@@ -1032,3 +1032,49 @@ class InPlayOdds(models.Model):
             code = f'InPlayOdd-{get_random_string(5).upper()}'
             self.code = code
         super(InPlayOdds, self).save(*args, **kwargs)
+
+
+class Markets(models.Model):
+    legacy = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    developer_name = models.CharField(max_length=200, null=True, blank=True)
+    has_winning_calculations = models.CharField(max_length=20, choices=Public_Status, default='Yes', null=True, blank=True)
+    status = models.CharField(max_length=20, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('title',)
+        verbose_name = 'market'
+        # verbose_name_plural = 'categories'
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            code = f'Market-{get_random_string(5).upper()}'
+            self.code = code
+        super(Markets, self).save(*args, **kwargs)
+
+
+class Bookmakers(models.Model):
+    legacy = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        # ordering = ('title',)
+        verbose_name = 'bookmaker'
+        # verbose_name_plural = 'categories'
+
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            code = f'Bookmaker-{get_random_string(5).upper()}'
+            self.code = code
+        super(Bookmakers, self).save(*args, **kwargs)
