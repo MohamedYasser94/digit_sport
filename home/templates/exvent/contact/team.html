@@ -1,0 +1,80 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+        <!-- Hero Start -->
+        <div class="section exvent-hero-section d-lg-flex d-block align-items-center inner-page-hero" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/about_page_bg.jpg);">
+            <img class="shape-1 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape1.png" alt="">
+            <img class="shape-2 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape2.png" alt="">
+
+            <div class="container">
+                <div class="row exvent-hero-row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="page-title">
+                            <h2 class="section-title">{% translate 'Team' %}</h2>
+                        </div>
+                        <div class="page-navigation">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a></li>
+                                    <li class="breadcrumb-item"><a href="">{% translate 'Team' %}</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Speaker Start -->
+        <div class="speaker-section-2 section-padding-07 purple-bg-2">
+            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/speaker_shape2.png" alt="shape" class="speaker-bg-shape">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title-wrap">
+                            <div class="section-title text-center">
+                                <h5 class="sub-title orange">{% translate 'Our Awesome Team' %}</h5>
+                                <h2 class="title white">Iconic industry-leading speakers</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center text-center">
+                    {% for item in teams %}
+                    <div class="col-md-4 col-sm-6 speaker-col">
+                        <a class="speaker-link" href="">
+                            <div class="single-speaker">
+                                <div class="speaker-thumb">
+                                    {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="Speaker" class="img-fluid">
+                                    {% else %}
+                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_9.jpg" alt="Speaker" class="img-fluid">
+                                    {% endif %}
+                                </div>
+                                <div class="speaker-content text-start">
+                                    <h4>{{ item.get_full_name }}</h4>
+                                    <span>{{ item.position }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        <!-- Speaker End -->
+
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

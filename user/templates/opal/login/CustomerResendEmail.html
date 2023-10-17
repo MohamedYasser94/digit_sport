@@ -1,0 +1,302 @@
+{% load i18n %}
+{% load static %}
+{% block header %} {% include 'good/login/header.html' %}  {% endblock %}
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="auth-bg">
+<!--begin::Main-->
+<!--begin::Root-->
+<div class="d-flex flex-column flex-root">
+    <!--begin::Authentication - Sign-up -->
+    <div class="d-flex flex-column flex-lg-row flex-column-fluid">
+        <!--begin::Aside-->
+         {% block aside %} {% include 'good/login/aside.html' %}  {% endblock %}
+        <!--begin::Aside-->
+        <!--begin::Body-->
+        <div class="d-flex flex-column flex-lg-row-fluid py-10">
+            <!--begin::Content-->
+            <div class="d-flex flex-center flex-column flex-column-fluid" id="customer_signup">
+                <!--begin::Wrapper-->
+                <div class="w-lg-600px p-10 p-lg-15 mx-auto">
+                    <!--begin::Form-->
+                    <form class="form w-100"
+                          action="{% url 'user:CustomerResendActivationEmail' %}" method="post">
+                        {% csrf_token %}
+                        <!--begin::Heading-->
+                        <div class="mb-10 text-center">
+                            <!--begin::Title-->
+                            <h1 class="text-dark mb-3">{% translate 'Resand Activation Email' %}</h1>
+                            <!--end::Title-->
+                            <!--begin::Link-->
+                            <div class="text-gray-400 fw-bold fs-4">{% translate 'Already have an account?' %}
+                                <a href="{% url 'user:CustomerLogin' %}"
+                                   class="link-primary fw-bolder">{% translate 'Sign in here' %}</a></div>
+                            <!--end::Link-->
+                        </div>
+                        <!--end::Heading-->
+{#                        <!--begin::Action-->#}
+{#                                                <button type="button" class="btn btn-light-primary fw-bolder w-100 mb-10">#}
+{#                                                    <img alt="Logo"#}
+{#                                                         src="{% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/google-icon.svg"#}
+{#                                                         class="h-20px me-3"/>{% translate 'Sign in with Google' %}</button>#}
+                        <!--end::Action-->
+                        <!--begin::Separator-->
+                        <div class="d-flex align-items-center mb-10">
+                            <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+                            <span class="fw-bold text-gray-400 fs-7 mx-2">{% translate 'OR' %}</span>
+                            <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+                        </div>
+                        <div>
+                            {% if form.errors %}
+
+                                {% for error_field, error_message in form.errors.items %}
+                                    <!--begin::Alert-->
+												<div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+													<!--begin::Icon-->
+													<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+													<span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3" d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z" fill="black" />
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z" fill="black" />
+														</svg>
+													</span>
+													<!--end::Svg Icon-->
+													<!--end::Icon-->
+													<!--begin::Content-->
+													<div class="d-flex flex-column pe-0 pe-sm-10">
+														<h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+														<span>{{ error_message|striptags }}.</span>
+													</div>
+													<!--end::Content-->
+													<!--begin::Close-->
+													<button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+														<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+														<span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+																<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+															</svg>
+														</span>
+														<!--end::Svg Icon-->
+													</button>
+													<!--end::Close-->
+												</div>
+												<!--end::Alert-->
+
+
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if membership_form.errors %}
+
+                                {% for error_field, error_message in membership_form.errors.items %}
+
+                                      <!--begin::Alert-->
+												<div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+													<!--begin::Icon-->
+													<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+													<span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3" d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z" fill="black" />
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z" fill="black" />
+														</svg>
+													</span>
+													<!--end::Svg Icon-->
+													<!--end::Icon-->
+													<!--begin::Content-->
+													<div class="d-flex flex-column pe-0 pe-sm-10">
+														<h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+														<span>{{ error_message|striptags }}.</span>
+													</div>
+													<!--end::Content-->
+													<!--begin::Close-->
+													<button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+														<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+														<span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+																<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+															</svg>
+														</span>
+														<!--end::Svg Icon-->
+													</button>
+													<!--end::Close-->
+												</div>
+												<!--end::Alert-->
+                                {% endfor %}
+
+                            {% endif %}
+                        {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                  <!--begin::Alert-->
+												<div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+													<!--begin::Icon-->
+													<!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+													<span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3" d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z" fill="black" />
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z" fill="black" />
+														</svg>
+													</span>
+													<!--end::Svg Icon-->
+													<!--end::Icon-->
+													<!--begin::Content-->
+													<div class="d-flex flex-column pe-0 pe-sm-10">
+														<h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+														<span>{{ message|striptags }}.</span>
+													</div>
+													<!--end::Content-->
+													<!--begin::Close-->
+													<button type="button" class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto" data-bs-dismiss="alert">
+														<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+														<span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+																<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+															</svg>
+														</span>
+														<!--end::Svg Icon-->
+													</button>
+													<!--end::Close-->
+												</div>
+												<!--end::Alert-->
+                            {% endfor %}
+                        </ul>
+                    {% endif %}</div>
+                        <!--end::Separator-->
+
+                        <div class="row fv-row mb-7">
+                            <!--begin::Input group-->
+                            <div class="col-xl-12">
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'Email' %}</label>
+                                <input class="form-control form-control-lg form-control-solid" type="email" value="Hitham55@gmail.com"
+                                       placeholder="{% translate 'Email' %}" required
+                                       name="email" autocomplete="off"/>
+
+                            </div>
+
+                            <!--end::Input group-->
+
+
+                            <!--end::Input group-->
+                        </div>
+
+
+
+
+
+                    <br>
+                        <div class="text-center">
+                            <button type="submit"  id="kt_sign_up_submit" class="btn btn-lg btn-primary">
+                                <span class="indicator-label">{% translate 'Submit' %}</span>
+                                <span class="indicator-progress">{% translate 'Please wait...' %}
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                        </div>
+                        <!--end::Actions-->
+                    </form>
+                    <!--end::Form-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Content-->
+            <!--begin::Footer-->
+             {% block footer %} {% include 'good/login/footer.html' %}  {% endblock %}
+            <!--end::Footer-->
+        </div>
+        <!--end::Body-->
+    </div>
+    <!--end::Authentication - Sign-up-->
+</div>
+<!--end::Root-->
+<!--end::Main-->
+<!--begin::Javascript-->
+<script>var hostUrl = "assets/";</script>
+<!--begin::Global Javascript Bundle(used by all pages)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/global/plugins.bundle.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/scripts.bundle.js"></script>
+<!--end::Global Javascript Bundle-->
+<!--begin::Page Custom Javascript(used by this page)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/authentication/sign-up/general.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script>
+    Vue.config.devtools = true
+
+    const customer_signup = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#customer_signup',
+        data: {
+            email: [],
+            phone: [],
+            coupon:[],
+            disabled: 0
+
+        },
+        methods: {
+            CheckPhoneNumber: function (event) {
+                console.log(encodeURIComponent(event.target.value))
+                fetch("/api/client/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                    .then(response => {
+                        if (response.status == 404) {
+                            window.alert("Please Add Correct Mobile Number");
+                        } else if (response.status != 200) {
+                            console.log(response);
+                            window.alert("Something went wrong");
+                        } else {
+                            response.json().then(json => {
+                                var s = json
+                                this.phone = (s);
+                                console.log(json)
+                            });
+                        }
+                    });
+            },
+            CheckEmail: function (event) {
+                console.log(encodeURIComponent(event.target.value))
+                fetch("/api/client/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                    .then(response => {
+                        if (response.status == 404) {
+                            window.alert("Please Add Correct Email");
+                        } else if (response.status != 200) {
+                            console.log(response);
+
+                        } else {
+                            response.json().then(json => {
+                                var d = json
+                                this.email = (d);
+                                console.log(json)
+                            });
+                        }
+                    });
+            },
+            CheckPromoCode: function (event) {
+                console.log(encodeURIComponent(event.target.value))
+                fetch("/api/code/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                    .then(response => {
+                        if (response.status == 404) {
+                            window.alert("Please Add Correct Email");
+                        } else if (response.status != 200) {
+                            console.log(response);
+                            window.alert(response.json().message);
+                        } else {
+                            response.json().then(json => {
+                                var d = json
+                                this.coupon = (d);
+                                console.log(json)
+                            });
+                        }
+                    });
+            },
+
+
+        }
+    })
+
+
+</script>
+<!--end::Page Custom Javascript-->
+<!--end::Javascript-->
+</body>
+<!--end::Body-->
+</html>

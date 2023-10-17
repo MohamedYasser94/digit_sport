@@ -1,0 +1,88 @@
+{% load static %}
+{% load i18n %}
+
+
+{% if user.is_author %}
+              <!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-1">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fonticon-linkedin fs-1"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown px-lg-2 py-lg-4 w-200px w-lg-225px">
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate 'Blog' %}</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->
+                                        <!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminBlogCategoriesList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Category' %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+                                        <!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminBlogTagsList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Tags' %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminBlogArticleList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Article's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminBlogServicesList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Service' %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+
+
+
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								<!--end:Menu item-->
+            {% endif %}
+
+
+<script>
+
+
+</script>

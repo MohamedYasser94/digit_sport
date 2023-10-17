@@ -1,0 +1,166 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+
+    <!--begin::Body-->
+    <div class="d-flex flex-column flex-lg-row-fluid py-10">
+        {% if form.errors %}
+            {% for error_field, error_message in form.errors.items %}
+
+                <div class="alert alert-danger">
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li{% if message.tags %}
+                                    class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {{ error_field|striptags }}: {{ error_message|striptags }}
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+
+        {% endif %}
+        <!--begin::Content-->
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+            <!--begin::Container-->
+            <div id="kt_content_container" class="container-fluid">
+                <!--begin::Card-->
+                <div class="card">
+                    <!--begin::Card body-->
+                    <div class="card-body">
+                        <!--begin::Heading-->
+                        <div class="card-px text-center pt-15 pb-15">
+                            <!--begin::Title-->
+                            <h2 class="fs-2x fw-bolder mb-0">View Users Modal Example</h2>
+                            <!--end::Title-->
+                            <!--begin::Description-->
+                            <p class="text-gray-400 fs-4 fw-bold py-7">Click on the below buttons to launch
+                                <br/>user lists example.</p>
+                            <!--end::Description-->
+                            <!--begin::Action-->
+                             <form class="form w-100" novalidate="novalidate" enctype="multipart/form-data"
+                      action="{% url 'core:AdminCreateWallet' %}"
+                      method="post">
+                    {% csrf_token %}
+                    <!--begin::Heading-->
+                    <div class="text-center mb-10">
+                        <!--begin::Title-->
+                        <h1 class="text-dark mb-3">{% translate 'Creatting Wallet' %} - {{ wallet_state }}</h1>
+                        <!--end::Title-->
+                        <!--begin::Link-->
+                        <img src="{% static '' %}{{ BACKEND_ASSETS }}/images/profile_av.jpg" class="rounded-circle"
+                             alt="User">
+                        <div class="text-gray-400 fw-bold fs-4">{{ user.email }}
+                            <a href="" class="link-primary fw-bolder">Sign in here</a></div>
+                        <!--end::Link-->
+                    </div>
+                    <!--begin::Heading-->
+                    <!--begin::Input group=-->
+                    <div class="fv-row mb-10">
+                        <label class="form-label fw-bolder text-dark fs-6">{% translate 'Wallet Code' %}</label>
+                        <input class="form-control form-control-lg form-control-solid" type="text"
+                               placeholder="{% translate 'Wallet Code' %}" name="wallet_code" autocomplete="off"/>
+                    </div>
+                    <!--end::Input group=-->
+                    <!--begin::Input group-->
+                    <div class="mb-10 fv-row" data-kt-password-meter="true">
+                        <!--begin::Wrapper-->
+                        <div class="mb-1">
+                            <!--begin::Label-->
+                            <label class="form-label fw-bolder text-dark fs-6">{% translate 'Password' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Input wrapper-->
+                            <div class="position-relative mb-3">
+                                <input class="form-control form-control-lg form-control-solid" type="password"
+                                       placeholder="{% translate 'Password' %}" name="password" autocomplete="off"/>
+                                <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
+                                      data-kt-password-meter-control="visibility">
+												<i class="bi bi-eye-slash fs-2"></i>
+												<i class="bi bi-eye fs-2 d-none"></i>
+											</span>
+                            </div>
+                            <!--end::Input wrapper-->
+                            <!--begin::Meter-->
+                            <div class="d-flex align-items-center mb-3" data-kt-password-meter-control="highlight">
+                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
+                            </div>
+                            <!--end::Meter-->
+                        </div>
+                        <!--end::Wrapper-->
+                        <!--begin::Hint-->
+                        <div class="text-muted">Use 8 or more characters with a mix of letters, numbers &amp; symbols.
+                        </div>
+                        <!--end::Hint-->
+                    </div>
+                    <!--end::Input group=-->
+
+
+                    <!--begin::Action-->
+                    <div class="text-center">
+                        <button type="submit" id="kt_new_password_submit" class="btn btn-lg btn-primary fw-bolder">
+                            <span class="indicator-label">{% translate 'Submit' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                    </div>
+                    <!--end::Action-->
+                </form>
+                            <!--end::Action-->
+                        </div>
+                        <!--end::Heading-->
+                        <!--begin::Illustration-->
+                        <div class="text-center pb-15 px-5">
+                            <img src="{% static '' %}backend/good/media/illustrations/sketchy-1/2.png" alt=""
+                                 class="mw-100 h-200px h-sm-325px"/>
+                        </div>
+                        <!--end::Illustration-->
+                    </div>
+                    <!--end::Card body-->
+                </div>
+                <!--end::Card-->
+            </div>
+            <!--end::Container-->
+        </div>
+        <!--end::Content-->
+
+    </div>
+    <!--end::Body-->
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/list/export.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/list/list.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/add.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+    <!--end::Page Custom Javascript-->
+    <!--end::Javascript-->
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

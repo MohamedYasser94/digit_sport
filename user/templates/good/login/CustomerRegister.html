@@ -1,0 +1,595 @@
+{% load i18n %}
+{% load static %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block header %} {% include 'good/login/header.html' %}  {% endblock %}
+<!--end::Head-->
+<!--begin::Body-->
+<body id="kt_body" class="auth-bg">
+<!--begin::Main-->
+<!--begin::Root-->
+<div class="d-flex flex-column flex-root">
+    <!--begin::Authentication - Sign-up -->
+    <div class="d-flex flex-column flex-lg-row flex-column-fluid" id="signup-app">
+        <!--begin::Aside-->
+        {% block aside %} {% include 'good/login/aside.html' %}  {% endblock %}
+        <!--begin::Aside-->
+        <!--begin::Body-->
+        <div class="d-flex flex-column flex-lg-row-fluid py-10">
+            <!--begin::Content-->
+            <div class="d-flex flex-center flex-column flex-column-fluid" >
+                <!--begin::Wrapper-->
+                <div class="w-lg-600px p-10 p-lg-15 mx-auto">
+                    <!--begin::Form-->
+                    <!--begin::language-->
+                    <div class="mb-10 text-center">
+                        <!--begin::Theme mode docs-->
+
+                        <form action="{% url 'set_language' %}" method="post"
+                              id="language-form"
+                              name="language-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="language" id="language" value=""/>
+                        </form>
+                        <script>
+                            function set_language(code) {
+                                $('#language').val(code);
+                                $('#language-form').submit();
+                            }
+                        </script>
+
+                        {% if  LANGUAGE_CODE == 'en' %}
+
+
+
+                            <a class="btn btn-icon btn-active-light btn-outline btn-outline-default btn-icon-gray-muted btn-active-icon-primary"
+                               href="javascript:set_language('ar')">
+
+                                <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/egypt.svg"
+                                     alt="{{ en_language }}"
+                                     style="height: 20px;width: 30px">
+
+                            </a>
+                        {% elif LANGUAGE_CODE == 'ar' %}
+                            <a href="javascript:set_language('en')">
+
+                                <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/united-states.svg"
+                                     alt="{{ en_language }}" style="height: 20px;width: 30px"
+                                >
+                            </a>
+
+                        {% endif %}
+
+
+
+
+                        <!--end::Theme mode docs-->
+                    </div>
+                    <!--end::language-->
+                    <form class="form w-100"
+                          action="{% url 'user:CustomerRegister' %}" method="POST">
+                        {% csrf_token %}
+                        <!--begin::Heading-->
+                        <div class="mb-10 text-center">
+                            <!--begin::Title-->
+                            <h1 class="text-dark mb-3">{% translate 'Create an Account' %}</h1>
+                            <!--end::Title-->
+
+                            <!--begin::Link-->
+                            <div class="text-gray-400 fw-bold fs-4">{% translate 'Already have an account?' %}
+                                <a href="{% url 'user:CustomerLogin' %}"
+                                   class="link-primary fw-bolder">{% translate 'Sign in here' %}</a></div>
+                            <!--end::Link-->
+                        </div>
+                        <!--end::Heading-->
+                        <!--begin::Action-->
+                        {#                        <button type="button" class="btn btn-light-primary fw-bolder w-100 mb-10">#}
+                        {#                            <img alt="Logo"#}
+                        {#                                 src="{% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/google-icon.svg"#}
+                        {#                                 class="h-20px me-3"/>{% translate 'Sign in with Google' %}</button>#}
+                        <!--end::Action-->
+                        <!--begin::Separator-->
+                        <div class="d-flex align-items-center mb-10">
+                            <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+                            <span class="fw-bold text-gray-400 fs-7 mx-2">{% translate 'OR' %}</span>
+                            <div class="border-bottom border-gray-300 mw-50 w-100"></div>
+                        </div>
+                        <div>
+                            {% if form.errors %}
+
+                                {% for error_field, error_message in form.errors.items %}
+                                    <!--begin::Alert-->
+                                    <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                        <!--begin::Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+                                        <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3"
+                                                                  d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z"
+                                                                  fill="black"/>
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                        <!--end::Svg Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Content-->
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+                                            <span>{{ error_message|striptags }}.</span>
+                                        </div>
+                                        <!--end::Content-->
+                                        <!--begin::Close-->
+                                        <button type="button"
+                                                class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto"
+                                                data-bs-dismiss="alert">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                            <span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16"
+                                                                      height="2" rx="1"
+                                                                      transform="rotate(-45 6 17.3137)" fill="black"/>
+																<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                      transform="rotate(45 7.41422 6)" fill="black"/>
+															</svg>
+														</span>
+                                            <!--end::Svg Icon-->
+                                        </button>
+                                        <!--end::Close-->
+                                    </div>
+                                    <!--end::Alert-->
+
+
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if membership_form.errors %}
+
+                                {% for error_field, error_message in membership_form.errors.items %}
+
+                                    <!--begin::Alert-->
+                                    <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                        <!--begin::Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+                                        <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3"
+                                                                  d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z"
+                                                                  fill="black"/>
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                        <!--end::Svg Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Content-->
+                                        <div class="d-flex flex-column pe-0 pe-sm-10">
+                                            <h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+                                            <span>{{ error_message|striptags }}.</span>
+                                        </div>
+                                        <!--end::Content-->
+                                        <!--begin::Close-->
+                                        <button type="button"
+                                                class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto"
+                                                data-bs-dismiss="alert">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                            <span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16"
+                                                                      height="2" rx="1"
+                                                                      transform="rotate(-45 6 17.3137)" fill="black"/>
+																<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                      transform="rotate(45 7.41422 6)" fill="black"/>
+															</svg>
+														</span>
+                                            <!--end::Svg Icon-->
+                                        </button>
+                                        <!--end::Close-->
+                                    </div>
+                                    <!--end::Alert-->
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if messages %}
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'User SignUp' %}
+                                             {% if message.tags == 'User SignUp success' %}
+
+                                            <!--begin::Alert-->
+                                    <div class="alert alert-dismissible bg-light-info d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                                <!--begin::Icon-->
+                                                <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+                                                <span class="svg-icon svg-icon-2hx svg-icon-success me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3"
+                                                                  d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z"
+                                                                  fill="black"/>
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                                <!--end::Svg Icon-->
+
+                                                <!--end::Icon-->
+                                                <!--begin::Content-->
+                                       {% elif message.tags == 'Category danger' %}
+                                            <div class="alert alert-dismissible bg-light-danger d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                                <!--begin::Icon-->
+                                                <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+                                                <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3"
+                                                                  d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z"
+                                                                  fill="black"/>
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                                <!--end::Svg Icon-->
+                                                <!--end::Icon-->
+                                                    {% endif %}
+                                                <!--begin::Content-->
+                                                <div class="d-flex flex-column pe-0 pe-sm-10">
+                                                    <h4 class="fw-bold"> {{ error_field|striptags }}</h4>
+                                                    <span>{{ message|striptags }}.</span>
+                                                </div>
+
+                                                <!--end::Content-->
+                                                <!--begin::Close-->
+                                                <button type="button"
+                                                        class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto"
+                                                        data-bs-dismiss="alert">
+                                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                                    <span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16"
+                                                                      height="2" rx="1"
+                                                                      transform="rotate(-45 6 17.3137)" fill="black"/>
+																<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                      transform="rotate(45 7.41422 6)" fill="black"/>
+															</svg>
+														</span>
+                                                    <!--end::Svg Icon-->
+                                                </button>
+                                                <!--end::Close-->
+                                            </div>
+                                       <!--end::Alert-->
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </ul>
+                            {% endif %}
+                        </div>
+                        <!--end::Separator-->
+                        <!--begin::Input group-->
+                        <div class="row fv-row mb-7">
+                            <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'First Name' %}</label>
+                                <input class="form-control form-control-lg form-control-solid" type="text" required value="Hitham"
+
+                                       placeholder="{% translate 'First Name' %}" name="first_name" autocomplete="off"/>
+                            </div>
+                            <!--end::Col-->
+                            <!--begin::Col-->
+                            <div class="col-xl-6">
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'Last Name' %}</label>
+                                <input class="form-control form-control-lg form-control-solid" type="text" required value="Gamal"
+
+                                       placeholder="{% translate 'Last Name' %}" name="last_name" autocomplete="off"/>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group-->
+                        <div class="row fv-row mb-7">
+                            <!--begin::Input group-->
+                            <div class="col-xl-6">
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'Email' %}</label>
+                                <input class="form-control form-control-lg form-control-solid" type="email"
+                                       placeholder="{% translate 'Email' %}" required minlength="5"
+                                       name="email" autocomplete="off" @input="CheckEmail($event)"/>
+
+                            </div>
+
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="col-xl-6">
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'Mobile Number' %}</label>
+                                <input id="PhoneNumber" class="form-control form-control-lg form-control-solid" type="number" value="01032008815"
+
+                                       placeholder="{% translate 'Mobile Number' %}" required
+                                       name="phone" @input="CheckPhoneNumber($event)"/>
+
+
+                            </div>
+
+
+                            <ul id="example-1">
+                                <li v-if="EmailExist">
+                                    <p>{% translate 'this email already exists' %}</p>
+                                </li>
+                                <li  v-if="PhoneExist">
+                                    <p>{% translate 'this Mobile Number already exists' %}</p>
+                                </li>
+                            </ul>
+
+                            <!--end::Input group-->
+                        </div>
+                        <!--begin::Input group-->
+                        {% if system_setting.membership == 'Active' %}
+                            <div class="row fv-row mb-7">
+                                <!--begin::Col-->
+                                <div class=" col-xl-6">
+                                    <label class="form-label required fw-bolder text-dark fs-6">{% translate 'Membership' %}</label>
+                                    <select name="membership" aria-label="Select a Duration" data-control="select2"
+                                            data-placeholder="Select a Membership..."
+                                            class="form-control form-select form-select-solid ">
+                                        <option>{% translate 'Select a Membership...' %}</option>
+                                        {% for value, text in membership_form.membership.field.choices %}
+                                            <option value="{{ text }}">
+                                                {% if text == 'PromoCode' %}{% translate 'Promo Code' %}
+                                                    {% elif text == 'Paid' %}{% translate 'Paid Membership' %}
+                                                    {% elif text == 'Free' %}{% translate 'Free Membership' %}
+                                                {% endif %}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col-xl-6">
+                                    <label class="form-label fw-bolder text-dark fs-6">{% translate 'Promo Code' %}</label>
+                                    <input class="form-control form-control-lg form-control-solid" type="text"
+                                           placeholder="{% translate 'Promo Code' %}" name="coupon" autocomplete="off"
+                                           @input="CheckPromoCode($event)"/>
+                                </div>
+                                <!--end::Col-->
+                                <ul id="example-1">
+
+                                    <li v-for="item in coupon.slice(0, 1)" :key="item.message">
+                                        <p>{% translate 'this Promo Code Number already Used' %}</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <!--end::Input group-->
+
+                        <!--begin::Input group-->
+                        <div class="mb-10 fv-row" data-kt-password-meter="true">
+                            <!--begin::Wrapper-->
+                            <div class="mb-1">
+                                <!--begin::Label-->
+                                <label class="form-label fw-bolder text-dark fs-6">{% translate 'Password' %}</label>
+                                <!--end::Label-->
+                                <!--begin::Input wrapper-->
+                                <div class="position-relative mb-3">
+                                    <input class="form-control form-control-lg form-control-solid" type="password"
+                                           placeholder="{% translate 'Password' %}" name="password1" required
+                                           value="4rew4rew56*"
+                                           autocomplete="off"/>
+                                    <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
+                                          data-kt-password-meter-control="visibility">
+												<i class="bi bi-eye-slash fs-2"></i>
+												<i class="bi bi-eye fs-2 d-none"></i>
+											</span>
+                                </div>
+                                <!--end::Input wrapper-->
+                                <!--begin::Meter-->
+                                <div class="d-flex align-items-center mb-3" data-kt-password-meter-control="highlight">
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
+                                </div>
+                                <!--end::Meter-->
+                            </div>
+                            <!--end::Wrapper-->
+                            <!--begin::Hint-->
+                            <div class="text-gray-900 ">{% translate 'Use 8 or more characters with a mix of letters, numbers &amp; symbols.' %}
+                            </div>
+                            <!--end::Hint-->
+                        </div>
+                        <!--end::Input group=-->
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-5">
+                            <label class="form-label fw-bolder text-dark fs-6">{% translate 'Confirm Password' %}</label>
+                            <input class="form-control form-control-lg form-control-solid" type="password" required
+                                   placeholder="{% translate 'Confirm Password' %}" name="password2" value="4rew4rew56*"
+                                   autocomplete="off"/>
+                        </div>
+                        <!--begin::Hint-->
+                        <div class="text-gray-900 ">{% translate 'Use 8 or more characters with a mix of letters, numbers &amp; symbols.' %}
+                        </div>
+                        <!--end::Hint-->
+                        <!--end::Input group-->
+                        {#                        <!--begin::Input group-->#}
+                        {#                        <div class="fv-row mb-10">#}
+                        {#                            <label class="form-check form-check-custom form-check-solid form-check-inline">#}
+                        {#                                <input class="form-check-input" type="checkbox" title="toc" value="1"/>#}
+                        {#                                <span class="form-check-label fw-bold text-gray-700 fs-6">I Agree#}
+                        {#										<a href="#" class="ms-1 link-primary">Terms and conditions</a>.</span>#}
+                        {#                            </label>#}
+                        {#                        </div> :disabled="disabled <= coupon"   #}
+                        {#                        <!--end::Input group-->#}
+                        <!--begin::Actions-->
+                        <br>
+                        <div class="text-center">
+                            <button :disabled="PhoneExist == true || EmailExist == true" type="submit" id="kt_sign_up_submit" class="btn btn-lg btn-primary">
+                                <span class="indicator-label">{% translate 'Submit' %}</span>
+                                <span class="indicator-progress">{% translate 'Please wait...' %}
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                        </div>
+                        <!--end::Actions-->
+                    </form>
+                    <!--end::Form-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Content-->
+            <!--begin::Footer-->
+            {% block footer %} {% include 'good/login/footer.html' %}  {% endblock %}
+            <!--end::Footer-->
+        </div>
+        <!--end::Body-->
+    </div>
+    <!--end::Authentication - Sign-up-->
+</div>
+<!--end::Root-->
+<!--end::Main-->
+<!--begin::Javascript-->
+
+<script>
+    function validateMax(input) {
+  var max = input.getAttribute("max");
+  var value = input.value;
+
+  if (value > max) {
+    input.setCustomValidity("The value must be less than or equal to " + max);
+  } else {
+    input.setCustomValidity("");
+  }
+}
+
+// Attach the validateMax function to the input field
+document.getElementById("PhoneNumber").addEventListener("input", validateMax);
+</script>
+<script>
+
+    const customerSignupApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                PhoneExist: false,
+                EmailExist: false,
+                CouponExist: false,
+                CanSubmit : false,
+                email: [],
+                phone: [],
+                coupon: [],
+                disabled: 0
+            }
+        },
+        methods: {
+            CheckPhoneNumber: function (event) {
+                console.log(encodeURIComponent(event.target.value))
+                const url = "{% url 'api:ApiCheckUserDataExist' data=53252623623632623  %}".replace("53252623623632623", encodeURIComponent(event.target.value));
+                payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "type": 'phone',
+                }
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    timeout: 5000,
+                    success: (data) => {
+                        console.log('data', data)
+                        this.PhoneExist = data ;
+                        if (data == true) {
+                            this.CanSubmit = false
+                        }else {
+                            this.CanSubmit = true
+                        }
+
+                    },
+                    error: function (data) {
+                        console.error("ERROR...", data)
+                        this.suggestions = 'No Data Found'
+
+
+                    },
+                });
+            },
+            CheckEmail: function (event) {
+                console.log(encodeURIComponent(event.target.value))
+               const url = "{% url 'api:ApiCheckUserDataExist' data=53252623623632623  %}".replace("53252623623632623", encodeURIComponent(event.target.value));
+                payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "type": 'email',
+                }
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                     data: payload,
+                    url: url,
+                    timeout: 5000,
+                    success: (data) => {
+                        console.log('data', data)
+                        this.EmailExist = data ;
+                        if (data == true) {
+                            this.CanSubmit = false
+                        }else {
+                            this.CanSubmit = true
+                        }
+
+                    },
+                    error: function (data) {
+                        console.error("ERROR...", data)
+                        this.suggestions = 'No Data Found'
+
+
+                    },
+                });
+            },
+            CheckPromoCode: function (event) {
+                const url = "{% url 'api:ApiCheckUserDataExist' data=53252623623632623  %}".replace("53252623623632623", encodeURIComponent(event.target.value));
+                payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "type": 'phone',
+                }
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    timeout: 5000,
+                    success: (data) => {
+                        console.log('data', data)
+                        this.PhoneExist = data ;
+                        if (data == true) {
+                            this.CanSubmit = false
+                        }else {
+                            this.CanSubmit = true
+                        }
+
+                    },
+                    error: function (data) {
+                        console.error("ERROR...", data)
+                        this.suggestions = 'No Data Found'
+
+
+                    },
+                });
+            },
+
+
+        }
+
+
+    })
+    customerSignupApp.mount('#signup-app')
+    customerSignupApp.config.devtools = true
+
+
+</script>
+<script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
+<!--begin::Global Javascript Bundle(used by all pages)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/global/plugins.bundle.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/scripts.bundle.js"></script>
+<!--end::Global Javascript Bundle-->
+<!--begin::Page Custom Javascript(used by this page)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/authentication/sign-up/general.js"></script>
+
+
+
+</body>
+<!--end::Body-->
+</html>

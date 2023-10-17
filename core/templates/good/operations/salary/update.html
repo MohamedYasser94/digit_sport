@@ -1,0 +1,276 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid" >
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'core:AdminEmployeeSalaryUpdate' salary_transaction.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10" id="operation-app">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Salary Payemnt Data' %}</h2>
+                            </div>
+                            <div class="card-center">
+                                <h2>{{ salary_transaction.month }}/{{ salary_transaction.year }}</h2>
+                            </div>
+                            <div class="card-custom">
+                                <h2>{{ employee_salary.receiver }}/{{ employee_timesheet.cost }}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Payment Code' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="payment_code" type="text" disabled
+                                               placeholder="{% translate 'Payment Code' %}" value="{{ salary_transaction.code }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Salary' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="salary" type="number" disabled
+                                               placeholder="{% translate 'Salary' %}" value="{{ employee_salary.cost }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Paid' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="operation_paid" type="number" disabled
+
+                                               placeholder="{% translate 'Paid' %}" value="{{ salary_transaction.paid }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Amount' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="operation_amount" type="number"
+                                               placeholder="{% translate 'Amount' %}" />
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Paid Date' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input id="operation_paid_date" class="form-control" name="operation_paid_date" type="date"
+                                               min="{{ operation_history.paid_date|date:'Y-m-d' }}"
+                                               placeholder="{% translate 'Paid Date' %}" value="{{ operation_history.paid_date }}"/>
+                                        <!--end::Input-->
+                                        <script>
+                                                            document.getElementById('operation_paid_date').defaultValue = "{{ operation_history.paid_date|date:'Y-m-d' }}";
+                                                        </script>
+                                    </div>
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Document Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="hero_image" type="file" accept="image" required
+                                               placeholder="{% translate 'Document Image' %}" value=""/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Notes' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="note" type="text"
+                                               placeholder="{% translate 'Notes' %}" value=""/>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if operation_form.errors %}
+                                {% for error_field, error_message in operation_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                          {% if invoice_form.errors %}
+                    {% for error_field, error_message in invoice_form.errors.items %}
+
+                        <div class="alert alert-danger">
+                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+                  {% for message in messages %}
+                                            {% if message.extra_tags == 'Salary' %}
+                                                {% if message.tags == 'Salary success' %}
+                                                    <div class="alert alert-info">
+                                                {% elif message.tags == 'Salary danger' %}
+                                                    <div class="alert alert-danger">
+                                                {% endif %}
+
+
+                                            {{ message.extra_tags|striptags }}:{{ message.tags }}
+                                            : {{ message|striptags }}
+
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{% url 'clinic:AdminCarCategoriesList' %}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" :disabled="[[DisablePaid]] == 0" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+    {% if uploaded_file_url %}
+        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    {% endif %}
+
+{% endblock %}
+{% block custom_js %}
+
+
+     <script>
+
+        const OperationApp = Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+
+                    operationAmount: {{ operation_history.amount }},
+                    operationPaid: 0,
+                    operationDue: {{ operation_history.due }},
+                    DisablePaid: 0,
+
+
+                }
+            },
+            methods: {
+
+                calculateBalance: function (event) {
+                    let operation_amount = parseFloat(this.operationAmount)
+                    let operation_paid = parseFloat(event.target.value);
+
+                    console.log('operationAmount', operation_amount)
+                    console.log('operationPaid', operation_paid)
+
+                    let operation_due  = (operation_amount -operation_paid).toFixed(1)
+                     console.log('operation_due', operation_due)
+                    if (operation_amount < operation_paid) {
+
+                        Swal.fire({
+        text: "{% translate 'The amount paid is greater than amount of the project ' %}",
+        icon: "error",
+        buttonsStyling: false,
+        confirmButtonText: "{% translate 'Please Edit The Paid Amount' %}",
+        customClass: {
+            confirmButton: "btn btn-danger"
+        }
+    });
+                        this.DisablePaid = 0;
+                        console.log('DisablePaid', this.DisablePaid)
+                        return  this.operationDue=operation_due ,this.DisablePaid=0;
+
+                    } else {
+                        this.DisablePaid = 1;
+                        console.log('DisablePaid', this.DisablePaid)
+                           return  this.operationDue=operation_due ,this.DisablePaid=1;
+
+                    }
+
+
+
+
+
+
+
+
+                },
+            },
+            mounted() {
+                // methods can be called in lifecycle hooks, or other methods!
+
+            }
+
+
+        })
+        OperationApp.mount('#operation-app')
+
+        OperationApp.config.devtools = true
+
+
+    </script>
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

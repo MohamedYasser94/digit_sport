@@ -1,0 +1,57 @@
+{% load i18n %}
+{% load static %}
+{% block header %} {% include 'good/login/header.html' %}  {% endblock %}
+	<!--end::Head-->
+	<!--begin::Body-->
+	<body id="kt_body" class="auth-bg">
+		<!--begin::Main-->
+		<!--begin::Root-->
+		<div class="d-flex flex-column flex-root">
+			<!--begin::Authentication - Signup Verify Email -->
+			<div class="d-flex flex-column flex-column-fluid">
+				<!--begin::Content-->
+				<div class="d-flex flex-row-fluid flex-column flex-column-fluid text-center p-10 py-lg-5">
+					<!--begin::Logo-->
+					<a href="{% url 'home:HomeIndex' %}" class="pt-lg-20 mb-12">
+						<img alt="Logo" src="{% static '' %}Digithup/tetxtmix.png" class="h-250px" />
+					</a>
+					<!--end::Logo-->
+					<!--begin::Logo-->
+					<h1 class="fw-bolder fs-2qx text-gray-800 mb-7">{% translate 'Verify Your Email' %}</h1>
+					<!--end::Logo-->
+					<!--begin::Message-->
+					<div class="fs-3 fw-bold text-muted mb-10">{% translate 'We have sent an email to' %}
+					<a href="#" class="link-primary fw-bolder">{{ user.email }}</a>
+					<br />{% translate 'please follow a link to verify your email.' %}</div>
+					<!--end::Message-->
+					<!--begin::Action-->
+					<div class="text-center mb-10">
+						<a href="" class="btn btn-lg btn-primary fw-bolder">{% translate 'Skip for now' %}</a>
+					</div>
+					<!--end::Action-->
+					<!--begin::Action-->
+					<div class="fs-5">
+						<span class="fw-bold text-gray-700">{% translate 'Did’t receive an email?' %}</span>
+						<a href="{% url 'user:CustomerResendActivationEmail' %}" class="link-primary fw-bolder">{% translate 'Resend' %}</a>
+					</div>
+					<!--end::Action-->
+				</div>
+				<!--end::Content-->
+				<!--begin::Illustration-->
+				<div class="d-flex flex-row-auto bgi-no-repeat bgi-position-x-center bgi-size-contain bgi-position-y-bottom min-h-150px min-h-lg-350px" style="background-image: url({% static ''%}backend/good/assets/media/illustrations/sketchy-1/7.png)"></div>
+				<!--end::Illustration-->
+			</div>
+			<!--end::Authentication - Signup Verify Email-->
+		</div>
+		<!--end::Root-->
+		<!--end::Main-->
+		<!--begin::Javascript-->
+		<script>var hostUrl = "{% static ''%}backend/good/assets/";</script>
+		<!--begin::Global Javascript Bundle(used by all pages)-->
+		<script src="{% static ''%}backend/good/assets/plugins/global/plugins.bundle.js"></script>
+		<script src="{% static ''%}backend/good/assets/js/scripts.bundle.js"></script>
+		<!--end::Global Javascript Bundle-->
+		<!--end::Javascript-->
+	</body>
+	<!--end::Body-->
+</html>

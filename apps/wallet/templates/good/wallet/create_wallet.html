@@ -1,0 +1,228 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+
+    <!--begin::Body-->
+
+    <div class="d-flex flex-column flex-lg-row-fluid py-10">
+        {% if form.errors %}
+            {% for error_field, error_message in form.errors.items %}
+                <div class="alert alert-danger">
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li{% if message.tags %}
+                                    class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {{ error_field|striptags }}: {{ error_message|striptags }}
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+
+        {% endif %}
+        <!--begin::Content-->
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+            <!--begin::Container-->
+            <div id="kt_content_container" class="container-fluid">
+                <!--begin::Card-->
+                <div class="card">
+                    <!--begin::Card body-->
+                    <div class="card-body">
+                        <!--begin::Heading-->
+                        <div class="card-px text-center ">
+                            <!--begin::Title-->
+                            <h2 class="fs-2x fw-bolder mb-0">{% translate 'Welcome ' %}{{ user.get_full_name }}</h2>
+                            <!--end::Title-->
+                            <!--begin::Description-->
+                            <p class="text-gray-400 fs-4 fw-bold py-7">
+                                {{ wallet_state }}</p>
+                            <!--end::Description-->
+                            {% if form.errors %}
+                                {% for error_field, error_message in form.errors.items %}
+                                    <div class="alert alert-danger">
+                                        {% if messages %}
+                                            <ul class="messages">
+                                                {% for message in messages %}
+                                                    <li{% if message.tags %}
+                                                        class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% for message in messages %}
+{#                                 {% if message.extra_tags == 'Wallet' %}#}
+
+                                <!--begin::Alert-->
+                                <div class="alert alert-dismissible bg-light-info d-flex flex-column flex-sm-row w-100 p-5 mb-10">
+                                    <!--begin::Icon-->
+                                    <!--begin::Svg Icon | path: icons/duotune/communication/com003.svg-->
+                                    <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path opacity="0.3"
+                                                                  d="M2 4V16C2 16.6 2.4 17 3 17H13L16.6 20.6C17.1 21.1 18 20.8 18 20V17H21C21.6 17 22 16.6 22 16V4C22 3.4 21.6 3 21 3H3C2.4 3 2 3.4 2 4Z"
+                                                                  fill="black"/>
+															<path d="M18 9H6C5.4 9 5 8.6 5 8C5 7.4 5.4 7 6 7H18C18.6 7 19 7.4 19 8C19 8.6 18.6 9 18 9ZM16 12C16 11.4 15.6 11 15 11H6C5.4 11 5 11.4 5 12C5 12.6 5.4 13 6 13H15C15.6 13 16 12.6 16 12Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                    <!--end::Svg Icon-->
+                                    <!--end::Icon-->
+                                    <!--begin::Content-->
+                                    <div class="d-flex flex-column pe-0 pe-sm-10">
+                                        <h4 class="fw-bold">{% translate 'New Wallet' %}</h4>
+                                        <span>{{ message }}.</span>
+                                    </div>
+                                    <!--end::Content-->
+                                    <!--begin::Close-->
+                                    <button type="button"
+                                            class="position-absolute position-sm-relative m-2 m-sm-0 top-0 end-0 btn btn-icon ms-sm-auto"
+                                            data-bs-dismiss="alert">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                        <span class="svg-icon svg-icon-1 svg-icon-danger">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="6" y="17.3137" width="16"
+                                                                      height="2" rx="1"
+                                                                      transform="rotate(-45 6 17.3137)" fill="black"/>
+																<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                      transform="rotate(45 7.41422 6)" fill="black"/>
+															</svg>
+														</span>
+                                        <!--end::Svg Icon-->
+                                    </button>
+                                    <!--end::Close-->
+                                </div>
+                                <!--end::Alert-->
+
+
+{#{% endif %}#}
+                            {% endfor %}
+                            <!--begin::Action-->
+                            <!--begin::Wrapper-->
+                            <div class="w-lg-550px  mx-auto">
+                                <form class="form w-100" novalidate="novalidate" enctype="multipart/form-data"
+                                      action="{% url 'wallet:AdminCreateWallet' %}"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <!--begin::Input group=-->
+                                    <div class="fv-row mb-10">
+                                        <label class="form-label fw-bolder text-dark fs-6">{% translate 'Wallet Code' %}</label>
+                                        <input class="form-control form-control-lg form-control-solid" type="text"
+                                               placeholder="{% translate 'Wallet Code' %}" name="wallet_code"
+                                               autocomplete="off"/>
+                                    </div>
+                                    <!--end::Input group=-->
+                                    <!--begin::Input group-->
+                                    <div class="mb-10 fv-row" data-kt-password-meter="true">
+                                        <!--begin::Wrapper-->
+                                        <div class="mb-1">
+                                            <!--begin::Label-->
+                                            <label class="form-label fw-bolder text-dark fs-6">{% translate 'Password' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input wrapper-->
+                                            <div class="position-relative mb-3">
+                                                <input class="form-control form-control-lg form-control-solid"
+                                                       type="password"
+                                                       placeholder="{% translate 'Password' %}" name="password"
+                                                       autocomplete="off"/>
+                                                <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
+                                                      data-kt-password-meter-control="visibility">
+												<i class="bi bi-eye-slash fs-2"></i>
+												<i class="bi bi-eye fs-2 d-none"></i>
+											</span>
+                                            </div>
+                                            <!--end::Input wrapper-->
+                                            <!--begin::Meter-->
+                                            <div class="d-flex align-items-center mb-3"
+                                                 data-kt-password-meter-control="highlight">
+                                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                                <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
+                                            </div>
+                                            <!--end::Meter-->
+                                        </div>
+                                        <!--end::Wrapper-->
+                                        <!--begin::Hint-->
+                                        <div class="text-muted">Use 8 or more characters with a mix of letters,
+                                            numbers &amp; symbols.
+                                        </div>
+                                        <!--end::Hint-->
+                                    </div>
+                                    <!--end::Input group=-->
+
+
+                                    <!--begin::Action-->
+                                    <div class="text-center">
+                                        <button type="submit" id="kt_new_password_submit"
+                                                class="btn btn-lg btn-primary fw-bolder">
+                                            <span class="indicator-label">{% translate 'Submit' %}</span>
+                                            <span class="indicator-progress">{% translate 'Please wait...' %}
+										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                        </button>
+                                    </div>
+                                    <!--end::Action-->
+                                </form>
+                                <!--end::Action-->
+                            </div>
+                        </div>
+                        <!--end::Heading-->
+                        <!--begin::Illustration-->
+                        <div class="text-center pb-15 px-5">
+                            <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/illustrations/sketchy-1/2.png" alt=""
+                                 class="mw-100 h-200px h-sm-325px"/>
+                        </div>
+                        <!--end::Illustration-->
+                    </div>
+                    <!--end::Card body-->
+                </div>
+                <!--end::Card-->
+            </div>
+            <!--end::Container-->
+        </div>
+        <!--end::Content-->
+
+    </div>
+    <!--end::Body-->
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/list/export.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/list/list.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/customers/add.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+    <!--end::Page Custom Javascript-->
+    <!--end::Javascript-->
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

@@ -1,0 +1,58 @@
+{% load static %}
+
+ <!-- END - Root element of PhotoSwipe, the gallery. Must have class pswp. -->
+
+		<!-- ///////////////////\\\\\\\\\\\\\\\\\\\ -->
+	    <!-- ********** Resources jQuery ********** -->
+	    <!-- \\\\\\\\\\\\\\\\\\\/////////////////// -->
+
+		<!-- * Libraries jQuery, Easing and Bootstrap - Be careful to not remove them * -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/jquery.min.js"></script>
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/jquery.easings.min.js"></script>
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/bootstrap.min.js"></script>
+
+		<!-- Newsletter plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/notifyMe.js"></script>
+
+		<!-- Contact form plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/contact-me.js"></script>
+
+		<!-- Mozaic plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/mozaic.js"></script>
+
+		<!-- Scroll plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/jquery.mousewheel.js"></script>
+
+		<!-- Custom Scrollbar plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/jquery.mCustomScrollbar.js"></script>
+
+		<!-- Popup Newsletter Form -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/classie.js"></script>
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/dialogFx.js"></script>
+
+		<!-- PhotoSwipe Core JS file -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/photoswipe.js"></script>
+
+		<!-- PhotoSwipe UI JS file -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/photoswipe-ui-default.js"></script>
+
+		<!-- Countdown plugin -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/jquery.countdown.js"></script>
+
+		<script>
+		$("#getting-started")
+			// Year/Month/Day Hour:Minute:Second
+			.countdown("2016/10/24 15:30:30", function(event) {
+				$(this).html(
+					event.strftime('<strong>%D Days</strong> %Hh %Mm %Ss')
+				);
+		});
+		</script>
+
+		<!-- Main JS File -->
+		<script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/main.js"></script>
+
+		<!--[if lt IE 10]><script type="text/javascript" src="{% static '' %}{{ FRONTEND_ASSETS }}/js/placeholder.js"></script><![endif]-->
+
+{% block javascript %}
+{% endblock %}

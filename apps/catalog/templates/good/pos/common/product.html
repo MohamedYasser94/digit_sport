@@ -1,0 +1,126 @@
+{% load i18n %}
+
+<div class="col-xl-4 order-xl-first order-last" id="POSAppProduct">
+    <p>Selected: [[selected ]]</p>
+    <div class="card card-custom gutter-b bg-white border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between colorfull-select">
+                <div class="selectmain">
+
+                    <select
+                            class="form-select mb-2  w-150px bag-secondary" id="categorys"
+                             data-control="select2ss"
+                             data-allow-clear="true"
+                            data-placeholder="Select an option"
+                            @change="ApiGetCategory($event)">
+                        {% for category in categorys %}
+                            <option value="{{ category.id }}">{{ category.title }}</option>
+                        {% endfor %}
+                    </select>
+
+
+                </div>
+
+                <div class="selectmain">
+                    <select class="form-select mb-2  w-150px bag-secondary">
+                        <option v-for="(category,index) in ApiCategory " key="index" value="category.id">
+                            [[category.title]]
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+        <div class="product-items">
+            <div class="row" v-if="AllProduct.length">
+
+                <div class="col-xl-4 col-lg-2 col-md-3 col-sm-4 col-6"
+                     v-for="(product,index) in AllProduct">
+
+                    <div class="productCard">
+                        <div class="productThumb" v-for="image in product.product_image">
+                            <img class="img-fluid" role="button" :value="product.id" :src="[[image.image]]"
+                                 @click="ApiAddProductToCashier([[product.id]])" product_id=""
+                            >
+                        </div>
+                        <div class="productContent align-content-center">
+
+
+                            {% translate 'Qunt ' %}:[ [[product.quantity]] ] {% translate 'price' %}: (
+                            [[product.final_price]])
+                            <hr>
+                            [[ product.title]]
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="row" v-else>
+
+
+                <div class="row" v-if="categoryProducts.length">
+
+                    <div class="col-xl-4 col-lg-2 col-md-3 col-sm-4 col-6"
+                         v-for="(product,index) in categoryProducts">
+
+                        <div class="productCard">
+                            <div class="productThumb" v-for="image in product.product_image">
+                                <img class="img-fluid" role="button" :value="product.id" :src="[[image.image]]"
+                                     @click="ApiAddProductToCashier([[product.id]])" product_id=""
+                                >
+                            </div>
+                            <div class="productContent align-content-center">
+
+
+                                {% translate 'Qunt' %}:[ [[product.quantity]] ] {% translate 'price' %}: (
+                                [[product.final_price]])
+                                <hr>
+                                [[ product.title]]
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="row" v-else>
+                    {% for product in product_list %}
+                        <div class="col-xl-4 col-lg-2 col-md-3 col-sm-4 col-6">
+
+                            <div class="productCard">
+
+                                <div class="productThumb">
+                                    <img class="img-fluid" role="button"
+                                         src="{{ product.image.image.url }}"
+                                         @click="ApiAddProductToCashier( '{{ product.product.id }}' )"
+                                    >
+                                </div>
+                                <div class="productContent align-content-center">
+                                    {% translate 'Qunt' %}:[ {{ product.product.quantity }}
+                                    ] {% translate 'price' %}: ({{ product.product.final_price }})
+                                    <hr>
+                                    {{ product.product.title|truncatewords:2 }}
+                                    &nbsp;
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+

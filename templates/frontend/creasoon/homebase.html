@@ -1,0 +1,99 @@
+{% load i18n %}
+{% load static %}
+{% block head %} {% include FRONTEND_HEAD %}  {% endblock %}
+<body >
+ <!-- Page Wrap ===========================================-->
+<div class="page-wrapper">
+
+
+
+
+
+{% block header %} {% include FRONTEND_HEADER %}  {% endblock %}
+
+{% block breadcrumb %}{% endblock %}
+
+
+{% block body %} {% include FRONTEND_BODY %}  {% endblock %}
+
+{% block vuejs %} {% include FRONTEND_VUE %}  {% endblock %}
+
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+  </div>
+
+
+{% block modal %} {% include FRONTEND_MODAL %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}  {% endblock %}
+
+
+{% block custom_js %}
+
+
+
+{% endblock custom_js %}
+
+<script>
+
+    const FrontApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                searchInput: '',
+                searchResults: [],
+                notifications: [],
+                notificationCount: 0,
+                Disable: false,
+                appointmentButton: true,
+
+
+            }
+        },
+        methods: {
+
+            makeAppointmentSlider: function () {
+                this.appointmentButton = !this.appointmentButton
+                console.log('DurationCount', )
+                const url = '/api/search/' ;
+                payload = {}
+                jQuery.ajax({
+                    type: 'GET',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    timeout: 5000,
+                    success: (data) => {
+                        console.log('data', data)
+                        console.log("SUCCESS", data)
+                        console.log("Disable", this.Disable)
+                        if (data) {
+                            this.searchResults = data
+
+                        } else {
+                            return new Swal("{% translate 'You Can not add Leasing small Then Rent Price The Rent price is  '  %} " + " {% translate 'Leasing Price is '  %} ",);
+
+                        }
+                    },
+                });
+        },
+        },
+        watch: {},
+
+
+        mounted() {
+
+
+        },
+        computed() {
+
+        }
+
+
+    })
+    FrontApp.mount('#front_app')
+
+    FrontApp.config.devtools = true
+
+
+</script>
+</body>
+</html>

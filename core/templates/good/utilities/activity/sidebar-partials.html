@@ -1,0 +1,217 @@
+{% load static %}
+{% load i18n %}
+
+
+{% if user.is_staff %}
+   <!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item here show py-1">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fonticon-location fs-1"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown px-lg-2 py-lg-4 w-200px w-lg-225px">
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate 'Log' %}</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminActivityLog' model='MoneyTransaction' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Money Transaction' %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Categories' %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link " href="{% url 'core:AdminClientList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Client's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="{% url 'core:AdminDriverList' %}">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Driver's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Car's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Project'S" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+                                        <!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Contract'S" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								<!--end:Menu item-->
+{% endif %}
+
+{% if user.is_staff %}
+   <!--begin:Menu item-->
+								<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item  py-1">
+									<!--begin:Menu link-->
+									<span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fonticon-notification fs-1"></i>
+										</span>
+									</span>
+									<!--end:Menu link-->
+									<!--begin:Menu sub-->
+									<div class="menu-sub menu-sub-dropdown px-lg-2 py-lg-4 w-200px w-lg-225px">
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu content-->
+											<div class="menu-content">
+												<span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate 'Financial' %}</span>
+											</div>
+											<!--end:Menu content-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Project's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Car's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+{#										<!--begin:Menu item-->#}
+{#										<div class="menu-item">#}
+{#											<!--begin:Menu link-->#}
+{#											<a class="menu-link " href="{% url 'clinic:AdminCarSystemOperationTransaction' %}">#}
+{#												<span class="menu-bullet">#}
+{#													<span class="bullet bullet-dot"></span>#}
+{#												</span>#}
+{#												<span class="menu-title">{% translate "System Operation's" %}</span>#}
+{#											</a>#}
+{#											<!--end:Menu link-->#}
+{#										</div>#}
+{#										<!--end:Menu item-->#}
+										<!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Monthly Expense's" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+{#										<!--end:Menu item-->#}
+{#                                        {% if user.access_level == 'Admin' %}#}
+                                         <!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Partner Percentage" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+                                        <!--begin:Menu item-->
+										<div class="menu-item">
+											<!--begin:Menu link-->
+											<a class="menu-link" href="">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate "Transaction Users" %}</span>
+											</a>
+											<!--end:Menu link-->
+										</div>
+										<!--end:Menu item-->
+{#                                            {% endif %}#}
+
+									</div>
+									<!--end:Menu sub-->
+								</div>
+								<!--end:Menu item-->
+{% endif %}
+

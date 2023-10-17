@@ -1,0 +1,119 @@
+{% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="de-flex sm-pt10">
+            <div class="de-flex-col">
+                <!-- logo begin -->
+                <div id="logo">
+                    <a href="{% url 'home:HomeIndex' %}">
+                        <img alt="" class="logo" src="{% static '' %}frontend/justica/images/logo-light.png"/>
+                        <img alt="" class="logo-2" src="{% static '' %}frontend/justica/images/logo.png"/>
+                    </a>
+                </div>
+                <!-- logo close -->
+            </div>
+            <div class="de-flex-col header-col-mid">
+                <!-- mainmenu begin -->
+                <ul id="mainmenu">
+                    <li><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a>
+                    <li><a href="{% url 'home:FrontRoll' %}">{% translate 'Roll' %}</a>
+                     <li><a href="{% url 'home:FrontedLawyer' %}">{% translate 'Lawyers' %}</a>
+
+                    </li>
+
+                    </li>
+
+                    <li><a href="{% url 'home:Blog' %}">{% translate 'News' %}</a>
+
+                    </li>
+                    <li><a href="">{% translate 'About' %}</a>
+                        <ul>
+                            <li><a href="{% url 'home:FrontAbout' %}">{% translate 'About US' %}</a></li>
+                            <li><a href="{% url 'home:FrontTheTeam' %}">{% translate 'The Team' %}</a></li>
+                            <li><a href="{% url 'home:FrontFAQ' %}">{% translate 'FAQ' %}</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="{% url 'home:Contact' %}">{% translate 'Contact' %}</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="#">{% translate 'Welcome' %}</a>
+                            <ul>
+                                <li><a href="">{{ user.email }}</a></li>
+                                {% if user.is_staff %}
+                                    <li><a href="{% url 'core:AdminIndex' %}">{% translate 'Office Management' %}</a></li>
+                                    {% elif user.is_superuser %}
+                                    <li><a href="{% url 'core:AdminIndex' %}">{% translate 'Office Management' %}</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'user:CustomerLogout' %}">{% translate 'Logout' %}</a></li>
+
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'user:CustomerLogin' %}">{% translate 'Login' %}</a></li>
+                    {% endif %}
+
+
+                    <li>
+                        <form action="{% url 'set_language' %}" method="post"
+                              id="language-form"
+                              name="language-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="language" id="language" value=""/>
+                        </form>
+                        <script>
+                            function set_language(code) {
+                                $('#language').val(code);
+                                $('#language-form').submit();
+                            }
+                        </script>
+
+
+                        {% if  LANGUAGE_CODE == 'en' %}
+                            <a class="nav-link" href="javascript:set_language('{{ ar_language.code }}')">
+                                <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/egypt.svg" alt="en image" style="height: 20px;width: 40px">
+                            </a>
+                        {% elif LANGUAGE_CODE == 'ar' %}
+                            <a class="nav-link" href="javascript:set_language('{{ en_language.code }}')">
+                                <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/united-states.svg" alt="ar image" style="height: 20px;width: 40px"
+                                > </a>
+
+                        {% endif %}
+                </ul>
+
+
+                <!-- mainmenu close -->
+            </div>
+            <div class="de-flex-col">
+            <!--begin::Purchase link-->
+
+			<!--end::Purchase link-->
+                <div class="h-phone md-hide"><span>{% translate 'Need &nbsp; Help?' %}</span><i class="fa fa-whatsapp"></i>
+
+                    {% for setting in site_info %}
+                        {% if location_country == 'Egypt' %}
+                            {% if setting.setting.country.name  == 'Egypt' %}
+                                {{ setting.extra_settings.phone }}
+                            {% endif %}
+                            {% elif location_country == 'Kuwait' %}
+                            {% if setting.setting.country.name  == 'Kuwait' %}
+                                {{ setting.extra_settings.phone }}
+                            {% endif %}
+                            {% else %}
+                            {% if setting.setting.country.name  == 'Egypt' %}
+                                {{ setting.extra_settings.phone }}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+                <span id="menu-btn"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

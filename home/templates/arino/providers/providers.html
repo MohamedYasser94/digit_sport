@@ -1,0 +1,82 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+ <!--==============================
+    Breadcumb
+============================== -->
+    <div class="breadcumb-wrapper " data-bg-src="{%  static '' %}{{FRONTEND_ASSETS}}/img/bg/breadcumb-bg.jpg" data-overlay="black" data-opacity="8">
+        <div class="container">
+            <div class="breadcumb-content text-center">
+                <h1 class="breadcumb-title">{% translate 'Service Provider' %}</h1>
+                <ul class="breadcumb-menu">
+                    <li><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a></li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--==============================
+Project Area
+==============================-->
+    <section class="space">
+        <div class="container">
+            <div class="text-center">
+                <div class="portfolio-filter-btn filter-menu filter-menu-active mb-50">
+                    <button data-filter="*" class="tab-btn active" type="button">Show All</button>
+                      {% for item in  category %}
+                    <button data-filter="{{item.code}}" class="tab-btn" type="button">{{ item.title }}</button>
+                    {% endfor %}
+                 <button data-filter=".cat" class="tab-btn " type="button">Show All</button>
+
+                </div>
+            </div>
+            <div class="row gx-40 gy-40 filter-active">
+                {% for item in  providers %}
+                <div class="col-md-6 col-lg-4 cat1 filter-item">
+                    <div class="project-{{item.category.code}} wow fadeInUp">
+                        <div class="project-img">
+                            <img src="{{ item.image.url }}" alt="providers image">
+                        </div>
+                        <a href="{% url 'home:FrontProvidersDetails' item.slug %}" class="icon-btn" tabindex="-1"><i class="far fa-arrow-up-right"></i></a>
+                        <div class="project-content">
+                            <p class="project-card_subtitle">{{ item.title }}</p>
+                            <h4 class="box-title"><a href="{% url 'home:FrontProvidersDetails' item.slug %}">{{ item.category }}</a></h4>
+                        </div>
+                    </div>
+                </div>
+                    {% empty %}
+                    <div class="col-md-6 col-lg-4 cat1 filter-item">
+                    <div class="project-card3 wow fadeInUp">
+                        <div class="project-img">
+                            <img src="{%  static '' %}{{FRONTEND_ASSETS}}/img/project/project_4_1.jpg" alt="project image">
+                        </div>
+                        <a href="" class="icon-btn" tabindex="-1"><i class="far fa-arrow-up-right"></i></a>
+                        <div class="project-content">
+                            <p class="project-card_subtitle">Marketing Agency</p>
+                            <h4 class="box-title"><a href="">Email Marketing</a></h4>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="btn-area text-center mt-70">
+                <a href="" class="th-btn">{% translate 'Discover More' %}<i class="fa-solid fa-arrow-up-right ms-2"></i></a>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+

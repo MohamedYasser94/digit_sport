@@ -1,0 +1,360 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'event:AdminAttendeesUpdate' attendee.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Client Data' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'First Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="first_name"
+                                               placeholder="{% translate 'First Name' %}" value="{{ client.first_name }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Middle Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="middle_name"
+                                               placeholder="{% translate 'Middle Name' %}" value="{{ client.middle_name }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Last Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="last_name"
+                                               placeholder="{% translate 'Last Name' %}" value="{{ client.last_name }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                            <!--begin::Input group-->
+
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                       <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Email' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="email"
+                                               placeholder="{% translate 'Email' %}" value="{{ client.email }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                             <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Title' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                       <select name="title" aria-label="{% translate 'Title' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Title' %}"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                         <option value="{{ client.title }}" selected="">{{ client.title }}</option>
+                                                    <option value="Dr" >{% translate 'Dr' %}</option>
+                                                    <option value="Mr" >{% translate 'Mr' %}</option>
+                                                    <option value="Ms" >{% translate 'Ms' %}</option>
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Phone' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="phone"
+                                               placeholder="{% translate 'Phone' %}" value="{{ client.phone }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'National ID' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="national_id"
+                                               placeholder="{% translate 'National ID' %}" value="{{ client.national_id }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Company' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="company"
+                                               placeholder="{% translate 'Company' %}" value="{{ client.company }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Client Type' %}</label>
+                                        <!--end::Label-->
+                                         <!--begin::Input-->
+                                        <select name="client_type" aria-label="{% translate 'Select a Type..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a Type..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                         <option value="{{ client.client_type }}">{{ client.client_type }}</option>
+                                            {% for value, text in client_form.client_type.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Country' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="country" aria-label="{% translate 'Select a Country..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a Country..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                          <option value="{{ client.country }}">{{ client.country }}</option>
+
+                                            {% for value, text in client_form.country.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                   <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Governorates' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="governorates" aria-label="{% translate 'Select a Governorates..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a Governorates..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                          <option value="{{ client.governorates }}">{{ client.governorates }}</option>
+
+
+                                            {% for value, text in client_form.governorates.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'City' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="city" aria-label="{% translate 'Select a City..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a City..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                          <option value="{{ client.city }}">{{ client.city }}</option>
+
+
+                                            {% for value, text in client_form.city.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Area' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="area" aria-label="{% translate 'Select a Area..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a Area..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                          <option value="{{ client.area }}">{{ client.area }}</option>
+
+
+                                            {% for value, text in client_form.area.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="file" accept="image/*"  class="form-control form-control-solid"
+                                               placeholder="{% translate 'Image' %}"
+                                               name="hero_image" />
+                                        <!--end::Input-->
+                                    </div>
+                                 <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Id Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="file" accept="image/*"  class="form-control form-control-solid"
+                                               placeholder="{% translate 'Image' %}"
+                                               name="national_image" />
+                                        <!--end::Input-->
+                                    </div>
+
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Select a status..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a status..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                           <option value="{{ client.status }}">{{ client.status }}</option>
+
+                                            {% for value, text in client_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Job Title' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <textarea class="form-control" name="job_title" rows="3"
+                                               placeholder="{% translate 'Job Title' %}">{{ client.job_title }}</textarea>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                          {% if form_show_errors %}
+                {% endif %}
+                {% if attendees_form.errors %}
+                    {% for error_field, error_message in attendees_form.errors.items %}
+
+                        <div class="alert alert-danger">
+                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+
+                {% for message in messages %}
+                            {% if message.extra_tags == 'Attendees' %}
+                                {% if message.tags == 'Attendees success' %}
+                                    <div class="alert alert-info">
+                                {% elif message.tags == 'Attendees danger' %}
+                                    <div class="alert alert-danger">
+                                {% endif %}
+                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

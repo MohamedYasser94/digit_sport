@@ -1,0 +1,857 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+<!-- Hero Start -->
+    <div class="section exvent-hero-section-04" id="eventregis-app"
+            {% if event.image %}
+         style="background-image: url({{ event.image.url }});"
+            {% else %}
+         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/hero_bg1.jpg);"
+            {% endif %}
+    >
+        <img class="shape-5 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/section_bottom_shape.png"
+             alt="Shape">
+
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-5 col-md-5" >
+                    <div class="exvent-hero-title">
+                        <h5 class="title-date" data-aos="fade-down"
+                            data-aos-delay="500">{{ event.start_date|date:'F jS' }}</h5>
+                        <p style="font-size: 60px" class="main-title" data-aos="fade-down" data-aos-delay="550">{{ event.title }}</p>
+                        <h4 style="font-size: 40px" class="title-year" data-aos="fade-down" data-aos-delay="600">{{ event.category }}</h4>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-7">
+                    <div class="hero-form"
+                         style="background-color: #0d0a0a;opacity: 60%">
+
+
+
+                        <form action="{% url 'home:FrontEventRegistration' event.slug %}" method="post"
+                              enctype="multipart/form-data"
+                              class="exvent-form">
+                            {% csrf_token %}
+                            <div class="row gy-4">
+                                <div class="col-4" v-show="showSignUpFields">
+                                    <label class="required text-white ">{% translate 'First Name *' %}</label>
+                                    <div class="single-input">
+                                        <input type="text" name="first_name" placeholder="{% translate 'First Name' %} required"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-4" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'Middle Name *' %}</label>
+                                    <div class="single-input">
+                                        <input type="text" name="middle_name"
+                                               placeholder="{% translate 'Middle Name' %}" required
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-4" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'Last Name *' %}</label>
+                                    <div class="single-input">
+                                        <input type="text" name="last_name" placeholder="{% translate 'Last Name' %}" required
+                                        >
+                                    </div>
+
+                                </div>
+                                <label v-show="showSignUpFields" class="text-white ">{% translate 'First Name And Last Name Like Apper In Id Card , Full Name For Apper In Certificate' %}</label>
+
+                                <div class="col-6" v-show="showCommonFields">
+                                    <label class="text-white ">{% translate 'Email *' %}</label>
+                                    <div class="single-input">
+                                        <input type="email" required
+                                               placeholder="{% translate 'Email' %}"
+                                               name="email" />
+                                        <input hidden type="text" name="sign_type" :value="[[SignType]]" />
+
+                                    </div>
+                                </div>
+                                <div class="col-6" v-show="showCommonFields">
+                                    <label class="text-white ">{% translate 'Mobile Number *' %}</label>
+                                    <div class="single-input">
+
+                                        <input type="text"
+                                               placeholder="{% translate 'Mobile Number' %}" required
+                                               name="phone" />
+                                    </div>
+                                </div>
+
+                                  <div class="col-2" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'Title *' %}</label>
+                                     <div class="single-input">
+                                        <select name="title" id="select" required
+                                                class="form-select form-select-solid fw-bolder">
+                                                <option value="Dr">Dr</option>
+                                                <option value="Mr">Mr</option>
+                                                <option value="Mrs">Mrs</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'Specialty ' %}</label>
+                                    <div class="single-input">
+                                        <select name="specialty" id="select"
+                                                class="form-select form-select-solid fw-bolder">
+                                            {% for value, text in attendees_form.specialty.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'General Syndicate of Doctors card' %}</label>
+                                    <div class="single-input">
+                                        <input type="file" accept=".png, .jpg, .jpeg"
+                                               name="national_image"/>
+                                    </div>
+                                </div>
+                                <div class="col-6" v-show="showSignUpFields">
+                                    <label class="text-white ">{% translate 'Country ' %}</label>
+                                    <div class="single-input">
+
+                                        <select name="country"
+                                                data-control="select2"
+                                                @change="getCountryChoice($event.target.value)"
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="Egypt">{% translate 'Egypt' %}</option>
+                                            {% for value, text in attendees_form.country.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6"v-show="showSignUpFields"   >
+                                    <label class="text-white " v-show="showGovernorate">{% translate 'Governorate' %}</label>
+                                    <div class="single-input" v-show="showGovernorate">
+                                        <select name="governorates"
+                                                data-control="select2"
+                                                class="form-select form-select-solid fw-bolder">
+                                            {% for value, text in attendees_form.governorates.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-8 text-center" style="padding-left: 20%;" v-show="showSubmitFields">
+                                    <button type="submit"
+                                            class="submit_btn">{% translate 'Submit Registration' %}</button>
+                                </div>
+
+                                <div class="col-12 text-center">
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'Attendees' %}
+                                            {% if message.tags == 'Attendees success' %}
+                                                <div class="alert alert-info">
+                                            {% elif message.tags == 'Attendees danger' %}
+                                                <div class="alert alert-danger">
+                                            {% elif message.tags == 'Attendees warning' %}
+                                                <div class="alert alert-warning">
+                                            {% elif message.tags == 'Attendees info' %}
+                                                <div class="alert alert-info">
+                                            {% else %}
+                                                <div class="alert alert-{{ message.tags }}">
+                                            {% endif %}
+                                        {{ message|striptags }}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->
+
+
+{#    <!-- Hero Start -->#}
+{#    <div class="section exvent-hero-section-04" id="eventregis-app"#}
+{#            {% if event.image %}#}
+{#         style="background-image: url({{ event.image.url }});"#}
+{#            {% else %}#}
+{#         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/hero_bg1.jpg);"#}
+{#            {% endif %}#}
+{#    >#}
+{#        <img class="shape-5 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/section_bottom_shape.png"#}
+{#             alt="Shape">#}
+{##}
+{#        <div class="container">#}
+{#            <div class="row align-items-center justify-content-center">#}
+{#                <div class="col-lg-5 col-md-5" >#}
+{#                    <div class="exvent-hero-title">#}
+{#                        <h5 class="title-date" data-aos="fade-down"#}
+{#                            data-aos-delay="500">{{ event.start_date|date:'F jS' }}</h5>#}
+{#                        <p style="font-size: 60px" class="main-title" data-aos="fade-down" data-aos-delay="550">{{ event.title }}</p>#}
+{#                        <h4 style="font-size: 40px" class="title-year" data-aos="fade-down" data-aos-delay="600">{{ event.category }}</h4>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-7 col-md-7">#}
+{#                    <div class="hero-form"#}
+{#                         style="background-color: #0d0a0a;opacity: 60%">#}
+{#                        <div class="row gy-4 form-title text-center col-9" style="padding-left: 25%;">#}
+{#                            <div class="col-5 text-center">#}
+{#                                     <button type="button" class="col-md-2 submit_btn "  @click="getAlreadyUser('SignIn')">#}
+{#                                {% translate 'SignIn' %}#}
+{#                            </button>#}
+{#                                </div>#}
+{#                                <div class="col-5 text-center">#}
+{#                                   <button type="button" class="col-md-2 submit_btn "  @click="getAlreadyUser('SignUp')">#}
+{#                                 {% translate 'SignUp' %}#}
+{#                            </button>#}
+{#                                </div>#}
+{#                            <br><br>#}
+{#                            <h5 class="title-date" data-aos="fade-down" v-show="showHelpText"#}
+{#                            data-aos-delay="500" style="color: #ffffff">{% translate 'If you not First Time in our website and already attend in other event with xtreme its easy now just make sign in or is his firs ime you need to make signup ' %}</h5>#}
+{#                        </div>#}
+{##}
+{##}
+{#                        <form action="{% url 'home:FrontEventRegistration' event.slug %}" method="post"#}
+{#                              class="exvent-form">#}
+{#                            {% csrf_token %}#}
+{#                            <div class="row gy-4">#}
+{#                                <div class="col-4" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'First Name' %}</label>#}
+{#                                    <div class="single-input">#}
+{#                                        <input type="text" name="first_name" placeholder="{% translate 'First Name' %}"#}
+{#                                        >#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-4" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'Middle Name' %}</label>#}
+{#                                    <div class="single-input">#}
+{#                                        <input type="text" name="middle_name"#}
+{#                                               placeholder="{% translate 'Middle Name' %}"#}
+{#                                        >#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-4" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'Last Name' %}</label>#}
+{#                                    <div class="single-input">#}
+{#                                        <input type="text" name="last_name" placeholder="{% translate 'Last Name' %}"#}
+{#                                        >#}
+{#                                    </div>#}
+{##}
+{#                                </div>#}
+{#                                <label v-show="showSignUpFields" class="text-white ">{% translate 'First Name And Last Name Like Apper In Id Card , Full Name For Apper In Certificate' %}</label>#}
+{##}
+{#                                <div class="col-6" v-show="showCommonFields">#}
+{#                                    <label class="text-white ">{% translate 'Email' %}</label>#}
+{#                                    <div class="single-input">#}
+{#                                        <input type="email"#}
+{#                                               placeholder="{% translate 'Email' %}"#}
+{#                                               name="email" />#}
+{#                                        <input hidden type="text" name="sign_type" :value="[[SignType]]" />#}
+{#                                        >#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-6" v-show="showCommonFields">#}
+{#                                    <label class="text-white ">{% translate 'Mobile Number' %}</label>#}
+{#                                    <div class="single-input">#}
+{##}
+{#                                        <input type="text"#}
+{#                                               placeholder="{% translate 'Mobile Number' %}"#}
+{#                                               name="phone" />#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                  <div class="col-2" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'Title' %}</label>#}
+{#                                     <div class="single-input">#}
+{#                                        <select name="specialty" id="select"#}
+{#                                                class="form-select form-select-solid fw-bolder">#}
+{##}
+{#                                                <option value="Dr">Dr</option>#}
+{#                                                <option value="Mr">Mr</option>#}
+{#                                                <option value="Mrs">Mrs</option>#}
+{##}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-4" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'Specialty' %}</label>#}
+{#                                    <div class="single-input">#}
+{#                                        <select name="specialty" id="select"#}
+{#                                                class="form-select form-select-solid fw-bolder">#}
+{#                                            {% for value, text in attendees_form.specialty.field.choices %}#}
+{#                                                <option value="{{ value }}">{{ text }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-6" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'General Syndicate of Doctors card' %}</label>#}
+{#                                    <div class="single-input">#}
+{##}
+{#                                        <input type="file" accept=".png, .jpg, .jpeg"#}
+{##}
+{#                                               name="image"/>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-6" v-show="showSignUpFields">#}
+{#                                    <label class="text-white ">{% translate 'Country ' %}</label>#}
+{#                                    <div class="single-input">#}
+{##}
+{#                                        <select name="country"#}
+{#                                                data-control="select2"#}
+{#                                                @change="getCountryChoice($event.target.value)"#}
+{#                                                class="form-select form-select-solid fw-bolder">#}
+{#                                            <option value="Egypt">{% translate 'Egypt' %}</option>#}
+{#                                            {% for value, text in attendees_form.country.field.choices %}#}
+{#                                                <option value="{{ value }}">{{ text }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-6"v-show="showSignUpFields"   >#}
+{#                                    <label class="text-white " v-show="showGovernorate">{% translate 'Governorate' %}</label>#}
+{#                                    <div class="single-input" v-show="showGovernorate">#}
+{#                                        <select name="governorates"#}
+{#                                                data-control="select2"#}
+{#                                                class="form-select form-select-solid fw-bolder">#}
+{#                                            {% for value, text in attendees_form.governorates.field.choices %}#}
+{#                                                <option value="{{ value }}">{{ text }}</option>#}
+{#                                            {% endfor %}#}
+{#                                        </select>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="col-8 text-center" style="padding-left: 20%;" v-show="showSubmitFields">#}
+{#                                    <button type="submit"#}
+{#                                            class="submit_btn">{% translate 'Submit Registration' %}</button>#}
+{#                                </div>#}
+{##}
+{#                                <div class="col-12 text-center">#}
+{#                                    {% for message in messages %}#}
+{#                                        {% if message.extra_tags == 'Attendees' %}#}
+{#                                            {% if message.tags == 'Attendees success' %}#}
+{#                                                <div class="alert alert-info">#}
+{#                                            {% elif message.tags == 'Attendees danger' %}#}
+{#                                                <div class="alert alert-danger">#}
+{#                                            {% elif message.tags == 'Attendees warning' %}#}
+{#                                                <div class="alert alert-warning">#}
+{#                                            {% elif message.tags == 'Attendees info' %}#}
+{#                                                <div class="alert alert-info">#}
+{#                                            {% else %}#}
+{#                                                <div class="alert alert-{{ message.tags }}">#}
+{#                                            {% endif %}#}
+{#                                        {{ message|striptags }}#}
+{#                                        </div>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Hero End -->#}
+
+
+
+    <!-- About Start -->
+    <div class="about-area-4 section-padding-09">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="about-thumbnail">
+                        {% if event.about_image1 %}
+                            <img src="{{ event.about_image1.url }}" alt="Thumbnail"
+                                 style="width: 258px;height: 273px;"
+                                 class="about-thumb-1 img-fluid">
+                        {% else %}
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/about_img_3.png" alt="Thumbnail"
+                                 class="about-thumb-1 img-fluid">
+                        {% endif %}
+                        {% if event.about_image2 %}
+                            <img src="{{ event.about_image2.url }}" alt="Thumbnail"
+                                  style="width: 360px;height: 505px;"
+                                 class="about-thumb-2 img-fluid">
+                        {% else %}
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/about_img_4.png" alt="Thumbnail"
+                                 class="about-thumb-2 img-fluid">
+                        {% endif %}
+
+                        <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/about_shape4.png" alt="Shape"
+                             class="thumbnail-shape img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-title">
+                        <div class="section-title">
+                            <h2 class="title">{{ event.title }}</h2>
+                        </div>
+                    </div>
+                    <div class="about-content">
+                        <div class="section-paragraph">
+                            <p>{{ event.description|safe }} </p>
+                        </div>
+                        <div class="about-event">
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/calender-icon.png" alt="World"
+                                 class="thumb">
+                            <div class="content">
+                                <h5>When start</h5>
+                                <p>{{ event.start_date|date }}</p>
+                            </div>
+                        </div>
+                        <div class="about-event">
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/world-icon.png" alt="World"
+                                 class="thumb">
+                            <div class="content">
+                                <h5>Where to</h5>
+                                <p>{{ event.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
+{#    <!-- Countdown Start -->#}
+{#    <div class="event-countdown-2 event-countdown-3 section-padding-02"#}
+{#         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/countdown_bg.jpg);">#}
+{#        <div class="container">#}
+{#            <div class="counter-wrapper">#}
+{#                <div class="row g-0 justify-content-center">#}
+{#                    <div class="col-lg-4">#}
+{#                        <div class="counter-content-left">#}
+{#                            <h4 class="counter-title">Book your seat now</h4>#}
+{#                            <a class="btn btn-orange" href="">Buy Ticket Now</a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-lg-8">#}
+{#                        <!-- Countdown Start -->#}
+{#                        <div class="exvent-countdown-inner-3 countdown" data-countdown="2023/06/26" data-format="short">#}
+{#                            <div class="single-countdown">#}
+{#                                <span class="count countdown__time daysLeft"></span>#}
+{#                                <span class="value countdown__time daysText"></span>#}
+{#                            </div>#}
+{#                            <div class="single-countdown countdown-2">#}
+{#                                <span class="count countdown__time hoursLeft"></span>#}
+{#                                <span class="value countdown__time hoursText"></span>#}
+{#                            </div>#}
+{#                            <div class="single-countdown countdown-3">#}
+{#                                <span class="count countdown__time minsLeft"></span>#}
+{#                                <span class="value countdown__time minsText"></span>#}
+{#                            </div>#}
+{#                            <div class="single-countdown countdown-4">#}
+{#                                <span class="count countdown__time secsLeft"></span>#}
+{#                                <span class="value countdown__time secsText"></span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <!-- Countdown End -->#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Countdown End -->#}
+
+{#    <!-- Event Agenda Start  -->#}
+{#    <div class="event-agenda-area grey-bg section-padding-04">#}
+{#        <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/event_shape_h4_1.png" alt="shape" class="shape-1">#}
+{#        <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/event_shape_h4_2.png" alt="shape" class="shape-2">#}
+{#        <div class="container">#}
+{#            <div class="row">#}
+{#                <div class="col-12">#}
+{#                    <div class="section-title-wrap">#}
+{#                        <div class="section-title text-center">#}
+{#                            <h5 class="sub-title orange">Event Agenda</h5>#}
+{#                            <h2 class="title">Improve skill with every workshops</h2>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#                <div class="col-lg-4">#}
+{#                    <div class="single-event text-center">#}
+{#                        <a href="" class="event-header">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/even_card_thumb_1.jpg" alt="Thumbnail"#}
+{#                                 class="event-thumb img-fluid">#}
+{#                        </a>#}
+{#                        <div class="event-body">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/event_card_bg.png" alt="shape"#}
+{#                                 class="event-body-shape img-fluid">#}
+{#                            <a href="">#}
+{#                                <h3 class="event-title">Counselling Tips</h3>#}
+{#                            </a>#}
+{#                            <p class="event-desc">We’re inviting the top creatives in the tech industry from all over#}
+{#                                the world to come learn, grow, scrape their knees.</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-4">#}
+{#                    <div class="single-event text-center">#}
+{#                        <a href="" class="event-header">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/even_card_thumb_2.jpg" alt="Thumbnail"#}
+{#                                 class="event-thumb img-fluid">#}
+{#                        </a>#}
+{#                        <div class="event-body">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/event_card_bg.png" alt="shape"#}
+{#                                 class="event-body-shape img-fluid">#}
+{#                            <a href="">#}
+{#                                <h3 class="event-title">Meeting Investors</h3>#}
+{#                            </a>#}
+{#                            <p class="event-desc">We’re inviting the top creatives in the tech industry from all over#}
+{#                                the world to come learn, grow, scrape their knees.</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-4">#}
+{#                    <div class="single-event text-center">#}
+{#                        <a href="" class="event-header">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/even_card_thumb_3.jpg" alt="Thumbnail"#}
+{#                                 class="event-thumb img-fluid">#}
+{#                        </a>#}
+{#                        <div class="event-body">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/event_card_bg.png" alt="shape"#}
+{#                                 class="event-body-shape img-fluid">#}
+{#                            <a href="">#}
+{#                                <h3 class="event-title">Business Guides</h3>#}
+{#                            </a>#}
+{#                            <p class="event-desc">We’re inviting the top creatives in the tech industry from all over#}
+{#                                the world to come learn, grow, scrape their knees.</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Event Agenda End  -->#}
+{##}
+{#    <!-- Speaker Area Start -->#}
+{#    <div class="speaker-section-3 speaker-section-4"#}
+{#         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/speaker_bg_h4.jpg);">#}
+{#        <img class="section-shape-bottom img-fluid"#}
+{#             src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/section_bottom_shape.png" alt="Shape">#}
+{#        <div class="container">#}
+{#            <div class="row">#}
+{#                <div class="col-12">#}
+{#                    <div class="section-title-wrap">#}
+{#                        <div class="section-title text-center">#}
+{#                            <h5 class="sub-title white-2">Speakers</h5>#}
+{#                            <h2 class="title">Iconic industry-leading speakers</h2>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row gy-5 justify-content-center">#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_1.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Mike Fermalin</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Career Expert</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_2.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Anna Blair</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Founder, Marks</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_3.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Trevor J. Bell</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Lead Trainer, Blids</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_4.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Michael Rooker</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Developer Expert</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_5.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">David B. Perez</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Founder, Madis</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_6.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Agustin Todaro</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Founder, Nickho</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_7.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Jon P. Monroe</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">Traveller</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-lg-3 col-md-6 speaker-col">#}
+{#                    <div class="single-speaker">#}
+{#                        <a href="" class="speaker-thumbnail">#}
+{#                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/speaker/speaker_rounded_8.jpg"#}
+{#                                 alt="Speaker 1" class="speaker-img">#}
+{#                        </a>#}
+{#                        <div class="speaker-details">#}
+{##}
+{#                            <a href="" class="speaker-name-link">#}
+{#                                <h4 class="speaker-name">Trisha Fisher</h4>#}
+{#                            </a>#}
+{#                            <p class="speaker-designation">President, Child Care</p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Speaker Area End -->#}
+{##}
+{#    <!-- Brand Area Start -->#}
+{#    <div class="brand-area section-padding-02">#}
+{#        <div class="container">#}
+{#            <div class="row">#}
+{#                <div class="col-12">#}
+{#                    <div class="section-title-wrap">#}
+{#                        <div class="section-title text-center">#}
+{#                            <h5 class="sub-title orange">Sponsors</h5>#}
+{#                            <h2 class="title">50+ leading companies with us</h2>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row justify-content-center text-center">#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand1.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand2.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand3.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand4.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand5.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand6.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand7.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="col-md-3 col-6">#}
+{#                    <div class="brand-item">#}
+{#                        <a href=""><img#}
+{#                                src="{% static '' %}{{ FRONTEND_ASSETS }}/images/logo/brand8.png" alt="Brand"></a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- Brand Area End -->#}
+
+    <!-- Countdown Start -->
+    <div class="event-countdown-2 event-countdown-3 section-padding-02"
+         {% if event.countdown_image %}
+            style="background-image: url({{ event.countdown_image.url }});width: 1920px;height: 325px;"
+
+            {% else %}
+         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/countdown_bg.jpg);"
+            {% endif %}
+    >
+        <div class="container">
+            <div class="counter-wrapper">
+                <div class="row g-0 justify-content-center">
+                    <div class="col-lg-4">
+                        <div class="counter-content-left">
+                            <h4 class="counter-title">Book your seat now</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <!-- Countdown Start -->
+                        <div class="exvent-countdown-inner-3 countdown" data-countdown="{{ event.start_date|date:'Y/m/d' }}" data-format="short">
+                            <div class="single-countdown">
+                                <span class="count countdown__time daysLeft"></span>
+                                <span class="value countdown__time daysText"></span>
+                            </div>
+                            <div class="single-countdown countdown-2">
+                                <span class="count countdown__time hoursLeft"></span>
+                                <span class="value countdown__time hoursText"></span>
+                            </div>
+                            <div class="single-countdown countdown-3">
+                                <span class="count countdown__time minsLeft"></span>
+                                <span class="value countdown__time minsText"></span>
+                            </div>
+                            <div class="single-countdown countdown-4">
+                                <span class="count countdown__time secsLeft"></span>
+                                <span class="value countdown__time secsText"></span>
+                            </div>
+                        </div>
+                        <!-- Countdown End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Countdown End -->
+
+    <script>
+        const FrontEventRegistrationApp = Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+
+                    showGovernorate: true,
+                    showSignInFields: false,
+                     showSignUpFields: true,
+                    showSubmitFields: true,
+                    showCommonFields:true,
+                    showHelpText: true,
+                    SignType: 'SignUp',
+
+
+
+                }
+            },
+            methods: {
+                getCountryChoice(event) {
+                    console.log('getDiagnosisStatus', event);
+                    if (event === 'Egypt') {
+
+                        this.showGovernorate = true
+                    } else {
+                        this.showGovernorate = false
+                    }
+                },
+
+                getAlreadyUser(event) {
+
+                    if (event == 'SignIn') {
+                        this.showSignInFields = true
+                        this.showSignUpFields = false
+                        this.showSubmitFields = true
+                        this.showHelpText = false
+                        this.showCommonFields = true
+                        this.SignType = 'SignIn'
+                        this.AccountButton = '{% translate 'SignIn' %}'
+                    } else if (event == 'SignUp') {
+                        this.showSignInFields = false
+                        this.showSignUpFields = true
+                        this.showSubmitFields = true
+                        this.showHelpText = false
+                        this.showCommonFields = true
+                        this.SignType = 'SignUp'
+                        this.AccountButton = '{% translate 'SignUp' %}'
+                    } else {
+                        this.showSignInFields = false
+                        this.showSignUpFields = false
+                        this.showSubmitFields = false
+                        this.showHelpText = true
+                        this.showCommonFields = false
+
+                    }
+                },
+
+
+            },
+
+
+        })
+        FrontEventRegistrationApp.mount('#eventregis-app')
+        FrontEventRegistrationApp.config.devtools = true
+    </script>
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

@@ -1,0 +1,73 @@
+
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+
+
+
+<!--Page Content-->
+<main id="pageContent" class="page has-sidebar">
+<div class="container-fluid relative animatedParent animateOnce">
+    <div class="animated fadeInUpShort p-md-5 p-3">
+
+    <div class="wrapper">
+        <section class="section">
+            <h1 class="my-5 text-primary">{% translate 'clinic Chaneels' %}</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br>Architecto atque aut blanditiis consectetur
+            </p>
+        </section>
+        {% for category in categories %}
+        <section class="section">
+            <div class="mb-4">
+                <h3>{{ category.category.title }}</h3>
+                <p>{{ category.category.keyword }}</p>
+            </div>
+            <div class="row">
+                {% for album in category.albums_category %}
+
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="col-8">
+                                <div class="mr-4 float-left">
+                                    <i class="icon-windows s-36"></i>
+                                </div>
+                                <h6>
+                                      <a href="{% url 'home:FrontmedicalAlbumDetails' album.slug %}" class="ml-auto">
+                                   {{ album.title }}
+                                          </a>
+                                </h6>
+                                <a href="">
+                                    <small> {{ album.total }}</small>
+                                </a>
+                            </div>
+                            <a href="{% url 'home:FrontmedicalAlbumDetails' album.slug %}" class="ml-auto"><i class="icon-link"></i></a>
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </section>
+        {% endfor %}
+
+    </div>
+    </div>
+</div>
+</main><!--@Page Content-->
+
+
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

@@ -1,0 +1,59 @@
+{##}
+{#<script>#}
+{#    jQuery(document).ready(function() {#}
+{#  // Create two variables with names of months and days of the week in the array#}
+{#  var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];#}
+{#  var dayNames= ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]#}
+{##}
+{#  // Create an object newDate()#}
+{#  var newDate = new Date();#}
+{#  // Retrieve the current date from the Date object#}
+{#  newDate.setDate(newDate.getDate());#}
+{#  // At the output of the day, date, month and year#}
+{#  jQuery('#Date').html(dayNames[newDate.getDay()] + " " + newDate.getDate() + ' ' + monthNames[newDate.getMonth()] + ' ' + newDate.getFullYear());#}
+{##}
+{#  setInterval( function() {#}
+{#      // Create an object newDate () and extract the second of the current time#}
+{#      var seconds = new Date().getSeconds();#}
+{#      // Add a leading zero to the value of seconds#}
+{#      jQuery("#sec").html(( seconds < 10 ? "0" : "" ) + seconds);#}
+{#      },1000);#}
+{##}
+{#  setInterval( function() {#}
+{#      // Create an object newDate () and extract the minutes of the current time#}
+{#      var minutes = new Date().getMinutes();#}
+{#      // Add a leading zero to the minutes#}
+{#      jQuery("#min").html(( minutes < 10 ? "0" : "" ) + minutes);#}
+{#      },1000);#}
+{##}
+{#  setInterval( function() {#}
+{#      // Create an object newDate () and extract the clock from the current time#}
+{#      var hours = new Date().getHours();#}
+{#      // Add a leading zero to the value of hours#}
+{#      jQuery("#hours").html(( hours < 10 ? "0" : "" ) + hours);#}
+{#      }, 1000);#}
+{##}
+{#  });#}
+{#</script>#}
+{##}
+{##}
+{#    <script>#}
+{#        function updateClock() {#}
+{#            // Make an AJAX request to the Django view#}
+{#            var request = new XMLHttpRequest();#}
+{#            request.open('GET', '/dashboard/clock', true);#}
+{#            request.onload = function () {#}
+{#                if (request.status === 200) {#}
+{#                    // Parse the JSON response#}
+{#                    var time = JSON.parse(request.responseText).time;#}
+{##}
+{#                    // Update the clock on the page#}
+{#                    document.getElementById('clock').innerHTML = time;#}
+{#                }#}
+{#            };#}
+{#            request.send();#}
+{#        }#}
+{##}
+{#        // Schedule the clock update function to run every second#}
+{#        setInterval(updateClock, 1000);#}
+{#    </script>#}

@@ -1,0 +1,409 @@
+{% extends BACKEND_BASE %}
+
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+
+    <!--end::Page Vendor Stylesheets-->
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'core:AdminSystemSettingUpdate' system.slug %}" method="POST">
+                {% csrf_token %}
+                <!--begin::Aside column-->
+                <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'System Setting Update' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column gap-10">
+                                <!--begin::Input group-->
+                                <div class="fv-row">
+                                    <!--begin::Label-->
+                                    <label class="form-label">{% translate 'System Info' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Auto-generated ID-->
+                                    <div class="fw-bolder fs-3">#{{ system.title }}</div>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'Multi Vendor' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Select2-->
+                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="vendor"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.vendor }}"> {{ system.vendor }}</option>
+                                         {% for value, text in system_form.vendor.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                    <!--end::Select2-->
+
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'Maintenance Mode' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Select2-->
+                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="maintenance"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.maintenance }}">{{ system.maintenance }}</option>
+                                         {% for value, text in system_form.maintenance.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                    <!--end::Select2-->
+
+                                </div>
+                                <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <div class="fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'Maintenance Template' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Select2-->
+                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="maintenance_temp"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.maintenance_temp }}">{{ system.maintenance_temp }}</option>
+                                         {% for value, text in system_form.maintenance_temp.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                    <!--end::Select2-->
+
+                                </div>
+                                <!--end::Input group-->
+
+
+                                <!--begin::Input group-->
+                                <div class="fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'System Update data' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Editor-->
+                                    <input disabled
+                                           class="form-control mb-2" value="{{ system.update_at|date:'d,m,Y' }}"/>
+                                    <!--end::Editor-->
+
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                    </div>
+                    <br>
+                    <div class="card-body pt-0">
+                        {% if form_show_errors %}
+                        {% endif %}
+                        {% if system_form.errors %}
+                            {% for error_field, error_message in system_form.errors.items %}
+
+                                <div class="alert alert-danger">
+                                    {{ error_field|striptags }}: {{ error_message|striptags }}
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+
+                        {% endif %}
+                      {% for message in messages %}
+                            {% if message.extra_tags == 'Setting' %}
+                                {% if message.tags == 'Setting success' %}
+                                    <div class="alert alert-info">
+                                {% elif message.tags == 'Setting danger' %}
+                                    <div class="alert alert-danger">
+                                {% endif %}
+                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!--end::Order details-->
+                </div>
+                <!--end::Aside column-->
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'System Data' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Title' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="title"
+                                               placeholder="{% translate 'Title' %}" value="{{ system.title }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Frontend Template' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="frontend_temp"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.frontend_temp }}">{{ system.frontend_temp }}</option>
+                                         {% for value, text in system_form.frontend_temp.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                        <!--end::Input-->
+                                    </div>
+                                 <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Frontend Index' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="home_index"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.home_index }}">{{ system.home_index }}</option>
+                                         {% for value, text in system_form.home_index.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Backend Template' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="backend_temp"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.backend_temp }}">{{ system.backend_temp }}</option>
+                                         {% for value, text in system_form.backend_temp.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'Membership Status' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Select2-->
+                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="membership"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option value="{{ system.membership }}">{{ system.membership }}</option>
+                                         {% for value, text in system_form.membership.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                    <!--end::Select2-->
+                                    </div>
+                                    <div class="flex-row-fluid">
+                                       <!--begin::Label-->
+                                    <label class="required form-label">{% translate 'Registration Type' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Select2-->
+                                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="registration"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option {{ system.registration }}>{{ system.registration }}</option>
+                                         {% for value, text in system_form.registration.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                    <!--end::Select2-->
+                                    </div>
+                                 <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'System App' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                            data-placeholder="Select an option" name="app"
+                                            id="kt_ecommerce_edit_order_payment">
+                                        <option {{ system.app }}>{{ system.app }}</option>
+                                         {% for value, text in system_form.app.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                    </select>
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Facebook App Id' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="fb_id"
+                                               placeholder="{% translate 'Facebook App Id' %}"
+                                               value="{{ system.fb_id }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Facebook App Secret' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="fb_secret"
+                                               placeholder="{% translate 'Facebook App Secret' %}" value="{{ system.fb_secret }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Google App Id' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="gp_id"
+                                               placeholder="{% translate 'Google App Id' %}" value="{{ system.gp_id }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Google App Secret' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="gb_secret"
+                                               placeholder="{% translate 'Google App Secret' %}" value="{{ system.gb_secret }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                                  <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Email Host' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="email_host"
+                                               placeholder="{% translate 'Email Host' %}"
+                                               value="{{ system.email_host }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Email User' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="email_user"
+                                               placeholder="{% translate 'Email User' %}" value="{{ system.email_user }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Email Password' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="email_pass"
+                                               placeholder="{% translate 'Email Password' %}" value="{{ system.email_pass }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Email From' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="email_from"
+                                               placeholder="{% translate 'Email From' %}" value="{{ system.email_from }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                                 <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Api Url' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text" name="api_url"
+                                               placeholder="{% translate 'Api Url' %}"
+                                               value="{{ system.api_url }}"/>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

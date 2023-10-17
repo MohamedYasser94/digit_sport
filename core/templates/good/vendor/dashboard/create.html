@@ -1,0 +1,507 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block breadcrumb %} {% endblock %}
+{% include FRONTEND_BREADCRUMB %}
+
+
+{% block body %}
+
+    <!-- Page Header -->
+    <div class="container-fuild">
+        <div class="page-header" style="background-image: url('images/miscellaneous/page-header.png')">
+            <div class="container">
+                <h1 class="page-title">Vendor<span>Introduce Yourself</span></h1>
+            </div><!-- End .container -->
+        </div>
+        <nav aria-label="breadcrumb">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Vendor Login</li>
+                </ol>
+            </div>
+        </nav>
+
+
+    </div>
+
+    <!-- login Content -->
+    <div class="page-area pro-content vendorlogin">
+        <div class="container">
+
+
+            <div class="row justify-content-lg-start account-content">
+                <div class="col-12 col-md-12  col-lg-6">
+                    <div class="col-12  px-0">
+                        <div class="tab-content" id="registerTabContent">
+                            <div class="tab-pane fade show active" id="signup" role="tabpanel"
+                                 aria-labelledby="signup-tab">
+                                <div class="registration-process vendorregestration">
+                                    <div class="container-fluid" id="grad1">
+                                        <form id="msform" action="{% url 'core:AdminVendorRegister' user.nuc %}"
+                                              method="post">
+                                            {% csrf_token %}
+                                            <!-- progressbar -->
+                                            <ul id="progressbar">
+                                                <li class="active" id="account">
+                                                    <div class="stepiner">
+                                                        <i class="fas fa-store"></i>
+                                                        <span class="m-step">1</span>
+                                                    </div>
+                                                </li>
+                                                <li id="personal">
+                                                    <div class="stepiner">
+                                                        <i class="fas fa-user"></i>
+                                                        <span class="m-step">2</span>
+                                                    </div>
+                                                </li>
+                                                <li id="payment">
+                                                    <div class="stepiner">
+                                                        <i class="fas fa-share"></i>
+                                                        <span class="m-step">3</span>
+                                                    </div>
+                                                </li>
+
+                                            </ul> <!-- fieldsets -->
+                                            <fieldset>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3 position-relative w-100">
+
+                                                        <div class="input-group ">
+                                                            <input type="text" name="title" v-model="shopName"
+                                                                   class="form-control" id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Shop Name' %}" required>
+                                                        </div>
+                                                        <a @input="CheckCheckAvailability()"
+                                                           class="text-secondary inputtop">Check Availability</a>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3 position-relative w-100">
+
+                                                        <div class="input-group ">
+                                                            <input type="text" name="title_tr" v-model="shopName"
+                                                                   class="form-control" id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Shop Arabic Name' %}"
+                                                                   required>
+                                                        </div>
+                                                        <a @input="CheckCheckAvailability()"
+                                                           class="text-secondary inputtop">Check Availability</a>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="email" name="email" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Shop Email' %}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="number" name="phone" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Shop Mobile Number' %}"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="text" name="company" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Company' %}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="number" name="national_id" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Owner National ID' %}"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+                                                        <div class="input-group">
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Store Category' %}"
+                                                                    name="category" required>
+                                                                <option value="{% translate 'Select Store Category' %}">{% translate 'Select Store Category' %}</option>
+                                                                {% for value, text in vendor_form.category.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3 form-control p-1">
+                                                        <input type="file" class="d-block w-100" id="img1"
+                                                               name="hero_image">
+                                                    </div>
+                                                </div>
+
+                                                <input type="button" name="next"
+                                                       class="next action-button btn btn-secondary" value="Next"/>
+                                            </fieldset>
+                                            <fieldset>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Store Country' %}"
+                                                                    name="country" required>
+                                                                <option value="{% translate 'Select Store Country' %}">{% translate 'Select Store Country' %}</option>
+                                                                {% for value, text in profile_form.country.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="selector-box">
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Store Governorates' %}"
+                                                                    name="governorates" required>
+                                                                <option value="{% translate 'Select Store Governorates' %}">{% translate 'Select Store Governorates' %}</option>
+                                                                {% for value, text in profile_form.governorates.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Store City' %}"
+                                                                    name="city" required>
+                                                                <option value="{% translate 'Select Store City' %}">{% translate 'Select Store City' %}</option>
+                                                                {% for value, text in profile_form.city.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Store Area' %}"
+                                                                    name="area">
+                                                                <option value="{% translate 'Select Store Area' %}">{% translate 'Select Store Area' %}</option>
+                                                                {% for value, text in profile_form.area.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3 position-relative w-100">
+
+                                                        <div class="input-group ">
+                                                            <input type="text" name="address" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Shop Address' %}"
+                                                                   required>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <input type="button" name="previous"
+                                                       class="previous action-button-previous btn btn-primary"
+                                                       value="Back"/>
+                                                <input type="button" name="next"
+                                                       class="next action-button btn btn-secondary" value="Next"/>
+                                            </fieldset>
+
+                                            <fieldset>
+                                                <div class="v-sinupfildes">
+
+
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Social Account' %}"
+                                                                    name="provider">
+                                                                <option value="{% translate 'Select Social Account' %}">{% translate 'Select Social Account' %}</option>
+                                                                {% for value, text in social_form.provider.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="url" name="urls" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Social Url' %}">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Social Account' %}"
+                                                                    name="provider">
+                                                                <option value="{% translate 'Select Social Account' %}">{% translate 'Select Social Account' %}</option>
+                                                                {% for value, text in social_form.provider.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="urls" name="url" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Social Url' %}">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Social Account' %}"
+                                                                    name="provider">
+                                                                <option value="{% translate 'Select Social Account' %}">{% translate 'Select Social Account' %}</option>
+                                                                {% for value, text in social_form.provider.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="urls" name="url" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Social Url' %}">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="v-sinupfildes">
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <select class="arabic-select w-100 "
+                                                                    data-placeholder="{% translate 'Select Social Account' %}"
+                                                                    name="provider">
+                                                                <option value="{% translate 'Select Social Account' %}">{% translate 'Select Social Account' %}</option>
+                                                                {% for value, text in social_form.provider.field.choices %}
+                                                                    <option value="{{ value }}">{{ text }}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="from-group mb-3">
+
+                                                        <div class="input-group">
+
+                                                            <input type="urls" name="url" class="form-control"
+                                                                   id="inlineFormInputGroup2"
+                                                                   placeholder="{% translate 'Social Url' %}">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <input type="button" name="previous"
+                                                       class="previous action-button-previous btn btn-primary"
+                                                       value="Back"/>
+                                                <button type="submit"
+                                                        class="btn btn-secondary">{% translate 'Create Store' %}</button>
+                                            </fieldset>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                {% if form_show_errors %}
+                                {% endif %}
+                                {% if vendor_form.errors %}
+                                    {% for error_field, error_message in vendor_form.errors.items %}
+                                        purchase_form
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if profile_form.errors %}
+                                    {% for error_field, error_message in profile_form.errors.items %}
+                                        item_form
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if media_form.errors %}
+                                    {% for error_field, error_message in media_form.errors.items %}
+                                        item_form
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if social_form.errors %}
+                                    {% for error_field, error_message in social_form.errors.items %}
+                                        item_form
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+
+                                {% for message in messages %}
+                                    {% if message.extra_tags == 'Store' %}
+
+                                        <div class="alert alert-danger">
+                                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+{% block custom_js %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+
+        Vue.config.devtools = true
+
+        var customer_signup = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#customer_signup',
+            data: {
+                email: [],
+                phone: [],
+                coupon: [],
+                disabled: 0
+
+            },
+            methods: {
+                CheckPhoneNumber: function (event) {
+                    console.log(encodeURIComponent(event.target.value))
+                    fetch("/api/v1/client/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Please Add Correct Mobile Number");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert("Something went wrong");
+                            } else {
+                                response.json().then(json => {
+                                    var s = json
+                                    this.phone = (s);
+                                    console.log(json)
+                                });
+                            }
+                        });
+                },
+                CheckEmail: function (event) {
+                    console.log(encodeURIComponent(event.target.value))
+                    fetch("/api/v1/client/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Please Add Correct Email");
+                            } else if (response.status != 200) {
+                                console.log(response);
+
+                            } else {
+                                response.json().then(json => {
+                                    var d = json
+                                    this.email = (d);
+                                    console.log(json)
+                                });
+                            }
+                        });
+                },
+                CheckPromoCode: function (event) {
+                    console.log(encodeURIComponent(event.target.value))
+                    fetch("/api/v1/code/" + encodeURIComponent(event.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Please Add Correct Code");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                response.json().then(json => {
+                                    var d = json
+                                    this.coupon = (d);
+                                    console.log(json)
+                                });
+                            }
+                        });
+                },
+
+
+            }
+        })
+
+
+    </script>
+{% endblock custom_js %}

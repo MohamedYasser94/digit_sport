@@ -1,0 +1,40 @@
+  {% load i18n %}
+{% load static %}
+{% get_current_language as LANGUAGE_CODE %}
+
+
+
+<div class="app-navbar-item ms-2 ms-lg-4">
+                    <!--begin::Menu- wrapper-->
+                    <form action="{% url 'set_language' %}" method="post"
+                          id="language-form"
+                          name="language-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="language" id="language" value=""/>
+                    </form>
+                    <script>
+                        function set_language(code) {
+                            $('#language').val(code);
+                            $('#language-form').submit();
+                        }
+                    </script>
+                    {% if  LANGUAGE_CODE == 'en' %}
+
+                        <a class="btn btn-icon btn-active-light btn-outline btn-outline-default btn-icon-gray-muted btn-active-icon-primary"
+                           href="javascript:set_language('{{ ar_language.code }}')">
+                            <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/egypt.svg"
+                                 alt="{{ en_language.code }}" style="height: 20px;width: 30px">
+
+                        </a>
+                    {% elif LANGUAGE_CODE == 'ar' %}
+                        <a href="javascript:set_language('{{ en_language.code }}')">
+                            <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/flags/united-states.svg"
+                                 alt="{{ en_language.code }}" style="height: 20px;width: 30px"
+                            > </a>
+
+                    {% endif %}
+                    <!--begin::Menu-->
+
+                    <!--end::Menu-->
+                    <!--end::Menu wrapper-->
+                </div>

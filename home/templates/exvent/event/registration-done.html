@@ -1,0 +1,130 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+
+
+
+    <!-- About Start -->
+    <div class="about-area-4 section-padding-09">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="about-thumbnail">
+                        {% if event.about_image1 %}
+                            <img src="{{ event.about_image1.url }}" alt="Thumbnail"
+                                 style="width: 258px;height: 273px;"
+                                 class="about-thumb-1 img-fluid">
+                        {% else %}
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/about_img_3.png" alt="Thumbnail"
+                                 class="about-thumb-1 img-fluid">
+                        {% endif %}
+                        {% if event.about_image2 %}
+                            <img src="{{ event.about_image2.url }}" alt="Thumbnail"
+                                  style="width: 360px;height: 505px;"
+                                 class="about-thumb-2 img-fluid">
+                        {% else %}
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/about_img_4.png" alt="Thumbnail"
+                                 class="about-thumb-2 img-fluid">
+                        {% endif %}
+
+                        <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/about_shape4.png" alt="Shape"
+                             class="thumbnail-shape img-fluid">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-title">
+                        <div class="section-title">
+                            <h2 class="title">{{ event.title }}</h2>
+                        </div>
+                    </div>
+                    <div class="about-content">
+                        <div class="section-paragraph">
+                            <h4>  {% for message in messages %}
+                                        {% if message.extra_tags == 'Attendees' %}
+                                            {% if message.tags == 'Attendees success' %}
+                                                <div class="alert alert-info">
+                                            {% endif %}
+                                        {{ message|striptags }}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %} </h4>
+                        </div>
+                        <div class="about-event">
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/calender-icon.png" alt="World"
+                                 class="thumb">
+                            <div class="content">
+                                <h5>When start</h5>
+                                <p>{{ event.start_date|date }}</p>
+                            </div>
+                        </div>
+                        <div class="about-event">
+                            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/world-icon.png" alt="World"
+                                 class="thumb">
+                            <div class="content">
+                                <h5>Where to</h5>
+                                <p>{{ event.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Countdown Start -->
+    <div class="event-countdown-2 event-countdown-3 section-padding-02"
+         {% if event.countdown_image %}
+            style="background-image: url({{ event.countdown_image.url }});width: 1920px;height: 325px;"
+
+            {% else %}
+         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/countdown_bg.jpg);"
+            {% endif %}
+    >
+        <div class="container">
+            <div class="counter-wrapper">
+                <div class="row g-0 justify-content-center">
+                    <div class="col-lg-4">
+                        <div class="counter-content-left">
+                            <h4 class="counter-title">Book your seat now</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <!-- Countdown Start -->
+                        <div class="exvent-countdown-inner-3 countdown" data-countdown="{{ event.start_date|date:'Y/m/d' }}" data-format="short">
+                            <div class="single-countdown">
+                                <span class="count countdown__time daysLeft"></span>
+                                <span class="value countdown__time daysText"></span>
+                            </div>
+                            <div class="single-countdown countdown-2">
+                                <span class="count countdown__time hoursLeft"></span>
+                                <span class="value countdown__time hoursText"></span>
+                            </div>
+                            <div class="single-countdown countdown-3">
+                                <span class="count countdown__time minsLeft"></span>
+                                <span class="value countdown__time minsText"></span>
+                            </div>
+                            <div class="single-countdown countdown-4">
+                                <span class="count countdown__time secsLeft"></span>
+                                <span class="value countdown__time secsText"></span>
+                            </div>
+                        </div>
+                        <!-- Countdown End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Countdown End -->
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

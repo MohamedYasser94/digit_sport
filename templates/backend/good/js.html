@@ -1,0 +1,83 @@
+{% load static %}
+{% load i18n %}
+
+
+<!--begin::Javascript-->
+<script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
+<!--begin::Global Javascript Bundle(used by all pages)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/global/plugins.bundle.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/scripts.bundle.js"></script>
+<!--end::Global Javascript Bundle-->
+<!--begin::Vendors Javascript(used by this page)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/vis-timeline/vis-timeline.bundle.js"></script>
+<!--end::Vendors Javascript-->
+<!--begin::Custom Javascript(used by this page)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/reports/views/views.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/categories.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-app.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-campaign.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/base/toasts.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/general/datatables/buttons/export.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
+<!--end::Vendors Javascript-->
+<!--begin::Custom Javascript(used by this page)-->
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/account/referrals/referral-program.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/documentation.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/search.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/forms/formrepeater/basic.js"></script>
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/forms/formrepeater/advanced.js"></script>
+
+<!--end::Custom Javascript-->
+<!--end::Javascript-->
+
+{% block javascript %}
+
+
+    <script>
+        const $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+
+        function getCookie() {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+
+        }
+
+    </script>
+
+
+
+
+{% endblock %}
+
+
+
+{% block custom_js %} {% endblock custom_js %}
+
+
+
+

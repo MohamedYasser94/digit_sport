@@ -1,0 +1,87 @@
+
+	{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+	 <!--==============================
+    Breadcumb
+============================== -->
+    <div class="breadcumb-wrapper " data-bg-src="{{ partner.image.url }}" data-overlay="black" data-opacity="8">
+        <div class="container">
+            <div class="breadcumb-content text-center">
+                <h1 class="breadcumb-title">{{ partner.title }}</h1>
+                <ul class="breadcumb-menu">
+                    <li><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a></li>
+                    <li>{% translate 'Partners' %}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--==============================
+    Project Area
+==============================-->
+    <section class="space">
+        <div class="container">
+            <div class="row">
+                <div class="col-xxl-12">
+                    <div class="page-single border-bottom">
+                        <div class="page-content">
+                            <div class="page-content-details">
+                                <h2 class="page-title mb-0">{{ partner.title }}</h2>
+                                <ul class="page-content-list">
+                                    <li><strong>{% translate 'Category' %} </strong>{{ partner.category.title }}</li>
+                                    <li><strong>{% translate 'Governorates' %} </strong>{{ partner.governorates }}</li>
+                                    <li><strong>{% translate 'Phone' %} </strong>{{ partner.phone }}</li>
+                                </ul>
+                            </div>
+                            <p class="mb-30"> {{ partner.keyword }}</p>
+                            <div class="thumb mb-45">
+                                <img class="w-100" src="{{ partner.image.url }}" alt="img">
+                            </div>
+
+                            <p class="mb-30">{{ partner.description|safe }}</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="related-product-area mt-70">
+                <div class="title-area text-center mb-40">
+                    <h2 class="sec-title wow fadeInUp">{% translate 'Partner' %}</h2>
+                </div>
+            </div>
+            <div class="row th-carousel" data-slide-show="3" data-lg-slide-show="3" data-md-slide-show="2" data-sm-slide-show="1">
+                {% for item in partners %}
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="project-card3 wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="project-img">
+                            <img src="{{ item.image.url }}" alt="project image">
+                        </div>
+                        <a href="{{ item.image.url }}" class="icon-btn popup-image" tabindex="-1"><i class="far fa-arrow-up-right"></i></a>
+                        <div class="project-content">
+                            <p class="project-card_subtitle">{{ item.title }}</p>
+                            <h4 class="box-title"><a href="{% url 'home:FrontPartnersDetails' item.slug %}">{{ item.category }}</a></h4>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+
+

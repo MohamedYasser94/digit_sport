@@ -1,0 +1,294 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-us" class="no-js">
+
+<head>
+    <meta charset="utf-8">
+       {% for info in site_info %}
+        <base href=""/>
+		<title>{{ info.seo.meta_title }}</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="{{ info.seo.meta_description }}." />
+		<meta name="keywords" content="{{ info.seo.meta_keywords }}" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="{{ info.seo.meta_title }}" />
+		<meta property="og:url" content="{{ info.site.domain }}" />
+		<meta property="og:site_name" content="{{ info.seo.meta_title }}" />
+		<link rel="canonical" href="{{ info.seo.meta_title }}" />
+		<link rel="shortcut icon" href="{% static '' %}{{ BACKEND_ASSETS }}/media/logos/favicon.ico" />
+            {% empty %}
+            <base href=""/>
+		<title>Digithup</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="Digithup admin dashboard live demo. Check out all the features of the admin panel. A large number of settings, additional services and widgets." />
+		<meta name="keywords" content="Digithup, bootstrap, bootstrap 5, admin themes, Asp.Net Core &amp; Django starter kits, admin themes, bootstrap admin, bootstrap dashboard, bootstrap dark mode" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="Digithup - Bootstrap 5 HTML Asp.Net Core, Blazor, Django &amp; Flask Admin Dashboard Template" />
+		<meta property="og:url" content="https://Digithup.com" />
+		<meta property="og:site_name" content="Digithup | Demo" />
+		<link rel="canonical" href="https://Digithup.com" />
+		<link rel="shortcut icon" href="{% static '' %}{{ BACKEND_ASSETS }}/media/logos/favicon.ico" />
+        {% endfor %}
+
+    <!-- ================= Favicon ================== -->
+    <!-- Standard -->
+    <link rel="shortcut icon" href="{% static '' %}{{ FRONTEND_ASSETS }}/img/favicon.png">
+    <!-- Retina iPad Touch Icon-->
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static '' %}default/upmix.png">
+    <!-- Retina iPhone Touch Icon-->
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static '' %}{{ FRONTEND_ASSETS }}/img/favicon-retina-iphone.png">
+    <!-- Standard iPad Touch Icon-->
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static '' %}{{ FRONTEND_ASSETS }}/img/favicon-standard-ipad.png">
+    <!-- Standard iPhone Touch Icon-->
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static '' %}{{ FRONTEND_ASSETS }}/img/favicon-standard-iphone.png">
+
+    <!-- ============== Resources style ============== -->
+    <link rel="stylesheet" href="{% static '' %}{{ FRONTEND_ASSETS }}/css/style.css"/>
+
+    <!-- Modernizr runs quickly on page load to detect features -->
+    <script src="{% static '' %}{{ FRONTEND_ASSETS }}/js/modernizr.custom.js"></script>
+</head>
+
+<body>
+
+<canvas id="dotty"></canvas>
+
+<!-- Page preloader -->
+<div id="loading">
+    <div id="preloader">
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+<!-- START - Home part -->
+<div class="outer-home">
+
+    <!-- START - Home section -->
+    <section id="home">
+
+        <!-- Background picture(s) -->
+        <div id="vegas-background"></div>
+
+        <!-- Overlay -->
+        <div class="global-overlay"></div>
+
+        <!-- Your logo -->
+        <img src="{% static '' %}default/upmix.png" alt="" class="brand-logo text-intro opacity-0"/>
+
+        <!-- START - Content -->
+        <div class="content">
+
+            <h1 class="text-intro opacity-0">Grand opening in :
+                <div id="getting-started" class="countdown-variant"></div>
+            </h1>
+
+            <p class="text-intro opacity-0">Perfect and awesome template to present your future product or service.<br>
+                Hooking audience attention is all in the opener.</p>
+
+            <nav>
+                <ul>
+                    <li>
+                        <a href="#" id="open-more-info" data-target="right-side" class="light-btn text-intro opacity-0">More
+                            Informations</a>
+                    </li>
+                    <li>
+                        <a data-dialog="somedialog" class="action-btn trigger text-intro opacity-0">Notify Me!</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+        <!-- END - Content -->
+
+        <!-- START - Bottom home -->
+        <div class="bottom-home">
+
+            <!-- Social icons, replace # by your links -->
+            <div class="social-icons">
+
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-google-plus"></i></a>
+                <a href="#"><i class="fa fa-linkedin"></i></a>
+
+            </div>
+
+            <p class="copyright">
+                © OPAL - Made for awesome people
+            </p>
+
+        </div>
+        <!-- END - Bottom home -->
+
+    </section>
+    <!-- END - Home section -->
+
+</div>
+<!-- END - Home part -->
+
+<!-- Transparent div used when more info part is opening, allow the user to click on the home to get back on it -->
+<div class="close-right-part layer-left hide-layer-left"></div>
+
+<!-- Skew left border info part -->
+<div class="border-right-side hide-border"></div>
+
+<!-- START - More Informations part -->
+<section id="right-side" class="hide-right">
+
+    {% block header %} {% include 'frontend/opal/content.html' %} {% endblock %}
+</section>
+<!-- END - More Informations part -->
+
+<!-- Cross to close the More Informations part -->
+<button id="close-more-info" class="close-right-part hide-close"><i class="icon ion-android-close"></i></button>
+
+<!-- START - Newsletter Popup -->
+<div id="somedialog" class="dialog">
+
+    <div class="dialog__overlay"></div>
+
+    <!-- START - dialog__content -->
+    <div class="dialog__content">
+
+        <!-- START - dialog-inner -->
+        <div class="dialog-inner">
+
+            <h4>You like taking the lead of line?</h4>
+
+            <p>Being the first to know always feels great... Signing up to our newsletter gives you <strong>exclusive
+                access to our Grand Opening!</strong></p>
+
+            <!-- START - Newsletter Form -->
+            <div id="subscribe">
+
+                <form action="php/notify-me.php" id="notifyMe" method="POST">
+
+                    <div class="form-group">
+
+                        <div class="controls">
+
+                            <!-- Field  -->
+                            <input type="text" id="mail-sub" name="email" placeholder="Click here to write your email"
+                                   onfocus="this.placeholder = ''"
+                                   onblur="this.placeholder = 'Click here to write your email'"
+                                   class="form-control email srequiredField"/>
+
+                            <!-- Spinner top left during the submission -->
+                            <i class="fa fa-spinner opacity-0"></i>
+
+                            <!-- Button -->
+                            <button class="btn btn-lg submit">Get notified</button>
+
+                            <div class="clear"></div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <!-- Answer for the newsletter form is displayed in the next div, do not remove it. -->
+                <div class="block-message">
+
+                    <div class="message">
+
+                        <p class="notify-valid"></p>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- END - Newsletter Form -->
+
+        </div>
+        <!-- END - dialog-inner -->
+
+        <!-- Cross to close the Newsletter Popup -->
+        <button class="close-newsletter" data-dialog-close><i class="icon ion-android-close"></i></button>
+
+    </div>
+    <!-- END - dialog__content -->
+
+</div>
+<!-- END - Newsletter Popup -->
+
+<!-- START - Root element of PhotoSwipe, the gallery. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe.
+        It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides.
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% block js %}{% include 'frontend/opal/js.html' %}{% endblock %}
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,612 @@
+{% extends BACKEND_BASE %}
+
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_add_product_form" class="form d-flex flex-column flex-lg-row"
+                  action="{% url 'core:AdminAddSiteSetting' %}"
+                  method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <!--begin::Aside column-->
+                <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+                    <!--begin::Thumbnail settings-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Site Logo' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body text-center pt-0">
+                            <!--begin::Image input-->
+                            <div class="image-input image-input-empty image-input-outline mb-3"
+                                 data-kt-image-input="true"
+                                 style="background-image: url({% static 'add.html' %}backend/good/assets/media/svg/files/blank-image.svg)">
+                                <!--begin::Preview existing avatar-->
+                                <div class="image-input-wrapper w-150px h-150px"></div>
+                                <!--end::Preview existing avatar-->
+                                <!--begin::Label-->
+                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                       data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                       title="Change avatar">
+                                    <i class="bi bi-pencil-fill fs-7"></i>
+                                    <!--begin::Inputs-->
+                                    <input type="file" name="image" accept=".png, .jpg, .jpeg" required/>
+                                    <input type="hidden" name="avatar_remove"/>
+                                    <!--end::Inputs-->
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Cancel-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                      data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                      title="Cancel avatar">
+													<i class="bi bi-x fs-2"></i>
+												</span>
+                                <!--end::Cancel-->
+                                <!--begin::Remove-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                      data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                      title="Remove avatar">
+													<i class="bi bi-x fs-2"></i>
+												</span>
+                                <!--end::Remove-->
+                            </div>
+                            <!--end::Image input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Set the product thumbnail image. Only *.png, *.jpg and *.jpeg
+                                image files are accepted
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Thumbnail settings-->
+                    <!--begin::Status-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Active Status' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <div class="rounded-circle bg-success w-15px h-15px"
+                                     id="kt_ecommerce_add_product_status"></div>
+                            </div>
+                            <!--begin::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select"
+                                    name="status"
+                                    required>
+                                <option value="">{% translate 'Active_Status' %}</option>
+                                {% for value, text in setting_form.status.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>&nbsp;
+
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">{% translate 'Set the Site status.' %}</div>
+                            <!--end::Description-->
+
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Status-->
+                    <!--begin::Category & tags-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Phone Number' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="form-label">{% translate 'Phone Number' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Select2-->
+                            <input type="text" name="phone" class="form-control mb-2" required
+                                   placeholder="{% translate 'Phone Number' %}" value=""/>
+                            <!--end::Select2-->
+
+
+                        </div>
+                        <!--end::Card body-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="form-label">{% translate 'Country' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_status_country"
+                                    name="country"
+                                    required>
+                                <option value="">{% translate 'Country' %}</option>
+                                {% for value, text in setting_form.country.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>&nbsp;
+                            <!--end::Select2-->
+
+
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Category & tags-->
+
+
+                </div>
+                <!--end::Aside column-->
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                    <!--begin:::Tabs-->
+                    <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-n2">
+                        <!--begin:::Tab item-->
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary active pb-4 " data-bs-toggle="tab"
+                               href="#kt_ecommerce_add_product_general">{% translate 'General' %}</a>
+                        </li>
+                        <!--end:::Tab item-->
+                        <!--begin:::Tab item-->
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary pb-4 " data-bs-toggle="tab"
+                               href="#kt_ecommerce_add_product_advanced">{% translate 'Advanced' %}</a>
+                        </li>
+                        <!--end:::Tab item-->
+                    </ul>
+                    <!--end:::Tabs-->
+                    <!--begin::Tab content-->
+                    <div class="tab-content">
+                        <!--begin::Tab pane-->
+                        <div class="tab-pane fade show active " id="kt_ecommerce_add_product_general" role="tab-panel">
+                            <div class="d-flex flex-column gap-7 gap-lg-10">
+
+                                <!--begin::Site details-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>{% translate 'Site Info' %}</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Billing address-->
+                                        <div class="d-flex flex-column gap-5 gap-md-7">
+
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-column flex-md-row gap-5">
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'Title' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="title"
+                                                           placeholder="{% translate 'Title' %}"
+                                                           value="{{ site.title }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Keyword' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="keywords"
+                                                           placeholder="{% translate 'Keyword' %}"
+                                                           value="{{ site.keywords }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Email' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="email" class="form-control" name="email"
+                                                           placeholder="{% translate 'Email' %}"
+                                                           value="{{ site.email }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-column flex-md-row gap-5">
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Domain' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="url" class="form-control" name="domain"
+                                                           placeholder="{% translate 'Domain' %}"
+                                                           value="{{ site.domain }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Address' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="address"
+                                                           placeholder="{% translate 'Address' %}"
+                                                           value="{{ site.address }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'Copyright' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="copyright"
+                                                           placeholder="{% translate 'Copyright' %}"
+                                                           value="{{ site.copyright }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'About' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="about"
+                                                           placeholder="{% translate 'About' %}"
+                                                           value="{{ site.about }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+
+
+                                            </div>
+                                            <!--end::Input group-->
+
+
+                                        </div>
+                                        <!--end::Billing address-->
+                                    </div>
+                                    <!--end::Card body-->
+
+                                </div>
+                                <!--end::Site details-->
+                                <!--begin::Social Link-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>{% translate 'Social Link' %}</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <div class="d-flex flex-column flex-md-row gap-5">
+
+                                            <!--begin::Repeater-->
+                                            <div class="flex-row-fluid">
+                                                <!--begin::Form group-->
+                                                <div class="form-group image_div  ">
+                                                    <div data-repeater-list="image">
+                                                        <!--begin::Label-->
+
+                                                        <!--end::Label-->
+                                                        <div data-repeater-item class=" ">
+                                                            <div class="row fv-row flex-row-fluid image_div_row   first_image">
+
+                                                                <div class="col-md-3">
+                                                                    <label class="required form-label">{% translate 'Scocial Account' %}</label>
+                                                                    <!--begin::Select2-->
+                                                                    <select class="form-select mb-2"
+                                                                            data-control=""
+                                                                            data-hide-search="true"
+                                                                            data-placeholder="Select an option"
+                                                                            id="kt_ecommerce_add_product_status_country"
+                                                                            name="providers"
+                                                                            required>
+                                                                        <option value="">{% translate 'Scocial Account' %}</option>
+                                                                        {% for value, text in social_form.provider.field.choices %}
+                                                                            <option value="{{ value }}">{{ text }}</option>
+                                                                        {% endfor %}
+                                                                    </select>&nbsp;
+                                                                    <!--end::Select2-->
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label class="required form-label">{% translate 'Scocial Url' %}</label>
+                                                                    <input type="url" name="url"
+                                                                           class="form-control mb-2"/>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::Form group-->
+                                                <!--begin::Form group-->
+                                                <div class="form-group">
+                                                    <a href="javascript:" data-repeater-create
+                                                       class="btn btn-light-primary add_image">
+                                                        <i class="la la-plus"></i>
+                                                    </a>
+                                                    <a href="javascript:" data-repeater-create
+                                                       class="btn btn-light-danger remove_image">
+                                                        <i class="la la-trash-o fs-3"></i>
+                                                    </a>
+                                                </div>
+                                                <!--end::Form group-->
+                                            </div>
+                                            <!--end::Repeater-->
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!--end::Social Link-->
+
+                            </div>
+                        </div>
+                        <!--end::Tab pane-->
+                        <!--begin::Tab pane-->
+                        <div class="tab-pane fade " id="kt_ecommerce_add_product_advanced" role="tab-panel">
+                            <div class="d-flex flex-column gap-7 gap-lg-10">
+                                <!--begin::Meta options-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>{% translate 'Meta Options' %}</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Meta Title' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control mb-2" name="meta_title" value="{{ seo.meta_title }}"
+                                                   placeholder="{% translate 'Meta Title' %}"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">{% translate 'Set a meta tag title. Recommended to be simple and precise keywords.' %}
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Meta Tag Description' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control mb-2" name="meta_description" value="{{ seo.meta_description }}"
+                                                   placeholder="{% translate 'Meta Tag Description' %}"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">{% translate 'Set a meta tag description to the product for increased SEO ranking.' %}
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Meta Tag Keywords' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Editor-->
+                                            <input id="kt_ecommerce_add_product_meta_keywords" name="meta_keywords" value="{{ seo.meta_keywords }}"
+                                                   class="form-control mb-2"
+                                                   placeholder="{% translate 'Meta Tag Keywords' %}"/>
+                                            <!--end::Editor-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">{% translate 'Set a meta tag description to the product for increased SEO ranking.' %}
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card header-->
+                                </div>
+                                <!--end::Meta options-->
+                            </div>
+                        </div>
+                        <!--end::Tab pane-->
+                    </div>
+                    {% if setting_form.errors or social_form.errors or seo_form.errors %}
+                        <div class="card">
+                            <div class="body">
+                                {% if form_show_errors %}
+                                {% endif %}
+                                {% if setting_form.errors %}
+                                    {% for error_field, error_message in setting_form.errors.items %}
+                                        art
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            model
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if social_form.errors %}
+                                    {% for error_field, error_message in social_form.errors.items %}
+                                        cate
+
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            type
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if seo_form.errors %}
+                                    {% for error_field, error_message in seo_form.errors.items %}
+                                        tags
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            type
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!--end::Tab content-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{% url 'core:AdminSystemSetting' %}" id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save Changes' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+{% endblock %}
+{% block custom_js %}
+     <script>
+        $(".add_image").click(function () {
+
+            var image_row = $(".first_image").clone();
+            image_row.removeClass("first_image");
+            image_row.find(".first_image").val("");
+            image_row.find(".image_details").val("");
+            $(".image_div").append(image_row);
+        });
+        $(".remove_image").click(function () {
+            if ($(".image_div").find(".image_div_row").length > 1) {
+                $(".image_div").children().last().remove();
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+        const blog_article = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#blog_article',
+            data: {
+                categories: {{ blog_category|safe }},
+
+                category_id: "",
+            },
+            methods: {
+
+                getCategory: function (category_id) {
+                    console.log(encodeURIComponent(category_id.target.value))
+                    fetch("/dashboard/blog/api/category/" + encodeURIComponent(category_id.target.value) + "/", {method: 'PUT'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Order not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                response.json().then(json => {
+                                    var d = json
+
+                                    this.client_code.push(d);
+                                    {#this.newClient.push( json );#}
+                                    {#this.newClient = {};#}
+
+                                    console.log(json)
+                                });
+                            }
+                        });
+                },
+
+
+            }
+        })
+    </script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#kt_docs_ckeditor_classic'))
+            .then(editor => {
+                console.log(editor);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+
+
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/save-product.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/prismjs/prismjs.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/documentation.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/search.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/editors/ckeditor/classic.js"></script>
+    <!--end::Page Custom Javascript-->
+
+
+
+
+    <!--end::Page Custom Javascript-->
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

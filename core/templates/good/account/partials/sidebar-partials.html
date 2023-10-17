@@ -1,0 +1,201 @@
+{% load static %}
+{% load i18n %}
+
+
+<!--begin:Menu item-->
+<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+     class="menu-item py-1">
+    <!--begin:Menu link-->
+    <span class="menu-link menu-center">
+										<span class="menu-icon me-0">
+											<i class="fonticon-insurance fs-1"></i>
+										</span>
+									</span>
+    <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-dropdown px-lg-2 py-lg-4 w-200px w-lg-225px">
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu content-->
+            <div class="menu-content">
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate "People" %}</span>
+            </div>
+            <!--end:Menu content-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        {% if user.is_superuser == 'Active' %}
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                <!--begin:Menu link-->
+                <span class="menu-link">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Account' %}</span>
+												<span class="menu-arrow"></span>
+											</span>
+                <!--end:Menu link-->
+                <!--begin:Menu sub-->
+                <div class="menu-sub menu-sub-accordion menu-active-bg">
+                    <!--begin:Menu item-->
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
+                        <a class="menu-link" href="{% url 'core:AdminUserList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                            <span class="menu-title">{% translate "User's" %}</span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+                    <!--end:Menu item-->
+                    <!--begin:Menu item-->
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
+                        <a class="menu-link" href="{% url 'core:AdminUsersGeoInfoList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                            <span class="menu-title">{% translate 'Geo Info' %}</span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+                    <!--end:Menu item-->
+                    <!--begin:Menu item-->
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
+                        <a class="menu-link" href="{% url 'core:AdminUserGroupList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                            <span class="menu-title">{% translate 'User Group' %}</span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+                    <!--end:Menu item-->
+
+                </div>
+                <!--end:Menu sub-->
+            </div>
+        {% endif %}
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+            <!--begin:Menu link-->
+            <span class="menu-link">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'People' %}</span>
+												<span class="menu-arrow"></span>
+											</span>
+            <!--end:Menu link-->
+            <!--begin:Menu sub-->
+            <div class="menu-sub menu-sub-accordion menu-active-bg">
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminClientList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Client's" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminEmployeeList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Employee's" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminDriverList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Driver's" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminTeamList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Team's" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+
+            </div>
+            <!--end:Menu sub-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+            <!--begin:Menu link-->
+            <span class="menu-link">
+												<span class="menu-bullet">
+													<span class="bullet bullet-dot"></span>
+												</span>
+												<span class="menu-title">{% translate 'Contact' %}</span>
+												<span class="menu-arrow"></span>
+											</span>
+            <!--end:Menu link-->
+            <!--begin:Menu sub-->
+            <div class="menu-sub menu-sub-accordion menu-active-bg">
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminUserNewsletter' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate 'Newsletter' %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'core:AdminClientContactList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate 'Contact Form' %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+
+            </div>
+            <!--end:Menu sub-->
+        </div>
+        <!--end:Menu item-->
+
+
+    </div>
+    <!--end:Menu sub-->
+</div>
+<!--end:Menu item-->
+
+
+<script>
+
+
+</script>

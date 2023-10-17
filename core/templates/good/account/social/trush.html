@@ -1,0 +1,80 @@
+   {% for request in friend_requests %}
+                                        <!--begin::Item-->
+                                        <div class="d-flex flex-stack">
+                                            <!--begin::Symbol-->
+                                            <div class="symbol symbol-40px me-5">
+                                                <img src="{% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-11.jpg"
+                                                     class="h-50 align-self-center" alt=""/>
+                                            </div>
+                                            <!--end::Symbol-->
+                                            <!--begin::Section-->
+                                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                                <!--begin:Author-->
+                                                <div class="flex-grow-1 me-2">
+                                                    <a href=""
+                                                       class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ request.sender }}</a>
+                                                    <span class="text-muted fw-semibold d-block fs-7">{{ request.status }}.</span>
+                                                </div>
+                                                <!--end:Author-->
+                                                <!--begin:Action-->
+
+
+                                                <a
+                                                        :click="acceptFriendRequest('{{ request.receiver.slug }}')"
+                                                        class="btn btn-sm btn-light fs-12 fw-bold">Accept Friend
+                                                    Request</a>
+                                                <br>
+                                                <a id="id_cancel_{{ request.sender.id }}"
+                                                   class="btn btn-sm btn-light fs-12 fw-bold"> Delete Friend Request</a>
+                                                <!--end:Action-->
+                                            </div>
+                                            <!--end::Section-->
+                                        </div>
+                                        <!--end::Item-->
+                                        <!--begin::Separator-->
+                                        <div class="separator separator-dashed my-4"></div>
+                                        <!--end::Separator-->
+                                    {% endfor %}
+
+
+
+
+
+
+                 CanselFriendRequest: function (category_id) {
+                    Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            type: "warning", showCancelButton: !0,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, delete it!",
+                            confirmButtonClass: "btn btn-primary",
+                            cancelButtonClass: "btn btn-danger ml-1",
+                            buttonsStyling: !1
+                        },
+                    )
+                        .then((result) => {
+                            console.log(category_id)
+                            if (result.value) {
+                                fetch("/dashboard/api/blog/category/" + encodeURIComponent(category_id.target.value) + "/", {method: 'DELETE'})
+                                    .then(response => {
+                                        if (response.status == 200) {
+                                            window.Swal("Order cleared");
+                                            this.friend_list()
+
+
+                                        } else {
+                                            window.Swal("Can't clear order");
+                                            console.log(response);
+                                        }
+                                    });
+
+
+                            } else {
+                                Swal('Cancelled', 'Your file is still intact', 'info')
+                            }
+                        })
+
+
+                },

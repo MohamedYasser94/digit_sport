@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load static %}
+<!-- Hero Start -->
+    <div class="section exvent-hero-section d-lg-flex d-block align-items-center inner-page-hero"
+         style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/about_page_bg.jpg);">
+        <img class="shape-1 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape1.png" alt="">
+        <img class="shape-2 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape2.png" alt="">
+
+        <div class="container">
+            <div class="row exvent-hero-row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="page-title">
+                        <h2 class="section-title">Contact Us</h2>
+                    </div>
+                    <div class="page-navigation">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center">
+                                <li class="breadcrumb-item"><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a></li>
+                                <li class="breadcrumb-item"><a >{% translate 'Contact Us' %}</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero End -->

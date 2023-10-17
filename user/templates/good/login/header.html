@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <base href="">
+    <title>Digithup | Dashboard</title>
+    <meta charset="utf-8"/>
+    <meta name="description"
+          content="Digithup Dashboard Management Erp System."/>
+    <meta name="keywords"
+          content="Digithup, Lawyer, Office, admin , Management, Erp, System dashboard"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Your Office By one Click "/>
+    <meta property="og:url"
+          content="https://Digithup.com"/>
+    <meta property="og:site_name" content="Digtihup | DEv"/>
+    <link rel="canonical" href="https://Digithup.com"/>
+    <link rel="shortcut icon" href="{% static '' %}digithup/mix.ico"/>
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="{% static '' %}{{ BACKEND_ASSETS }}/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <link href="{% static '' %}{{ BACKEND_ASSETS }}/css/style.bundle.css" rel="stylesheet" type="text/css"/>
+    <!--end::Global Stylesheets Bundle-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.30/vue.global.min.js"></script>
+</head>

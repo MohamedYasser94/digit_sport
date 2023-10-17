@@ -1,0 +1,134 @@
+{% load static %}
+{% load i18n %}
+
+
+ <!-- Hero Start -->
+        <div class="swiper hero-slide">
+            <div class="swiper-wrapper">
+                {% for item in event_data.coming_event %}
+                <div class="swiper-slide">
+                {% if item.image %}
+                    <div class="exvent-hero-section-05" style="background-image: url({{ item.image.url }});">
+                {% else %}
+                    <div class="exvent-hero-section-05" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/slider-bg-1.jpg);">
+                {% endif %}
+                        <div class="container">
+                            <div class="row justify-content-center align-items-center">
+                                <div class="col-md-8 text-center">
+                                    <div class="hero-conent-wrapper">
+                                        <div class="top-title-date" data-aos="fade-down" data-aos-delay="500">
+                                            <span>{{ item.start_date|date:'M,D,Y' }}</span>
+                                            <spa> </spa>
+                                        </div>
+                                        <div class="main-title" data-aos="fade-down" data-aos-delay="1000">
+                                            <h1>{{ item.title }}</h1>
+                                             <spa> </spa>
+                                        </div>
+                                        <ul class="hero-meta" data-aos="fade-right" data-aos-delay="1500">
+                                            <li class="meta-item">
+                                                <a ><i class="fas fa-chair"></i> 5000 Seats</a>
+                                            </li>
+                                            <li class="meta-item">
+                                                <a ><i class="fas fa-user"></i> 12 Speakers</a>
+                                            </li>
+                                            <li class="meta-item">
+                                                <a ><i class="fas fa-map-marker-alt"></i> {{ item.location}}</a>
+                                            </li>
+                                        </ul>
+                                        <div class="hero-btn" data-aos="fade-up" data-aos-delay="2000">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-3 col-sm-4 col-6">
+
+                                                    <button  class="btn-5"><a href="{% url 'home:FrontEventDetails' item.slug %}" >Book Now</a></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                 <div class="swiper-slide">
+                    <div class="exvent-hero-section-05" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/slider-bg-1.jpg);">
+                        <div class="container">
+                            <div class="row justify-content-center align-items-center">
+                                <div class="col-md-8 text-center">
+                                    <div class="hero-conent-wrapper">
+                                        <div class="top-title-date" data-aos="fade-down" data-aos-delay="500">
+                                            <span>January 20, 2024</span>
+                                        </div>
+                                        <div class="main-title" data-aos="fade-down" data-aos-delay="1000">
+                                            <h1>World Digital Conference 2023</h1>
+                                        </div>
+                                        <ul class="hero-meta" data-aos="fade-right" data-aos-delay="1500">
+                                            <li class="meta-item">
+                                                <a href=""><i class="fas fa-chair"></i> 5000 Seats</a>
+                                            </li>
+                                            <li class="meta-item">
+                                                <a href=""><i class="fas fa-user"></i> 12 Speakers</a>
+                                            </li>
+                                            <li class="meta-item">
+                                                <a href=""><i class="fas fa-map-marker-alt"></i> Boston, Canada</a>
+                                            </li>
+                                        </ul>
+                                        <div class="hero-btn" data-aos="fade-up" data-aos-delay="2000">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-3 col-sm-4 col-6">
+                                                    <button class="btn-5">Book Now</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Countdown Start -->
+        <div class="event-countdown-5 section-padding-02 grey-bg">
+            <div class="container">
+                <div class="counter-wrapper">
+                    <div class="row gx-0 gy-5 align-items-center">
+                        <div class="col-lg-4 text-center">
+                            <div class="counter-content-left">
+                                <h4 class="counter-title">Event Starting</h4>
+                                <span class="counter-subtitle">Time Remaining</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 text-center">
+                            <!-- Countdown Start -->
+                            <div class="exvent-countdown-inner-5 countdown" data-countdown="2023/06/26" data-format="short">
+                                <div class="single-countdown">
+                                    <span class="count countdown__time daysLeft"></span>
+                                    <span class="value countdown__time daysText"></span>
+                                </div>
+                                <div class="single-countdown countdown-2">
+                                    <span class="count countdown__time hoursLeft"></span>
+                                    <span class="value countdown__time hoursText"></span>
+                                </div>
+                                <div class="single-countdown countdown-3">
+                                    <span class="count countdown__time minsLeft"></span>
+                                    <span class="value countdown__time minsText"></span>
+                                </div>
+                                <div class="single-countdown countdown-4">
+                                    <span class="count countdown__time secsLeft"></span>
+                                    <span class="value countdown__time secsText"></span>
+                                </div>
+                            </div>
+                            <!-- Countdown End -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Countdown End -->

@@ -1,0 +1,271 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    {#    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/{% static '' %}frontend/css/select2.min.css"#}
+    {#          integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="#}
+    {#          crossorigin="anonymous" referrerpolicy="no-referrer"/>#}
+    <style>
+        #court {
+            width: 200px;
+
+        }
+
+        #circuit {
+            width: 200px;
+        }
+    </style>
+    <!-- content begin -->
+    <div class="no-bottom no-top" id="RollFront">
+        <div id="top"></div>
+        <!-- section begin -->
+        <section id="subheader" class="jarallax text-white">
+            <img src="{% static '' %}frontend/justica/images/background/subheader.jpg" class="jarallax-img" alt="">
+            <div class="center-y relative text-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h1>News</h1>
+                            <p>Reputation. Respect. Result.</p>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- section close -->
+        <!-- section begin -->
+        <section aria-label="section">
+            <div class="container">
+                <div class="row">
+                    <div class=" col-md-9">
+                    <div class="row ">
+                        <div class="col-lg-4 col-md-6 mb30" v-if="roll_circuit.length">
+                            <div class="bloglist item" v-for="roll in roll_list" >
+                                <div class="post-content" >
+                                    <div class="date-box">
+                                        <div class="m"> [[roll.create_at]]</div>
+                                        <div class="d">[[roll.title]]</div>
+                                    </div>
+                                    <div class="post-image">
+                                        <img alt="" :src="'http://127.0.0.1:8000/upload/' +[[roll.image]]">
+                                    </div>
+                                    <div class="post-text">
+                                        <span class="p-tagline">Law Firm</span>
+                                        <h4><a href="news-single.html">[[roll.title]]<span></span></a>
+                                        </h4>
+                                        <p>[[roll]].</p>
+                                        <span class="p-author">Fynley Wilkinson</span>
+                                    </div>
+                                </div>
+                            </div>
+                         <div class="col-lg-4 col-md-6 mb30" v-else>
+                               {% for roll in rolls %}
+                            <div class="bloglist item" >
+
+                                    <div class="post-content">
+
+                                        <div class="date-box">
+                                            <div class="m">{{ roll.create_at|date:'d' }}</div>
+                                            <div class="d">{{ roll.create_at|date:'M' }}</div>
+                                        </div>
+                                        <div class="post-image">
+                                            <img alt=""
+                                                 src="{{ roll.image.url }} ">
+                                        </div>
+                                        <div class="post-text">
+                                            <span class="p-tagline">Law Firm</span>
+                                            <h4><a href="news-single.html">{{ roll.title }}<span></span></a>
+                                            </h4>
+                                            <p>{{ roll.description }}.</p>
+                                            <span class="p-author">Fynley Wilkinson</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+
+                        </div>  </div></div>
+
+                    <div id=" sidebar" class="col-md-3">
+                        <div class="widget widget-post">
+                            <h4>Recent Posts </h4>
+                            <div class="small-border"></div>
+
+                            <ul>
+                                <li>
+                                    <select class="court form-control" id="court"
+                                            court_id=""
+                                            @change="getCircuit($event)">
+                                        <option v-for="(p,i) in court_list" :value="p.id">[[p.name]]</option>
+                                    </select>
+                                </li>
+
+                                <li>
+                                    <select id="circuit" class="circuit form-control"
+
+                                            data-placeholder="Select an option" circuit_id=""
+                                            @change="getRoll($event)">
+                                        <option v-for="(p,i) in circuit_list" :key="i" :value="p.id">[[p.name]]</option>
+                                    </select>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="widget widget-text">
+                            <h4>About Us</h4>
+                            <div class="small-border"></div>
+                            <p>
+                                consequuntur magni
+                            </p>
+                            <div class="post-image">
+                                <img alt="" src="{{ qrcode.image.url }}">
+                            </div>
+                        </div>
+                        <div class="widget widget_tags">
+                            <h4>Tags</h4>
+                            <div class="small-border"></div>
+                            <ul>
+                                <li><a href="#link">Art</a></li>
+                                <li><a href="#link">Application</a></li>
+                                <li><a href="#link">Design</a></li>
+                                <li><a href="#link">Entertainment</a></li>
+                                <li><a href="#link">Internet</a></li>
+                                <li><a href="#link">Marketing</a></li>
+                                <li><a href="#link">Multipurpose</a></li>
+                                <li><a href="#link">Music</a></li>
+                                <li><a href="#link">Print</a></li>
+                                <li><a href="#link">Programming</a></li>
+                                <li><a href="#link">Responsive</a></li>
+                                <li><a href="#link">Website</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="spacer-single"></div>
+                    <ul class="pagination">
+                        <li><a href="#">Prev</a></li>
+                        <li class="active"><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li><a href="#">Next</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- content close -->
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        Vue.config.devtools = true
+        var RollFront = new Vue({
+            el: '#RollFront',
+            delimiters: ['[[', ']]'],
+            data: {
+                court_list:{{ court_list|safe }},
+                court_id: '',
+                circuit_list: [],
+                circuit_id: '',
+                roll_list: {{ roll_list|safe }},
+                roll_circuit: [],
+
+
+            },
+
+            methods: {
+
+                getCircuit: function (court_id) {
+                    console.log('court', court_id.target.value)
+                    fetch("/api/roll/circuit/" + encodeURIComponent(court_id.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Circuit not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+
+                                response.json().then(json => {
+                                    this.circuit_list = json;
+
+                                });
+                            }
+                        });
+                },
+
+                getRoll: function (circuit_id) {
+                    console.log('court', circuit_id.target.value)
+                    fetch("/api/roll/list/" + encodeURIComponent(circuit_id.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("USER not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+
+                                response.json().then(json => {
+                                    this.roll_circuit = json;
+                                });
+                            }
+                        });
+                },
+                displayableDate (date) {
+      return new Intl.DateTimeFormat(
+        'en-US',
+        { dateStyle: 'full' },
+      ).format(new Date(date))
+    }
+
+
+            },
+
+
+        });
+
+
+    </script>
+    {#    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"#}
+    {#            integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="#}
+    {#            crossorigin="anonymous" referrerpolicy="no-referrer"></script>#}
+    <script>
+        $(".court").select2({
+            placeholder: "Select a state",
+            allowClear: true
+        });
+
+
+    </script>
+
+    <script>
+        $(".circuit").select2({
+            placeholder: "Select a state",
+            allowClear: true
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+

@@ -1,0 +1,206 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'core:AdminCountryUpdate' country.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <!--begin::Block-->
+
+                                <div class="rounded border p-2">
+                                    <!--begin::Background image-->
+                                    <style>.image-input-placeholder {
+                                        background-image: url('{% static '' %}{{ BACKEND_ASSETS }}/media/svg/avatars/blank.svg');
+                                    }
+
+                                    [data-theme="dark"] .image-input-placeholder {
+                                        background-image: url('{% static '' %}{{ BACKEND_ASSETS }}/media/svg/avatars/blank-dark.svg');
+                                    }</style>
+                                    <!--end::Background image-->
+                                    <!--begin::Image input-->
+                                    <div class="image-input image-input-circle image-input-placeholder"
+                                         data-kt-image-input="true">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-125px h-125px"
+                                             style="background-image: url('{{ country.image.url }}')"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Edit-->
+                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                               data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                               data-bs-dismiss="click" title="Change avatar">
+                                            <i class="bi bi-pencil-fill fs-7"></i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="image" accept=".png, .jpg, .jpeg"/>
+                                            <input type="hidden" name="avatar_remove"/>
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Edit-->
+                                        <!--begin::Cancel-->
+                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                              data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                              data-bs-dismiss="click" title="Cancel avatar">
+														<i class="bi bi-x fs-2"></i>
+													</span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                              data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                              data-bs-dismiss="click" title="Remove avatar">
+														<i class="bi bi-x fs-2"></i>
+													</span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                </div>
+
+                                <!--end::Block-->
+
+
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="name" aria-label="{% translate 'Name' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Name' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ country.name }}">{{ country.name }}</option>
+                                            {% for value, text in country_form.name.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Select a Status..' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Select a Status..' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ country.status }}">{{ country.status }} </option>
+
+                                            {% for value, text in country_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if country_form.errors %}
+                                {% for error_field, error_message in country_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'Country' %}
+                                    {% if message.tags == 'Country success' %}
+                                        <div class="alert alert-info">
+                                    {% elif message.tags == 'Country danger' %}
+                                        <div class="alert alert-danger">
+                                    {% endif %}
+
+
+                                {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                        </div>
+                        <!--end::Order details-->
+                        <div class="d-flex justify-content-end">
+                            <!--begin::Button-->
+                            <a href="{{ prev_Page_url }}" id="kt_ecommerce_edit_order_cancel"
+                               class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                            <!--end::Button-->
+                            <!--begin::Button-->
+                            <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                                <span class="indicator-label">{% translate 'Save' %}</span>
+                                <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                            <!--end::Button-->
+                        </div>
+                    </div>
+                    <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

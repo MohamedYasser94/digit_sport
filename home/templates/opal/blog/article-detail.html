@@ -1,0 +1,281 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+    <!-- content begin -->
+        <div class="no-bottom no-top" id="content">
+            <div id="top"></div>
+            <!-- section begin -->
+            <section id="subheader" class="jarallax text-white">
+                <img src="{% static '' %}frontend/justica/images/background/subheader.jpg" class="jarallax-img" alt="">
+                <div class="center-y relative text-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h1>{{ article.title }}</h1>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- section close -->
+            <!-- section begin -->
+            <section aria-label="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="blog-read">
+                                {% if article.image %}
+                                     <img alt="" src="{{ article.image.url }}" class="img-fullwidth">
+                                    {% else %}
+                                <img alt="" src="{% static '' %}frontend/justica/images/news/5.jpg" class="img-fullwidth">
+                                {% endif %}
+                                <div class="post-text">
+                                    <p>{{ article.body|safe }}</p>
+                                    <span class="post-date">{{ article.pub_time|date }}</span>
+                                    <span class="post-comment"></span>
+                                    <span class="post-like">{{ article.views }}</span>
+                                </div>
+                            </div>
+                            <div class="spacer-single"></div>
+{#                            <div id="blog-comment">#}
+{#                                <h4>Comments (5)</h4>#}
+{#                                <div class="spacer-half"></div>#}
+{#                                <ol>#}
+{#                                    <li>#}
+{#                                        <div class="avatar">#}
+{#                                            <img src="{% static '' %}frontend/justica/images/misc/avatar.png" alt="" /></div>#}
+{#                                        <div class="comment-info">#}
+{#                                            <span class="c_name">John Smith</span>#}
+{#                                            <span class="c_date id-color">15 January 2020</span>#}
+{#                                            <span class="c_reply"><a href="#">Reply</a></span>#}
+{#                                            <div class="clearfix"></div>#}
+{#                                        </div>#}
+{#                                        <div class="comment">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</div>#}
+{#                                        <ol>#}
+{#                                            <li>#}
+{#                                                <div class="avatar">#}
+{#                                                    <img src="{% static '' %}frontend/justica/images/misc/avatar.png" alt="" /></div>#}
+{#                                                <div class="comment-info">#}
+{#                                                    <span class="c_name">John Smith</span>#}
+{#                                                    <span class="c_date id-color">15 January 2020</span>#}
+{#                                                    <span class="c_reply"><a href="#">Reply</a></span>#}
+{#                                                    <div class="clearfix"></div>#}
+{#                                                </div>#}
+{#                                                <div class="comment">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt#}
+{#                                                    explicabo.</div>#}
+{#                                            </li>#}
+{#                                        </ol>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <div class="avatar">#}
+{#                                            <img src="{% static '' %}frontend/justica/images/misc/avatar.png" alt="" /></div>#}
+{#                                        <div class="comment-info">#}
+{#                                            <span class="c_name">John Smith</span>#}
+{#                                            <span class="c_date id-color">15 January 2020</span>#}
+{#                                            <span class="c_reply"><a href="#">Reply</a></span>#}
+{#                                            <div class="clearfix"></div>#}
+{#                                        </div>#}
+{#                                        <div class="comment">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</div>#}
+{#                                        <ol>#}
+{#                                            <li>#}
+{#                                                <div class="avatar">#}
+{#                                                    <img src="{% static '' %}frontend/justica/images/misc/avatar.png" alt="" /></div>#}
+{#                                                <div class="comment-info">#}
+{#                                                    <span class="c_name">John Smith</span>#}
+{#                                                    <span class="c_date id-color">15 January 2020</span>#}
+{#                                                    <span class="c_reply"><a href="#">Reply</a></span>#}
+{#                                                    <div class="clearfix"></div>#}
+{#                                                </div>#}
+{#                                                <div class="comment">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt#}
+{#                                                    explicabo.</div>#}
+{#                                            </li>#}
+{#                                        </ol>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <div class="avatar">#}
+{#                                            <img src="{% static '' %}frontend/justica/images/misc/avatar.png" alt="" /></div>#}
+{#                                        <div class="comment-info">#}
+{#                                            <span class="c_name">John Smith</span>#}
+{#                                            <span class="c_date id-color">15 January 2020</span>#}
+{#                                            <span class="c_reply"><a href="#">Reply</a></span>#}
+{#                                            <div class="clearfix"></div>#}
+{#                                        </div>#}
+{#                                        <div class="comment">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</div>#}
+{#                                    </li>#}
+{#                                </ol>#}
+{#                                <div class="spacer-single"></div>#}
+{#                                <div id="comment-form-wrapper">#}
+{#                                    <h4>Leave a Comment</h4>#}
+{#                                    <div class="comment_form_holder">#}
+{#                                        <form id="contact_form" title="form1" class="form-default" method="post" action="#">#}
+{#                                            <label>Name</label>#}
+{#                                            <input type="text" title="title" id="title" class="form-control" />#}
+{#                                            <label>Email <span class="req">*</span></label>#}
+{#                                            <input type="text" title="email" id="email" class="form-control" />#}
+{#                                            <div id="error_email" class="error">Please check your email</div>#}
+{#                                            <label>Message <span class="req">*</span></label>#}
+{#                                            <textarea cols="10" rows="10" title="message" id="message" class="form-control"></textarea>#}
+{#                                            <div id="error_message" class="error">Please check your message</div>#}
+{#                                            <div id="mail_success" class="success">Thank you. Your message has been sent.</div>#}
+{#                                            <div id="mail_failed" class="error">Error, email not sent</div>#}
+{#                                            <p id="btnsubmit">#}
+{#                                                <input type="submit" id="send" value="Send" class="btn btn-custom" /></p>#}
+{#                                        </form>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+                        </div>
+                        <div id="sidebar" class="col-md-4">
+                            <div class="widget widget-post">
+                                <h4>Recent Posts</h4>
+                                <div class="small-border"></div>
+                                <ul>
+                                    <li><span class="date">10 Jun</span><a href="#">The Lawyer European Awards shortlist</a></li>
+                                    <li><span class="date">22 Jun</span><a href="#">Six firms that are setting the trend</a></li>
+                                    <li><span class="date">20 Jun</span><a href="#">When it comes to law firm mergers</a></li>
+                                    <li><span class="date">12 Jun</span><a href="#">How to Make the Most of Your CLE</a></li>
+                                </ul>
+                            </div>
+                            <div class="widget widget-text">
+                                <h4>About Us</h4>
+                                <div class="small-border"></div>
+                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas
+                                sit aspernatur aut odit aut fugit, sed quia consequuntur magni
+                            </div>
+                            <div class="widget widget_tags">
+                                <h4>Tags</h4>
+                                <div class="small-border"></div>
+                                <ul>
+                                    <li><a href="#link">Art</a></li>
+                                    <li><a href="#link">Application</a></li>
+                                    <li><a href="#link">Design</a></li>
+                                    <li><a href="#link">Entertainment</a></li>
+                                    <li><a href="#link">Internet</a></li>
+                                    <li><a href="#link">Marketing</a></li>
+                                    <li><a href="#link">Multipurpose</a></li>
+                                    <li><a href="#link">Music</a></li>
+                                    <li><a href="#link">Print</a></li>
+                                    <li><a href="#link">Programming</a></li>
+                                    <li><a href="#link">Responsive</a></li>
+                                    <li><a href="#link">Website</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- content close -->
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+        Vue.config.devtools = true
+        var RollFront = new Vue({
+            el: '#RollFront',
+            delimiters: ['[[', ']]'],
+            data: {
+
+                court_id: '',
+                circuit_list: [],
+                circuit_id: '',
+
+                roll_circuit: [],
+
+
+            },
+
+            methods: {
+
+                getCircuit: function (court_id) {
+                    console.log('court', court_id.target.value)
+                    fetch("/api/roll/circuit/" + encodeURIComponent(court_id.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Circuit not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+
+                                response.json().then(json => {
+                                    this.circuit_list = json;
+
+                                });
+                            }
+                        });
+                },
+
+                getRoll: function (circuit_id) {
+                    console.log('court', circuit_id.target.value)
+                    fetch("/api/roll/list/" + encodeURIComponent(circuit_id.target.value) + "/", {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("USER not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+
+                                response.json().then(json => {
+                                    this.roll_circuit = json;
+                                });
+                            }
+                        });
+                },
+                displayableDate(date) {
+                    return new Intl.DateTimeFormat(
+                        'en-US',
+                        {dateStyle: 'full'},
+                    ).format(new Date(date))
+                }
+
+
+            },
+
+
+        });
+
+
+    </script>
+    {#    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"#}
+    {#            integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="#}
+    {#            crossorigin="anonymous" referrerpolicy="no-referrer"></script>#}
+    <script>
+        $(".court").select2({
+            placeholder: "Select a state",
+            allowClear: true
+        });
+
+
+    </script>
+
+    <script>
+        $(".circuit").select2({
+            placeholder: "Select a state",
+            allowClear: true
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+

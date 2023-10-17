@@ -1,0 +1,668 @@
+{% extends BACKEND_BASE %}
+
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+    <!--begin::Page Vendor Stylesheets(used by this page)-->
+		<link href="{% static 'details.html' %}backend/good/assets/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet" type="text/css" />
+		<!--end::Page Vendor Stylesheets-->
+    <!--begin::Page Vendor Stylesheets(used by this page)-->
+    <link href="{% static 'details.html' %}backend/good/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet"
+          type="text/css"/>
+    <!--end::Page Vendor Stylesheets-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_add_product_form" class="form d-flex flex-column flex-lg-row"
+                  action="{% url 'core:AdminAddBlogArticle' %}"
+                  method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <!--begin::Aside column-->
+                <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+                    <!--begin::Thumbnail settings-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Article Image' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body text-center pt-0">
+                            <!--begin::Image input-->
+                            <div class="image-input image-input-empty image-input-outline mb-3"
+                                 data-kt-image-input="true"
+                                 style="background-image: url({% static 'details.html' %}backend/good/assets/media/svg/files/blank-image.svg)">
+                                <!--begin::Preview existing avatar-->
+                                <div class="image-input-wrapper w-150px h-150px"></div>
+                                <!--end::Preview existing avatar-->
+                                <!--begin::Label-->
+                                <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                       data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                       title="Change avatar">
+                                    <i class="bi bi-pencil-fill fs-7"></i>
+                                    <!--begin::Inputs-->
+                                    <input type="file" name="image" accept=".png, .jpg, .jpeg" required/>
+                                    <input type="hidden" name="avatar_remove"/>
+                                    <!--end::Inputs-->
+                                </label>
+                                <!--end::Label-->
+                                <!--begin::Cancel-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                      data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                      title="Cancel avatar">
+													<i class="bi bi-x fs-2"></i>
+												</span>
+                                <!--end::Cancel-->
+                                <!--begin::Remove-->
+                                <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                      data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                      title="Remove avatar">
+													<i class="bi bi-x fs-2"></i>
+												</span>
+                                <!--end::Remove-->
+                            </div>
+                            <!--end::Image input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Set the product thumbnail image. Only *.png, *.jpg and *.jpeg
+                                image files are accepted
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Thumbnail settings-->
+                    <!--begin::Status-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Publish Type' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <div class="rounded-circle bg-success w-15px h-15px"
+                                     id="kt_ecommerce_add_product_status"></div>
+                            </div>
+                            <!--begin::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="pub_type"
+                                    required>
+                                <option value="">{% translate 'Publish Type' %}</option>
+                                {% for value, text in article_form.pub_type.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>&nbsp;
+
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Set the product status.</div>
+                            <!--end::Description-->
+                            <!--begin::Input group-->
+                            <div class=" mt-10 ">
+                                <!--begin::Label-->
+                                <label class="required form-label">publishing date</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control" type="date" id="kt_ecommerce_add_product_status_datepicker"
+                                       name="pub_time" placeholder="Pick date &amp; time" required/>
+                                <!--end::Input-->
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">Select publishing date and time .</div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Status-->
+                    <!--begin::Category & tags-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Article Details</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="form-label">Categories</label>
+                            <!--end::Label-->
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
+                                    data-allow-clear="true" name="category" required>
+                                <option></option>
+                                <option value="">{% translate 'Categories' %}</option>
+                                {% for value, text in article_form.category.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7 mb-7">Add product to a category.</div>
+                            <!--end::Description-->
+                            <!--end::Input group-->
+                            <!--begin::Button-->
+                            <a href=""
+                               class="btn btn-light-primary btn-sm mb-10">
+                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                <span class="svg-icon svg-icon-2">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none">
+													<rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1"
+                                                          transform="rotate(-90 11 18)" fill="black"/>
+													<rect x="6" y="11" width="12" height="2" rx="1" fill="black"/>
+												</svg>
+											</span>
+                                <!--end::Svg Icon-->Create new category</a>
+                            <!--end::Button-->
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="form-label d-block">Tags</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input id="kt_ecommerce_add_product_tags" name="" class="form-control mb-2" value=""/>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Add tags to a product.</div>
+                            <!--end::Description-->
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Category & tags-->
+
+                    <!--begin::Template settings-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Article Setting</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select store template-->
+                            <label for="kt_ecommerce_add_product_store_template" class="form-label">Select a
+                                is_featured</label>
+                            <!--end::Select store template-->
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_store_template"
+                                    name="is_featured">
+                                <option></option>
+                                {% for value, text in article_form.is_featured.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Assign .</div>
+                            <!--end::Description-->
+
+                        </div>
+                        <!--end::Card body-->
+
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select store template-->
+                            <label for="kt_ecommerce_add_product_store_template" class="form-label">Select a
+                                comment_status</label>
+                            <!--end::Select store template-->
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_store"
+                                    name="comment_status">
+                                <option></option>
+                                {% for value, text in article_form.comment_status.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Assign .</div>
+                            <!--end::Description-->
+
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Template settings-->
+                </div>
+                <!--end::Aside column-->
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                    <!--begin:::Tabs-->
+                    <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-n2">
+                        <!--begin:::Tab item-->
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
+                               href="#kt_ecommerce_add_product_general">General</a>
+                        </li>
+                        <!--end:::Tab item-->
+                        <!--begin:::Tab item-->
+                        <li class="nav-item">
+                            <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab"
+                               href="#kt_ecommerce_add_product_advanced">Advanced</a>
+                        </li>
+                        <!--end:::Tab item-->
+                    </ul>
+                    <!--end:::Tabs-->
+                    <!--begin::Tab content-->
+                    <div class="tab-content">
+                        <!--begin::Tab pane-->
+                        <div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tab-panel">
+                            <div class="d-flex flex-column gap-7 gap-lg-10">
+                                <!--begin::General options-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>General</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <div class="mb-10 fv-row">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Article Title' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" name="title" class="form-control mb-2"
+                                                   placeholder="Product name" value=""/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">A Article name is required and recommended to
+                                                be unique.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10 fv-row">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Article keyword' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" name="keyword" class="form-control mb-2"
+                                                   placeholder="Product name" value=""/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">A Article keyword is required and recommended
+                                                to be unique.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div>
+                                            <!--begin::Label-->
+                                            <label class="form-label">Description</label>
+                                            <!--end::Label-->
+                                            <!--begin::Editor-->
+ <div id="" class="min-h-400px mb-2">
+
+<textarea name="body" id="kt_docs_ckeditor_classic">
+    <h1>Quick and simple CKEditor 5 Integration</h1>
+    <p>Here goes the <a href="#">Minitial content of the editor</a>. Lorem Ipsum is simply dummy text of the <em>printing and typesetting</em> industry.</p>
+    <blockquote>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled. Lorem Ipsum is simply dummy text of the printing and typesetting industry.</blockquote>
+    <ul>
+        <li>List item 1</li>
+        <li>List item 2</li>
+        <li>List item 3</li>
+        <li>List item 4</li>
+    </ul>
+    <figure class="image"><img src="assets/media/stock/600x400/img-1.jpg" alt="CKEditor Demo"/></figure>
+    Here goes the <a href="#">Minitial content of the editor</a>. Lorem Ipsum is simply dummy text of the <em>printing and typesetting</em> industry.
+    <h1>Easy Media Embeds</h1>
+    <figure class="symbol">
+        <oembed url="https://www.youtube.com/watch?v=d-pSVf8Xazk"></oembed>
+    </figure>
+    <p>Lorem ipsum dolor sit amet,consectetuer edipiscing elit,sed diam nonummy nibh euismod tinciduntut laoreet doloremagna aliquam erat volutpat.Ut wisi enim ad minim veniam,quis nostrud exerci tation ullamcorper. Lorem ipsum dolor sit amet,consectetuer edipiscing elit,sed diam nonummy nibh euismod tinciduntut laoreet doloremagna aliquam erat volutpat.Ut wisi enim ad minim veniam,quis nostrud exerci tation ullamcorper.</p>
+</textarea>
+
+
+
+
+
+                                            </div>
+                                            <!--end::Editor-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a description to the product for better
+                                                visibility.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card header-->
+                                </div>
+                                <!--end::General options-->
+                                <!--begin::Media-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>Media</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row mb-2">
+                                            <!--begin::Dropzone-->
+                                            <div class="dropzone" id="kt_ecommerce_add_product_media">
+                                                <!--begin::Message-->
+                                                <div class="dz-message needsclick">
+                                                    <!--begin::Icon-->
+                                                    <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
+                                                    <!--end::Icon-->
+                                                    <!--begin::Info-->
+                                                    <div class="ms-4">
+                                                        <h3 class="fs-5 fw-bolder text-gray-900 mb-1">Drop files here or
+                                                            click to upload.</h3>
+                                                        <span class="fs-7 fw-bold text-gray-400">Upload up to 10 files</span>
+                                                    </div>
+                                                    <!--end::Info-->
+                                                </div>
+                                            </div>
+                                            <!--end::Dropzone-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7">Set the product media gallery.</div>
+                                        <!--end::Description-->
+                                    </div>
+                                    <!--end::Card header-->
+                                </div>
+                                <!--end::Media-->
+
+                            </div>
+                        </div>
+                        <!--end::Tab pane-->
+                        <!--begin::Tab pane-->
+                        <div class="tab-pane fade" id="kt_ecommerce_add_product_advanced" role="tab-panel">
+                            <div class="d-flex flex-column gap-7 gap-lg-10">
+
+                                <!--begin::Meta options-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>Meta Options</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">Meta Tag Title</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control mb-2" name="meta_title"
+                                                   placeholder="Meta tag name"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a meta tag title. Recommended to be simple
+                                                and precise keywords.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">Meta Tag Description</label>
+                                            <!--end::Label-->
+                                           <!--begin::Input-->
+                                            <input type="text" class="form-control mb-2" name="meta_description"
+                                                   placeholder="Meta tag name"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a meta tag description to the product for
+                                                increased SEO ranking.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">Meta Tag Keywords</label>
+                                            <!--end::Label-->
+                                            <!--begin::Editor-->
+                                            <input id="kt_ecommerce_add_product_meta_keywords" name="meta_keywords"
+                                                   class="form-control mb-2"/>
+                                            <!--end::Editor-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a list of keywords that the product is
+                                                related to. Separate the keywords by adding a comma
+                                                <code>,</code>between each keyword.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Author' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control mb-2" name="author"
+                                                   placeholder="Meta tag name"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a meta tag title. Recommended to be simple
+                                                and precise keywords.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="mb-10">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Meta Tag Image' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="file" class="form-control mb-2" name="seo_image"
+                                                   placeholder="Meta tag name"/>
+                                            <!--end::Input-->
+                                            <!--begin::Description-->
+                                            <div class="text-muted fs-7">Set a meta tag title. Recommended to be simple
+                                                and precise keywords.
+                                            </div>
+                                            <!--end::Description-->
+                                        </div>
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Card header-->
+                                </div>
+                                <!--end::Meta options-->
+                            </div>
+                        </div>
+                        <!--end::Tab pane-->
+                    </div>
+                    {% if category_form.errors or article_form.errors or tags_form.errors %}
+                        <div class="card">
+                            <div class="body">
+                                {% if form_show_errors %}
+                                {% endif %}
+                                {% if article_form.errors %}
+                                    {% for error_field, error_message in article_form.errors.items %}
+                                        art
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            model
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if category_form.errors %}
+                                    {% for error_field, error_message in category_form.errors.items %}
+                                        cate
+
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            type
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if tags_form.errors %}
+                                    {% for error_field, error_message in tags_form.errors.items %}
+                                        tags
+                                        <div class="alert alert-danger">
+                                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                                            type
+                                            <strong>{{ error|escape }}</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!--end::Tab content-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="" id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
+                            <span class="indicator-label">Save Changes</span>
+                            <span class="indicator-progress">Please wait...
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+{% endblock %}
+{% block custom_js %}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+        const blog_article = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#blog_article',
+            data: {
+                categories: {{ blog_category|safe }},
+
+                category_id: "",
+            },
+            methods: {
+
+                getCategory: function (category_id) {
+                    console.log(encodeURIComponent(category_id.target.value))
+                    fetch("/dashboard/blog/api/category/" + encodeURIComponent(category_id.target.value) + "/", {method: 'PUT'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("Order not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                response.json().then(json => {
+                                    var d = json
+
+                                    this.client_code.push(d);
+                                    {#this.newClient.push( json );#}
+                                    {#this.newClient = {};#}
+
+                                    console.log(json)
+                                });
+                            }
+                        });
+                },
+
+
+            }
+        })
+    </script>
+    <script>
+    ClassicEditor
+    .create(document.querySelector('#kt_docs_ckeditor_classic'))
+    .then(editor => {
+        console.log(editor);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+    </script>
+
+
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static 'details.html' %}backend/good/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/apps/ecommerce/catalog/save-product.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/widgets.bundle.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/widgets.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static 'details.html' %}backend/good/assets/js/custom/utilities/modals/users-search.js"></script>
+
+<!--begin::Page Vendors Javascript(used by this page)-->
+		<script src="{% static 'details.html' %}backend/good/assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
+		<script src="{% static 'details.html' %}backend/good/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+		<!--end::Page Vendors Javascript-->
+		<!--begin::Page Custom Javascript(used by this page)-->
+		<script src="{% static 'details.html' %}backend/good/assets/js/custom/documentation/documentation.js"></script>
+		<script src="{% static 'details.html' %}backend/good/assets/js/custom/documentation/search.js"></script>
+		<script src="{% static 'details.html' %}backend/good/assets/js/custom/documentation/editors/ckeditor/classic.js"></script>
+		<!--end::Page Custom Javascript-->
+
+
+
+
+    <!--end::Page Custom Javascript-->
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

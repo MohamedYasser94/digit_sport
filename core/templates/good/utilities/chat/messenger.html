@@ -1,0 +1,470 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+    <!--begin::Main-->
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid" id="chat-app">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content flex-column-fluid">
+                <!--begin::Content container-->
+                <div id="kt_app_content_container" class="app-container container-fluid">
+                    <!--begin::Layout-->
+                    <div class="d-flex flex-column flex-lg-row">
+                        <!--begin::Sidebar-->
+                        <div class="flex-column flex-lg-row-auto w-100 w-lg-300px w-xl-400px mb-10 mb-lg-0">
+                            <!--begin::Contacts-->
+                            <div class="card card-flush">
+                                <!--begin::Card header-->
+                                <div class="card-header pt-7" id="kt_chat_contacts_header">
+                                    <!--begin::Form-->
+                                    <form class="w-100 position-relative" autocomplete="off">
+                                        <!--begin::Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                                        <span class="svg-icon svg-icon-2 svg-icon-lg-1 svg-icon-gray-500 position-absolute top-50 ms-5 translate-middle-y">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<rect opacity="0.5" x="17.0365" y="15.1223"
+                                                                      width="8.15546" height="2" rx="1"
+                                                                      transform="rotate(45 17.0365 15.1223)"
+                                                                      fill="currentColor"/>
+																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                      fill="currentColor"/>
+															</svg>
+														</span>
+                                        <!--end::Svg Icon-->
+                                        <!--end::Icon-->
+                                        <!--begin::Input-->
+                                        <input type="text" class="form-control form-control-solid px-15" name="search"
+                                               value="" placeholder="Search by email or email..."/>
+                                        <!--end::Input-->
+                                    </form>
+                                    <!--end::Form-->
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body pt-5" id="kt_chat_contacts_body">
+                                    <!--begin::List-->
+                                    <div class="scroll-y me-n5 pe-5 h-200px h-lg-auto" data-kt-scroll="true"
+                                         data-kt-scroll-activate="{default: false, lg: true}"
+                                         data-kt-scroll-max-height="auto"
+                                         data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_contacts_header"
+                                         data-kt-scroll-wrappers="#kt_content, #kt_chat_contacts_body"
+                                         data-kt-scroll-offset="5px">
+                                        {% for chat in chat_list %}
+                                            <!--begin::User-->
+                                            <div class="d-flex flex-stack py-4">
+                                                <!--begin::Details-->
+                                                <div class="d-flex align-items-center">
+                                                    <!--begin::Avatar-->
+                                                    <div class="symbol symbol-45px symbol-circle">
+                                                        <span class="symbol-label bg-light-danger text-danger fs-6 fw-bolder">
+                                                            {{ chat.user_room.recipient_two.get_full_name|make_list|first }}</span>
+                                                    </div>
+                                                    <!--end::Avatar-->
+                                                    <!--begin::Details-->
+                                                    <div class="ms-5">
+                                                        <a @click="getChatRoom('{{ chat.user_room.slug }}','{{ chat.user_room.recipient_two.slug }}'
+                                                        ,'{{ chat.user_room.recipient_two.email }}','{{ chat.user_room.recipient_two.get_full_name }}')"
+                                                           class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">{{ chat.user_room.recipient_two.get_full_name }}</a>
+                                                        <div class="fw-semibold text-muted">{{ chat.user_room.recipient_two.email }}</div>
+                                                    </div>
+                                                    <!--end::Details-->
+                                                </div>
+                                                <!--end::Details-->
+                                                <!--begin::Lat seen-->
+                                                <div class="d-flex flex-column align-items-end ms-2">
+                                                    <span class="text-muted fs-7 mb-1">{{ chat.message.updated_at|date:'d,m' }}</span>
+                                                    <span class="badge badge-sm badge-circle badge-light-warning">{{ chat.message_count }}</span>
+                                                </div>
+                                                <!--end::Lat seen-->
+                                            </div>
+                                            <!--end::User-->
+                                            <!--begin::Separator-->
+                                            <div class="separator separator-dashed d-none"></div>
+                                            <!--end::Separator-->
+                                        {% endfor %}
+
+                                    </div>
+                                    <!--end::List-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Contacts-->
+                        </div>
+                        <!--end::Sidebar-->
+                        <!--begin::Content-->
+                        <div v-show="chatRoom" class="flex-lg-row-fluid ms-lg-7 ms-xl-10">
+                            <!--begin::Messenger-->
+                            <div class="card" id="kt_chat_messenger" key="index">
+                                <!--begin::Card header-->
+                                <div class="card-header" id="kt_chat_messenger_header">
+                                    <!--begin::Title-->
+                                    <div class="card-title">
+                                        <!--begin::User-->
+                                        <div class="d-flex justify-content-center flex-column me-3">
+                                            <a href="#"
+                                               class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">[[
+                                                recipientTwoName ]]</a>
+                                            </a>
+                                            <!--begin::Info-->
+                                            <div class="mb-0 lh-1">
+                                                <span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
+                                                <span class="fs-7 fw-semibold text-muted">[[ userOnline ]]</span>
+                                            </div>
+                                            <!--end::Info-->
+                                        </div>
+                                        <!--end::User-->
+                                    </div>
+                                    <!--end::Title-->
+
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body" id="kt_chat_messenger_body">
+                                    <!--begin::Messages-->
+                                    <div class="scroll-y me-n5 pe-5 h-300px h-lg-auto" data-kt-element="messages"
+                                         data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                                         data-kt-scroll-max-height="auto"
+                                         data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_chat_messenger_header, #kt_chat_messenger_footer"
+                                         data-kt-scroll-wrappers="#kt_content, #kt_chat_messenger_body"
+                                         data-kt-scroll-offset="5px">
+                                        <!--begin::Message(in)-->
+                                        <div class="d-flex justify-content-start mb-10" id="chat-messages"
+                                             v-for="(message,index) in chatBody">
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex flex-column align-items-start"
+                                                 v-if="message.user_email == [[recipientTwoEmail]] ">
+                                                <!--begin::User-->
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <!--begin::Avatar-->
+                                                    <div class="symbol symbol-35px symbol-circle">
+                                                        <img alt="Pic" src="
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-25.jpg"/>
+
+                                                    </div>
+                                                    <!--end::Avatar-->
+                                                    <!--begin::Text-->
+                                                    <div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end"
+                                                         data-kt-element="message-text">[[message.content ]]
+
+                                                    </div>
+                                                    <!--end::Text-->
+
+                                                </div>
+                                                <!--end::User-->
+
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+
+                                        <!--end::Message(in)-->
+                                        <!--begin::Message(out)-->
+                                        <div class="d-flex justify-content-end mb-10"
+                                             v-for="(message,index) in chatBody">
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex flex-column align-items-end"
+                                                 v-if="message.user_email == [[recipientOneEmail]] ">
+                                                <!--begin::User-->
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <!--begin::Text-->
+                                                    <div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end"
+                                                         data-kt-element="message-text">[[message.content ]]
+
+                                                    </div>
+                                                    <!--end::Text-->
+                                                    {#                                                    <!--begin::Details-->#}
+                                                    {#                                                    <div class="me-3">#}
+                                                    {#                                                        <span class="text-muted fs-7 mb-1">5 mins</span>#}
+                                                    {#                                                        <a href="#"#}
+                                                    {#                                                           class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>#}
+                                                    {#                                                    </div>#}
+                                                    {#                                                    <!--end::Details-->#}
+
+                                                </div>
+                                                <!--end::User-->
+
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+                                        <!--end::Message(out)-->
+
+
+                                    </div>
+                                    <!--end::Messages-->
+                                </div>
+                                <!--end::Card body-->
+                                <!--begin::Card footer-->
+                                <div class="card-footer pt-4" id="kt_chat_messenger_footer">
+                                    <!--begin::Input-->
+                                    <textarea class="form-control form-control-flush mb-3" rows="1"
+                                              id="chat-message-input"
+                                              data-kt-element="input" placeholder="Type a message"></textarea>
+                                    <input hidden id="chat-user-email" :value="[[recipientOneEmail]]">
+                                    <input hidden id="chat-room-slug" :value="[[roomName]]">
+                                    <!--end::Input-->
+                                    <!--begin:Toolbar-->
+                                    <div class="d-flex flex-stack">
+                                        <!--begin::Actions-->
+                                        <div class="d-flex align-items-center me-2">
+                                            <button class="btn btn-sm btn-icon btn-active-light-primary me-1"
+                                                    type="button" data-bs-toggle="tooltip" title="Coming soon">
+                                                <i class="bi bi-paperclip fs-3"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-icon btn-active-light-primary me-1"
+                                                    type="button" data-bs-toggle="tooltip" title="Coming soon">
+                                                <i class="bi bi-upload fs-3"></i>
+                                            </button>
+                                        </div>
+                                        <!--end::Actions-->
+                                        <!--begin::Send-->
+                                        <button class="btn btn-primary" id="chat-message-submit"
+                                                data-kt-element="send">Send
+                                        </button>
+                                        <!--end::Send-->
+                                    </div>
+                                    <!--end::Toolbar-->
+                                </div>
+                                <!--end::Card footer-->
+                            </div>
+                            <!--end::Messenger-->
+                        </div>
+                        <!--end::Content-->
+                    </div>
+                    <!--end::Layout-->
+                    {#                   {% include 'good/utilities/chat/common.html' %}#}
+                </div>
+                <!--end::Content container-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Content wrapper-->
+
+    </div>
+    <!--end:::Main-->
+
+
+
+{% endblock %}
+{% block custom_js %}
+    <script>
+        const ChatApp = Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    recipientTwoSlug: '',
+                    recipientTwoName: '',
+                    recipientTwoEmail: '',
+                    recipientOneEmail: '{{ request.user.email }}',
+                    chatBody: [],
+                    messages: [],
+                    chatSocket: null,
+                    email: '',
+                    roomName: '',
+                    dataResponse: '',
+                    chatRoom: false,
+                    userOnline: 'Offline',
+                    oneMessage: '',
+                    twoMessage: '',
+                }
+            },
+            methods: {
+                getChatRoom: function (room_slug, recipient_slug, recipient_email, recipient_name) {
+                    console.log('getChatRoom', room_slug, recipient_slug, recipient_email)
+                    this.recipientTwoSlug = recipient_slug
+                    this.recipientTwoName = recipient_name
+                    this.recipientTwoEmail = recipient_email
+
+                    const url = "{% url 'api:AdminApiChatRoomCheck' slug=53252623623632623 %}".replace("53252623623632623", encodeURIComponent(room_slug));
+                    payload = {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+                        "recipient_slug": this.recipientTwoSlug,
+
+                    }
+                    fetch(url, payload, {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("USER not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                this.openChat(room_slug)
+                                this.roomName = room_slug
+                                this.recipientTwoSlug = recipient_slug
+                                this.recipientTwoName = recipient_name
+                                this.recipientTwoEmail = recipient_email
+                                this.dataResponse = response;
+                                this.getOldChat(room_slug);
+                                this.chatRoom = true;
+                            }
+                        });
+                },
+                pushNewMessage: function (room_slug) {
+                    console.log('pushNewMessage', room_slug)
+                    const url = "{% url 'api:AdminApiChatRoomGetMessage' slug=53252623623632623 %}".replace("53252623623632623", room_slug);
+                    payload = {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+
+                    }
+                    fetch(url, payload, {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("USER not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                response.json().then(json => {
+                                    this.chatBody = json;
+                                });
+                            }
+                        });
+                },
+                openChat: function (event) {
+                    console.log('openChat', event)
+                    console.log(window.location);  // Get the room name from the page
+                    var loc = window.location;
+                    var wsStart = 'ws://';
+                    if (loc.protocol == 'https:') {
+                        wsStart = 'wss://';
+                    }
+                    console.log('wsStart', wsStart);
+                    console.log('pathname', loc.pathname);
+                    console.log('host', loc.host);
+                    var endpoint = wsStart + loc.host + '/ws' + loc.pathname;
+                    console.log('endpoint', endpoint);
+                    const url = wsStart + window.location.host + '/ws/dashboard/messenger/' + event + '/'
+                    console.log('url', url);
+                    const chatSocket = new WebSocket(url);
+                    chatSocket.onclose = function (e) {
+                        console.log('onclose')
+                    }
+                    chatSocket.onopen = function (e) {
+                        console.log('onopen')
+
+                        this.roomName = this.roomName
+                        this.email = this.recipientTwoEmail
+
+                    }
+                    chatSocket.onerror = function (e) {
+                        console.log('onerror', e)
+                    }
+                    chatSocket.onmessage = (event) => {
+                            const data = JSON.parse(event.data);
+                            console.log('data.message check ', data.email, data.room)
+                            if (data.email == this.recipientTwoEmail) {
+                                console.log('data.message 2', data.message, data.room)
+                                this.userOnline = 'Online'
+                                this.twoMessage = data.message
+                                  this.pushNewMessage(data.room)
+                            } else if (data.email == this.recipientOneEmail) {
+                                console.log('data.message 1 ', data.message, data.room)
+                                this.userOnline = 'Online'
+                                this.oneMessage = 'aaaa'
+                                this.pushNewMessage(data.room)
+
+                            } else {
+                                console.log('data.message off ', data.message, data.room)
+                                this.userOnline = 'Offline'
+                                this.oneMessage = 'aaaa'
+                                this.twoMessage = 'aaaa'
+                            }
+                        }
+
+
+
+
+                    document.querySelector('#chat-message-input').focus();
+                    document.querySelector('#chat-message-input').onkeyup = function (e) {
+                        if (e.keyCode === 13) {
+                            document.querySelector('#chat-message-submit').click();
+                        }
+                    };
+
+                    document.querySelector('#chat-message-submit').onclick = function (e) {
+                        e.preventDefault()
+                        const messageInputDom = document.querySelector('#chat-message-input');
+                        var message = messageInputDom.value;
+
+                        const userEmailDom = document.querySelector('#chat-user-email');
+                        var email = userEmailDom.value;
+
+                        const roomSlugDom = document.querySelector('#chat-room-slug');
+                        var roomName = roomSlugDom.value;
+
+
+                        console.log({
+                            'message': message,
+                            'email': email,
+                            'room': roomName
+                        })
+
+                        chatSocket.send(JSON.stringify({
+                            'message': message,
+                            'email': email,
+                            'room': roomName
+                        }));
+
+                        messageInputDom.value = '';
+
+                        return false
+                    };
+                },
+                getOldChat: function (room_slug) {
+                    console.log('getOldChat', room_slug)
+                    const url = "{% url 'api:AdminApiChatRoomGetMessage' slug=53252623623632623 %}".replace("53252623623632623", room_slug);
+                    payload = {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+
+                    }
+                    fetch(url, payload, {method: 'GET'})
+                        .then(response => {
+                            if (response.status == 404) {
+                                window.alert("USER not found");
+                            } else if (response.status != 200) {
+                                console.log(response);
+                                window.alert(response.json().message);
+                            } else {
+                                response.json().then(json => {
+                                    this.chatBody = json;
+                                });
+                            }
+                        });
+                },
+
+
+            },
+            mounted() {
+                    },
+            compute() {
+               return {
+                        userOnline: this.userOnline,
+                        oneMessage: this.oneMessage,
+                        twoMessage: this.twoMessage,
+                        chatBody: this.chatBody,
+                        roomName: this.roomName,
+                        recipientOneSlug: this.recipientOneSlug,
+                        recipientOneName: this.recipientOneName,
+                        recipientOneEmail: this.recipientOneEmail,
+                        recipientTwoSlug: this.recipientTwoSlug,
+                        recipientTwoName: this.recipientTwoName,
+                        recipientTwoEmail: this.recipientTwoEmail,
+                        dataResponse: this.dataResponse,
+                        chatRoom: this.chatRoom,
+                    }
+            }
+
+
+        })
+        ChatApp.mount('#chat-app')
+        ChatApp.config.devtools = true
+
+
+    </script>
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

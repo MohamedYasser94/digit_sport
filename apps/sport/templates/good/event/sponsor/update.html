@@ -1,0 +1,196 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'event:AdminSponsorsUpdate' sponsor.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Sponsor Info' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                         <label class="required fs-6 fw-bold mb-2">{% translate 'First Name' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'First Name' %}" value="{{ sponsor.first_name }}"
+                                                               name="first_name" required/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Last Name' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Last Name' %}" value="{{ sponsor.last_name }}"
+                                                               name="last_name" required/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                         <label class="required fs-6 fw-bold mb-2">{% translate 'Email' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="email" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Email' %}" value="{{ sponsor.email }}"
+                                                               name="email" required/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Phone' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="number" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Phone' %}" value="{{ sponsor.phone }}"
+                                                               name="phone" required/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Company' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                         <input type="text" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Company' %}" value="{{ sponsor.company }}"
+                                                               name="company" required/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="file" class="form-control form-control-solid"
+
+                                                               name="image" />
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                                 <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Keywords' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                         <input type="text" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Keywords' %}" value="{{ sponsor.keywords }}"
+                                                               name="keywords" required/>
+                                        <!--end::Input-->
+                                    </div>
+
+                                    <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class=" fs-6 fw-bold mb-2">{% translate 'Notes' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" class="form-control form-control-solid"
+                                                               placeholder="{% translate 'Notes' %}" value="{{ sponsor.notes }}"
+                                                               name="notes" />
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if sponsor_form.errors %}
+                                {% for error_field, error_message in sponsor_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

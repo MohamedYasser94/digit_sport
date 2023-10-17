@@ -1,0 +1,182 @@
+
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+
+
+<main id="pageContent" class="page has-sidebar">
+
+<div class="container-fluid relative animatedParent animateOnce">
+    <div class="wrapper animated fadeInUpShort p-4 mt-2">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="video-responsive">
+                    <div class="card no-b r-0">
+                        <div class="card-body p-4">
+                            <div class="d-lg-flex align-items-center">
+                                <h1 class="my-3 h4">{{  episode.title}}
+                                    </h1>
+                                <div class="ml-auto">
+                                    <a href="#" class="snackbar" data-text="Added to favourites"
+                                       data-pos="top-right"
+                                       data-showAction="true"
+                                       data-actionText="ok"
+                                       data-actionTextColor="#fff"
+                                       data-backgroundColor="#0c101b"><i class="icon-bookmark s-24"></i></a>
+                                    <a href="#" class="snackbar ml-3" data-text="Added to favourites"
+                                       data-pos="top-right"
+                                       data-showAction="true"
+                                       data-actionText="ok"
+                                       data-actionTextColor="#fff"
+                                       data-backgroundColor="#0c101b"><i class="icon-heart s-24"></i></a>
+                                    <a href="#" class="snackbar ml-3" data-text="Added to favourites"
+                                       data-pos="top-right"
+                                       data-showAction="true"
+                                       data-actionText="ok"
+                                       data-actionTextColor="#fff"
+                                       data-backgroundColor="#0c101b"><i class="icon-share-1 s-24"></i></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item"
+                                src="{{ episode.url }}"
+                                height="540"
+                                allowfullscreen></iframe>
+                    </div>
+
+                </div>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="lightSlider has-items-overlay playlist"
+                             data-item="3"
+                             data-item-xl="3"
+                             data-item-lg="3"
+                             data-item-md="3"
+                             data-item-sm="1"
+                             data-auto="false"
+                             data-pager="false"
+                             data-controls="true"
+                             data-loop="false">
+                            <div>
+                                <div class="p-5 bg-primary text-white">
+                                    <h5 class="font-weight-normal s-14">Views</h5>
+                                    <span class="s-48 font-weight-lighter text-primary">{{ views }}</span>
+                                    <div> Likes
+                                        <span class="text-primary">
+                                            <i class="icon icon-arrow_downward"></i> 67%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="p-5">
+                                    <h5 class="font-weight-normal s-14">Share</h5>
+                                    <span class="s-48 font-weight-lighter amber-text">700</span>
+                                    <div>
+                                            <span class="amber-text">
+                                            <i class="icon icon-arrow_downward"></i> 34</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="p-5 light">
+                                    <h5 class="font-weight-normal s-14">Comments</h5>
+                                    <span class="s-48 font-weight-lighter text-indigo">411</span>
+                                    <div> Iron
+                                        <span class="text-indigo">
+                                            <i class="icon icon-arrow_downward"></i> 89%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="p-5">
+                                    <h5 class="font-weight-normal s-14">Likes</h5>
+                                    <span class="s-48 font-weight-lighter pink-text">224</span>
+                                    <div> Sodium
+                                        <span class="pink-text">
+                                            <i class="icon icon-arrow_downward"></i> 47%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="col-lg-4">
+                <div class="card pt-3">
+                    <div class="card-header">
+                        <h6>{% translate 'You May Also like' %}</h6>
+                    </div>
+                   <div class="card-body">
+                       {% for episode in episodes %}
+                       <div class="d-flex align-items-center mb-4 ">
+                           <div class="col-5">
+                               {% if episode.cover %}
+                                 <img src="{{episode.cover.url}}" alt="Card image">
+                                 {% else %}
+                               <img src="{%  static '' %}{{FRONTEND_ASSETS}}/img/demo/v4.jpg" alt="Card image">
+                                 {% endif %}
+                           </div>
+                           <div class="ml-3">
+                               <a href="">
+                                   <h6>{{ episode.title }}</h6>
+                               </a>
+                               <small class="mt-1">{{ episode.category.title }}</small>
+                           </div>
+                       </div>
+                          {% endfor %}
+
+                   </div>
+                </div>
+
+                <div class="my-4">
+                       {% for episode in episodes %}
+                    <div class="d-flex align-items-center mb-4 ">
+                        <div class="col-5">
+                            {% if episode.cover %}
+                           <img src="{{episode.cover.url}}" alt="Card image">
+                                 {% else %}
+                               <img src="{%  static '' %}{{FRONTEND_ASSETS}}/img/demo/v4.jpg" alt="Card image">
+                                 {% endif %}
+                        </div>
+                        <div class="ml-3">
+                               <a href="">
+                                   <h6>{{ episode.title }}</h6>
+                               </a>
+                               <small class="mt-1">{{ episode.category.title }}</small>
+                           </div>
+                    </div>
+                          {% endfor %}
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</main><!--@Page Content-->
+
+
+
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

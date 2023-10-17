@@ -1,0 +1,62 @@
+ {#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>#}
+    <script>
+
+        /*
+
+        On focus out on input nickname,
+
+        call AJAX get request to check if the nickName
+
+        already exists or not.
+
+        */
+
+        $("#client_name").change(function () {
+
+
+            // get the nickname
+
+            var client_name = $(this).val();
+
+            // GET AJAX request
+
+            $.ajax({
+
+                type: 'GET',
+
+                url: "{% url 'lawyer:AjaxAttorneyClient' %}",
+
+                data: {"client_name": client_name},
+
+                success: function (data) {
+                    $('#appendHere').html(data.rendered_table);
+
+
+                    // if not valid user, alert the user
+
+                    if (data["valid"]) {
+
+                        alert("{% translate 'You cannot create a Attorney with same clinet title' %}");
+
+                        var ClientName = $("#client_name");
+
+                        ClientName.val("")
+
+                        ClientName.focus()
+
+                    }
+
+
+                },
+
+                error: function (data) {
+
+                    console.log(data)
+
+                }
+
+            })
+
+        })
+
+    </script>

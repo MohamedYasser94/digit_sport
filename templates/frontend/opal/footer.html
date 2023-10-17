@@ -1,0 +1,151 @@
+{% load static %}
+
+{% load i18n %}
+<!-- Footer -->
+
+<!-- footer begin -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="widget">
+                    <a href="{% url 'home:HomeIndex' %}"><img alt="" class="img-fluid mb20"
+                                              src="{% static '' %}frontend/justica/images/logo-light.png"></a>
+                    <address class="s1">
+                        {% for setting in site_info %}
+                            {% if location_country == 'Egypt' %}
+                                {% if setting.setting.country.name  == 'Egypt' %}
+
+                                    <span><i
+                                            class="id-color fa fa-map-marker fa-lg"></i> {{ setting.extra_settings.address }}</span>
+                                    <span><i
+                                            class="id-color fa fa-phone fa-lg"></i>{{ setting.extra_settings.phone }}</span>
+                                    <span><i class="id-color fa fa-envelope-o fa-lg"></i><a
+                                            href="mailto:{{ setting.setting.email }}">{{ setting.setting.email }}</a></span>
+                                    <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a
+                                            href="#">{{ setting.extra_settings.contact }}</a></span>
+                                {% endif %}
+                            {% elif location_country == 'Kuwait' %}
+                                {% if setting.setting.country.name  == 'Kuwait' %}
+                                    <span><i
+                                            class="id-color fa fa-map-marker fa-lg"></i> {{ setting.extra_settings.address }}</span>
+                                    <span><i
+                                            class="id-color fa fa-phone fa-lg"></i>{{ setting.extra_settings.phone }}</span>
+                                    <span><i class="id-color fa fa-envelope-o fa-lg"></i><a
+                                            href="mailto:{{ setting.setting.email }}">{{ setting.setting.email }}</a></span>
+                                    <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a
+                                            href="#">{{ setting.extra_settings.contact }}</a></span>
+                                {% endif %}
+                            {% else %}
+                                {% if setting.setting.country.name  == 'Egypt' %}
+                                    <span><i
+                                            class="id-color fa fa-map-marker fa-lg"></i> {{ setting.extra_settings.address }}</span>
+                                    <span><i
+                                            class="id-color fa fa-phone fa-lg"></i>{{ setting.extra_settings.phone }}</span>
+                                    <span><i class="id-color fa fa-envelope-o fa-lg"></i><a
+                                            href="mailto:{{ setting.setting.email }}">{{ setting.setting.email }}</a></span>
+                                    <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a
+                                            href="#">{{ setting.extra_settings.contact }}</a></span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+                    </address>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h5 class="id-color mb20">{% translate 'Practice Areas' %}</h5>
+                <ul class="ul-style-2">
+                    <li>{% translate 'Cases' %}</li>
+                    <li>{% translate 'Archive' %}</li>
+                    <li>{% translate 'Accounting' %}</li>
+                    <li>{% translate 'Team & users' %}</li>
+                    <li>{% translate 'News' %}</li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <div class="widget">
+                    <h5 class="id-color">{% translate 'Newsletter' %}</h5>
+                    <p>Signup for our newsletter to get the latest news, updates and special offers in your inbox.</p>
+                    <form action="{% url 'home:Newsletter' %}" class="row" id="form_subscribe"
+                          enctype="multipart/form-data" method="POST" name="form_subscribe">
+                          {% csrf_token %}
+                        <div class="col text-center">
+                            <input class="form-control" id="name_1" name="email" placeholder="enter your email"
+                                   type="text"/> <a
+                                href="" onclick="
+
+                                                    {document.getElementById('form_subscribe').submit();}"
+
+                                id="btn-submit"><i class="fa fa-long-arrow-right"></i></a>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+                    <div class="spacer-10"></div>
+                    <small>{% translate "Your email is safe with us. We don't spam." %}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="subfooter">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="de-flex">
+                        <div class="de-flex-col">
+                            &copy; Copyright {% now "Y " %} - Digithup
+                        </div>
+                        <div class="de-flex-col">
+                            <div class="social-icons">
+                                {% for setting in site_info %}
+                                    {% if location_country == 'Egypt' %}
+                                        {% if setting.setting.country.name  == 'Egypt' %}
+                                            <a href="{{ setting.extra_settings.facebook }}"><i
+                                                    class="fa fa-facebook fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.twitter }}"><i
+                                                    class="fa fa-twitter fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.linkedin }}"><i
+                                                    class="fa fa-linkedin fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.instagram }}"><i
+                                                    class="fa fa-instagram fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.youtube }}"><i
+                                                    class="fa fa-youtube fa-lg"></i></a>
+                                        {% endif %}
+                                    {% elif location_country == 'Kuwait' %}
+                                        {% if setting.setting.country.name  == 'Kuwait' %}
+                                            <a href="{{ setting.extra_settings.facebook }}"><i
+                                                    class="fa fa-facebook fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.twitter }}"><i
+                                                    class="fa fa-twitter fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.linkedin }}"><i
+                                                    class="fa fa-linkedin fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.instagram }}"><i
+                                                    class="fa fa-instagram fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.youtube }}"><i
+                                                    class="fa fa-youtube fa-lg"></i></a>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if setting.setting.country.name  == 'Egypt' %}
+                                            <a href="{{ setting.extra_settings.facebook }}"><i
+                                                    class="fa fa-facebook fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.twitter }}"><i
+                                                    class="fa fa-twitter fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.linkedin }}"><i
+                                                    class="fa fa-linkedin fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.instagram }}"><i
+                                                    class="fa fa-instagram fa-lg"></i></a>
+                                            <a href=" {{ setting.extra_settings.youtube }}"><i
+                                                    class="fa fa-youtube fa-lg"></i></a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer close -->

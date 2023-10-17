@@ -1,0 +1,106 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+ <!-- content begin -->
+        <div class="no-bottom no-top" id="content">
+            <div id="top"></div>
+            <!-- section begin -->
+            <section id="subheader" class="jarallax text-white">
+                <img src="{% static '' %}frontend/justica/images/background/subheader.jpg" class="jarallax-img" alt="">
+                <div class="center-y relative text-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h1>{% translate 'Lawyer' %}</h1>
+                                <p>{% translate 'Reputation. Respect. Result.' %}</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- section close -->
+            <!-- section begin -->
+            <section aria-label="section">
+                <div class="container">
+                    <div class="row">
+                        {% for lawyer in lawyers %}
+                        <div class="col-lg-4 col-md-6 mb20">
+                            <div class="bloglist item">
+                                <div class="post-content">
+                                    <div class="date-box">
+                                        <div  class="d"> <img alt="lawyer" src="{% static '' %}frontend/justica/images/lawico.png" style="height: 40px"></div>
+
+                                    </div>
+                                    <div class="post-image">
+                                        {% if lawyer.image %}
+                                        <img alt="lawyer"  src="{{ lawyer.image.url }}" style="width: 250px;height: 300px">
+
+
+                                        {% else %}
+                                             <img alt="lawyer" src="{% static '' %}frontend/justica/images/news/1.jpg">
+                                        {% endif %}
+
+
+                                    </div>
+                                    <div class="post-text">
+                                        <span class="p-tagline">Law Firm</span>
+                                        <h4><a href="https://wa.me/{{ lawyer.whatsapp }}"><span style='color: #eab206'> {{ lawyer.name }}</span></a></h4>
+                                        <p><i class="m fa fa-location-arrow  fa-2x " style='color: #eab206'>&nbsp;</i>{{ lawyer.address }}</p>
+                                        <p><i class="fa fa-phone  fa-2x " style='color: #eab206'>&nbsp;</i><a href="tel:{{ lawyer.whatsapp }}">{{ lawyer.phone }}</a></p>
+                                        <p><i class="fa fa-whatsapp fa-2x " style='color: #eab206'>&nbsp;</i><a href="https://wa.me/{{ lawyer.whatsapp }}">{{ lawyer.whatsapp }}</a></p>
+                                         <p>{{ lawyer.keyword }}.</p>
+                                        <span class="p-author">Digithup</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                             <div class="col-lg-4 col-md-6 mb30">
+                            <div class="bloglist item">
+                                <div class="post-content">
+                                    <div class="date-box">
+                                        <div class="m">10</div>
+                                        <div class="d">NOV</div>
+                                    </div>
+                                    <div class="post-image">
+                                        <img alt="" src="{% static '' %}frontend/justica/images/news/1.jpg">
+                                    </div>
+                                    <div class="post-text">
+                                        <span class="p-tagline">Law Firm</span>
+                                        <h4><a href="news-single.html">The Lawyer European Awards shortlist<span></span></a></h4>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                        <span class="p-author">Fynley Wilkinson</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="spacer-single"></div>
+                        <ul class="pagination">
+                            <li><a href="#">Prev</a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">Next</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- content close -->
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+

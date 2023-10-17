@@ -1,0 +1,835 @@
+{% extends BACKEND_BASE %}
+
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+
+    <!--begin::Main-->
+    <style>
+
+
+        .upload__box {
+            padding: 40px;
+        }
+
+        .upload__inputfile {
+
+            opacity: 0;
+            overflow: hidden;
+
+        }
+
+        .upload__btn {
+
+            font-weight: 400;
+
+
+        }
+
+        .upload__btn:hover {
+
+        }
+
+        .upload__btn-box {
+            margin-bottom: 10px;
+        }
+
+        .upload__img-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .upload__img-box {
+            width: 200px;
+            padding: 0 10px;
+            margin-bottom: 12px;
+        }
+
+        .upload__img-close {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-align: center;
+            line-height: 24px;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .upload__img-close:after {
+            content: "✖";
+            font-size: 14px;
+            color: white;
+        }
+
+        .img-bg {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+            padding-bottom: 100%;
+        }
+    </style>
+
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content flex-column-fluid">
+                <!--begin::Content container-->
+                <div id="kt_app_content_container" class="app-container container-fluid">
+                    <!--begin::Form-->
+                    <form id="kt_invoice_form" class="form d-flex flex-column flex-lg-row"
+                          data-kt-redirect="../dist/apps/ecommerce/catalog/products.html"
+                          enctype="multipart/form-data" method="POST"
+                          action="{% url 'core:AdminBlogServicesCreate' %}">
+                        {% csrf_token %}
+                        <!--begin::Aside column-->
+                        <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
+                            <!--begin::Thumbnail settings-->
+                            <div class="card card-flush py-4">
+                                <!--begin::Card header-->
+                                <div class="card-header">
+                                    <!--begin::Card title-->
+                                    <div class="card-title">
+                                        <h2>{% translate 'Thumbnail' %}</h2>
+                                    </div>
+                                    <!--end::Card title-->
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body text-center pt-0">
+                                    <!--begin::Image input-->
+                                    <div class="image-input image-input-empty image-input-outline mb-3"
+                                         data-kt-image-input="true"
+                                         style="background-image: url(
+                                                 {% static '' %}{{ BACKEND_ASSETS }}/media/svg/files/blank-image.svg)">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-150px h-150px"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Label-->
+                                        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                               data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                               title="Change avatar">
+                                            <i class="bi bi-pencil-fill fs-7"></i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="hero_image" accept=".png, .jpg, .jpeg ,.svg"/>
+                                            <input type="hidden" name="avatar_remove"/>
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Label-->
+                                        <!--begin::Cancel-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                              data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                              title="Cancel avatar">
+															<i class="bi bi-x fs-2"></i>
+														</span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                              data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                              title="Remove avatar">
+															<i class="bi bi-x fs-2"></i>
+														</span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">{% translate 'Set the product thumbnail image. Only *.png, *.jpg and *.jpeg image files are accepted' %}</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <!--end::Thumbnail settings-->
+                              <!--begin::Status-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Active Status' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                            <!--begin::Card toolbar-->
+                            <div class="card-toolbar">
+                                <div class="rounded-circle bg-success w-15px h-15px"
+                                     id="kt_ecommerce_add_product_status"></div>
+                            </div>
+                            <!--begin::Card toolbar-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select"
+                                    name="status"
+                            >
+                                <option value="">{% translate 'Active Status' %}</option>
+                                {% for value, text in service_form.status.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>&nbsp;
+
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">{% translate 'Set the product status.' %}</div>
+                            <!--end::Description-->
+                            <!--begin::Input group-->
+                            <div class=" mt-10 ">
+                                <!--begin::Label-->
+                                <label class="form-label">{% translate 'Sort Order' %}</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input class="form-control" type="number"
+                                       name="sort_order"/>
+                                <!--end::Input-->
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">{% translate 'Select publishing date and time .' %}</div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class=" mt-10 ">
+                                <!--begin::Label-->
+                                <label class="form-label">{% translate 'Featured' %}</label>
+                                <!--end::Label-->
+                                <!--begin::Select2-->
+                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                                        data-placeholder="{% translate 'Select an option' %}"
+                                        id="kt_ecommerce_add_product_store_template"
+                                        name="featured">
+                                    <option></option>
+                                    {% for value, text in service_form.featured.field.choices %}
+                                        <option value="{{ value }}">{{ text }}</option>
+                                    {% endfor %}
+                                </select>
+                                <!--end::Select2-->
+                                <!--begin::Description-->
+                                <div class="text-muted fs-7">{% translate 'Select publishing date and time .' %}</div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Status-->
+                    <!--begin::Category & tags-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>{% translate 'Service Details' %}</h2>
+                            </div>
+                            <!--end::Card title-->
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="required form-label d-block">{% translate 'Services Type' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <select class="form-select mb-2" data-control="select2"
+                                    data-placeholder="{% translate 'Select an option' %}"
+                                    data-allow-clear="true" name="service_type" multiple>
+                                <option></option>
+                                <option value="">{% translate 'Services Type' %}</option>
+                                {% for value, text in service_form.service_type.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">{% translate 'Add tags to a product.' %}</div>
+                            <!--end::Description-->
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="required form-label">{% translate 'Categories' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Select2-->
+                            <select class="form-select mb-2" data-control="select2"
+                                    data-placeholder="{% translate 'Select an option' %}"
+                                    data-allow-clear="true" name="category">
+                                <option></option>
+                                <option value="">{% translate 'Categories' %}</option>
+                                {% for value, text in service_form.category.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Select2-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7 mb-7">{% translate 'Add product to a category.' %}</div>
+                            <!--end::Description-->
+                            <!--end::Input group-->
+                            <!--begin::Button-->
+                            <a href="{% url 'core:AdminBlogCategoriesList' %}"
+                               class="btn btn-light-primary btn-sm mb-10">
+                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
+                                <span class="svg-icon svg-icon-2">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none">
+													<rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1"
+                                                          transform="rotate(-90 11 18)" fill="black"/>
+													<rect x="6" y="11" width="12" height="2" rx="1" fill="black"/>
+												</svg>
+											</span>
+                                <!--end::Svg Icon-->{% translate 'Create new category' %}</a>
+                            <!--end::Button-->
+                            <!--begin::Input group-->
+                            <!--begin::Label-->
+                            <label class="required form-label d-block">{% translate 'Tags' %}</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <select class="form-select mb-2" data-control="select2"
+                                    data-placeholder="{% translate 'Select an option' %}"
+                                    data-allow-clear="true" name="tags" multiple>
+                                <option></option>
+
+                                {% for value, text in service_form.tags.field.choices %}
+                                    <option value="{{ value }}">{{ text }}</option>
+                                {% endfor %}
+                            </select>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">{% translate 'Add tags to a product.' %}</div>
+                            <!--end::Description-->
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Category & tags-->
+
+                </div>
+                <!--end::Aside column-->
+
+
+
+                        <!--end::Aside column-->
+                        <!--begin::Main column-->
+                        <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+                            <!--begin:::Tabs-->
+                            <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-n2">
+                                <!--begin:::Tab item-->
+                                <li class="nav-item">
+                                    <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
+                                       href="#kt_ecommerce_add_product_general">{% translate 'General' %}</a>
+                                </li>
+                                <!--end:::Tab item-->
+
+                            </ul>
+                            <!--end:::Tabs-->
+                            <!--begin::Tab content-->
+                            <div class="tab-content">
+                                <!--begin::Tab pane-->
+                                <div class="tab-pane fade show active" id="kt_ecommerce_add_product_general"
+                                     role="tab-panel">
+                                    <div class="d-flex flex-column gap-7 gap-lg-10">
+                                        <!--begin::General options-->
+                                        <div class="card card-flush py-4">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <h2>{% translate 'General' %}</h2>
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <!--begin::Title-->
+                                                <div class="d-flex flex-wrap gap-5">
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Name' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="title"
+                                                               class="form-control mb-2" />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product title is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Transalte Name' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="title_tr" class="form-control mb-2"
+                                                              />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product title is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+                                                </div>
+                                                <!--end:Title-->
+                                                <!--begin::Title-->
+                                                <div class="d-flex flex-wrap gap-5">
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Keyword' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="keyword"
+                                                               class="form-control mb-2" />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product Keyword is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Transalte Keyword' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="text" name="keyword_tr" class="form-control mb-2"
+                                                               />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product Keyword is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+                                                </div>
+                                                <!--end:Title-->
+
+                                            </div>
+                                            <!--end::Card header-->
+                                        </div>
+                                        <!--end::General options-->
+                                         <!--begin::Media-->
+                                        <div class="card card-flush py-4">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <h2>{% translate 'English' %}</h2>
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <textarea id="kt_docs_tinymce_1" name="body" class="tox-target"></textarea>
+
+
+
+                                            </div>
+                                            <!--end::Card header-->
+                                        </div>
+                                        <!--end::Media-->
+                                         <!--begin::Media-->
+                                        <div class="card card-flush py-4">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <h2>{% translate 'Arabic' %}</h2>
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+
+                                                <textarea id="kt_docs_tinymce_2" name="body_tr">
+                                                 </textarea>
+
+                                            </div>
+                                            <!--end::Card header-->
+                                        </div>
+                                        <!--end::Media-->
+                                        <!--begin::Media-->
+                                        <div class="card card-flush py-4">
+                                            <!--begin::Card header-->
+                                            <div class="card-header">
+                                                <div class="card-title">
+                                                    <h2>{% translate 'Media' %}</h2>
+                                                </div>
+                                            </div>
+                                            <!--end::Card header-->
+                                            <!--begin::Card body-->
+                                            <div class="card-body pt-0">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row mb-2">
+                                                    <!--begin::Dropzone-->
+                                                    <div class="upload__box">
+                                                        <div class=" upload__btn-box">
+                                                            <div class="" id="kt_ecommerce_add_product_media">
+                                                                <!--begin::Message-->
+                                                                <div class=" needsclick">
+                                                                    <!--begin::Icon-->
+                                                                    <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
+                                                                    <!--end::Icon-->
+                                                                    <!--begin::Info-->
+                                                                    <label class="btn btn-outline-primary ">
+                                                                        <i class=""><h3
+                                                                                class="fs-5 fw-bold text-gray-900 mb-1">{% translate 'Select Product Image here or click to upload' %}
+                                                                        </h3></i>
+                                                                        <input type="file" multiple=""
+                                                                               data-max_length="20"
+                                                                               name="images"
+                                                                               class="upload__inputfile"
+                                                                               accept=".png, .jpg, .jpeg">
+
+                                                                        <span class="fs-7 fw-semibold text-gray-400">{% translate 'Upload up to 10 files' %}</span>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="upload__img-wrap"></div>
+                                                            </div>
+
+                                                        </div>
+                                                        <!--end::Info-->
+
+                                                    </div>
+                                                    <!--end::Dropzone-->
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Title-->
+                                                <div class="d-flex flex-wrap gap-5">
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Video Url' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="url" name="video_url"
+                                                               class="form-control mb-2"
+                                                              />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product Video is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+
+                                                    <!--begin::Input group-->
+                                                    <div class="fv-row w-100 flex-md-root">
+                                                        <!--begin::Label-->
+                                                        <label class="form-label">{% translate 'Video Cover' %}</label>
+                                                        <!--end::Label-->
+                                                        <!--begin::Input-->
+                                                        <input type="file" accept=".png, .jpg, .jpeg" name="video_cover"
+                                                               class="form-control mb-2"
+                                                        />
+                                                        <!--end::Input-->
+                                                        <!--begin::Description-->
+                                                        <div class="text-muted fs-7">{% translate 'A product Video Cover is required an recommended to be unique.' %}</div>
+                                                        <!--end::Description-->
+                                                    </div>
+                                                    <!--end::Input group-->
+                                                </div>
+                                                <!--end:Title-->
+                                                <!--begin::Description-->
+                                                <div class="text-muted fs-7">{% translate 'Set the product media gallery.' %}</div>
+                                                <!--end::Description-->
+                                            </div>
+                                            <!--end::Card header-->
+                                        </div>
+                                        <!--end::Media-->
+
+                                     <!--begin::Order details-->
+                                <div class="card card-flush py-4">
+                                    <!--begin::Card header-->
+                                    <div class="card-header">
+                                        <div class="card-title">
+                                            <h2>{% translate 'Product & Work  Deatils' %}</h2>
+                                        </div>
+                                    </div>
+                                    <!--end::Card header-->
+                                    <!--begin::Card body-->
+                                    <div class="card-body pt-0">
+                                        <!--begin::Billing address-->
+                                        <div class="d-flex flex-column gap-5 gap-md-7">
+
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-column flex-md-row gap-5">
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'Project Name' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="project_name"
+                                                           placeholder="{% translate 'Project Name' %}"
+                                                           value="{{ service.project_name }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Project Type' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="project_type"
+                                                           placeholder="{% translate 'Project Type' %}"
+                                                           value="{{ service.project_type }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Skills' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control" name="skills"
+                                                           placeholder="{% translate 'Skills' %}"
+                                                           value="{{ service.skills }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-column flex-md-row gap-5">
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Demo' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="url" class="form-control" name="demo"
+                                                           placeholder="{% translate 'Demo' %}"
+                                                           value="{{ service.demo }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Cloud File' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="url" class="form-control" name="cloud_file"
+                                                           placeholder="{% translate 'Cloud File' %}"
+                                                           value="{{ service.cloud_file }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'File' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="file" class="form-control" name="files"
+                                                           placeholder="{% translate 'File' %}"
+                                                    />
+                                                    <!--end::Input-->
+                                                </div>
+                                                <div class="fv-row flex-row-fluid">
+                                                    <!--begin::Label-->
+                                                    <label class="required form-label">{% translate 'Pdf' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="file" class="form-control" name="pdf"
+                                                           placeholder="{% translate 'Pdf' %}"
+                                                           value="{{ court.name }}"/>
+                                                    <!--end::Input-->
+                                                </div>
+
+
+                                            </div>
+                                            <!--end::Input group-->
+
+
+                                        </div>
+                                        <!--end::Billing address-->
+                                    </div>
+                                    <!--end::Card body-->
+
+                                </div>
+                                <!--end::Order details-->
+
+                            </div>
+                        </div>
+                        <!--end::Tab pane-->
+
+                            </div>
+                            <!--end::Tab content-->
+                            <div class="d-flex justify-content-end">
+                                <!--begin::Button-->
+                                <a href=""
+                                   id="kt_ecommerce_add_product_cancel"
+                                   class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                                <!--end::Button-->
+                                <!--begin::Button-->
+                                <button type="submit" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
+                                    <span class="indicator-label">{% translate 'Save Changes' %}</span>
+                                    <span class="indicator-progress">{% translate 'Please wait...' %}
+													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                                <!--end::Button-->
+                            </div>
+                        </div>
+                        <!--end::Main column-->
+
+                    </form>
+                    <!--end::Form-->
+<br>
+                    <div>
+                        {% if service_form.errors %}
+
+                            {% for error_field, error_message in service_form.errors.items %}
+
+                                <div class="alert alert-danger">
+                                    {{ error_field|striptags }}: {{ error_message|striptags }}
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+
+                        {% endif %}
+
+
+                        {% if seo_form.errors %}
+                            {% for error_field, error_message in seo_form.errors.items %}
+
+                                <div class="alert alert-danger">
+                                    {{ error_field|striptags }}: {{ error_message|striptags }}
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+
+                        {% endif %}
+                    {% for message in messages %}
+                        {% if message.extra_tags == 'Service' %}
+                            {% if message.tags == 'Service success' %}
+                                <div class="alert alert-info">
+                            {% elif message.tags == 'Service danger' %}
+                                <div class="alert alert-danger">
+                            {% endif %}
+
+
+                        {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+
+
+
+                    </div>
+                </div>
+
+                <!--end::Content container-->
+            </div>
+            <!--end::Content-->
+        </div>
+
+        <!--end::Content wrapper-->
+
+    </div>
+    <!--end:::Main-->
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/forms/formrepeater/advanced.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/tinymce/tinymce.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/editors/tinymce/basic.js"></script>
+
+    <!--end::Custom Javascript-->
+    <!--end::Custom Javascript-->
+    <script>
+        jQuery(document).ready(function () {
+            ImgUpload();
+        });
+
+        function ImgUpload() {
+            var imgWrap = "";
+            var imgArray = [];
+
+            $('.upload__inputfile').each(function () {
+                $(this).on('change', function (e) {
+                    imgWrap = $(this).closest('.upload__box').find('.upload__img-wrap');
+                    var maxLength = $(this).attr('data-max_length');
+
+                    var files = e.target.files;
+                    var filesArr = Array.prototype.slice.call(files);
+                    var iterator = 0;
+                    filesArr.forEach(function (f, index) {
+
+                        if (!f.type.match('image.*')) {
+                            return;
+                        }
+
+                        if (imgArray.length > maxLength) {
+                            return false
+                        } else {
+                            var len = 0;
+                            for (var i = 0; i < imgArray.length; i++) {
+                                if (imgArray[i] !== undefined) {
+                                    len++;
+                                }
+                            }
+                            if (len > maxLength) {
+                                return false;
+                            } else {
+                                imgArray.push(f);
+
+                                var reader = new FileReader();
+                                reader.onload = function (e) {
+                                    var html = "<div class='upload__img-box'><div style='background-image: url(" + e.target.result + ")' data-number='" +
+                                        $(".upload__img-close").length + "' data-file='" + f.name + "' class='img-bg'><div class='upload__img-close'></div></div></div>";
+                                    imgWrap.append(html);
+                                    iterator++;
+                                }
+                                reader.readAsDataURL(f);
+                            }
+                        }
+                    });
+                });
+            });
+
+            $('body').on('click', ".upload__img-close", function (e) {
+                var file = $(this).parent().data("file");
+                for (var i = 0; i < imgArray.length; i++) {
+                    if (imgArray[i].name === file) {
+                        imgArray.splice(i, 1);
+                        break;
+                    }
+                }
+                $(this).parent().parent().remove();
+            });
+        }
+    </script>
+    <script>
+kt_docs_tinymce_1
+
+
+var options = {selector: "#kt_docs_tinymce_1", height : "480"};
+
+if ( KTThemeMode.getMode() === "dark" ) {
+    options["skin"] = "oxide-dark";
+    options["content_css"] = "dark";
+}
+
+tinymce.init(options);
+var options = {selector: "#kt_docs_tinymce_2", height : "480"};
+
+if ( KTThemeMode.getMode() === "dark" ) {
+    options["skin"] = "oxide-dark";
+    options["content_css"] = "dark";
+}
+
+tinymce.init(options);
+
+
+    </script>
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

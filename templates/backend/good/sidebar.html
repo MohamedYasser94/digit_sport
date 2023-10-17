@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load static %}
+<!--begin::sidebar-->
+<div id="kt_app_sidebar" class="app-sidebar flex-column d-print-none" data-kt-drawer="true"
+     data-kt-drawer-name="app-sidebar"
+     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="auto"
+     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
+    <!--begin::Logo-->
+    <div class="app-sidebar-logo d-none d-lg-flex flex-center py-10 px-5 mb-1" id="kt_app_sidebar_logo">
+        <!--begin::Logo image-->
+        <a href="{% url 'core:AdminIndex' %}">
+            <img alt="Logo" src="{% static '' %}digithup/mix.png" class="h-50px"/>
+        </a>
+        <!--end::Logo image-->
+    </div>
+    <!--end::Logo-->
+    <!--begin::Sidebar menu-->
+    <div class="app-sidebar-menu d-flex w-100 hover-scroll-overlay-y my-5" id="kt_app_sidebar_menu_wrapper"
+         data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_sidebar_logo"
+         data-kt-scroll-offset="0">
+        <!--begin::Menu-->
+        <div class="menu menu-column menu-rounded menu-sub-indention menu-active-bg menu-here-bg menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-semibold"
+             id="#kt_app_sidebar_menu" data-kt-menu="true">
+            <!--begin:Menu item-->
+            <div data-kt-menu-placement="right-start" class="menu-item py-1">
+                <!--begin:Menu link-->
+                <span class="menu-link menu-center">
+                <a class="menu-link" href="{% url 'core:AdminIndex' %}">
+
+
+                    <span class="menu-icon me-0">
+											<i class="fonticon-house fs-1"></i>
+										</span>
+                    </a>
+									</span>
+                <!--end:Menu link-->
+
+            </div>
+            <!--end:Menu item-->
+        {% if dashboard_app == 'Press' %}
+            {% block press %}{% include 'good/press/partials/sidebar-partials.html' %}{% endblock press %}
+        {% elif dashboard_app == 'Event' %}
+            {% block event %}{% include 'good/event/partials/sidebar-partials.html' %}{% endblock event %}
+             {% block operations %}{% include 'good/operations/partials/sidebar-partials.html' %}{% endblock operations %}
+             {% block catalog %}{% include 'good/catalog/partials/sidebar-partials.html' %}{% endblock catalog %}
+             {% block hr %}{% include 'good/hr/partials/sidebar-partials.html' %}{% endblock hr %}
+
+       {% endif %}
+
+            {% if user_access == 'SuperAdmin' %}
+                {% block blog %}{% include 'good/blog/partials/sidebar-partials.html' %}{% endblock blog %}
+                 {% block apps %}{% include 'good/utilities/partials/sidebar-partials.html' %}{% endblock apps %}
+                {% block wallet %}{% include 'good/wallet/partials/sidebar-partials.html' %}{% endblock wallet %}
+                {% block account %}{% include 'good/account/partials/sidebar-partials.html' %}{% endblock account %}
+                {% block system %}{% include 'good/core/partials/sidebar-partials.html' %}{% endblock system %}
+            {% endif %}
+
+
+
+        </div>
+        <!--end::Menu-->
+    </div>
+    <!--end::Sidebar menu-->
+</div>
+<!--end::sidebar-->

@@ -1,0 +1,49 @@
+{#{% load static %}#}
+{#{% load socialaccount %}#}
+{#{% get_providers as socialaccount_providers %}#}
+{##}
+{#{% for provider in socialaccount_providers %}#}
+{#    <!--begin::Google link-->#}
+{#    {% if provider.id == "google" %}#}
+{##}
+{#        <a href="{% provider_login_url 'google' %}"#}
+{#           class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">#}
+{#            <img alt="Logo"#}
+{#                 src="{% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/google-icon.svg"#}
+{#                 class="h-20px me-3"/>Continue with Google</a>#}
+{#    {% endif %}#}
+{#    <!--end::Google link-->#}
+{#    <!--begin::Google link-->#}
+{#    {% if provider.id == "facebook" %}#}
+{#        <a href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">#}
+{#            <img alt="Logo"#}
+{#                 src="{% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/facebook-4.svg"#}
+{#                 class="h-20px me-3"/>Continue with Facebook</a>#}
+{#    {% endif %}#}
+{#    <!--end::Google link-->#}
+{#    <!--begin::Google link-->#}
+{#    {% if provider.id == "apple" %}#}
+{#        <a href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}" class="btn btn-flex flex-center btn-light btn-lg w-100">#}
+{#            <img alt="Logo"#}
+{#                 src="{% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/apple-black.svg"#}
+{#                 class="h-20px me-3"/>Continue with Apple</a>#}
+{#    {% endif %}#}
+{#    <!--end::Google link-->#}
+{##}
+{##}
+{##}
+{#    {% if provider.id == "gogole" %}#}
+{#        {% for brand in provider.get_brands %}#}
+{#            <li>#}
+{#                <a title="{{ brand.title }}"#}
+{#                   class="socialaccount_provider {{ provider.id }} {{ brand.id }}"#}
+{#                   href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">{{ brand.title }}</a>#}
+{#            </li>#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
+{#    <li>#}
+{#        <a title="{{ provider.title }} {{ provider.id }}#}
+{#" class="socialaccount_provider {{ provider.id }}"#}
+{#           href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">{{ provider.title }}</a>#}
+{#    </li>#}
+{#{% endfor %}#}

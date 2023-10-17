@@ -1,0 +1,42 @@
+<script>
+
+    const PlayerApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                currentPage: '',
+                apiCurrentTrack: [],
+                audio: null,
+                audioId: 0,
+                TrackId: 0,
+                circleLeft: null,
+                barWidth: null,
+                duration: null,
+                currentTime: null,
+                isTimerPlaying: 'none',
+                isCurrentTrack: false,
+                currentTrack: null,
+                currentTrackIndex: 0,
+
+                tracks: [],
+                prevTrackID: '',
+                nextTrackID: '',
+                categoryTracks: [],
+                playList: [],
+                waveform: null,
+                canvas: null,
+
+
+            }
+        },
+
+
+
+    })
+    PlayerApp.mount('#player-app')
+
+
+    PlayerApp.config.devtools = true
+
+
+</script>

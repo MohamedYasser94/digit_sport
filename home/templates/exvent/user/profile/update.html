@@ -1,0 +1,118 @@
+
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+
+
+<!--Page Content-->
+<main id="pageContent" class="page has-sidebar">
+<div class="container-fluid relative animatedParent animateOnce p-lg-5">
+    <div class="card no-b shadow no-r">
+        <div class="row no-gutters">
+            <div class="col-md-4 b-r">
+                <div class="text-center p-5 mt-5">
+                    <figure class="avatar avatar-xl">
+                        <img src="{%  static '' %}{{FRONTEND_ASSETS}}/img/demo/u7.jpg" alt=""></figure>
+                    <div>
+                        <h4 class="p-t-10">{{ user.get_full_name }}</h4>
+                        {{ user.email }}
+                    </div>
+                     <a href="{% url 'user:FrontUpdateProfile' user.slug %}" class="btn btn-outline-primary btn-sm  mt-3">{% translate 'Edit Profile' %}</a>
+                    &nbsp;
+                    <a href="{% url 'user:CustomerLogout' %}" class="btn btn-outline-primary btn-sm  mt-3">{% translate 'Log Out' %}</a>
+                    <div class="mt-5">
+                        <ul class="social social list-inline">
+                            <li class="list-inline-item"><a href="#" class="grey-text"><i class="icon-facebook"></i></a>
+                            </li>
+                            <li class="list-inline-item"><a href="#" class="grey-text"><i class="icon-youtube"></i></a>
+                            </li>
+                            <li class="list-inline-item"><a href="#" class="grey-text"><i class="icon-twitter"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+
+                <div class="p5 b-b">
+                    <div class="pl-4 mt-4">
+                        <h5>{% translate 'Profile Information' %}</h5>
+                    </div>
+                    <div id="step-1y" class="card-body p-5">
+                                        <form>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputEmail4" class="col-form-label">Email</label>
+                                                    <input class="form-control form-control-lg" id="inputEmail4"
+                                                           placeholder="Email User Email" type="email">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="name" class="col-form-label">Name</label>
+                                                    <input class="form-control form-control-lg" id="name"
+                                                           placeholder="Enter User Name" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputAddress" class="col-form-label">Address</label>
+                                                <input class="form-control form-control-lg" id="inputAddress"
+                                                       placeholder="1234 Main St" type="text">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="inputAddress2" class="col-form-label">Address 2</label>
+                                                <input class="form-control form-control-lg" id="inputAddress2"
+                                                       placeholder="Apartment, studio, or floor" type="text">
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="inputCity" class="col-form-label">City</label>
+                                                    <input class="form-control form-control-lg" id="inputCity"
+                                                           type="text">
+                                                </div>
+                                                <div class="form-group col-md-4">
+                                                    <label for="inputState" class="col-form-label">State</label>
+                                                    <select id="inputState" class="form-control form-control-lg">
+                                                        <option value="1">Value1</option>
+                                                        <option value="1">Value2</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-2">
+                                                    <label for="inputZip" class="col-form-label">Zip</label>
+                                                    <input class="form-control form-control-lg" id="inputZip"
+                                                           type="text">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        <input class="form-check-input" type="checkbox"> Check me out
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save Contact</button>
+                                        </form>
+                                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</main><!--@Page Content-->
+
+
+
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

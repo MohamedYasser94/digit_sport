@@ -1,0 +1,163 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+    <!-- content begin -->
+        <div class="no-bottom no-top" id="content">
+            <div id="top"></div>
+            <!-- section begin -->
+            <section id="subheader" class="jarallax text-white">
+                <img src="{% static '' %}frontend/justica/images/background/subheader2.jpg" class="jarallax-img" alt="">
+                <div class="center-y relative text-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h1>{% translate 'Contact Us' %}</h1>
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- section close -->
+            <section aria-label="section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="{% static '' %}frontend/justica/images/misc/p1.jpg" alt="" class="img-fluid mb30">
+                            <h3>{% translate 'Egypt Office' %}</h3>
+                            <address class="s1">
+                                <span><i class="id-color fa fa-map-marker fa-lg"></i>bridge ,ibn elhitham apartments, Qena,dandrah</span>
+                                <span><i class="id-color fa fa-phone fa-lg"></i>+201032008815</span>
+                                <span><i class="id-color fa fa-envelope-o fa-lg"></i><a href="mailto:info@lawhup.net">info@lawhup.net</a></span>
+                                <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a href="#">Download Brochure</a></span>
+                            </address>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="{% static '' %}frontend/justica/images/misc/p2.jpg" alt="" class="img-fluid mb30">
+                            <h3>{% translate 'Kuwait Office' %}</h3>
+                            <address class="s1">
+                                <span><i class="id-color fa fa-map-marker fa-lg"></i>9XCJ+M92, Al Shuhada Street, Kuwait City, Kuwait</span>
+                                <span><i class="id-color fa fa-phone fa-lg"></i>+965 588 54144</span>
+                                <span><i class="id-color fa fa-envelope-o fa-lg"></i><a href="mailto:info@lawhup.net">info@lawhup.net</a></span>
+                                <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a href="#">Download Brochure</a></span>
+                            </address>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="{% static '' %}frontend/justica/images/misc/p3.jpg" alt="" class="img-fluid mb30">
+                            <h3>{% translate 'Turkey Office' %}</h3>
+                            <address class="s1">
+                                <span><i class="id-color fa fa-map-marker fa-lg"></i>İskenderpaşa, 34091 Fatih/İstanbul</span>
+                                <span><i class="id-color fa fa-phone fa-lg"></i>+90 21269 77570</span>
+                                <span><i class="id-color fa fa-envelope-o fa-lg"></i><a href="mailto:info@lawhup.net">info@lawhup.net</a></span>
+                                <span><i class="id-color fa fa-file-pdf-o fa-lg"></i><a href="#">Download Brochure</a></span>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section aria-label="section" class="text-light" data-bgcolor="#111111">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2 mb-sm-30 text-center">
+                            <h3>{% translate 'Do you have any question?' %}</h3>
+
+                          {% if messages %}
+                              {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                              {{ message }}
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            {% endfor %}
+                         {% endif %}
+                            <form  class="form-border" method="POST" enctype="multipart/form-data" action="{% url 'home:Contact' %}">
+                                {% csrf_token %}
+                                <div class="field-set">
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="{% translate 'Name' %}" />
+                                </div>
+                                <div class="field-set">
+                                    <input type="text" name="email" id="email" class="form-control" placeholder="{% translate 'Email' %}" />
+                                </div>
+                                <div class="field-set">
+                                    <input type="text" name="phone" id="phone" class="form-control" placeholder="{% translate 'Phone' %}" />
+                                </div>
+                                <div class="field-set">
+                                    <textarea name="message" id="message" class="form-control" placeholder="{% translate 'Your Message' %}"></textarea>
+                                </div>
+                                <div class="spacer-half"></div>
+                                <div id="submit">
+                                    <button type="submit" class="btn btn-custom">{% translate 'Send Message' %}</button>
+                                </div>
+                                <div id="mail_success" class="success">Your message has been sent successfully.</div>
+                                <div id="mail_fail" class="error">Sorry, error occured this time sending your message.</div>
+                            </form>
+                            {% for error_field, error_message in form.errors.items %}
+
+
+            {% endfor %}
+                        </div>
+                        <div class="col-lg-4">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="jarallax text-light">
+                <img src="{% static '' %}frontend/justica/images/background/2.jpg" class="jarallax-img" alt="">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-md-12 wow fadeInRight" data-wow-delay=".2s">
+                            <div class="de_count ultra-big s2 border-light text-center">
+                                <h3 class="timer" data-to="20" data-speed="1000">20</h3>
+                                <span class="id-color">{% translate 'Years of Experience' %}</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 p-lg-5  mb-sm-30 wow fadeInRight" data-wow-delay=".4s">
+                            <span class="p-title">{% translate 'About Us' %}</span><br>
+                            <h2>{% translate 'Law Hup is Your Best Partner for Legal Solutions' %}</h2>
+                        </div>
+                        <div class="col-lg-4 wow fadeInRight" data-wow-delay=".6s">
+                            <p>
+                              {% translate 'The digital transformation would make a qualitative leap in judicial and legal work in Egypt and the Arab world. It facilitated access to justice and litigation for litigants and lawyers, thus contributing to the creation of a more modern and developed legal environment that contributes to creating an advanced society.' %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- content close -->
+
+{% endblock %}
+
+{#<script src="{% static '' %}{% static '' %}{% static '' %}{% static '' %}assets/js/particle-theme.js"></script>#}
+{#	<script src="{% static '' %}{% static '' %}{% static '' %}{% static '' %}assets/js/page-service-item.js"></script>#}
+{% block custom_js %}
+
+    <script>
+        $(document).ready(function () {
+
+            // Custom JavaScript for all "service-item" pages
+
+            // Initiate typed.js text effect (done custom for each typed text effect)
+            $(".animated-text-effect").typed({
+                strings: [" Digithup ^", "Blog!^"], // example for multiple headings strings: ["Awesome Ineractive Effect^", "Click on the live effect!^", "Coolest Modern HTML Theme^"],
+                contentType: "text",
+                typeSpeed: 30,
+                loop: true,
+                backDelay: 1200,
+                showCursor: true,
+                startDelay: 3200, // PRELOADER -- comment-out this line if you stop using page preloader
+                cursorChar: "|"
+            });
+
+        });
+    </script>
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
