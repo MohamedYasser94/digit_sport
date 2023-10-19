@@ -1,16 +1,9 @@
-import os
-from decimal import Decimal as decimal, Decimal
-from datetime import datetime
-from decimal import Decimal as decimal
-import glob
+from decimal import Decimal
 import os
 import re
-from reportlab.pdfgen import canvas
-from django.conf import settings
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, PageBreak
-from reportlab.lib.units import inch, cm
+from datetime import datetime
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -21,20 +14,14 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
+from reportlab.lib.units import cm
+from reportlab.platypus import Image, PageBreak
 from reportlab.platypus import SimpleDocTemplate
 from rest_framework import status
 
-from apps.event.api.serializers import AdminEventAttendeesSerializer
-from apps.event.forms.forms import AdminEventAttendeesForm
-from apps.event.models.models import Event, EventAttendees, EventAttendeesHistory
-from apps.event.models.operations import EventTime
-from apps.event.views.utils import CommonEventEventAttendeesIdCardGenerate, \
-    CommonEventEventAttendeesIdCardPrintGenerate, CommonEventEventAttendeesCertificatePrintGenerate, \
-    CommonEventCertificatePrintGenerate
 from core.models.core import QrCode
 from core.models.people import Clients
 from core.utils.backends import RandomEgyptPhoneGenerator
-from core.utils.notification import notify_user_ticket
 from core.views.core import AdminCommonQrCode
 from core.views.people import AdminClientCommonCreate
 from digit_sport.settings import MEDIA_ROOT

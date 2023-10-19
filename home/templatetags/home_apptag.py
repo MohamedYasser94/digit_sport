@@ -1,14 +1,12 @@
 from django import template
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from apps.catalog.models.models import Categories
+
 from core.models.shop import ShopCart
 register = template.Library()
 
 
-@register.simple_tag
-def categorylist():
-    return Categories.objects.all()
+
 
 @register.simple_tag
 def set_user_preferences(request):

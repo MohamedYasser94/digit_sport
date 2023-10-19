@@ -21,7 +21,7 @@ from helper.viewHelper import get_file_path
 User = get_user_model()
 
 
-class CatalogCategories(MPTTModel):
+class Categories(MPTTModel):
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
     title = models.CharField(max_length=20,validators=[UnicodeUsernameValidator])
     keyword = models.CharField(max_length=100, blank=True, null=True)
@@ -53,7 +53,7 @@ class CatalogCategories(MPTTModel):
         if not self.code and not self.slug:
             self.code = f'CAT{get_random_string(5).upper()}'
             self.slug = slugify(self.title)
-        super(CatalogCategories, self).save(*args, **kwargs)
+        super(Categories, self).save(*args, **kwargs)
 
 
 class Manufacturer(models.Model):
@@ -87,7 +87,7 @@ class Products(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='product_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(null=True, blank=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    category = models.ForeignKey(CatalogCategories, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=255,validators=[UnicodeUsernameValidator], null=False, blank=False)
     keyword = models.CharField(max_length=255,validators=[UnicodeUsernameValidator], null=True, blank=True)
     body = models.TextField(blank=True,null=True)

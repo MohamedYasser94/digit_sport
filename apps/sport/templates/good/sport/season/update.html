@@ -12,7 +12,7 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Form-->
             <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'event:AdminEventCategoryUpdate' category.slug %}"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminSportUpdate' sport.slug %}"
                   method="post">
                 {% csrf_token %}
 
@@ -44,21 +44,37 @@
                                         <!--begin::Input-->
                                         <input class="form-control" name="title"
                                                placeholder="{% translate 'category Name' %}"
-                                               value="{{ category.title }}"/>
+                                               value="{{ sport.title }}"/>
                                         <!--end::Input-->
                                     </div>
                                       <div class="flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Active Status' %}</label>
+                                        <label class="form-label">{% translate 'Category' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="status" aria-label="{% translate 'Select a status..' %}"
+                                        <select name="category" aria-label="{% translate 'Category' %}"
                                                 data-control="select2"
-                                                data-placeholder="{% translate 'Select a status..' %}"
+                                                data-placeholder="{% translate 'Category' %}"
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ category.status }}">{{ category.status }}</option>
+                                            <option value="{{ sport.parent }}">{{ sport.parent }}</option>
+                                            {% for value, text in sport_form.parent.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Status' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Status' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ sport.status }}">{{ sport.status }}</option>
 
-                                            {% for value, text in category_form.status.field.choices %}
+                                            {% for value, text in sport_form.status.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
                                             {% endfor %}
                                         </select>
@@ -68,6 +84,51 @@
 
                                 </div>
                                 <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="file" accept="image/*" name="image"
+
+                                              />
+                                        <!--end::Input-->
+                                    </div>
+                                        <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="url"  name="image_url" value="{{ sport.image_url }}"
+                                               placeholder="{% translate 'Image Url' %}"/>
+
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group--> <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Keyword' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <textarea class="form-control" name="keyword" rows="3"
+                                               placeholder="{% translate 'Keyword' %}">{{ sport.keyword }}</textarea>
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
 
 
 

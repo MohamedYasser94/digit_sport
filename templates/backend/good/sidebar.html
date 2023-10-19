@@ -46,6 +46,7 @@
              {% block hr %}{% include 'good/hr/partials/sidebar-partials.html' %}{% endblock hr %}
 
        {% endif %}
+        {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
 
             {% if user_access == 'SuperAdmin' %}
                 {% block blog %}{% include 'good/blog/partials/sidebar-partials.html' %}{% endblock blog %}

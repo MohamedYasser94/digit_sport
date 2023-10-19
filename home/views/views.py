@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
-from apps.event.views.utils import FrontIndexEventAppData
+from apps.sport.views.utils import FrontIndexSportAppData
 from core.models.blog import BlogArticle
 from core.models.core import CommonMediaFiles, SystemSetting, CommonSocialLink
 from core.models.people import TeamSkill, Team
@@ -18,7 +18,7 @@ def HomeIndex(request):
     system_app = SystemSetting.objects.get(title='Digithup')
     print(' system_app.maintenance', system_app.maintenance,system_app.maintenance_temp)
     if system_app.maintenance == 'Active':
-        event_data = FrontIndexEventAppData(request)
+        event_data = FrontIndexSportAppData(request)
         context = {
             'event_data': event_data,
 
@@ -34,7 +34,7 @@ def HomeIndex(request):
                                                     owner_id=article.id,type='hero')
             article_list.append({'article': article, 'image': image})
 
-        event_data = FrontIndexEventAppData(request)
+        event_data = FrontIndexSportAppData(request)
 
 
 

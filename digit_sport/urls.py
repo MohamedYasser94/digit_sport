@@ -22,7 +22,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework_simplejwt import views as jwt_views
-
+from two_factor.urls import urlpatterns as tf_urls
 from core.sitemaps import ArticleSitemap
 
 sitemaps = {'blog': ArticleSitemap,
@@ -43,7 +43,8 @@ urlpatterns = [path('i18n/', include('django.conf.urls.i18n')),
                path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
                path('dj-rest-auth/', include('dj_rest_auth.urls')),
                path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-               path('accounts/', include('allauth.urls')), path('api/v1/', include('api.v1.urls', namespace='api-v1')),
+               path('', include(tf_urls)),
+               path('api/v1/', include('api.v1.urls', namespace='api-v1')),
 
                ]
 

@@ -3,13 +3,14 @@ from django.urls import path
 from core.views.payment_gateway.fawry_payment import PaymentFawry
 from core.views.payment_gateway.paymob import PaymentMyPaymob
 from core.views.payment_gateway.stripe import PaymentStripe
-from home.views import blog, catalog, contact, services, shop, views, payment, event
+from home.views import blog, catalog, contact, services, shop, views, payment
 
 app_name = 'home'
 
 urlpatterns = [
 
-    path('', views.HomeIndex, name='HomeIndex'), path("about/", contact.FrontAbout, name="FrontAbout"),
+    path('', views.HomeIndex, name='HomeIndex'),
+    path("about/", contact.FrontAbout, name="FrontAbout"),
     path("contact/", contact.ContactFront, name="FrontContact"),
     path("contactform/", contact.FrontContactForm, name="FrontContactForm"),
     path("sendnumber/", contact.FrontSendPhoneForm, name="FrontSendPhoneForm"),
@@ -25,17 +26,6 @@ urlpatterns = [
     path("termsofservice", views.FAQ, name="FrontRequestAQuote"),
 
     path("test/", views.FrontTestPage, name="FrontTestPage"),
-
-    ########## Event Front #########
-    path('event/', event.FrontEventList, name='FrontEventList'),
-    path('event/details/<slug:slug>/', event.FrontEventDetails, name='FrontEventDetails'),
-    path('event/registration/signup/<slug:slug>/', event.FrontEventRegistration, name='FrontEventRegistration'),
-    path('event/registration/sign/<slug:slug>/', event.FrontEventRegistrationWithoutEmail,
-         name='FrontEventRegistrationWithoutEmail'),
-    path('event/registration/done/<slug:slug>/', event.FrontEventRegistrationDone, name='FrontEventRegistrationDone'),
-    path('event/attendees/id/print/<slug:slug>/', event.FrontEventPrintId, name='FrontEventPrintId'),
-    path('speaker/', event.FrontSpeakerList, name='FrontSpeakerList'),
-    path('speaker/<slug:slug>', event.FrontSpeakerDetails, name='FrontSpeakerDetails'),
 
     ########## Services Front #########
     path('services/', services.FrontService, name='FrontServices'),

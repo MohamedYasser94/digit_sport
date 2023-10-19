@@ -19,7 +19,7 @@
             <div class="menu-item">
                 <!--begin:Menu content-->
                 <div class="menu-content">
-                    <span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate 'Event' %}</span>
+                    <span class="menu-section fs-5 fw-bolder ps-1 py-1">{% translate 'Sport' %}</span>
                 </div>
                 <!--end:Menu content-->
             </div>
@@ -28,7 +28,7 @@
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{% url 'event:AdminEventCategoryList' %}">
+                <a class="menu-link" href="{% url 'sport:AdminSportCategoryList' %}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
@@ -40,23 +40,11 @@
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{% url 'event:AdminEventList' %}">
+                <a class="menu-link" href="{% url 'sport:AdminSportList' %}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-                    <span class="menu-title">{% translate "Event" %}</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="{% url 'core:AdminClientList' %}">
-												<span class="menu-bullet">
-													<span class="bullet bullet-dot"></span>
-												</span>
-                    <span class="menu-title">{% translate "people" %}</span>
+                    <span class="menu-title">{% translate 'Sports' %}</span>
                 </a>
                 <!--end:Menu link-->
             </div>
@@ -64,27 +52,17 @@
              <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link" href="{% url 'event:AdminSpeakersList' %}">
+                <a class="menu-link" href="{% url 'sport:AdminLeaguesList' %}">
 												<span class="menu-bullet">
 													<span class="bullet bullet-dot"></span>
 												</span>
-                    <span class="menu-title">{% translate "Speakers" %}</span>
+                    <span class="menu-title">{% translate 'Leagues' %}</span>
                 </a>
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
-              <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link" href="{% url 'event:AdminSponsorsList' %}">
-												<span class="menu-bullet">
-													<span class="bullet bullet-dot"></span>
-												</span>
-                    <span class="menu-title">{% translate 'Sponsors' %}</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+
+
 
 
 

@@ -8,7 +8,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from apps.event.models.models import EventAttendees, Event
 from core.models.core import SiteSetting, SystemSetting
 from core.models.notifications import Notification, ChatNotification
 from core.models.people import Clients
@@ -69,63 +68,63 @@ async def delay_function():
 # Call the delay_function() function from a synchronous function
 asyncio.run(delay_function())
 
-def notify_user_ticket(request, slug, message):
-    attendee = EventAttendees.objects.get(slug=slug)
-    client = Clients.objects.get(id=attendee.owner_id)
-    event = Event.objects.get(id=attendee.receiver_id)
-
-    name = f'Dear, {client.title} {client.first_name} {client.middle_name}'
-    email = client.email
-    phone = client.phone
-    if client.data_confirmed == 'Active':
-        subject = _(f'your invitation Created in {event.title}')
-    else:
-        subject = _(f'your invitation request in {event.title}')
-    message = message
-    url = (f'{request._current_scheme_host}{event.get_pub_url()}')
-    button_text = 'View Event'
-    button_url = (f'{request._current_scheme_host}{event.get_pub_url()}')
-    button_text2 = 'View Ticket'
-    button_url2 = (f'{request._current_scheme_host}{event.get_pub_url()}')
-    image_url = (f'{request._current_scheme_host}{attendee.card_image.url}')
-    ticket_code = attendee.code
-    start_date = event.start_date.strftime('%d,%m,%y')
-    start_time = event.start_time.strftime('%H:%M')
-    Location = event.location
-    map = event.map
-    event_details = event.description
-    event_url = (f'{request._current_scheme_host}{event.get_pub_url()}')
-    print_url = (f'{request._current_scheme_host}{attendee.get_print_url()}')
-
-    site_setting = SiteSetting.objects.all()
-    system_setting = SystemSetting.objects.get(status='Active')
-    if system_setting.email_host != None or system_setting.email_host != '' or settings.email_user != None or settings.email_user != '' or settings.email_pass != None or settings.email_pass != '' or settings.email_port != None or settings.email_port != '' or settings.email_use_tls != None or settings.email_use_tls != '':
-        email_host = system_setting.email_host
-        email_user = system_setting.email_user
-        email_pass = system_setting.email_pass
-        email_port = system_setting.email_port
-        email_use_tls = system_setting.email_use_tls
-        from_email = email_user
-    else:
-
-        from_email = settings.EMAIL_HOST_USER
-
-    subject = subject
-    text_content = message
-    context = {'title': name, 'email': email, 'phone': phone, 'subject': subject, 'message': message, 'url': url,
-        'button_text': button_text, 'button_url': button_url, 'button_text2': button_text2, 'button_url2': button_url2,
-        'image_url': image_url, 'ticket_code': ticket_code, 'start_date': start_date, 'start_time': start_time,
-        'Location': Location, 'map': map, 'event_details': event_details, 'event_url': event_url,'print_url':print_url
-
-    }
-    if client.data_confirmed == 'Active':
-        html_content = render_to_string(f'{BACKEND_TEMPLATES}/utilities/email/ticket/ticket.html', context)
-    else:
-        html_content = render_to_string(f'{BACKEND_TEMPLATES}/utilities/email/ticket/request.html', context)
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [email])
-    msg.attach_alternative(html_content, 'text/html')
-
-    msg.send()
+# def notify_user_ticket(request, slug, message):
+#     attendee = EventAttendees.objects.get(slug=slug)
+#     client = Clients.objects.get(id=attendee.owner_id)
+#     event = Event.objects.get(id=attendee.receiver_id)
+#
+#     name = f'Dear, {client.title} {client.first_name} {client.middle_name}'
+#     email = client.email
+#     phone = client.phone
+#     if client.data_confirmed == 'Active':
+#         subject = _(f'your invitation Created in {event.title}')
+#     else:
+#         subject = _(f'your invitation request in {event.title}')
+#     message = message
+#     url = (f'{request._current_scheme_host}{event.get_pub_url()}')
+#     button_text = 'View Event'
+#     button_url = (f'{request._current_scheme_host}{event.get_pub_url()}')
+#     button_text2 = 'View Ticket'
+#     button_url2 = (f'{request._current_scheme_host}{event.get_pub_url()}')
+#     image_url = (f'{request._current_scheme_host}{attendee.card_image.url}')
+#     ticket_code = attendee.code
+#     start_date = event.start_date.strftime('%d,%m,%y')
+#     start_time = event.start_time.strftime('%H:%M')
+#     Location = event.location
+#     map = event.map
+#     event_details = event.description
+#     event_url = (f'{request._current_scheme_host}{event.get_pub_url()}')
+#     print_url = (f'{request._current_scheme_host}{attendee.get_print_url()}')
+#
+#     site_setting = SiteSetting.objects.all()
+#     system_setting = SystemSetting.objects.get(status='Active')
+#     if system_setting.email_host != None or system_setting.email_host != '' or settings.email_user != None or settings.email_user != '' or settings.email_pass != None or settings.email_pass != '' or settings.email_port != None or settings.email_port != '' or settings.email_use_tls != None or settings.email_use_tls != '':
+#         email_host = system_setting.email_host
+#         email_user = system_setting.email_user
+#         email_pass = system_setting.email_pass
+#         email_port = system_setting.email_port
+#         email_use_tls = system_setting.email_use_tls
+#         from_email = email_user
+#     else:
+#
+#         from_email = settings.EMAIL_HOST_USER
+#
+#     subject = subject
+#     text_content = message
+#     context = {'title': name, 'email': email, 'phone': phone, 'subject': subject, 'message': message, 'url': url,
+#         'button_text': button_text, 'button_url': button_url, 'button_text2': button_text2, 'button_url2': button_url2,
+#         'image_url': image_url, 'ticket_code': ticket_code, 'start_date': start_date, 'start_time': start_time,
+#         'Location': Location, 'map': map, 'event_details': event_details, 'event_url': event_url,'print_url':print_url
+#
+#     }
+#     if client.data_confirmed == 'Active':
+#         html_content = render_to_string(f'{BACKEND_TEMPLATES}/utilities/email/ticket/ticket.html', context)
+#     else:
+#         html_content = render_to_string(f'{BACKEND_TEMPLATES}/utilities/email/ticket/request.html', context)
+#     msg = EmailMultiAlternatives(subject, text_content, from_email, [email])
+#     msg.attach_alternative(html_content, 'text/html')
+#
+#     msg.send()
 
 
 def CommonWhatappNotification(request, name, phone, message):
