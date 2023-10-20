@@ -610,6 +610,9 @@ class Teams(models.Model):
         # ordering = ('title',)
         verbose_name = 'team'  # verbose_name_plural = 'categories'
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
             code = f'Teams-{get_random_string(5).upper()}'
@@ -1267,6 +1270,7 @@ class Match(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_match_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
+    name = models.CharField(max_length=100, null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_match', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_match', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_match', null=True, blank=True)
@@ -1277,6 +1281,7 @@ class Match(models.Model):
     location = models.CharField(max_length=100, null=True, blank=True)
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
     start_time = models.DateTimeField(null=True, blank=True)
+    played = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

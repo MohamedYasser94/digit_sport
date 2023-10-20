@@ -1048,10 +1048,15 @@ def AdminMatchList(request):
             location = request.POST.get('location')
             start_time = request.POST.get('start_time')
 
+
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
 
-            match_object = Match(
+
+
+            name = home_team.name + ' vs ' + away_team.name
+
+            match_object = Match(name=name,
                 home_team=home_team,away_team=away_team,location=location,start_time=start_time
             )
             match_object.save()
