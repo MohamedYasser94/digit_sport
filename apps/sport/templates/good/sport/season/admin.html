@@ -39,10 +39,10 @@
                     <div class="card-toolbar">
                         <!--begin::Toolbar-->
                         <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                               {#                              {% block filter %}{% include 'good/common/filter-export.html' %}{% endblock %}#}
+                            {#                              {% block filter %}{% include 'good/common/filter-export.html' %}{% endblock %}#}
                             <!--begin::Add customer-->
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#kt_modal_add_customer">{% translate 'Add Sport' %}
+                                    data-bs-target="#kt_modal_add_customer">{% translate 'Add Season' %}
                             </button>
                             <!--end::Add customer-->
                         </div>
@@ -79,7 +79,9 @@
                             <th class="min-w-20px">{% translate '#' %}</th>
                             <th class="min-w-125px">{% translate 'Name' %}</th>
                             <th class="min-w-125px">{% translate 'Code' %}</th>
-
+                            <th class="min-w-125px">{% translate 'League' %}</th>
+                            <th class="min-w-125px">{% translate 'Starting At' %}</th>
+                            <th class="min-w-125px">{% translate 'Ending At' %}</th>
                             <th class="min-w-125px">{% translate 'Status' %}</th>
                             <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                         </tr>
@@ -88,7 +90,7 @@
                         <!--end::Table head-->
                         <!--begin::Table body-->
                         <tbody class="fw-bold text-gray-600">
-                        {% for item in categories %}
+                        {% for item in seasons %}
                             <tr>
                                 <!--begin::Checkbox-->
                                 <td>
@@ -105,14 +107,14 @@
                                 <!--begin::Name=-->
                                 <td>
                                     <a
-                                       class="text-gray-800 text-hover-primary mb-1">
+                                            class="text-gray-800 text-hover-primary mb-1">
 
-                                              {{ item.title }}
+                                        {{ item.name }}
 
                                     </a>
                                 </td>
                                 <!--end::Name=-->
-                            <!--begin::Email=-->
+                                <!--begin::Email=-->
                                 <td>
                                     <a href="#"
                                        class="text-gray-600 text-hover-primary mb-1">
@@ -120,20 +122,45 @@
                                     </a>
                                 </td>
                                 <!--end::Email=-->
+                            <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.league }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                            <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.starting_at|date:"d-m-Y" }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                            <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.ending_at|date:"d-m-Y" }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+
 
 
                                 <!--begin::Payment method=-->
                                 <td>
-                                        {% if item.status == 'Active' %}
-                                            <div class="badge badge-light-info">
-                                            {% elif item.status == 'Archive' %}
-                                                  <div class="badge badge-light-warning">
-                                                {% elif item.status == 'Inactive' %}
-                                                        <div class="badge badge-light-danger">
-                                            {% endif %}
-                                                {{ item.status }}</div>
+                                    {% if item.status == 'Active' %}
+                                        <div class="badge badge-light-info">
+                                    {% elif item.status == 'Archive' %}
+                                        <div class="badge badge-light-warning">
+                                    {% elif item.status == 'Inactive' %}
+                                        <div class="badge badge-light-danger">
+                                    {% endif %}
+                                    {{ item.status }}</div>
 
-                                    </td>
+                                </td>
                                 <!--end::Payment method=-->
 
                                 <!--begin::Action=-->
@@ -154,17 +181,17 @@
                                          data-kt-menu="true">
                                         <!--begin::Menu item-->
                                         <div class="menu-item px-3">
-                                            <a href="{% url 'sport:AdminSportUpdate' item.slug %}"
+                                            <a href="{% url 'sport:AdminSeasonUpdate' item.slug %}"
                                                class="menu-link px-3">{% translate 'Edit' %}</a>
                                         </div>
                                         <!--end::Menu item-->
                                         <div class="menu-item px-3">
-                                            <form id="{{ item.slug }}" method="post"
-                                                  action="{% url 'sport:AdminSportDelete' item.slug %}">
+                                            <form id="{{ item.slug }}" method="POST"
+                                                  action="{% url 'sport:AdminSeasonDelete' item.slug %}">
                                                 {% csrf_token %} </form>
 
 
-                                            <a class="menu-link px-3" href="" onclick="
+                                            <a class="menu-link px-3" onclick="
                                                     if (confirm('Are You Sure To Delete {{ item.title }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
                                                title="Link Title">
                                                 {% translate 'Delete' %}
@@ -177,7 +204,7 @@
                                 <!--end::Action=-->
                             </tr>
                         {% empty %}
-                          {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+                            {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
                         {% endfor %}
 
                         </tbody>
@@ -196,14 +223,14 @@
                     <!--begin::Modal content-->
                     <div class="modal-content">
                         <!--begin::Form-->
-                        <form class="form" enctype="multipart/form-data" action="{% url 'sport:AdminSportList' %}"
+                        <form class="form" enctype="multipart/form-data" action="{% url 'sport:AdminSeasonList' %}"
                               method="post"
                         >
                             {% csrf_token %}
                             <!--begin::Modal header-->
                             <div class="modal-header" id="kt_modal_add_customer_header">
                                 <!--begin::Modal title-->
-                                <h2 class="fw-bolder">{% translate 'Add Sport' %}</h2>
+                                <h2 class="fw-bolder">{% translate 'Add Season' %}</h2>
                                 <!--end::Modal title-->
                                 <!--begin::Close-->
                                 <div id="kt_modal_add_customer_close"
@@ -234,82 +261,85 @@
                                      data-kt-scroll-wrappers="#kt_modal_add_customer_scroll"
                                      data-kt-scroll-offset="300px">
                                     <!--begin::Input group-->
-                                      <div class="d-flex flex-wrap gap-5">
-                                    <div class="fv-row w-100 flex-md-root">
-                                        <!--begin::Label-->
-                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Title' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="text" class="form-control form-control-solid"
-                                               placeholder="{% translate 'Title' %}"
-                                               name="title" required/>
-                                        <!--end::Input-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Name' %}"
+                                                   name="name"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'League' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="league" aria-label="{% translate 'League' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'League' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in season_form.league.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+
+
                                     </div>
-
-
                                     <!--begin::Input group-->
-                                    <div class="fv-row w-100 flex-md-root">
-                                        <!--begin::Label-->
-                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Category' %}</label>
-                                        <!--end::Label-->
-                                         <!--begin::Input-->
-                                        <select name="category" aria-label="{% translate 'Category' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Category' %}"
 
-                                                class="form-select form-select-solid fw-bolder">
-                                         <option value="" selected="">---------</option>
-                                                    {% for value, text in category_form.parent.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Starting At' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="date"  class="form-control form-control-solid"
 
-                                        </select>
-                                        <!--end::Input-->
+                                                   name="starting_at"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Ending At' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="date"  class="form-control form-control-solid"
+
+                                                   name="ending_at"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
                                     </div>
-                                    <!--end::Input group-->
-                                      </div>
-                                <!--begin::Input group-->
-                                      <div class="d-flex flex-wrap gap-5">
-                                           <!--begin::Input group-->
-                                    <div class="fv-row w-100 flex-md-root">
-                                        <!--begin::Label-->
-                                        <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="file" accept="image/*"  class="form-control form-control-solid"
 
-                                               name="image" />
-                                        <!--end::Input-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Keyword' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <textarea class="form-control" name="keyword" rows="3"
+                                                      placeholder="{% translate 'Keyword' %}"></textarea>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
                                     </div>
-                                    <!--end::Input group-->
-                                          <!--begin::Input group-->
-                                    <div class="fv-row w-100 flex-md-root">
-                                        <!--begin::Label-->
-                                        <label class=" fs-6 fw-bold mb-2">{% translate 'Image Url' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="url"  class="form-control form-control-solid"
-                                               placeholder="{% translate 'Image Url' %}"
-                                               name="image_url" />
-                                        <!--end::Input-->
-                                    </div>
-                                    <!--end::Input group-->
-
-                                      </div>
-
-                                      <div class="d-flex flex-wrap gap-5">
-                                <!--begin::Input group-->
-                                    <div class="fv-row w-100 flex-md-root">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Keyword' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <textarea class="form-control" name="keyword" rows="3"
-                                               placeholder="{% translate 'Keyword' %}"></textarea>
-                                        <!--end::Input-->
-                                    </div>
-                                    <!--end::Input group-->
-
-                                      </div>
 
 
                                 </div>
@@ -459,45 +489,36 @@
             </div>
             <!--end::Modal - New Card-->
             <!--end::Modals-->
-          <div class="card-body pt-15">
-            {% if form_show_errors %}
-            {% endif %}
-            {% if category_form.errors %}
-                {% for error_field, error_message in category_form.errors.items %}
+            <div class="card-body pt-15">
+                {% if form_show_errors %}
+                {% endif %}
+                {% if leagues_form.errors %}
+                    {% for error_field, error_message in leagues_form.errors.items %}
 
-                    <div class="alert alert-danger">
-                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-
-            {% endif %}
-          {% if translate_form.errors %}
-                {% for error_field, error_message in translate_form.errors.items %}
-
-                    <div class="alert alert-danger">
-                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-
-            {% endif %}
-   {% for message in messages %}
-            {% if message.extra_tags == 'Category' %}
-                {% if message.tags == 'Category success' %}
-                    <p class="alert alert-info">
-                        {% elif message.tags == 'Category danger' %}
-                    <p class="alert alert-danger">
-                        {% elif message.tags == 'Category warning' %}
-                    <p class="alert alert-warning">
+                        <div class="alert alert-danger">
+                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
 
                 {% endif %}
-            {{ message.extra_tags|striptags }}: {{ message|striptags }}
-            </p>
-            {% endif %}
 
-        {% endfor %}
-        </div>
+                {% for message in messages %}
+                    {% if message.extra_tags == 'Leagues' %}
+                        {% if message.tags == 'Leagues success' %}
+                            <p class="alert alert-info">
+                                {% elif message.tags == 'Leagues danger' %}
+                            <p class="alert alert-danger">
+                                {% elif message.tags == 'Leagues warning' %}
+                            <p class="alert alert-warning">
+
+                        {% endif %}
+                    {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                    </p>
+                    {% endif %}
+
+                {% endfor %}
+            </div>
         </div>
 
         <!--end::Container-->
@@ -508,7 +529,7 @@
 
 {% endblock %}
 {% block custom_js %}
- 
+
 
 
 {% endblock custom_js %}

@@ -63,32 +63,39 @@ urlpatterns = [
     # path('sport/round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
     #
     #
-    # ##########   Venues  #########
-    # path('sport/venues/', views.AdminVenuesList, name='AdminVenuesList'),
-    # path('sport/venues/update/<slug:slug>/', views.AdminVenuesUpdate, name='AdminVenuesUpdate'),
-    # path('sport/venues/archive/<slug:slug>/', views.AdminVenuesArchive, name='AdminVenuesArchive'),
-    # path('sport/venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
-    #
-    #
-    # ##########   Team  #########
-    # path('sport/team/', views.AdminTeamList, name='AdminTeamList'),
-    # path('sport/team/update/<slug:slug>/', views.AdminTeamUpdate, name='AdminTeamUpdate'),
-    # path('sport/team/archive/<slug:slug>/', views.AdminTeamArchive, name='AdminTeamArchive'),
-    # path('sport/team/delete/<slug:slug>/', views.AdminTeamDelete, name='AdminTeamDelete'),
-    #
-    #
-    # ##########   Player  #########
-    # path('sport/player/', views.AdminPlayerList, name='AdminPlayerList'),
-    # path('sport/player/update/<slug:slug>/', views.AdminPlayerUpdate, name='AdminPlayerUpdate'),
-    # path('sport/player/archive/<slug:slug>/', views.AdminPlayerArchive, name='AdminPlayerArchive'),
-    # path('sport/player/delete/<slug:slug>/', views.AdminPlayerDelete, name='AdminPlayerDelete'),
-    #
-    #
-    # ##########   Match  #########
-    # path('sport/match/', views.AdminMatchList, name='AdminMatchList'),
-    # path('sport/match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
-    # path('sport/match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
-    # path('sport/match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
+
+    ##########   Clubs  #########
+    path('sport/clubs/', views.AdminClubsList, name='AdminClubsList'),
+    path('sport/clubs/update/<slug:slug>/', views.AdminClubsUpdate, name='AdminClubsUpdate'),
+    path('sport/clubs/archive/<slug:slug>/', views.AdminClubsArchive, name='AdminClubsArchive'),
+    path('sport/clubs/delete/<slug:slug>/', views.AdminClubsDelete, name='AdminClubsDelete'),
+
+    ##########   Venues  #########
+    path('sport/venues/', views.AdminVenuesList, name='AdminVenuesList'),
+    path('sport/venues/update/<slug:slug>/', views.AdminVenuesUpdate, name='AdminVenuesUpdate'),
+    path('sport/venues/archive/<slug:slug>/', views.AdminVenuesArchive, name='AdminVenuesArchive'),
+    path('sport/venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
+
+
+
+    ##########   Team  #########
+    path('sport/team/', views.AdminTeamsList, name='AdminTeamsList'),
+    path('sport/team/update/<slug:slug>/', views.AdminTeamsUpdate, name='AdminTeamsUpdate'),
+    path('sport/team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
+    path('sport/team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
+
+
+    ##########   Players  #########
+    path('sport/player/', views.AdminPlayersList, name='AdminPlayersList'),
+    path('sport/player/update/<slug:slug>/', views.AdminPlayersUpdate, name='AdminPlayersUpdate'),
+    path('sport/player/archive/<slug:slug>/', views.AdminPlayersArchive, name='AdminPlayersArchive'),
+    path('sport/player/delete/<slug:slug>/', views.AdminPlayersDelete, name='AdminPlayersDelete'),
+
+    ##########   Match  #########
+    path('sport/match/', views.AdminMatchList, name='AdminMatchList'),
+    path('sport/match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
+    path('sport/match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
+    path('sport/match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
 
 
 

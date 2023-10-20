@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from apps.sport.models.models import SportCategory, Sport, Leagues, Season, Stages, Group, Aggregate, \
-    Round,Venues,SportState,Fixtures,LiveScores,Teams,Statistics,Standings,LiveStandings,Schedules,\
+    Round,Venues,SportState,Fixtures,LiveScores,Clubs,Teams,Statistics,Standings,LiveStandings,Schedules,\
     Players,Squads,TVStations,Coaches,TopScorers,Rivals,Commentaries,Referees,Transfers,PreMatchOdds,\
     InPlayOdds,Markets,Bookmakers,Match
 
@@ -93,6 +93,12 @@ class AdminLiveScoresForm(forms.ModelForm):
         fields = '__all__'
         exclude = ('slug', 'code')
 
+
+class AdminClubsForm(forms.ModelForm):
+    class Meta:
+        model = Clubs
+        fields = '__all__'
+        exclude = ('slug', 'code')
 
 class AdminTeamsForm(forms.ModelForm):
     class Meta:

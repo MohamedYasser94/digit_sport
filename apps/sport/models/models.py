@@ -10,7 +10,7 @@ from mptt.models import MPTTModel
 from slugify import slugify
 
 from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
-    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type
+    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -74,7 +74,7 @@ class Sport(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    title = models.CharField(max_length=40, unique=True)
+    title = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True,unique=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sport_category',blank=True, null=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
@@ -142,7 +142,7 @@ class Leagues(models.Model):
 
 
     def __str__(self):
-        return self.code
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -166,6 +166,7 @@ class Season(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_season', null=True, blank=True)
     tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     name = models.CharField(max_length=40, unique=True)
+    keyword = models.TextField(null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     pending = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
@@ -182,6 +183,9 @@ class Season(models.Model):
     class Meta:
         # ordering = ('title',)
         verbose_name = 'season'  # verbose_name_plural = 'categories'
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -359,11 +363,13 @@ class Venues(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_venue_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
+    name = models.CharField(max_length=40, unique=True)
+    keyword = models.TextField( blank=True, null=True)
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
     city = models.CharField(max_length=200, choices=Governorates_List, default='Cairo', null=True, blank=True)
-    name = models.CharField(max_length=40, unique=True)
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
+    image_url = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     zipcode = models.CharField(max_length=100, null=True, blank=True)
@@ -523,6 +529,42 @@ class LiveScores(models.Model):
             self.slug = slugify(code)
         super(LiveScores, self).save(*args, **kwargs)
 
+class Clubs(models.Model):
+    sender_model = models.ForeignKey(ContentType,related_name='sport_club_sender', on_delete=models.CASCADE, null=True, blank=True)
+    sender_id = models.PositiveIntegerField(blank=True, null=True)
+    sender = GenericForeignKey('sender_model', 'sender_id')
+    receiver_model = models.ForeignKey(ContentType,related_name='sport_club_receiver', on_delete=models.CASCADE, null=True, blank=True)
+    receiver_id = models.PositiveIntegerField(blank=True, null=True)
+    receiver = GenericForeignKey('receiver_model', 'receiver_id')
+    owner_model = models.ForeignKey(ContentType,related_name='sport_club_owner', on_delete=models.CASCADE, null=True, blank=True)
+    owner_id = models.PositiveIntegerField(blank=True, null=True)
+    owner = GenericForeignKey('owner_model', 'owner_id')
+    name = models.CharField(max_length=100, unique=True)
+    keyword = models.TextField(null=True, blank=True)
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_club', null=True, blank=True)
+    country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
+    image_url = models.URLField(blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
+    founded = models.CharField(max_length=100, null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('title',)
+        verbose_name = 'club'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'Sport-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(Clubs, self).save(*args, **kwargs)
+
+
 
 class Teams(models.Model):
     sender_model = models.ForeignKey(ContentType,related_name='sport_team_sender', on_delete=models.CASCADE, null=True, blank=True)
@@ -534,11 +576,13 @@ class Teams(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_team_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
+    name = models.CharField(max_length=100, unique=True)
+    keyword = models.TextField(null=True, blank=True)
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_team', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_team', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_team', null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    name = models.CharField(max_length=100, unique=True)
     short_code = models.CharField(max_length=100, unique=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_url = models.URLField(blank=True, null=True)
@@ -712,6 +756,13 @@ class Players(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_player_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
+    common_name = models.CharField(max_length=100, null=True, blank=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    middle_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    display_name = models.CharField(max_length=100, null=True, blank=True)
+    short_name = models.CharField(max_length=100, null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_player', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
@@ -720,13 +771,7 @@ class Players(models.Model):
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
     type = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
-    common_name = models.CharField(max_length=100, null=True, blank=True)
-    first_name = models.CharField(max_length=100, null=True, blank=True)
-    middle_name = models.CharField(max_length=100, null=True, blank=True)
-    last_name = models.CharField(max_length=100, null=True, blank=True)
-    name = models.CharField(max_length=100, null=True, blank=True)
-    display_name = models.CharField(max_length=100, null=True, blank=True)
-    short_name = models.CharField(max_length=100, null=True, blank=True)
+
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_url = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
@@ -1224,19 +1269,9 @@ class Match(models.Model):
     fixture = models.ForeignKey(Fixtures, on_delete=models.CASCADE, related_name='fixture_match', null=True, blank=True)
     home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match', null=True, blank=True)
     away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_away', null=True, blank=True)
-    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_match', null=True, blank=True)
+    location = models.CharField(max_length=100, null=True, blank=True)
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
-    coach = models.ForeignKey(Coaches, on_delete=models.CASCADE, related_name='coach_match', null=True, blank=True)
-    referee = models.ForeignKey(Referees, on_delete=models.CASCADE, related_name='referee_match', null=True, blank=True)
-    tv_station = models.ForeignKey(TVStations, on_delete=models.CASCADE, related_name='tv_station_match', null=True, blank=True)
-    top_scorer = models.ForeignKey(TopScorers, on_delete=models.CASCADE, related_name='top_scorer_match', null=True, blank=True)
-    rival = models.ForeignKey(Rivals, on_delete=models.CASCADE, related_name='rival_match', null=True, blank=True)
-    commentary = models.ForeignKey(Commentaries, on_delete=models.CASCADE, related_name='commentary_match', null=True, blank=True)
-    transfer = models.ForeignKey(Transfers, on_delete=models.CASCADE, related_name='transfer_match', null=True, blank=True)
-    pre_match_odd = models.ForeignKey(PreMatchOdds, on_delete=models.CASCADE, related_name='pre_match_odd_match', null=True, blank=True)
-    in_play_odd = models.ForeignKey(InPlayOdds, on_delete=models.CASCADE, related_name='in_play_odd_match', null=True, blank=True)
-    market = models.ForeignKey(Markets, on_delete=models.CASCADE, related_name='market_match', null=True, blank=True)
-    bookmaker = models.ForeignKey(Bookmakers, on_delete=models.CASCADE, related_name='bookmaker_match', null=True, blank=True)
+    start_time = models.DateTimeField(null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

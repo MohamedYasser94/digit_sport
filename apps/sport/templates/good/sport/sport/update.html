@@ -56,8 +56,8 @@
                                                 data-control="select2"
                                                 data-placeholder="{% translate 'Category' %}"
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ sport.parent }}">{{ sport.parent }}</option>
-                                            {% for value, text in sport_form.parent.field.choices %}
+                                            <option value="{{ sport.category.id }}">{{ sport.category }}</option>
+                                            {% for value, text in sport_form.category.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
                                             {% endfor %}
                                         </select>

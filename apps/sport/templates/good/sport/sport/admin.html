@@ -88,7 +88,7 @@
                         <!--end::Table head-->
                         <!--begin::Table body-->
                         <tbody class="fw-bold text-gray-600">
-                        {% for item in categories %}
+                        {% for item in sports %}
                             <tr>
                                 <!--begin::Checkbox-->
                                 <td>
@@ -159,12 +159,12 @@
                                         </div>
                                         <!--end::Menu item-->
                                         <div class="menu-item px-3">
-                                            <form id="{{ item.slug }}" method="post"
+                                            <form id="{{ item.slug }}" method="POST"
                                                   action="{% url 'sport:AdminSportDelete' item.slug %}">
                                                 {% csrf_token %} </form>
 
 
-                                            <a class="menu-link px-3" href="" onclick="
+                                            <a class="menu-link px-3"  onclick="
                                                     if (confirm('Are You Sure To Delete {{ item.title }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
                                                title="Link Title">
                                                 {% translate 'Delete' %}
@@ -240,9 +240,16 @@
                                         <label class="required fs-6 fw-bold mb-2">{% translate 'Title' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="text" class="form-control form-control-solid"
-                                               placeholder="{% translate 'Title' %}"
-                                               name="title" required/>
+                                        <select name="title" aria-label="{% translate 'Title' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Title' %}"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                         <option value="" selected="">---------</option>
+                                                    {% for value, text in sport_form.title.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
+
+                                        </select>
                                         <!--end::Input-->
                                     </div>
 
@@ -258,7 +265,7 @@
 
                                                 class="form-select form-select-solid fw-bolder">
                                          <option value="" selected="">---------</option>
-                                                    {% for value, text in category_form.parent.field.choices %}
+                                                    {% for value, text in sport_form.category.field.choices %}
                                                             <option value="{{ value }}">{{ text }}</option>
                                                         {% endfor %}
 
@@ -462,8 +469,8 @@
           <div class="card-body pt-15">
             {% if form_show_errors %}
             {% endif %}
-            {% if category_form.errors %}
-                {% for error_field, error_message in category_form.errors.items %}
+            {% if sport_form.errors %}
+                {% for error_field, error_message in sport_form.errors.items %}
 
                     <div class="alert alert-danger">
                         {{ error_field|striptags }}: {{ error_message|striptags }}
@@ -472,23 +479,14 @@
                 {% endfor %}
 
             {% endif %}
-          {% if translate_form.errors %}
-                {% for error_field, error_message in translate_form.errors.items %}
 
-                    <div class="alert alert-danger">
-                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-
-            {% endif %}
    {% for message in messages %}
-            {% if message.extra_tags == 'Category' %}
-                {% if message.tags == 'Category success' %}
+            {% if message.extra_tags == 'Sport' %}
+                {% if message.tags == 'Sport success' %}
                     <p class="alert alert-info">
-                        {% elif message.tags == 'Category danger' %}
+                        {% elif message.tags == 'Sport danger' %}
                     <p class="alert alert-danger">
-                        {% elif message.tags == 'Category warning' %}
+                        {% elif message.tags == 'Sport warning' %}
                     <p class="alert alert-warning">
 
                 {% endif %}

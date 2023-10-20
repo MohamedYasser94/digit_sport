@@ -12,7 +12,7 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Form-->
             <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'sport:AdminSportUpdate' sport.slug %}"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminSeasonUpdate' season.slug %}"
                   method="post">
                 {% csrf_token %}
 
@@ -42,74 +42,59 @@
                                         <label class="required form-label">{% translate 'Name' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" name="title"
-                                               placeholder="{% translate 'category Name' %}"
-                                               value="{{ sport.title }}"/>
+                                        <input class="form-control" name="name"
+                                               placeholder="{% translate 'Name' %}"
+                                               value="{{ season.name }}"/>
                                         <!--end::Input-->
                                     </div>
                                       <div class="flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Category' %}</label>
+                                        <label class="form-label">{% translate 'League' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="category" aria-label="{% translate 'Category' %}"
+                                        <select name="league" aria-label="{% translate 'League' %}"
                                                 data-control="select2"
-                                                data-placeholder="{% translate 'Category' %}"
+                                                data-placeholder="{% translate 'League' %}"
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ sport.parent }}">{{ sport.parent }}</option>
-                                            {% for value, text in sport_form.parent.field.choices %}
+                                            <option value="{{ season.league.id }}">{{ season.league }}</option>
+                                            {% for value, text in seasons_form.league.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
                                             {% endfor %}
                                         </select>
                                         <!--end::Input-->
                                     </div>
-                                  <div class="flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Status' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="status" aria-label="{% translate 'Status' %}"
-                                                data-control="select2"
-                                                data-placeholder="{% translate 'Status' %}"
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ sport.status }}">{{ sport.status }}</option>
 
-                                            {% for value, text in sport_form.status.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <!--end::Input-->
-                                    </div>
 
 
                                 </div>
                                 <!--end::Input group-->
+
                              <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image' %}</label>
+                                        <label class="required form-label">{% translate 'Starting At' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="file" accept="image/*" name="image"
+                                        <input type="date"  class="form-control form-control-solid"
+                                                min="{{ season.starting_at }}"
 
-                                              />
+                                                   name="starting_at"/>
                                         <!--end::Input-->
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <label class="required form-label">{% translate 'Ending At' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_url" value="{{ sport.image_url }}"
-                                               placeholder="{% translate 'Image Url' %}"/>
+                                         <input type="date"  class="form-control form-control-solid"
+                                                min="{{ season.ending_at }}"
+
+                                                   name="ending_at"/>
 
 
                                         <!--end::Input-->
                                     </div>
-
-
-
                                 </div>
                                 <!--end::Input group--> <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-5">
@@ -119,7 +104,7 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <textarea class="form-control" name="keyword" rows="3"
-                                               placeholder="{% translate 'Keyword' %}">{{ sport.keyword }}</textarea>
+                                               placeholder="{% translate 'Keyword' %}">{{ season.keyword }}</textarea>
                                         <!--end::Input-->
                                     </div>
 
