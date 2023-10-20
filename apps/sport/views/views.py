@@ -527,6 +527,111 @@ def AdminSeasonDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonList'))
 
 
+
+##########################  Clubs ################################
+
+@authenticated_staf
+@staff_only
+def AdminClubsList(request):
+    clubs = Clubs.objects.all()
+
+    if request.method == "POST":
+        clubs_form = AdminClubsForm(request.POST or None, request.FILES or None)
+        if clubs_form:
+            name = request.POST.get('name')
+            keyword = request.POST.get('keyword')
+            league = request.POST.get('league')
+            country = request.POST.get('country')
+            founded = request.POST.get('founded')
+            image = request.FILES.get('image')
+            image_url = request.POST.get('image_url')
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+            clubs_object = Clubs(name=name, keyword=keyword, league=league, country=country,founded=founded, image=image,
+                                    image_url=image_url, status='Active')
+
+            clubs_object.save()
+            messages.success(request, _("Clubs Add Successfully"), extra_tags='Clubs')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+        else:
+            messages.error(request, _("Clubs Not Add , Please Try Again"), extra_tags='Clubs')
+    else:
+        context = {'clubs': clubs, 'clubs_form': AdminClubsForm(), 'current_page': _('Clubs')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/clubs/admin.html', context)
+
+
+@authenticated_staf
+@staff_only
+def AdminClubsUpdate(request, slug):
+    club = Clubs.objects.get(slug=slug)
+
+    if request.method == "POST":
+        name = request.POST.get('name')
+        keyword = request.POST.get('keyword')
+        league = request.POST.get('league')
+        country = request.POST.get('country')
+        founded = request.POST.get('founded')
+        image = request.FILES.get('image')
+        image_url = request.POST.get('image_url')
+        status = request.POST.get('status')
+
+        if league == None or league == '':
+            league = None
+        else:
+            league = Leagues.objects.get(id=league)
+
+        clubs_object = Clubs.objects.get(slug=slug)
+        clubs_object.name = name
+        clubs_object.keyword = keyword
+        clubs_object.league = league
+        clubs_object.country = country
+        clubs_object.image = image
+        clubs_object.image_url = image_url
+        clubs_object.status = status
+        clubs_object.save()
+
+        messages.success(request, _("Clubs Update Successfully"), extra_tags='Clubs')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+    else:
+        messages.error(request, _("Clubs Not Update , Please Try Again"), extra_tags='Clubs')
+    context = {'club': club, 'clubs_form': AdminClubsForm(instance=club), 'current_page': _('Update'),
+                'prev_Page': _('Clubs'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/clubs/update.html', context)
+
+
+@authenticated_staf
+@staff_only
+def AdminClubsArchive(request, slug):
+    club = Clubs.objects.get(slug=slug)
+    if request.method == 'POST':
+        club.status = 'Archive'
+        club.save()
+        messages.success(request, _("Clubs Archive Successfully"), extra_tags='Clubs')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+
+
+@authenticated_staf
+@staff_only
+def AdminClubsDelete(request, slug):
+    club = Clubs.objects.get(slug=slug)
+
+    if request.method == "POST":
+        club.delete()
+
+        messages.success(request, _("Clubs Delete Successfully"), extra_tags='Clubs')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
+
+
 ##########################  Venues ################################
 
 @authenticated_staf
@@ -545,9 +650,6 @@ def AdminVenuesList(request):
             short_code = request.POST.get('short_code')
             image = request.FILES.get('image')
             image_url = request.POST.get('image_url')
-
-
-
 
             venues_object = Venues(name=name, keyword=keyword, country=country, city=city, short_code=short_code,
                                    image=image, image_url=image_url, status='Active')
@@ -634,107 +736,6 @@ def AdminVenuesDelete(request, slug):
 
 
 
-##########################  Clubs ################################
-
-@authenticated_staf
-@staff_only
-def AdminClubsList(request):
-    clubs = Clubs.objects.all()
-
-    if request.method == "POST":
-        clubs_form = AdminClubsForm(request.POST or None, request.FILES or None)
-        if clubs_form:
-            name = request.POST.get('name')
-            keyword = request.POST.get('keyword')
-            league = request.POST.get('league')
-            country = request.POST.get('country')
-            image = request.FILES.get('image')
-            image_url = request.POST.get('image_url')
-
-            if league == None or league == '':
-                league = None
-            else:
-                league = Leagues.objects.get(id=league)
-
-            clubs_object = Clubs(name=name, keyword=keyword, league=league, country=country, image=image,
-                                    image_url=image_url, status='Active')
-
-            clubs_object.save()
-            messages.success(request, _("Clubs Add Successfully"), extra_tags='Clubs')
-            return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-        else:
-            messages.error(request, _("Clubs Not Add , Please Try Again"), extra_tags='Clubs')
-    else:
-        context = {'clubs': clubs, 'clubs_form': AdminClubsForm(), 'current_page': _('Clubs')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/clubs/admin.html', context)
-
-
-@authenticated_staf
-@staff_only
-def AdminClubsUpdate(request, slug):
-    club = Clubs.objects.get(slug=slug)
-
-    if request.method == "POST":
-        name = request.POST.get('name')
-        keyword = request.POST.get('keyword')
-        league = request.POST.get('league')
-        country = request.POST.get('country')
-        image = request.FILES.get('image')
-        image_url = request.POST.get('image_url')
-        status = request.POST.get('status')
-
-        if league == None or league == '':
-            league = None
-        else:
-            league = Leagues.objects.get(id=league)
-
-        clubs_object = Clubs.objects.get(slug=slug)
-        clubs_object.name = name
-        clubs_object.keyword = keyword
-        clubs_object.league = league
-        clubs_object.country = country
-        clubs_object.image = image
-        clubs_object.image_url = image_url
-        clubs_object.status = status
-        clubs_object.save()
-
-        messages.success(request, _("Clubs Update Successfully"), extra_tags='Clubs')
-
-        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-    else:
-        messages.error(request, _("Clubs Not Update , Please Try Again"), extra_tags='Clubs')
-    context = {'club': club, 'clubs_form': AdminClubsForm(instance=club), 'current_page': _('Update'),
-                'prev_Page': _('Clubs'), }
-    return render(request, f'{BACKEND_TEMPLATES}/sport/clubs/update.html', context)
-
-
-@authenticated_staf
-@staff_only
-def AdminClubsArchive(request, slug):
-    club = Clubs.objects.get(slug=slug)
-    if request.method == 'POST':
-        club.status = 'Archive'
-        club.save()
-        messages.success(request, _("Clubs Archive Successfully"), extra_tags='Clubs')
-        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-    else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-
-
-@authenticated_staf
-@staff_only
-def AdminClubsDelete(request, slug):
-    club = Clubs.objects.get(slug=slug)
-
-    if request.method == "POST":
-        club.delete()
-
-        messages.success(request, _("Clubs Delete Successfully"), extra_tags='Clubs')
-
-        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-    else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminClubsList'))
-
 
 
 
@@ -749,23 +750,24 @@ def AdminTeamsList(request):
 
         if teams_form:
             name = request.POST.get('name')
+            short_code = request.POST.get('short_code')
             league = request.POST.get('league')
+            club = request.POST.get('club')
             sport = request.POST.get('sport')
             venue = request.POST.get('venue')
             gender = request.POST.get('gender')
             keyword = request.POST.get('keyword')
-            short_code = request.POST.get('short_code')
+
             image = request.FILES.get('image')
             image_url = request.POST.get('image_url')
-            url = request.POST.get('url')
-            type = request.POST.get('type')
-            country = request.POST.get('country')
-            founded = request.POST.get('founded')
-            venue = request.POST.get('venue')
-            venue_city = request.POST.get('venue_city')
-            venue_capacity = request.POST.get('venue_capacity')
-            coach = request.POST.get('coach')
             status = request.POST.get('status')
+
+            try:
+                check_teams = Teams.objects.get(name=name)
+                messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+            except:
+                pass
 
             if league == None or league == '':
                 league = None
@@ -777,14 +779,22 @@ def AdminTeamsList(request):
             else:
                 venue = Venues.objects.get(id=venue)
 
-            if coach == None or coach == '':
-                coach = None
+            if club == None or club == '':
+                club = None
             else:
-                coach = Coaches.objects.get(id=coach)
+                club = Clubs.objects.get(id=club)
 
-            teams_object = Teams(name=name, league=league, keyword=keyword, short_code=short_code, image=image,
-                                 image_url=image_url, type=type, country=country, founded=founded, venue=venue,
-                                 venue_city=venue_city, venue_capacity=venue_capacity, coach=coach, status=status)
+            if sport == None or sport == '':
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
+
+
+
+
+            teams_object = Teams(  name=name,league=league,club=club,sport=sport,venue=venue,
+                                   gender=gender,keyword=keyword,short_code=short_code,image=image,
+                                      image_url=image_url,status='Active')
 
             teams_object.save()
             messages.success(request, _("Teams Add Successfully"), extra_tags='Teams')
@@ -807,27 +817,28 @@ def AdminTeamsUpdate(request, slug):
     team = Teams.objects.get(slug=slug)
 
     if request.method == "POST":
-        team_form = AdminTeamsForm(request.POST or None, request.FILES or None, instance=team)
+        teams_form = AdminTeamsForm(request.POST or None, request.FILES or None, instance=team)
 
-        if team_form:
+        if teams_form:
             name = request.POST.get('name')
+            short_code = request.POST.get('short_code')
             league = request.POST.get('league')
+            club = request.POST.get('club')
             sport = request.POST.get('sport')
             venue = request.POST.get('venue')
             gender = request.POST.get('gender')
             keyword = request.POST.get('keyword')
-            short_code = request.POST.get('short_code')
+
             image = request.FILES.get('image')
             image_url = request.POST.get('image_url')
-            url = request.POST.get('url')
-            type = request.POST.get('type')
-            country = request.POST.get('country')
-            founded = request.POST.get('founded')
-            venue = request.POST.get('venue')
-            venue_city = request.POST.get('venue_city')
-            venue_capacity = request.POST.get('venue_capacity')
-            coach = request.POST.get('coach')
             status = request.POST.get('status')
+
+            try:
+                check_teams = Teams.objects.get(name=name)
+                messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+            except:
+                pass
 
             if league == None or league == '':
                 league = None
@@ -839,39 +850,41 @@ def AdminTeamsUpdate(request, slug):
             else:
                 venue = Venues.objects.get(id=venue)
 
-            if coach == None or coach == '':
-                coach = None
+            if club == None or club == '':
+                club = None
             else:
-                coach = Coaches.objects.get(id=coach)
+                club = Clubs.objects.get(id=club)
+
+            if sport == None or sport == '':
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
 
             team_object = Teams.objects.get(slug=slug)
             team_object.name = name
-            team_object.league = league
-            team_object.keyword = keyword
             team_object.short_code = short_code
-            team_object.image = image
-            team_object.image_url = image_url
-            team_object.type = type
-            team_object.country = country
-            team_object.founded = founded
+            team_object.league = league
+            team_object.club = club
+            team_object.sport = sport
             team_object.venue = venue
-            team_object.venue_city = venue_city
-            team_object.venue_capacity = venue_capacity
-            team_object.coach = coach
+            team_object.gender = gender
+            team_object.keyword = keyword
+            if image == None or image == '':
+                team_object.image = team.image
+            else:
+                team_object.image = image
+            team_object.image_url = image_url
             team_object.status = status
             team_object.save()
 
             messages.success(request, _("Teams Update Successfully"), extra_tags='Teams')
-
             return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
         else:
-
                 messages.error(request, _("Teams Not Update , Please Try Again"), extra_tags='Teams')
 
     else:
-
             messages.error(request, _("Teams Not Update , Please Try Again"), extra_tags='Teams')
-    context = {'team': team, 'team_form': AdminTeamsForm(instance=team), 'current_page': _('Update'),
+    context = {'team': team, 'teams_form': AdminTeamsForm(instance=team), 'current_page': _('Update'),
                 'prev_Page': _('Teams'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/teams/update.html', context)
 
@@ -915,12 +928,14 @@ def AdminPlayersList(request):
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
         if players_form:
             name = request.POST.get('name')
-            sport = request.POST.get('sport')
+            short_code = request.POST.get('short_code')
             country = request.POST.get('country')
+            sport = request.POST.get('sport')
+            gender = request.POST.get('gender')
             nationality = request.POST.get('nationality')
             image = request.FILES.get('image')
             image_url = request.POST.get('image_url')
-            gender = request.POST.get('gender')
+            keyword = request.POST.get('keyword')
 
             if sport == None or sport == '':
                 sport = None
@@ -928,8 +943,9 @@ def AdminPlayersList(request):
                 sport = Sport.objects.get(id=sport)
 
             player_object = Players(
-                name=name,sport=sport,country=country,nationality=nationality,
-                image=image,image_url=image_url,gender=gender
+                name=name,short_code=short_code,country=country,
+                sport=sport,gender=gender,nationality=nationality,image=image,
+                image_url=image_url,keyword=keyword
             )
             player_object.save()
             messages.success(request, _("Players Add Successfully"), extra_tags='Players')
@@ -950,12 +966,14 @@ def AdminPlayersUpdate(request, slug):
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None, instance=player)
         if players_form:
             name = request.POST.get('name')
-            sport = request.POST.get('sport')
+            short_code = request.POST.get('short_code')
             country = request.POST.get('country')
+            sport = request.POST.get('sport')
+            gender = request.POST.get('gender')
             nationality = request.POST.get('nationality')
             image = request.FILES.get('image')
             image_url = request.POST.get('image_url')
-            gender = request.POST.get('gender')
+            keyword = request.POST.get('keyword')
 
             if sport == None or sport == '':
                 sport = None
@@ -964,6 +982,7 @@ def AdminPlayersUpdate(request, slug):
 
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
+            player_object.short_code = short_code
             player_object.sport = sport
             player_object.country = country
             player_object.nationality =nationality
@@ -973,6 +992,7 @@ def AdminPlayersUpdate(request, slug):
                 player_object.image = image
             player_object.image_url = image_url
             player_object.gender = gender
+            player_object.keyword = keyword
             player_object.save()
 
             messages.success(request, _("Players Update Successfully"), extra_tags='Players')

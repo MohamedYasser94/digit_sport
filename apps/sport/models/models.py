@@ -557,6 +557,9 @@ class Clubs(models.Model):
         # ordering = ('title',)
         verbose_name = 'club'
 
+    def __str__(self):
+        return  self.name
+
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
             code = f'Sport-{get_random_string(5).upper()}'
@@ -579,6 +582,7 @@ class Teams(models.Model):
     name = models.CharField(max_length=100, unique=True)
     keyword = models.TextField(null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_team', null=True, blank=True)
+    club = models.ForeignKey(Clubs, on_delete=models.CASCADE, related_name='clubs_team', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_team', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_team', null=True, blank=True)
@@ -608,7 +612,7 @@ class Teams(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
+            code = f'Teams-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
         super(Teams, self).save(*args, **kwargs)
@@ -762,7 +766,8 @@ class Players(models.Model):
     last_name = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     display_name = models.CharField(max_length=100, null=True, blank=True)
-    short_name = models.CharField(max_length=100, null=True, blank=True)
+    short_code = models.CharField(max_length=100, null=True, blank=True)
+    keyword = models.TextField(null=True,blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_player', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
