@@ -57,7 +57,7 @@ FRONTEND_TEMPLATES = (
     ('multikart', 'multikart'), ('kundol', 'kundol'), ('techy', 'techy'), ('podes', 'podes'), ('centrix ', 'centrix'),
     ('kons', 'kons'), ('record', 'record'), ('rexlaw', 'rexlaw'), ('mintech', 'mintech'), ('volna', 'volna'),
     ('carenow', 'carenow'), ('medin', 'medin'), ('medikal', 'medikal'), ('dentisto', 'dentisto'),
-    ('doccure', 'doccure'), ('creasoon', 'creasoon'), ('marvio', 'marvio'),('exhibiz', 'exhibiz'), ('exvent', 'exvent'),)
+    ('doccure', 'doccure'), ('creasoon', 'creasoon'), ('marvio', 'marvio'),('exhibiz', 'exhibiz'), ('exvent', 'exvent'),('soccer','soccer'))
 
 Home_Index = (('Home', 'Home'), ('Home2', 'Home2'), ('Home3', 'Home3'), ('Home4', 'Home4'), ('Home5', 'Home5'),)
 

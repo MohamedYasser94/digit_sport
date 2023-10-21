@@ -1,0 +1,123 @@
+{% load i18n %}
+{% load static %}
+{% if user.is_authenticated %}
+
+
+    <!--======= BANNER TEXT =========-->
+    <div class="main-bnr-text">
+        <h5>Hello, We are Medikal!!</h5>
+        <h1>We Care About Your Health</h1>
+
+        <div class="appointment">
+            <div class="appointment">
+                <div class="row">
+                    <div class="col-md-11 ">
+                        <li class="col-sm-6">
+                            <select class="form-control selectpicker" name="select1" @change="getDepartment()"
+                                    id="select1">
+                                <option selected>Select Department</option>
+
+                            </select>
+                        </li>
+                        <li class="col-sm-6">
+                            <select class="form-control selectpicker" name="select1"
+                                    id="select1">
+                                <option selected>Select Department</option>
+                                <option>Dental</option>
+                                <option>Cardiology</option>
+                                <option>For disabled</option>
+                                <option>Ophthalmology</option>
+                                <option>Emergency</option>
+                                <option>X-ray</option>
+                            </select>
+                        </li>
+                        <li class="col-sm-6">
+                            <input type="text" name="datepicker" class="form-control"
+                                   id="datepicker" placeholder="DD/MM/YY">
+                            <i class="fa fa-calendar"></i></li>
+                        <li class="col-sm-6">
+                            <input type="time" name="datepicker" class="form-control"
+                                   id="timepicker" placeholder="DD/MM/YY">
+                            <i class="fa fa-clock-o"></i></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--======= BUTTON =========-->
+        <a @click="makeAppointmentSlider()" class="btn btn-1">{% translate 'Make an appointment' %}</a>
+    </div>
+
+{% else %}
+    <div class="appointment">
+        <div class="appointment">
+            <div class="row">
+                <!--======= Image =========-->
+                <div class="col-md-11 ">
+                    <!--======= FORM =========-->
+                    <div class="main-bnrappointmeny-text">
+                        <h1>{% translate 'Make  Appointment' %}</h1>
+                    </div>
+                    <form role="form" id="appointment" method="post">
+                        <ul class="row">
+                            <li class="col-sm-6">
+                                <input type="text" class="form-control" id="first_name"
+                                       name="first_name" required
+                                       placeholder="{% translate 'First Name *' %} ">
+                            </li>
+                            <li class="col-sm-6">
+                                <input type="text" class="form-control" id="last_name"
+                                       name="last_name" required
+                                       placeholder="{% translate 'Last Name *' %}">
+                            </li>
+                            <li class="col-sm-6">
+                                <input type="email" class="form-control" id="email" name="email"
+                                       required placeholder="{% translate 'Email *' %}">
+                            </li>
+                            <li class="col-sm-6">
+                                <input type="text" class="form-control" name="phone" id="phone"
+                                       required placeholder="{% translate 'Phone' %}">
+                            </li>
+                            <li class="col-sm-6">
+                                <select class="form-control selectpicker" name="select1" @change="getDepartment()"
+                                        id="select1">
+                                    <option selected>Select Department</option>
+
+                                </select>
+                            </li>
+                            <li class="col-sm-6">
+                                <select class="form-control selectpicker" name="select1"
+                                        id="select1">
+                                    <option selected>Select Department</option>
+                                    <option>Dental</option>
+                                    <option>Cardiology</option>
+                                    <option>For disabled</option>
+                                    <option>Ophthalmology</option>
+                                    <option>Emergency</option>
+                                    <option>X-ray</option>
+                                </select>
+                            </li>
+                            <li class="col-sm-6">
+                                <input type="text" name="datepicker" class="form-control"
+                                       id="datepicker" placeholder="DD/MM/YY">
+                                <i class="fa fa-calendar"></i></li>
+                            <li class="col-sm-6">
+                                <input type="time" name="datepicker" class="form-control"
+                                       id="timepicker" placeholder="DD/MM/YY">
+                                <i class="fa fa-clock-o"></i></li>
+                            <li class="col-sm-12">
+                                                    <textarea class="form-control" name="message" id="message" rows="5"
+                                                              placeholder="Message"></textarea>
+                            </li>
+                            <li class="col-sm-12">
+                                <button type="submit" value="submit" class="btn" id="btn_submit">
+                                    make an appointment
+                                </button>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

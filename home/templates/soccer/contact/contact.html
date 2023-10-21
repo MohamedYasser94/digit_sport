@@ -1,0 +1,120 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+    {% include 'exvent/common/hero.html' %}
+
+
+    <!-- Contact Page Start -->
+    <div class="contact-form-section section-padding-02">
+    <div class="container">
+        <div class="row g-5 justify-content-between">
+            <div class="col-lg-5">
+                <div class="section-title-wrap">
+                    <div class="section-title">
+                        <h5 class="sub-title orange">Get Information</h5>
+                        <h2 class="title">Contact With Us</h2>
+                    </div>
+                </div>
+                <div class="single-contact">
+                            <span class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                    <div class="contact-info">
+                        <h4 class="contact-label">Our Location : </h4>
+                        <p class="address"> Houd 10, Abo Bakr El Seddik Square, Misr Elkheir Building, Flat No. 1 <br>
+                            Qena Egypt</p>
+                    </div>
+                </div>
+                <div class="single-contact">
+                            <span class="contact-icon orange-color">
+                            <i class="flaticon-phone-call"></i>
+                        </span>
+                    <div class="contact-info">
+                        <h4 class="contact-label">24/7 Hotline</h4>
+                        <a href="tel:+201014566699" class="address">+201014566699</a>
+                    </div>
+                </div>
+                <div class="single-contact">
+                            <span class="contact-icon blue-color">
+                            <i class="far fa-envelope"></i>
+                        </span>
+                    <div class="contact-info">
+                        <h4 class="contact-label">Email :</h4>
+                        <a href="mailto:info@xtremeeg.com" class="address">info@xtremeeg.com</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="map-section">
+                    <div class="map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d895.3291988887079!2d32.71821153037848!3d26.153810302363784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x144ec93f0dd26bbd%3A0xd952c831cf61ff82!2sXtreme!5e0!3m2!1sar!2seg!4v1694480997485!5m2!1sar!2seg"
+                                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Contact Form Start -->
+        <div class="contact-form-wrap">
+            {% for message in messages %}
+                {% if message.extra_tags == 'ContactForm' %}
+                    {% if message.tags == 'ContactForm success' %}
+                        <div class="alert alert-info">
+                    {% elif message.tags == 'ContactForm danger' %}
+                        <div class="alert alert-danger">
+                    {% endif %}
+                {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                </div>
+                {% endif %}
+            {% endfor %}
+            <form action="{% url 'home:FrontContactForm' %}" method="post" class="contact-form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title-wrap text-center">
+                            <div class="section-title">
+                                <h2 class="title">Send Us A Message</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-6">
+                        <input type="text" name="name" class="comment-form-input" placeholder="Your Name">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="email" name="email" class="comment-form-input" placeholder="Your Email">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="tel" name="phone" class="comment-form-input" placeholder="Phone Number">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="text" name="subject" class="comment-form-input" placeholder="Subject">
+                    </div>
+                    <div class="col-12">
+                        <textarea name="message" placeholder="Your Message" class="comment-form-input"></textarea>
+                    </div>
+                    <div class="col-lg-3">
+                        <button type="submit" class="submit_btn">Submit Now</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <!-- Contact Form End -->
+        </div>
+    </div>
+
+    <!-- Contact Page Start -->
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

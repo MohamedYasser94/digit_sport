@@ -1,0 +1,389 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+	<!-- Hero Start -->
+        <div class="section exvent-hero-section d-lg-flex d-block align-items-center inner-page-hero" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/about_page_bg.jpg);">
+            <img class="shape-1 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape1.png" alt="">
+            <img class="shape-2 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape2.png" alt="">
+
+            <div class="container">
+                <div class="row exvent-hero-row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="page-title">
+                            <h2 class="section-title">Event Schedule</h2>
+                        </div>
+                        <div class="page-navigation">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="event-schedule.html">Event Schedule</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Schedule Area Start -->
+        <div class="schedule-area section-padding-02 grey-bg">
+            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/schedule_shape1.png" class="schedule-shape1" alt="Shape1">
+            <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/schedule_shape2.png" class="schedule-shape2" alt="Shape2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title-wrap">
+                            <div class="section-title text-center">
+                                <h5 class="sub-title">Schedule</h5>
+                                <h2 class="title">Without waiting for you to catch up</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-0 align-items-start">
+                    <div class="col-2 sticky-col">
+                        <div class="schedule-side-nav">
+                            <div class="nav d-block nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <p class="nav-link active" id="day-1-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">1st Day</p>
+                                <p class="nav-link" id="day-2-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">2nd Day</p>
+                                <p class="nav-link" id="day-3-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">3rd Day</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane show active" id="v-pills-home" role="tabpanel">
+                                <div class="schedule-wrapper">
+                                    <div class="single-schedule">
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">12</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">09:00 - 11:00 AM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb1.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Registration for opening workshop </h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc show" id="collapseContent1">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent1" role="button" aria-expanded="false" aria-controls="collapseContent1">
+                                                        <div class="plus-icon-1 active">
+                                                            <div class="plus-icon-shape active-plus"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">12</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">12:30 - 02:00 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb2.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Meeting with world class investors </h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent2">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent2" role="button" aria-expanded="false" aria-controls="collapseContent2">
+                                                        <div class="plus-icon-2">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">12</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">02:30 - 05:30 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb3.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Discussion about benefits of online meetings </h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent3">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent3" role="button" aria-expanded="false" aria-controls="collapseContent3">
+                                                        <div class="plus-icon-3">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="v-pills-profile" role="tabpanel">
+                                <div class="schedule-wrapper">
+                                    <div class="single-schedule">
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">13</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">09:00 - 11:00 AM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb1.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Discussion about the benefit of group work</h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc show" id="collapseContent4">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent4" role="button" aria-expanded="false" aria-controls="collapseContent4">
+                                                        <div class="plus-icon-1 active">
+                                                            <div class="plus-icon-shape active-plus"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">13</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">12:30 - 02:00 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb2.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Meeting With worldclass creators</h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent5">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent5" role="button" aria-expanded="false" aria-controls="collapseContent5">
+                                                        <div class="plus-icon-2">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-lg-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">13</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">02:30 - 05:30 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb3.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">A documentary film about success</h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent6">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent6" role="button" aria-expanded="false" aria-controls="collapseContent6">
+                                                        <div class="plus-icon-3">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="v-pills-messages" role="tabpanel">
+                                <div class="schedule-wrapper">
+                                    <div class="single-schedule">
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-md-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">14</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">09:00 - 11:00 AM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb1.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Discussion about why you learn international </h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc show" id="collapseContent7">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent7" role="button" aria-expanded="false" aria-controls="collapseContent7">
+                                                        <div class="plus-icon-1 active">
+                                                            <div class="plus-icon-shape active-plus"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-md-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">14</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">12:30 - 02:00 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb2.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">A task for the entire event and Q&A</h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent8">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent8" role="button" aria-expanded="false" aria-controls="collapseContent8">
+                                                        <div class="plus-icon-2">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-0 align-items-center shedule-row">
+                                            <div class="col-md-3 col-12">
+                                                <div class="schedule-thumbnail">
+                                                    <div class="schedule-time">
+                                                        <h3 class="time">14</h3>
+                                                        <div class="month-time">
+                                                            <span class="month">August</span>
+                                                            <span class="duration-event">02:30 - 5:00 PM</span>
+                                                        </div>
+                                                    </div>
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/schedule_thumb3.png" alt="Thumbnail" class="schedule-thumb-img">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9 col-12">
+                                                <div class="schedule-content-wrap">
+                                                    <div class="schedule-content">
+                                                        <div class="schedule-location">
+                                                            <p><span><i class="fas fa-map-marker-alt"></i> </span>Monthon city hall, New York</p>
+                                                        </div>
+                                                        <h4 class="schedule-title">Prize Giving and Closing Ceremony </h4>
+                                                        <div class="schedule-descrip">
+                                                            <p>We’re inviting the top creatives in the tech industry from all over the world to come learn, grow, scrape their knees, try new things, to be vulnerable, </p>
+                                                            <p class="collapse hidden-desc" id="collapseContent9">epic adventures Meh synth Schlitz, tempor duis single-origin coffee ea next level ethnic fingerstache fanny pack nostrud. Photo booth anim 8-bit hella, PBR 3 wolf moon beard Helvetica. Salvia esse flexitarian Truffaut synth art party deep v chillwave. </p>
+                                                        </div>
+                                                    </div>
+                                                    <a class="minus-btn" data-bs-toggle="collapse" href="#collapseContent9" role="button" aria-expanded="false" aria-controls="collapseContent9">
+                                                        <div class="plus-icon-3">
+                                                            <div class="plus-icon-shape"></div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Schedule Area End -->
+
+
+{% endblock %}
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}
+
+

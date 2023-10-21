@@ -1,0 +1,201 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+        <!-- Hero Start -->
+        <div class="section exvent-hero-section d-lg-flex d-block align-items-center inner-page-hero" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/about_page_bg.jpg);">
+            <img class="shape-1 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape1.png" alt="">
+            <img class="shape-2 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape2.png" alt="">
+
+            <div class="container">
+                <div class="row exvent-hero-row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="page-title">
+                            <h2 class="section-title">{% translate 'Event List' %}</h2>
+                        </div>
+                        <div class="page-navigation">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a href="{% url 'home:HomeIndex' %}">{% translate 'Home' %}</a></li>
+                                    <li class="breadcrumb-item"><a href="">{% translate 'Event List' %}</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Event List Page Start -->
+        <div class="event-list-page-wrap section-padding-02">
+            <div class="container">
+                <!-- Event List Topbar Start   -->
+                <div class="event-list-top-bar">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="event-list-search">
+                                <form action="#">
+                                    <div class="row g-0">
+                                        <div class="col-md-5">
+                                            <div class="single-form">
+                                                <i class="fas fa-search"></i>
+                                                <input type="text" placeholder="Search Event">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="single-form form-border">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <input type="text" placeholder="Location">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-btn">
+                                                <button class="event-topbar-btn btn btn-orange">Find Event</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="event-filter-wrap">
+                                <div class="event-collapse-btn">
+                                    <button class="btn collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFilters">
+                                        <i class="fa fa-filter"></i>
+                                        Hide Filters
+                                    </button>
+                                </div>
+
+                                <div class="event-list-btn">
+                                    <ul class="nav">
+                                        <li>
+                                            <button data-bs-toggle="tab" data-bs-target="#grid" class=""><i class="fas fa-th-large"></i></button>
+                                        </li>
+                                        <li>
+                                            <button class="active" data-bs-toggle="tab" data-bs-target="#list"><i class="fas fa-list"></i></button>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- List Collapse Start -->
+                    <div class="collapse" id="collapseFilters">
+                        <div class="event-list-tag">
+                            <ul>
+                                <li><a href="">Featured Event</a></li>
+                                <li><a href="">Upcoming</a></li>
+                                <li><a href="">Organizers</a></li>
+                                <li><a href="">Day</a></li>
+                                <li><a href="">Price</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- List Collapse End -->
+                </div>
+                <!-- Event List Topbar Ends   -->
+
+                <!-- Event List Bottom Bar Start   -->
+                <div class="event-list-bottom-bar">
+                    <div class="event-list-btn">
+                        <a class="event-btn" href=""><i class="flaticon-back"></i></a>
+                        <a class="event-btn" href=""><i class="flaticon-next"></i></a>
+                    </div>
+                    <div class="date-picker-filter">
+                        <input id="datepicker">
+                    </div>
+                </div>
+                <!-- Event List Bottom Bar End   -->
+
+                <!-- Event List Content Start -->
+                <div class="event-list-content-wrap">
+                    <div class="tab-content">
+                        <div class="tab-pane" id="grid">
+                            <div class="row">
+                                <div class="col-lg-4 col-sm-6">
+                                    <!-- Event List Item Start -->
+                                    <div class="event-list-item">
+                                        <div class="event-img">
+                                            <a href=""><img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/event-l-1.jpg" alt=""></a>
+                                            <span class="cat">Featured</span>
+                                        </div>
+                                        <div class="event-list-content">
+                                            <div class="event-price">
+                                                <span class="price">$25</span>
+                                            </div>
+                                            <h3 class="title"><a href="">Virtual Event with Protected Content and Hidden Livestream </a></h3>
+                                            <div class="meta-data">
+                                                <span><i class="far fa-clock"></i> 1:00AM-2:00AM</span>
+                                                <span><i class="fas fa-map-marker-alt"></i> Sand diego, Canada</span>
+                                            </div>
+                                            <div class="event-desc">
+                                                <p>Managing a popular open source project can be daunting at first. How do we maintain all these issues, or automatically trigger enim ad minim veniam, quis nostrud exercitation ullamco laboris</p>
+                                            </div>
+                                            <a class="ticket-link" href="">Get Ticket Now</a>
+                                        </div>
+                                    </div>
+                                    <!-- Event List Item End -->
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane show active" id="list">
+                            {% for item in events %}
+                            <!-- Event List Item Start -->
+                            <div class="event-list-item event-list d-lg-flex align-items-center">
+                                <div class="event-img">
+                                    {% if item.image %}
+                                    <a href="{% url 'home:FrontEventDetails' item.slug %}"><img src="{{ item.image.url }}" style="height: 200px;width: 340px" alt=""></a>
+                                    {% else %}
+                                    <a href="{% url 'home:FrontEventDetails' item.slug %}"><img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/event-l-1.jpg" alt=""></a>
+                                    {% endif %}
+                                    <span class="cat">Featured</span>
+                                </div>
+                                <div class="event-list-content">
+                                    <div class="event-price">
+                                        <span class="price">{{ item.category }}</span>
+                                    </div>
+                                    <h3 class="title"><a href="{% url 'home:FrontEventDetails' item.slug %}">{{ item.title }} </a></h3>
+                                    <div class="meta-data">
+                                        <span><i class="far fa-clock"></i> {{ item.start_time|time }}-{{ item.end_time|time }}</span>
+                                        <span><i class="fas fa-map-marker-alt"></i>{{ item.location }}</span>
+                                    </div>
+                                    <div class="event-desc">
+                                        <p>{{ item.description|safe }}</p>
+                                    </div>
+                                    <a class="ticket-link" href="{% url 'home:FrontEventDetails' item.slug %}">Get Ticket Now</a>
+                                </div>
+                                <span class="event-time"><span>{{ item.start_date|date:'d' }}</span>{{ item.start_date|date:'M' }}</span>
+                            </div>
+                            <!-- Event List Item EEnd -->
+                            {% empty %}
+                            <h1>No Events</h1>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Event List Content End -->
+
+                <div class="event-next-prev-btn text-center">
+                    <a class="event-btn" href=""><i class="flaticon-back"></i> Previous</a>
+                    <a class="event-btn btn-next" href="">Next <i class="flaticon-next"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Event List Page Start -->
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

@@ -1,0 +1,204 @@
+{% extends FRONTEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+
+
+
+
+  <!-- Hero Start -->
+        <div class="section exvent-hero-section d-lg-flex d-block align-items-center inner-page-hero" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/about_page_bg.jpg);">
+            <img class="shape-1 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape1.png" alt="">
+            <img class="shape-2 img-fluid" src="{% static '' %}{{ FRONTEND_ASSETS }}/images/shape/hero_shape2.png" alt="">
+
+            <div class="container">
+                <div class="row exvent-hero-row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <div class="page-title">
+                            <h2 class="section-title">Blog</h2>
+                        </div>
+                        <div class="page-navigation">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb justify-content-center">
+                                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="blog.html">Blog</a></li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Blog List Page Start -->
+        <div class="blog-list-page section-padding-04">
+            <div class="container">
+                <div class="row justify-content-between gx-5">
+                    <div class="col-lg-8">
+                        {% for item in articles %}
+                        <div class="single-blog">
+                            <div class="blog-header">
+                                <div class="blog-thumbnail">
+                                    <a href="{% url 'home:FrontArticleDetails' item.slug %}" class="">
+                                        {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="Blog Image" class="blog-img">
+                                        {% else %}
+                                        <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/blog_img_1.jpg" alt="Blog Image" class="blog-img">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                <h5 class="blog-event-date">
+                                    <span class="month bg-orange">{{ item.created_at|date:'M' }}</span>
+                                    <span class="year">{{ item.created_at|date:'Y' }}</span>
+                                </h5>
+                            </div>
+                            <div class="blog-body">
+                                <div class="blog-details">
+                                    <a href="#" class="author"><span><i class="far fa-user"></i></span> {{ item.author }}</a>
+                                    <a href="#" class="comment"><span><i class="far fa-calendar-alt"></i></span> 3 comments</a>
+                                </div>
+                                <a href="">
+                                    <h4 class="blog-title">{{ item.title }}</h4>
+                                </a>
+                                <p class="blog-content">{{ item.keywords }}</p>
+                            </div>
+                        </div>
+                            {% empty %}
+                            <p>No articles yet.</p>
+                        {% endfor %}
+
+                        <!-- Pagination Start  -->
+                        <div class="blog-pagination">
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item">
+                                        <a class="page-link arrow" href="#">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">1</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link active" href="#">2</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link arrow" href="#">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+                        <!-- Pagination End  -->
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="exvent-sidebar">
+                            <div class="sidebar-widget sidebar-widget-no-margin">
+                                <form class="search-form" action="#">
+                                    <input type="text" placeholder="Search">
+                                    <button type="submit"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="sidebar-widget">
+                                <div class="widget-title">
+                                    <h4>Categories</h4>
+                                </div>
+                                <ul class="category">
+                                    <li class="category-item">
+                                        <a href="#">
+                                            <i class="flaticon-next"></i> Industry <span class="post-count">(11)</span>
+                                        </a>
+                                    </li>
+                                    <li class="category-item">
+                                        <a href="#">
+                                            <i class="flaticon-next"></i> Business <span class="post-count">(02)</span>
+                                        </a>
+                                    </li>
+                                    <li class="category-item">
+                                        <a href="#">
+                                            <i class="flaticon-next"></i> Construction <span class="post-count">(0)</span>
+                                        </a>
+                                    </li>
+                                    <li class="category-item">
+                                        <a href="#">
+                                            <i class="flaticon-next"></i> Factory <span class="post-count">(231)</span>
+                                        </a>
+                                    </li>
+                                    <li class="category-item">
+                                        <a href="#">
+                                            <i class="flaticon-next"></i> Estate <span class="post-count">(45)</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="sidebar-widget">
+                                <div class="sidebar-offer" style="background-image: url({% static '' %}{{ FRONTEND_ASSETS }}/images/bg/sidebar_ad_bg.jpg);">
+                                    <h3 class="offer">40% off</h3>
+                                    <h3 class="offer-title">Book your seat now</h3>
+                                    <a href="#" class="btn btn-orange">Get ticket now</a>
+                                </div>
+                            </div>
+                            <div class="sidebar-widget">
+                                <div class="widget-title">
+                                    <h4>Popular Posts</h4>
+                                </div>
+                                <div class="popular-posts">
+                                    <ul>
+                                        <li>
+                                            <a class="post-link" href="#">
+                                                <div class="post-thumb">
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/r-post-1.jpg" alt="">
+                                                </div>
+                                                <div class="post-text">
+                                                    <h4 class="title">Cupidatat non proident sunt culpa officia</h4>
+                                                    <span class="post-meta"><i class="far fa-calendar-alt"></i>  Oct 09, 2021</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="post-link" href="#">
+                                                <div class="post-thumb">
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/r-post-2.jpg" alt="">
+                                                </div>
+                                                <div class="post-text">
+                                                    <h4 class="title">Cupidatat non proident sunt culpa officia</h4>
+                                                    <span class="post-meta"><i class="far fa-calendar-alt"></i>  Oct 09, 2021</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="post-link" href="#">
+                                                <div class="post-thumb">
+                                                    <img src="{% static '' %}{{ FRONTEND_ASSETS }}/images/thumbnails/r-post-3.jpg" alt="">
+                                                </div>
+                                                <div class="post-text">
+                                                    <h4 class="title">Cupidatat non proident sunt culpa officia</h4>
+                                                    <span class="post-meta"><i class="far fa-calendar-alt"></i>  Oct 09, 2021</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog List Page Start -->
+
+
+
+{% endblock %}
+
+
+{% block custom_js %}
+
+{% endblock custom_js %}
+{% block foot %} {% include FRONTEND_FOOTER %}  {% endblock %}
+{% block js %} {% include FRONTEND_JS %}{% endblock %}

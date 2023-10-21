@@ -600,6 +600,7 @@ class Teams(models.Model):
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
     has_jersey = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    player_count = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -788,6 +789,7 @@ class Players(models.Model):
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
+    in_team = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -838,9 +840,10 @@ class Squads(models.Model):
         verbose_name = 'squad'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Squad-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Squads, self).save(*args, **kwargs)
 
 
@@ -873,9 +876,10 @@ class TVStations(models.Model):
         verbose_name = 'tv station'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'TV-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(TVStations, self).save(*args, **kwargs)
 
 
@@ -920,9 +924,10 @@ class Coaches(models.Model):
         verbose_name = 'coach'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Coach-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Coaches, self).save(*args, **kwargs)
 
 
@@ -954,9 +959,10 @@ class TopScorers(models.Model):
         verbose_name = 'top scorer'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'TopScorer-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(TopScorers, self).save(*args, **kwargs)
 
 
@@ -985,9 +991,10 @@ class Rivals(models.Model):
         verbose_name = 'rival'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Rival-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Rivals, self).save(*args, **kwargs)
 
 
@@ -1019,9 +1026,10 @@ class Commentaries(models.Model):
         verbose_name = 'commentary'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Commentary-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Commentaries, self).save(*args, **kwargs)
 
 
@@ -1062,9 +1070,10 @@ class Referees(models.Model):
         verbose_name = 'referee'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Referee-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Referees, self).save(*args, **kwargs)
 
 
@@ -1105,9 +1114,10 @@ class Transfers(models.Model):
         verbose_name = 'transfer'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Transfer-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Transfers, self).save(*args, **kwargs)
 
 
@@ -1147,9 +1157,10 @@ class PreMatchOdds(models.Model):
         verbose_name = 'pre match odd'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'PreMatchOdd-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(PreMatchOdds, self).save(*args, **kwargs)
 
 
@@ -1193,9 +1204,10 @@ class InPlayOdds(models.Model):
         verbose_name = 'in play odd'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'InPlayOdd-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(InPlayOdds, self).save(*args, **kwargs)
 
 
@@ -1225,9 +1237,10 @@ class Markets(models.Model):
         verbose_name = 'market'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Market-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Markets, self).save(*args, **kwargs)
 
 
@@ -1254,9 +1267,10 @@ class Bookmakers(models.Model):
         verbose_name = 'bookmaker'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Bookmaker-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Bookmakers, self).save(*args, **kwargs)
 
 
@@ -1292,7 +1306,42 @@ class Match(models.Model):
         verbose_name = 'match'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
-        if not self.code:
+        if not self.code and not self.slug:
             code = f'Match-{get_random_string(5).upper()}'
             self.code = code
+            self.slug = slugify(code)
         super(Match, self).save(*args, **kwargs)
+
+
+
+class MatchTeamPlayer(models.Model):
+    sender_model = models.ForeignKey(ContentType,related_name='sport_match_team_player_sender', on_delete=models.CASCADE, null=True, blank=True)
+    sender_id = models.PositiveIntegerField(blank=True, null=True)
+    sender = GenericForeignKey('sender_model', 'sender_id')
+    receiver_model = models.ForeignKey(ContentType,related_name='sport_match_team_player_receiver', on_delete=models.CASCADE, null=True, blank=True)
+    receiver_id = models.PositiveIntegerField(blank=True, null=True)
+    receiver = GenericForeignKey('receiver_model', 'receiver_id')
+    owner_model = models.ForeignKey(ContentType,related_name='sport_match_team_player_owner', on_delete=models.CASCADE, null=True, blank=True)
+    owner_id = models.PositiveIntegerField(blank=True, null=True)
+    owner = GenericForeignKey('owner_model', 'owner_id')
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_team_player', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_team_player', null=True, blank=True)
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_match_team_player', null=True, blank=True)
+    position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    shirt_number = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128,unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        # ordering = ('title',)
+        verbose_name = 'match team player'  # verbose_name_plural = 'categories'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchTeamPlayer-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchTeamPlayer, self).save(*args, **kwargs)

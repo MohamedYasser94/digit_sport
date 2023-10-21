@@ -1133,6 +1133,68 @@ def AdminMatchDelete(request, slug):
 
 
 
+##########################  Match Result ################################
+
+
+@authenticated_staf
+@staff_only
+def AdminMatchTeamPlayerAdd(request,slug,team_slug):
+    match = Match.objects.get(slug=slug)
+    team = Teams.objects.get(slug=team_slug)
+    players = Players.objects.filter(sport=match.sport)
+    if request.method == "POST":
+        match_team_player_form = AdminMatchTeamPlayerForm(request.POST or None, request.FILES or None)
+        if match_team_player_form:
+            player = request.POST.get('player')
+            player = Players.objects.get(id=player)
+            match_team_player_object = MatchTeamPlayer(
+                match=match,team=team,player=player
+            )
+            match_team_player_object.save()
+            messages.success(request, _("Match Team Player Add Successfully"), extra_tags='Match Team Player')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList',kwargs={'slug':slug,'team_slug':team_slug}))
+        else:
+            messages.error(request, _("Match Team Player Not Add , Please Try Again"), extra_tags='Match Team Player')
+    else:
+        context = {'match': match,'team':team,'players':players, 'match_team_player_form': AdminMatchTeamPlayerForm(), 'current_page': _('Match Team Player')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/match/player.html', context)
+
+
+
+
+
+# @authenticated_staf
+# @staff_only
+# def AdminMatchResultList(request):
+#     match_results = MatchResult.objects.all()
+#
+#     if request.method == "POST":
+#         match_results_form = AdminMatchResultForm(request.POST or None, request.FILES or None)
+#         if match_results_form:
+#             match = request.POST.get('match')
+#             home_team_score = request.POST.get('home_team_score')
+#             away_team_score = request.POST.get('away_team_score')
+#             winner = request.POST.get('winner')
+#             status = request.POST.get('status')
+#
+#             match = Match.objects.get(id=match)
+#
+#             match_result_object = MatchResult(
+#                 match=match,home_team_score=home_team_score,away_team_score=away_team_score,
+#                 winner=winner,status=status
+#             )
+#             match_result_object.save()
+#             messages.success(request, _("Match Result Add Successfully"), extra_tags='Match Result')
+#             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchResultList'))
+#         else:
+#             messages.error(request, _("Match Result Not Add , Please Try Again"), extra_tags='Match Result')
+#     else:
+#         context = {'match_results': match_results, 'match_results_form': AdminMatchResultForm(), 'current_page': _('Match Result')}
+#         return render(request, f'{BACKEND_TEMPLATES}/sport/match_result/admin.html', context)
+
+
+
+
 
 
 

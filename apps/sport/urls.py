@@ -84,6 +84,9 @@ urlpatterns = [
     path('sport/team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('sport/team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
 
+    path('sport/team/playr/add/<slug:slug>/', views.AdminTeamsDelete,
+         name='AdminTeamPlayerAdd'),
+
 
     ##########   Players  #########
     path('sport/player/', views.AdminPlayersList, name='AdminPlayersList'),
@@ -96,6 +99,8 @@ urlpatterns = [
     path('sport/match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('sport/match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
     path('sport/match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
+
+    path('sport/match/team/playr/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamPlayerAdd, name='AdminMatchTeamPlayerAdd'),
 
 
 

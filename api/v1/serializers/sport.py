@@ -69,6 +69,11 @@ class LiveScoresSerializer(serializers.ModelSerializer)    :
         fields = "__all__"
 
 
+class ClubsSerializer(serializers.ModelSerializer)    :
+    class Meta:
+        model = Clubs
+        fields = "__all__"
+
 class TeamsSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = Teams
@@ -173,4 +178,10 @@ class MarketsSerializer(serializers.ModelSerializer)    :
 class BookmakersSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = Bookmakers
+        fields = "__all__"
+
+
+class MatchSerializer(serializers.ModelSerializer)    :
+    class Meta:
+        model = Match
         fields = "__all__"
