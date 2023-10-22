@@ -110,6 +110,8 @@ urlpatterns = [
     path('sport/bookmakers/<int:pk>/', sport.AdminBookmakersSerializerDetail.as_view(), name='AdminBookmakersAPiList'),
     path('sport/match/', sport.AdminMatchSerializerList.as_view(), name='AdminMatchAPiList'),
     path('sport/match/<int:pk>/', sport.AdminMatchSerializerDetail.as_view(), name='AdminMatchAPiList'),
+    path('sport/matchteamplayer/', sport.AdminMatchTeamPlayerSerializerList.as_view(), name='AdminMatchTeamPlayerAPiList'),
+    path('sport/matchteamplayer/<int:pk>/', sport.AdminMatchTeamPlayerSerializerDetail.as_view(), name='AdminMatchTeamPlayerAPiList'),
 
 
 

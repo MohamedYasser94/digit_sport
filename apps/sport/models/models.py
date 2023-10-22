@@ -600,7 +600,7 @@ class Teams(models.Model):
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
     has_jersey = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    player_count = models.IntegerField(null=True, blank=True)
+    player_count = models.IntegerField(null=True, blank=True,default=0)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

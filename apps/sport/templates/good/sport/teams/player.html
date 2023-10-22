@@ -17,7 +17,7 @@
                     <form id="kt_invoice_form" class="form d-flex flex-column flex-lg-row"
 
                           enctype="multipart/form-data" method="POST"
-                          action="{% url 'sport:AdminMatchTeamPlayerAdd' match.slug team.slug %}">
+                          action="{% url 'sport:AdminTeamPlayerAdd'  team.slug %}">
                         {% csrf_token %}
 
                         <!--begin::Main column-->
@@ -27,10 +27,9 @@
                                 <!--begin:::Tab item-->
                                 <li class="nav-item">
                                     <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
-                                       href="#kt_ecommerce_add_product_speaker">{% translate 'Speaker' %}</a>
+                                       href="#kt_ecommerce_add_product_speaker">{% translate 'Team Player' %}</a>
                                 </li>
                                 <!--end:::Tab item-->
-
 
 
                             </ul>
@@ -47,73 +46,94 @@
                                             <!--begin::Card header-->
                                             <div class="card-header">
                                                 <div class="card-title">
-                                                    <h2>{% translate 'Speaker' %}</h2>
+                                                    <h2>{{ team.name }}</h2>
                                                 </div>
                                             </div>
                                             <!--end::Card header-->
-                                         <!--begin::Card body-->
+                                            <!--begin::Card body-->
                                             <div class="card-body pt-0">
-                                            <!--begin::Repeater-->
-                                            <div class="fs-1 text-gray-800 w-bolder mb-17"
-                                                 id="kt_docs_repeater_speaker">
-                                                <!--begin::Form group-->
-                                                <div class="form-group">
-                                                    <div data-repeater-list="kt_docs_repeater_speaker">
-                                                        <div data-repeater-item="">
-                                                            <div class="form-group row mb-5">
-                                                                <div class="col-md-2">
-                                                                    <label class="required form-label">{% translate 'Speaker' %}</label>
-                                                                    <select class="form-select"
-                                                                            name="event_speaker"
-                                                                            data-kt-repeater="select2" required
-                                                                            data-placeholder="Select an option">
-                                                                        <option></option>
-                                                                        {% for item in speakers %}
-                                                                            <option value="{{ item.id }}">{{ item.get_full_name }}</option>
-                                                                        {% endfor %}
-                                                                    </select>
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <label class="required form-label">{% translate 'Start Date' %}</label>
-                                                                    <input class="form-control" type="date"
-                                                                           name="start_date" required/>
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <label class="required form-label">{% translate 'End Date' %}</label>
-                                                                    <input class="form-control" type="date"
-                                                                           name="end_date" required/>
+                                                <!--begin::Repeater-->
+                                                <div class="fs-1 text-gray-800 w-bolder mb-17"
+                                                     id="kt_docs_repeater_speaker">
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <div data-repeater-list="kt_docs_repeater_speaker">
+                                                            <div data-repeater-item="">
+                                                                <div class="form-group row mb-5">
+                                                                    <div class="col-md-2">
+                                                                        <label class="required form-label">{% translate 'Player' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_player"
+                                                                                data-kt-repeater="select2" required
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for item in players %}
+                                                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class="required form-label">{% translate 'Start Date' %}</label>
+                                                                        <input class="form-control" type="date"
+                                                                               name="start_date" required/>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class=" form-label">{% translate 'Position' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_position"
+                                                                                data-kt-repeater="select2"
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for value, text in transfer_form.position.field.choices %}
+                                                                                <option value="{{ value }}">{{ text }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
 
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <label class="required form-label">{% translate 'Start Time' %}</label>
-                                                                    <input class="form-control" type="time"
-                                                                           name="start_time" required/>
-                                                                </div>
-                                                                <div class="col-md-2">
-                                                                    <label class="required form-label">{% translate 'End Time' %}</label>
-                                                                    <input class="form-control" type="time"
-                                                                           name="end_time" required/>
-                                                                </div>
-                                                                <div class="col-md-1">
-                                                                    <a href="javascript:" data-repeater-delete=""
-                                                                       class="btn btn-sm btn-light-danger mt-3 mt-md-9">
-                                                                        <i class="la la-trash-o fs-3"></i>Delete</a>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class=" form-label">{% translate 'From Team' %}</label>
+                                                                         <select class="form-select"
+                                                                                name="from_team"
+                                                                                data-kt-repeater="select2"
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for value, text in transfer_form.from_team.field.choices %}
+                                                                                <option value="{{ value }}">{{ text }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class=" form-label">{% translate 'To Team' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="to_team"
+                                                                                data-kt-repeater="select2"
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for value, text in transfer_form.to_team.field.choices %}
+                                                                                <option value="{{ value }}">{{ text }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-1">
+                                                                        <a href="javascript:" data-repeater-delete=""
+                                                                           class="btn btn-sm btn-light-danger mt-3 mt-md-9">
+                                                                            <i class="la la-trash-o fs-3"></i>Delete</a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <!--end::Form group-->
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <a href="javascript:" data-repeater-create=""
+                                                           class="btn btn-light-primary">
+                                                            <i class="la la-plus"></i>Add</a>
+                                                    </div>
+                                                    <!--end::Form group-->
                                                 </div>
-                                                <!--end::Form group-->
-                                                <!--begin::Form group-->
-                                                <div class="form-group">
-                                                    <a href="javascript:" data-repeater-create=""
-                                                       class="btn btn-light-primary">
-                                                        <i class="la la-plus"></i>Add</a>
-                                                </div>
-                                                <!--end::Form group-->
+                                                <!--end::Repeater-->
                                             </div>
-                                            <!--end::Repeater-->
-                                              </div>
                                             <!--end::Card header-->
                                         </div>
                                         <!--end::Variations-->
@@ -124,7 +144,6 @@
 
                                 </div>
                                 <!--end::Tab pane-->
-
 
 
                             </div>
@@ -457,7 +476,7 @@
             KTFormRepeaterSponsor.init();
         });
     </script>
-     <script>
+    <script>
         "use strict";
         var KTFormRepeaterEmployee = {
             init: function () {
@@ -485,7 +504,7 @@
             KTFormRepeaterEmployee.init();
         });
     </script>
-     <script>
+    <script>
         "use strict";
         var KTFormRepeaterCustody = {
             init: function () {

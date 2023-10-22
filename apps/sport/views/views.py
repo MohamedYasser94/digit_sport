@@ -917,6 +917,58 @@ def AdminTeamsDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
 
 
+@authenticated_staf
+@staff_only
+def AdminTeamPlayerAdd(request, slug):
+    team = Teams.objects.get(slug=slug)
+    players = Players.objects.filter(in_team='No')
+    if request.method == "POST":
+        players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
+        transfer_form = AdminTransfersForm(request.POST or None, request.FILES or None)
+        if players_form:
+            team_player = request.POST.getlist('[team_player]')
+            start_date = request.POST.getlist('[start_date]')
+            team_position = request.POST.getlist('[team_position]')
+            from_team = request.POST.getlist('[from_team]')
+            to_team = request.POST.getlist('[to_team]')
+
+            print(request.POST)
+            for player, date, position, f_team, t_team in zip(team_player, start_date, team_position, from_team, to_team):
+
+                player_object = Players.objects.get(id=player)
+                player_object.owner_model = ContentType.objects.get(model = 'Teams')
+                player_object.owner_id = team.id
+                player_object.in_team = 'Yes'
+                player_object.save()
+                if f_team == None or f_team == '':
+                    f_team = None
+                else:
+                    f_team = Teams.objects.get(id=f_team)
+                if t_team == None or t_team == '':
+                    t_team = None
+                else:
+                    t_team = Teams.objects.get(id=t_team)
+                transfer_object = Transfers(player=player_object, date=date, position=position,
+                                            from_team=f_team, to_team=t_team)
+                transfer_object.save()
+                team_object = Teams.objects.get(slug=slug)
+                team_object.player_count += 1
+                team_object.save()
+
+
+            messages.success(request, _("Player Add Successfully"), extra_tags='Teams')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+
+
+    else:
+        messages.error(request, _("Player Not Add , Please Try Again"), extra_tags='Teams')
+    context = {'team': team, 'players': players,
+                 'players_form': AdminPlayersForm(), 'transfer_form': AdminTransfersForm(),
+               'current_page': _('Add Player'),
+               'prev_Page': _('Teams'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/teams/player.html', context)
+
+
 
 ##########################  Players ################################
 @authenticated_staf
@@ -1048,7 +1100,6 @@ def AdminMatchList(request):
             location = request.POST.get('location')
             start_time = request.POST.get('start_time')
 
-
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
 
@@ -1138,25 +1189,66 @@ def AdminMatchDelete(request, slug):
 
 @authenticated_staf
 @staff_only
+def AdminMatchTeamPlayerList(request,slug,team_slug):
+    match = Match.objects.get(slug=slug)
+    team = Teams.objects.get(slug=team_slug)
+    players = Players.objects.filter(owner_model=ContentType.objects.get(model='Teams'), owner_id=team.id)
+    match_team_players = MatchTeamPlayer.objects.filter(match=match,team=team)
+
+
+    if request.method == "POST":
+        players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
+        match_team_player_form = AdminMatchTeamPlayerForm(request.POST or None, request.FILES or None)
+        if match_team_player_form:
+            team_player = request.POST.getlist('[team_player]')
+            team_position = request.POST.getlist('[team_position]')
+
+            for player, position in zip(team_player, team_position):
+                player = Players.objects.get(id=player)
+                match_team_player_object = MatchTeamPlayer(
+                    match=match, team=team, player=player, position=position
+                )
+                match_team_player_object.save()
+            messages.success(request, _("Match Team Player Add Successfully"), extra_tags='Match Team Player')
+            return HttpResponseRedirect(
+                reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'slug': slug, 'team_slug': team_slug}))
+        else:
+            messages.error(request, _("Match Team Player Not Add , Please Try Again"), extra_tags='Match Team Player')
+    else:
+        context = {'match': match, 'team': team, 'players': players,
+                     'match_team_players': match_team_players,
+                   'players_form': AdminPlayersForm(),
+                   'match_team_player_form': AdminMatchTeamPlayerForm(), 'current_page': _('Match Team Player')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/match/player.html', context)
+
+
+@authenticated_staf
+@staff_only
 def AdminMatchTeamPlayerAdd(request,slug,team_slug):
     match = Match.objects.get(slug=slug)
     team = Teams.objects.get(slug=team_slug)
-    players = Players.objects.filter(sport=match.sport)
+    players = Players.objects.filter(owner_model=ContentType.objects.get(model='Teams'),owner_id=team.id)
     if request.method == "POST":
+        players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
         match_team_player_form = AdminMatchTeamPlayerForm(request.POST or None, request.FILES or None)
         if match_team_player_form:
-            player = request.POST.get('player')
-            player = Players.objects.get(id=player)
-            match_team_player_object = MatchTeamPlayer(
-                match=match,team=team,player=player
-            )
-            match_team_player_object.save()
+            team_player = request.POST.getlist('[team_player]')
+            team_position = request.POST.getlist('[team_position]')
+
+
+            for player,position in zip(team_player,team_position ):
+                player = Players.objects.get(id=player)
+                match_team_player_object = MatchTeamPlayer(
+                    match=match,team=team,player=player,position=position
+                )
+                match_team_player_object.save()
             messages.success(request, _("Match Team Player Add Successfully"), extra_tags='Match Team Player')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList',kwargs={'slug':slug,'team_slug':team_slug}))
         else:
             messages.error(request, _("Match Team Player Not Add , Please Try Again"), extra_tags='Match Team Player')
     else:
-        context = {'match': match,'team':team,'players':players, 'match_team_player_form': AdminMatchTeamPlayerForm(), 'current_page': _('Match Team Player')}
+        context = {'match': match,'team':team,'players':players,'players_form': AdminPlayersForm(),
+                   'match_team_player_form': AdminMatchTeamPlayerForm(), 'current_page': _('Match Team Player')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/match/player.html', context)
 
 

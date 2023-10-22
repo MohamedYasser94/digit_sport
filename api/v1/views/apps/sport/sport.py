@@ -777,7 +777,31 @@ class AdminMatchSerializerDetail(RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return MatchSerializer
+            return MatchDetailsSerializer
         else:
             return MatchSerializer
+
+
+class AdminMatchTeamPlayerSerializerList(ListCreateAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
+
+
+class AdminMatchTeamPlayerSerializerDetail(RetrieveUpdateDestroyAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
 

@@ -182,6 +182,28 @@ class BookmakersSerializer(serializers.ModelSerializer)    :
 
 
 class MatchSerializer(serializers.ModelSerializer)    :
+
     class Meta:
         model = Match
+        fields = "__all__"
+
+
+class MatchDetailsSerializer(serializers.ModelSerializer):
+    match_team_player = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Match
+        fields = "__all__"
+
+    def get_match_team_player(self, obj):
+        print( obj)
+        return MatchTeamPlayerSerializer(MatchTeamPlayer.objects.filter(match=obj.id,),many=True).data
+
+
+
+
+class MatchTeamPlayerSerializer(serializers.ModelSerializer)    :
+    class Meta:
+        model = MatchTeamPlayer
         fields = "__all__"

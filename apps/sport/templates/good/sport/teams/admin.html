@@ -79,7 +79,7 @@
                             <th class="min-w-20px">{% translate '#' %}</th>
                             <th class="min-w-125px">{% translate 'Name' %}</th>
                             <th class="min-w-125px">{% translate 'Code' %}</th>
-                            <th class="min-w-125px">{% translate 'League' %}</th>
+                            <th class="min-w-125px">{% translate 'Players' %}</th>
                             <th class="min-w-125px">{% translate 'Club' %}</th>
                             <th class="min-w-125px">{% translate 'Sport' %}</th>
                             <th class="min-w-125px">{% translate 'Image' %}</th>
@@ -125,9 +125,9 @@
                                 <!--end::Email=-->
                             <!--begin::Email=-->
                                 <td>
-                                    <a href="#"
+                                    <a href="{% url 'sport:AdminTeamPlayerAdd' item.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.league }}
+                                        {{ item.player_count }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
