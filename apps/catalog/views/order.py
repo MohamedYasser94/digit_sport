@@ -6,8 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
-from api.v1.serializers.order import OrderSerializer, OrderItemSerializer
-from api.v1.views.transaction import RefundTransaction
+from api.v3.serializers.order import OrderSerializer, OrderItemSerializer
+from api.v3.views.transaction import RefundTransaction
 from apps.catalog.models.models import Products
 
 from core.models.core import CommonProfile

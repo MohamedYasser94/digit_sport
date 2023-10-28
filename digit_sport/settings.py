@@ -40,7 +40,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', 'digithup.com', 'xtremeeg.com']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', 'digithup.com', 'aljwala.digithup.net']
 
 # Application definition
 
@@ -256,11 +256,12 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.
 
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
-REST_FRAMEWORK = {'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'EXCEPTION_HANDLER': 'core.utils.exceptions.core_exception_handler', 'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': [# 'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication', ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', 'PAGE_SIZE': 10
+    'DEFAULT_PAGINATION_CLASS': 'core.utils.pagination.PageNumberPagination', 'PAGE_SIZE': 5
 
 }
 

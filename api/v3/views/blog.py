@@ -1,11 +1,9 @@
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from api.v1.serializers.blog import AdminBlogArticleSerializer, AdminBlogCategoriesSerializer, \
+from api.v3.serializers.blog import AdminBlogArticleSerializer, AdminBlogCategoriesSerializer, \
     AdminBlogTagsiesSerializer, AdminBlogServicesSerializer
 from core.models.blog import BlogArticle, BlogCategories, CommonTags, BlogServices
 
@@ -15,7 +13,20 @@ class BlogCategoriesList(ListCreateAPIView):
     queryset = BlogCategories.objects.all()
     serializer_class = AdminBlogCategoriesSerializer
 
+def AdminBlogCategoriesSerializerList(request):
+    blog_list = BlogCategories.objects.all()
+    success = True
+    data ={}
+    message = "Send From Django API"
+    serializer = AdminBlogCategoriesSerializer(blog_list, many=True)
 
+    data = {
+        'success': success,
+        'data': serializer.data,
+        'message': message,
+
+    }
+    return JsonResponse(data, safe=False)
 
 class BlogCategoriesDetail(RetrieveUpdateDestroyAPIView):
     queryset = BlogCategories.objects.all()
@@ -55,6 +66,21 @@ class BlogArticleList(ListCreateAPIView):
     queryset = BlogArticle.objects.all()
     serializer_class = AdminBlogArticleSerializer
 
+
+def AdminBlogArticleSerializerList(request):
+    blog_list = BlogArticle.objects.all()
+    success = True
+    data ={}
+    message = "Send From Django API"
+    serializer = AdminBlogArticleSerializer(blog_list, many=True)
+
+    data = {
+        'success': success,
+        'data': serializer.data,
+        'message': message,
+
+    }
+    return JsonResponse(data, safe=False)
 
 
 class BlogArticleDetail(RetrieveUpdateDestroyAPIView):

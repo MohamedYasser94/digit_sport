@@ -1,7 +1,10 @@
+from django.http import JsonResponse
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from api.v1.serializers.sport import *
+from api.v3.serializers.blog import AdminBlogArticleSerializer, AdminBlogVideoSerializer
+from api.v3.serializers.sport import *
+from core.models.blog import BlogArticle, BlogVideo
 
 
 class SportCategoryList(ListCreateAPIView):
@@ -15,6 +18,7 @@ class SportCategoryList(ListCreateAPIView):
         else:
             return AdminSportCategorySerializer
 
+
 class SportCategoryDetail(RetrieveUpdateDestroyAPIView):
     queryset = SportCategory.objects.all()
     serializer_class = AdminSportCategorySerializer
@@ -26,30 +30,32 @@ class SportCategoryDetail(RetrieveUpdateDestroyAPIView):
         else:
             return AdminSportCategorySerializer
 
+
 class AdminSportSerializerList(ListCreateAPIView):
     queryset = Sport.objects.all()
-    serializer_class = AdminSportSerializer
+    serializer_class = SportSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return AdminSportSerializer
+            return SportSerializer
         else:
-            return AdminSportSerializer
+            return SportSerializer
 
 
 class AdminSportSerializerDetail(RetrieveUpdateDestroyAPIView):
     queryset = Sport.objects.all()
-    serializer_class = AdminSportSerializer
+    serializer_class = SportSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return AdminSportSerializer
+            return SportSerializer
         else:
-            return AdminSportSerializer
+            return SportSerializer
 
-class AdminLeaguesSerializerList(ListCreateAPIView):
+
+class AdminLeaguesSerializerListold(ListCreateAPIView):
     queryset = Leagues.objects.all()
     serializer_class = LeaguesSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -59,11 +65,57 @@ class AdminLeaguesSerializerList(ListCreateAPIView):
             return LeaguesSerializer
         else:
             return LeaguesSerializer
+
+
+def AdminLeaguesSerializerList(request):
+    league_list = Leagues.objects.all()
+    success = True
+    data = {}
+    message = "Send From Django API"
+    serializer = LeaguesSerializer(league_list, many=True)
+
+    data = {'success': success, 'data': serializer.data, 'message': message,
+
+    }
+    return JsonResponse(data, safe=False)
+
 
 class AdminLeaguesSerializerDetail(RetrieveUpdateDestroyAPIView):
     queryset = Leagues.objects.all()
     serializer_class = LeaguesSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return LeaguesSerializer
+        else:
+            return LeaguesSerializer
+
+
+class AdminLeaguesAPiByCountryList(ListCreateAPIView):
+    queryset = Leagues.objects.all()
+    serializer_class = LeaguesSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        country = self.kwargs['country']
+        return Leagues.objects.filter(country=country)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return LeaguesSerializer
+        else:
+            return LeaguesSerializer
+
+
+class AdminLeaguesAPiSearchList(ListCreateAPIView):
+    queryset = Leagues.objects.all()
+    serializer_class = LeaguesSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        search = self.kwargs['name']
+        return Leagues.objects.filter(name__icontains=search)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -83,6 +135,7 @@ class AdminSeasonSerializerList(ListCreateAPIView):
         else:
             return SeasonSerializer
 
+
 class AdminSeasonSerializerDetail(RetrieveUpdateDestroyAPIView):
     queryset = Season.objects.all()
     serializer_class = SeasonSerializer
@@ -94,6 +147,17 @@ class AdminSeasonSerializerDetail(RetrieveUpdateDestroyAPIView):
         else:
             return SeasonSerializer
 
+
+class AdminSeasonAPiByTeamList(ListCreateAPIView):
+    queryset = Season.objects.all()
+    serializer_class = SeasonSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return SeasonSerializer
+        else:
+            return SeasonSerializer
 
 
 class AdminStagesSerializerList(ListCreateAPIView):
@@ -264,7 +328,6 @@ class AdminFixturesSerializerDetail(RetrieveUpdateDestroyAPIView):
             return FixturesSerializer
 
 
-
 class AdminLiveScoresSerializerList(ListCreateAPIView):
     queryset = LiveScores.objects.all()
     serializer_class = LiveScoresSerializer
@@ -287,7 +350,6 @@ class AdminLiveScoresSerializerDetail(RetrieveUpdateDestroyAPIView):
             return LiveScoresSerializer
         else:
             return LiveScoresSerializer
-
 
 
 class AdminClubsSerializerList(ListCreateAPIView):
@@ -313,7 +375,8 @@ class AdminClubsSerializerDetail(RetrieveUpdateDestroyAPIView):
         else:
             return ClubsSerializer
 
-class AdminTeamsSerializerList(ListCreateAPIView):
+
+class AdminTeamsSerializerListold(ListCreateAPIView):
     queryset = Teams.objects.all()
     serializer_class = TeamsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -323,6 +386,19 @@ class AdminTeamsSerializerList(ListCreateAPIView):
             return TeamsSerializer
         else:
             return TeamsSerializer
+
+
+def AdminTeamsSerializerList(request):
+    team_list = Teams.objects.all()
+    success = True
+    data = {}
+    message = "Send From Django API"
+    serializer = TeamsSerializer(team_list, many=True)
+
+    data = {'success': success, 'data': serializer.data, 'message': message,
+
+    }
+    return JsonResponse(data, safe=False)
 
 
 class AdminTeamsSerializerDetail(RetrieveUpdateDestroyAPIView):
@@ -337,10 +413,30 @@ class AdminTeamsSerializerDetail(RetrieveUpdateDestroyAPIView):
             return TeamsSerializer
 
 
-class AdminTeamsSerializerDetail(RetrieveUpdateDestroyAPIView):
+class AdminTeamsAPiByCountryList(ListCreateAPIView):
     queryset = Teams.objects.all()
     serializer_class = TeamsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        country = self.kwargs['country']
+        return Teams.objects.filter(country=country)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TeamsSerializer
+        else:
+            return TeamsSerializer
+
+
+class AdminTeamsAPiSearchList(ListCreateAPIView):
+    queryset = Teams.objects.all()
+    serializer_class = TeamsSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        search = self.kwargs['name']
+        return Teams.objects.filter(name__icontains=search)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -461,6 +557,69 @@ class AdminPlayersSerializerDetail(RetrieveUpdateDestroyAPIView):
     queryset = Players.objects.all()
     serializer_class = PlayersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PlayersSerializer
+        else:
+            return PlayersSerializer
+
+
+class AdminPlayersAPiLatestList(ListCreateAPIView):
+    queryset = Players.objects.all()
+    serializer_class = PlayersSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        return Players.objects.all().order_by('-id')[:10]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PlayersSerializer
+        else:
+            return PlayersSerializer
+
+
+class AdminPlayersAPiByCountryList(ListCreateAPIView):
+    queryset = Players.objects.all()
+    serializer_class = PlayersSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        country = self.kwargs['country']
+        return Players.objects.filter(country=country)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PlayersSerializer
+        else:
+            return PlayersSerializer
+
+
+class AdminPlayersAPiByTeamList(ListCreateAPIView):
+    queryset = Players.objects.all()
+    serializer_class = PlayersSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        team = self.kwargs['team']
+        return Players.objects.filter(team=team)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PlayersSerializer
+        else:
+            return PlayersSerializer
+
+
+class AdminPlayersAPiSearchList(ListCreateAPIView):
+    queryset = Players.objects.all()
+    serializer_class = PlayersSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        search = self.kwargs['name']
+        return Players.objects.filter(name__icontains=search)
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -637,7 +796,6 @@ class AdminRefereesSerializerDetail(RetrieveUpdateDestroyAPIView):
             return RefereesSerializer
 
 
-
 class AdminTransfersSerializerList(ListCreateAPIView):
     queryset = Transfers.objects.all()
     serializer_class = TransfersSerializer
@@ -782,6 +940,65 @@ class AdminMatchSerializerDetail(RetrieveUpdateDestroyAPIView):
             return MatchSerializer
 
 
+class AdminMatchAPiLatestList(ListCreateAPIView):
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        return Match.objects.all().order_by('-id')[:10]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchSerializer
+        else:
+            return MatchSerializer
+
+
+class AdminMatchAPiByLeagueList(ListCreateAPIView):
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchSerializer
+        else:
+            return MatchSerializer
+
+
+class AdminMatchAPiByTeamList(ListCreateAPIView):
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        team = self.kwargs['team']
+        return Match.objects.filter(team=team)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchSerializer
+        else:
+            return MatchSerializer
+
+
+class AdminMatchAPiSearchList(ListCreateAPIView):
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        search = self.kwargs['name']
+        return Match.objects.filter(name__icontains=search)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchSerializer
+        else:
+            return MatchSerializer
+
+
 class AdminMatchTeamPlayerSerializerList(ListCreateAPIView):
     queryset = MatchTeamPlayer.objects.all()
     serializer_class = MatchTeamPlayerSerializer
@@ -805,3 +1022,87 @@ class AdminMatchTeamPlayerSerializerDetail(RetrieveUpdateDestroyAPIView):
         else:
             return MatchTeamPlayerSerializer
 
+
+class AdminMatchTeamPlayerAPiByTeamList(ListCreateAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
+
+
+class AdminMatchTeamPlayerAPiByMatchList(ListCreateAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
+
+
+class AdminMatchTeamPlayerAPiByPlayerList(ListCreateAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
+
+
+class AdminMatchTeamPlayerAPiSearchList(ListCreateAPIView):
+    queryset = MatchTeamPlayer.objects.all()
+    serializer_class = MatchTeamPlayerSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MatchTeamPlayerSerializer
+        else:
+            return MatchTeamPlayerSerializer
+
+
+############# Mix Serializer #####################
+def SportByCountryApiList(request, country):
+    print()
+    if country == '' or country == None or country == 'all' or country == ':country':
+        country = 'Kuwait'
+    else:
+        country = country
+    sport_list = Sport.objects.filter(country=country)
+    league_list = Leagues.objects.filter(country=country)
+    team_list = Teams.objects.filter(country=country)
+    match_list = Match.objects.filter(league__country=country)
+    news_list = BlogArticle.objects.filter(country=country)
+    video_list = BlogVideo.objects.filter(country=country)
+    success = True
+    message = f"Send From Django API mix {country}"
+    sport_serializer = SportSerializer(sport_list, many=True)
+    league_serializer = LeaguesSerializer(league_list, many=True)
+    team_serializer = TeamsSerializer(team_list, many=True)
+    match_serializer = MatchSerializer(match_list, many=True)
+    news_serializer = AdminBlogArticleSerializer(news_list, many=True)
+    video_serializer = AdminBlogVideoSerializer(video_list, many=True)
+
+    sport_data = {'sport': sport_serializer.data, 'league': league_serializer.data, 'team': team_serializer.data,
+                  'match': match_serializer.data, 'news': news_serializer.data, 'video': video_serializer.data}
+
+    sport_data = {'country': country,
+        'sport': sport_serializer.data,
+                  }
+
+
+
+    data = {'success': success, 'data': sport_data, 'message': message,
+
+    }
+    return JsonResponse(data, safe=False)

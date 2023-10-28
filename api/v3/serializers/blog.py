@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models.blog import BlogArticle, BlogCategories, CommonTags, BlogServices
+from core.models.blog import BlogArticle, BlogCategories, CommonTags, BlogServices, BlogVideo
 from core.models.localization import Language
 
 
@@ -32,4 +32,7 @@ class AdminBlogArticleSerializer(serializers.ModelSerializer)    :
         }
 
 
-
+class AdminBlogVideoSerializer(serializers.ModelSerializer)    :
+    class Meta:
+        model = BlogVideo
+        fields = "__all__"

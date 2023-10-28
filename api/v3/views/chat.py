@@ -11,7 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from api.v1.serializers.chat import AdminRoomSerializer, AdminMessageSerializer
+from api.v3.serializers.chat import AdminRoomSerializer, AdminMessageSerializer
 from core.models.chat import PrivateChatRoom, RoomChatMessage, Room, Message
 from core.models.social import FriendList
 from core.utils.chat import find_or_create_private_chat, find_or_create_room

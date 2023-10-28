@@ -177,7 +177,7 @@
                                         data-placeholder="Select an option"
                                         id="kt_ecommerce_add_product_status_select"
                                         name="pub_type"
-                                        required>
+                                        >
                                     <option value="{{ article.pub_type }}">{{ article.pub_type }}</option>
                                     {% for value, text in article_form.pub_type.field.choices %}
                                         <option value="{{ value }}">{{ text }}</option>
@@ -234,7 +234,7 @@
                                 <!--begin::Select2-->
                                 <select class="form-select mb-2" data-control="select2"
                                         data-placeholder="Select an option"
-                                        data-allow-clear="true" name="category" required>
+                                        data-allow-clear="true" name="category" >
                                     <option value="{{ article.category.id }}">{{ article.category.title }}</option>
                                     {% for value, text in article_form.category.field.choices %}
                                         <option value="{{ value }}">{{ text }}</option>
@@ -406,6 +406,7 @@
                                                 <!--end::Input group-->
                                             </div>
                                             <!--end:Title-->
+
                                             <!--begin::Title-->
                                             <div class="d-flex flex-wrap gap-5">
                                                 <!--begin::Input group-->
@@ -435,6 +436,61 @@
                                                     <!--begin::Description-->
                                                     <div class="text-muted fs-7">{% translate 'A product Keyword is required an recommended to be unique.' %}</div>
                                                     <!--end::Description-->
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                            <!--end:Title-->
+                                             <!--begin::Title-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Author' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" name="author" value="{{ article.author }}"
+                                                           class="form-control mb-2"/>
+                                                    <!--end::Input-->
+
+                                                </div>
+                                                <!--end::Input group-->
+
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Country' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select class="form-select mb-2" data-control="select2"
+                                                            data-placeholder="Select an option"
+                                                            data-allow-clear="true" name="country">
+                                                        <option value="{{ article.country }}">{{ article.country }}</option>
+                                                        <option value="">{% translate 'Country' %}</option>
+                                                        {% for value, text in article_form.country.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <!--end::Input-->
+
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Sport' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select class="form-select mb-2" data-control="select2"
+                                                            data-placeholder="Select an option"
+                                                            data-allow-clear="true" name="sport">
+                                                        <option value="{{ article.sport.id }}">{{ article.sport }}</option>
+                                                        <option value="">{% translate 'Sport' %}</option>
+                                                        {% for value, text in article_form.sport.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <!--end::Input-->
+
                                                 </div>
                                                 <!--end::Input group-->
                                             </div>

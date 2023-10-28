@@ -1,0 +1,143 @@
+from django.urls import path
+
+from api.v3.views.apps.sport import sport
+from api.v3.views import blog
+
+app_name = 'api'
+# DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
+urlpatterns = [
+
+#     ##########User API################
+#     path('register/', RegisterView.as_view(), name="register"),
+#     path('login/', LoginAPIView.as_view(), name="login"),
+#     path('logout/', LogoutAPIView.as_view(), name="logout"),
+#     path('email-verify/', VerifyEmail.as_view(), name="email-verify"),
+#     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+#     path('request-reset-email/', RequestPasswordResetEmail.as_view(),
+#          name="request-reset-email"),
+#     path('password-reset/<uidb64>/<token>/',
+#          PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
+#     path('password-reset-complete', SetNewPasswordAPIView.as_view(),
+#          name='password-reset-complete'),
+#     path('user/singup/check/data/<str:data>/', ApiCheckUserDataExist, name='ApiCheckUserDataExist'),
+#     path('code/<str:coupon>/', ApiPromoCodeClient, name='ApiPromoCodeClient'),
+#
+# ########## Notification   #########
+#
+#     path('notification/', AdminApiNotificationList, name='AdminApiNotificationList'),
+#
+#     ########## localization   #########
+#
+#     path('lang/', LanguageListAPIView.as_view(), name='AdminLanguageApiListView'),
+
+    ##################### Blog API ########################
+    path('v3/blog/category/', blog.AdminBlogCategoriesSerializerList, name='AdminBlogCategoriesAPiList'),
+    path('v3/blog/category/<int:pk>/', blog.BlogCategoriesDetail.as_view(), name='AdminBlogCategoriesAPiList'),
+    path('v3/blog/tag/', blog.BlogTagsList.as_view(), name='AdminBlogTagsAPiList'),
+    path('v3/blog/tag/<int:pk>/', blog.BlogTagsDetail.as_view(), name='AdminBlogTagsAPiList'),
+    path('v3/blog/service/', blog.BlogServicesList.as_view(), name='AdminBlogServicesAPiList'),
+    path('v3/blog/service/<int:pk>/', blog.BlogServicesDetail.as_view(), name='AdminBlogServicesAPiList'),
+    path('v3/blog/article/', blog.AdminBlogArticleSerializerList, name='AdminBlogArticleAPiList'),
+    path('v3/blog/article/<int:pk>/', blog.BlogArticleDetail.as_view(), name='AdminBlogArticleAPiList'),
+
+
+    ##################### Mix Sport API ########################
+
+    path('v3/genral/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
+
+    ##################### Sport API ########################
+    path('v3/sport/category/', sport.SportCategoryList.as_view(), name='AdminSportCategoryAPiList'),
+    path('v3/sport/category/<int:pk>/', sport.SportCategoryDetail.as_view(), name='AdminSportCategoryAPiList'),
+    path('v3/sport/v3/sport/', sport.AdminSportSerializerList.as_view(), name='AdminSportAPiList'),
+    path('v3/sport/v3/sport/<int:pk>/', sport.AdminSportSerializerDetail.as_view(), name='AdminSportAPiList'),
+    path('v3/sport/leagues/', sport.AdminLeaguesSerializerList, name='AdminLeaguesAPiList'),
+    path('v3/sport/leagues/<int:pk>/', sport.AdminLeaguesSerializerDetail.as_view(), name='AdminLeaguesAPiList'),
+    path('v3/sport/leagues/countries/<str:country>/', sport.AdminLeaguesAPiByCountryList.as_view(), name='AdminLeaguesAPiByCountryList'),
+    path('v3/sport/leagues/search/<str:name>/', sport.AdminLeaguesAPiSearchList.as_view(), name='AdminLeaguesAPiSearchList'),
+    path('v3/sport/seasons/', sport.AdminSeasonSerializerList.as_view(), name='AdminSeasonAPiList'),
+    path('v3/sport/seasons/<int:pk>/', sport.AdminSeasonSerializerDetail.as_view(), name='AdminSeasonAPiList'),
+    path('v3/sport/seasons/teams/<int:pk>/', sport.AdminSeasonAPiByTeamList.as_view(), name='AdminSeasonAPiByTeamList'),
+    path('v3/sport/stages/', sport.AdminStagesSerializerList.as_view(), name='AdminStagesAPiList'),
+    path('v3/sport/stages/<int:pk>/', sport.AdminStagesSerializerDetail.as_view(), name='AdminStagesAPiList'),
+    path('v3/sport/group/', sport.AdminGroupSerializerList.as_view(), name='AdminGroupAPiList'),
+    path('v3/sport/group/<int:pk>/', sport.AdminGroupSerializerDetail.as_view(), name='AdminGroupAPiList'),
+    path('v3/sport/aggregate/', sport.AdminAggregateSerializerList.as_view(), name='AdminAggregateAPiList'),
+    path('v3/sport/aggregate/<int:pk>/', sport.AdminAggregateSerializerDetail.as_view(), name='AdminAggregateAPiList'),
+    path('v3/sport/round/', sport.AdminRoundSerializerList.as_view(), name='AdminRoundAPiList'),
+    path('v3/sport/round/<int:pk>/', sport.AdminRoundSerializerDetail.as_view(), name='AdminRoundAPiList'),
+    path('v3/sport/venues/', sport.AdminVenuesSerializerList.as_view(), name='AdminVenuesAPiList'),
+    path('v3/sport/venues/<int:pk>/', sport.AdminVenuesSerializerDetail.as_view(), name='AdminVenuesAPiList'),
+    path('v3/sport/state/', sport.AdminSportStateSerializerList.as_view(), name='AdminSportStateAPiList'),
+    path('v3/sport/state/<int:pk>/', sport.AdminSportStateSerializerDetail.as_view(), name='AdminSportStateAPiList'),
+    path('v3/sport/fixtures/', sport.AdminFixturesSerializerList.as_view(), name='AdminFixturesAPiList'),
+    path('v3/sport/fixtures/<int:pk>/', sport.AdminFixturesSerializerDetail.as_view(), name='AdminFixturesAPiList'),
+    path('v3/sport/livescores/', sport.AdminLiveScoresSerializerList.as_view(), name='AdminLiveScoresAPiList'),
+    path('v3/sport/livescores/<int:pk>/', sport.AdminLiveScoresSerializerDetail.as_view(), name='AdminLiveScoresAPiList'),
+    path('v3/sport/clubs/', sport.AdminClubsSerializerList.as_view(), name='AdminClubsAPiList'),
+    path('v3/sport/clubs/<int:pk>/', sport.AdminClubsSerializerDetail.as_view(), name='AdminClubsAPiList'),
+    path('v3/sport/teams/', sport.AdminTeamsSerializerList, name='AdminTeamsAPiList'),
+
+    path('v3/sport/teams/<int:pk>/', sport.AdminTeamsSerializerDetail.as_view(), name='AdminTeamsAPiList'),
+    path('v3/sport/teams/countries/<str:country>/', sport.AdminTeamsAPiByCountryList.as_view(), name='AdminTeamsAPiByCountryList'),
+    path('v3/sport/teams/search/<str:name>/', sport.AdminTeamsAPiSearchList.as_view(), name='AdminTeamsAPiSearchList'),
+    path('v3/sport/statistics/', sport.AdminStatisticsSerializerList.as_view(), name='AdminStatisticsAPiList'),
+    path('v3/sport/statistics/<int:pk>/', sport.AdminStatisticsSerializerDetail.as_view(), name='AdminStatisticsAPiList'),
+    path('v3/sport/standings/', sport.AdminStandingsSerializerList.as_view(), name='AdminStandingsAPiList'),
+    path('v3/sport/standings/<int:pk>/', sport.AdminStandingsSerializerDetail.as_view(), name='AdminStandingsAPiList'),
+    path('v3/sport/livestandings/', sport.AdminLiveStandingsSerializerList.as_view(), name='AdminLiveStandingsAPiList'),
+    path('v3/sport/livestandings/<int:pk>/', sport.AdminLiveStandingsSerializerDetail.as_view(), name='AdminLiveStandingsAPiList'),
+    path('v3/sport/schedules/', sport.AdminSchedulesSerializerList.as_view(), name='AdminSchedulesAPiList'),
+    path('v3/sport/schedules/<int:pk>/', sport.AdminSchedulesSerializerDetail.as_view(), name='AdminSchedulesAPiList'),
+    path('v3/sport/players/', sport.AdminPlayersSerializerList.as_view(), name='AdminPlayersAPiList'),
+    path('v3/sport/players/<int:pk>/', sport.AdminPlayersSerializerDetail.as_view(), name='AdminPlayersAPiList'),
+    path('v3/sport/players/countries/<str:country>/', sport.AdminPlayersAPiByCountryList.as_view(), name='AdminPlayersAPiByCountryList'),
+    path('v3/sport/players/search/<str:name>/', sport.AdminPlayersAPiSearchList.as_view(), name='AdminPlayersAPiSearchList'),
+    path('v3/sport/players/latest/', sport.AdminPlayersAPiLatestList.as_view(), name='AdminPlayersAPiLatestList'),
+    path('v3/sport/squads/', sport.AdminSquadsSerializerList.as_view(), name='AdminSquadsAPiList'),
+    path('v3/sport/squads/<int:pk>/', sport.AdminSquadsSerializerDetail.as_view(), name='AdminSquadsAPiList'),
+    path('v3/sport/tVstations/', sport.AdminTVStationsSerializerList.as_view(), name='AdminTVstationsAPiList'),
+    path('v3/sport/tVstations/<int:pk>/', sport.AdminTVStationsSerializerDetail.as_view(), name='AdminTVstationsAPiList'),
+    path('v3/sport/coaches/', sport.AdminCoachesSerializerList.as_view(), name='AdminCoachesAPiList'),
+    path('v3/sport/coaches/<int:pk>/', sport.AdminCoachesSerializerDetail.as_view(), name='AdminCoachesAPiList'),
+    path('v3/sport/topscorers/', sport.AdminTopScorersSerializerList.as_view(), name='AdminTopScorersAPiList'),
+    path('v3/sport/topscorers/<int:pk>/', sport.AdminTopScorersSerializerDetail.as_view(), name='AdminTopScorersAPiList'),
+    path('v3/sport/rivals/', sport.AdminRivalsSerializerList.as_view(), name='AdminRivalsAPiList'),
+    path('v3/sport/rivals/<int:pk>/', sport.AdminRivalsSerializerDetail.as_view(), name='AdminRivalsAPiList'),
+    path('v3/sport/commentaries/', sport.AdminCommentariesSerializerList.as_view(), name='AdminCommentariesAPiList'),
+    path('v3/sport/commentaries/<int:pk>/', sport.AdminCommentariesSerializerDetail.as_view(), name='AdminCommentariesAPiList'),
+    path('v3/sport/referees/', sport.AdminRefereesSerializerList.as_view(), name='AdminRefereesAPiList'),
+    path('v3/sport/referees/<int:pk>/', sport.AdminRefereesSerializerDetail.as_view(), name='AdminRefereesAPiList'),
+    path('v3/sport/transfers/', sport.AdminTransfersSerializerList.as_view(), name='AdminTransfersAPiList'),
+    path('v3/sport/transfers/<int:pk>/', sport.AdminTransfersSerializerDetail.as_view(), name='AdminTransfersAPiList'),
+    path('v3/sport/prematchodds/', sport.AdminPreMatchOddsSerializerList.as_view(), name='AdminPreMatchOddsAPiList'),
+    path('v3/sport/prematchodds/<int:pk>/', sport.AdminPreMatchOddsSerializerDetail.as_view(), name='AdminPreMatchOddsAPiList'),
+    path('v3/sport/inplayodds/', sport.AdminInPlayOddsSerializerList.as_view(), name='AdminInPlayOddsAPiList'),
+    path('v3/sport/inplayodds/<int:pk>/', sport.AdminInPlayOddsSerializerDetail.as_view(), name='AdminInPlayOddsAPiList'),
+    path('v3/sport/markets/', sport.AdminMarketsSerializerList.as_view(), name='AdminMarketsAPiList'),
+    path('v3/sport/markets/<int:pk>/', sport.AdminMarketsSerializerDetail.as_view(), name='AdminMarketsAPiList'),
+    path('v3/sport/bookmakers/', sport.AdminBookmakersSerializerList.as_view(), name='AdminBookmakersAPiList'),
+    path('v3/sport/bookmakers/<int:pk>/', sport.AdminBookmakersSerializerDetail.as_view(), name='AdminBookmakersAPiList'),
+    path('v3/sport/match/', sport.AdminMatchSerializerList.as_view(), name='AdminMatchAPiList'),
+    path('v3/sport/match/<int:pk>/', sport.AdminMatchSerializerDetail.as_view(), name='AdminMatchAPiList'),
+    path('v3/sport/match/latest/', sport.AdminMatchAPiLatestList.as_view(), name='AdminMatchAPiLatestList'),
+    path('v3/sport/match/league/<int:pk>/', sport.AdminMatchAPiByLeagueList.as_view(), name='AdminMatchAPiByLeagueList'),
+    path('v3/sport/match/search/<str:name>/', sport.AdminMatchAPiSearchList.as_view(), name='AdminMatchAPiSearchList'),
+
+    path('v3/sport/matchteamplayer/', sport.AdminMatchTeamPlayerSerializerList.as_view(), name='AdminMatchTeamPlayerAPiList'),
+    path('v3/sport/matchteamplayer/<int:pk>/', sport.AdminMatchTeamPlayerSerializerDetail.as_view(), name='AdminMatchTeamPlayerAPiList'),
+    path('v3/sport/match/matchmatchteamplayer/byteam/<int:pk>/',
+    sport.AdminMatchTeamPlayerAPiByTeamList.as_view(), name='AdminMatchTeamPlayerAPiByTeamList'),
+    path('v3/sport/match/matchteamplayer/bymatch/<int:pk>/', sport.AdminMatchTeamPlayerAPiByMatchList.as_view(), name='AdminMatchTeamPlayerAPiByMatchList'),
+    path('v3/sport/match/matchteamplayer/search/<str:name>/', sport.AdminMatchTeamPlayerAPiSearchList.as_view(), name='AdminMatchTeamPlayerAPiSearchList'),
+
+
+
+
+
+
+
+
+
+
+]
+# scheduler.interval(UserToken.objects.delete_expired_tokens, DELETE_EXPIRED_TOKENS_INTERVAL)

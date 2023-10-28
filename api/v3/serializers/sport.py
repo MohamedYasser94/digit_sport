@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
+from api.v3.serializers.blog import *
 from apps.sport.models.models import  *
+from core.models.blog import *
 
 
 class AdminSportCategorySerializer(serializers.ModelSerializer)    :
@@ -8,10 +10,30 @@ class AdminSportCategorySerializer(serializers.ModelSerializer)    :
         model = SportCategory
         fields = "__all__"
 
-class AdminSportSerializer(serializers.ModelSerializer)    :
+class SportSerializer(serializers.ModelSerializer)    :
+    Leagues = serializers.SerializerMethodField()
+    teams = serializers.SerializerMethodField()
+    matches = serializers.SerializerMethodField()
+    news = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
     class Meta:
         model = Sport
         fields = "__all__"
+
+    def get_Leagues(self, obj):
+        return LeaguesSerializer(Leagues.objects.filter(sport=obj.id,),many=True).data
+
+    def get_teams(self, obj):
+        return TeamsSerializer(Teams.objects.filter(sport=obj.id,),many=True).data
+
+    def get_matches(self, obj):
+        return MatchSerializer(Match.objects.filter(sport=obj.id,),many=True).data
+
+    def get_news(self, obj):
+        return AdminBlogArticleSerializer(BlogArticle.objects.filter(sport=obj.id,),many=True).data
+
+    def get_videos(self, obj):
+        return AdminBlogVideoSerializer(BlogVideo.objects.filter(sport=obj.id,),many=True).data
 
 class LeaguesSerializer(serializers.ModelSerializer)    :
     class Meta:

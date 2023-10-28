@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api.v1.views import chat as api_chat
+from api.v3.views import chat as api_chat
 from core.templatetags.social_share import post_to_facebook
 from core.utils import utils
 from core.utils.export import export_model
@@ -50,6 +50,15 @@ urlpatterns = [
     path('blog/article/delete/<slug:slug>/', blog.AdminBlogArticleDelete, name='AdminBlogArticleDelete'),
     path('blog/article/images/delete/<slug:slug>/', blog.AdminApiBlogArticleImageDelete, name='AdminApiBlogArticleImageDelete'),
     path('blog/post_to_facebook_url/', post_to_facebook, name='post_to_facebook_url'),
+
+
+########## Blog Video Admin #########
+    path('blog/video/', blog.AdminBlogVideoList, name='AdminBlogVideoList'),
+    path('blog/video/detail/<slug:slug>/', blog.AdminBlogArticleDetails, name='AdminBlogVideoDetails'),
+    path('blog/video/update/<slug:slug>/', blog.AdminBlogArticleUpdate, name='AdminBlogVideoUpdate'),
+    path('blog/video/archive/<slug:slug>/', blog.AdminBlogArticleArchive, name='AdminBlogVideoArchive'),
+    path('blog/video/delete/<slug:slug>/', blog.AdminBlogArticleDelete, name='AdminBlogVideoDelete'),
+
 
     ########## Services Admin #########
     path('blog/Service/', blog.AdminBlogServicesList, name='AdminBlogServicesList'),

@@ -382,6 +382,8 @@ class CommonTranslate(models.Model):
     title = models.TextField( validators=[UnicodeUsernameValidator],blank=True,null=True)
     keyword = models.TextField(blank=True,null=True )
     body = models.TextField(blank=True,null=True)
+    description = models.TextField(blank=True, null=True)
+    language = models.CharField(max_length=50, null=True, blank=True,default='ar')
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
     create_at = models.DateTimeField(auto_now=True, null=False)

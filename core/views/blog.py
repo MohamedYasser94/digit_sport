@@ -7,10 +7,12 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
+
+from apps.sport.models.models import Sport
 from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm, AdminBlogServicesForm, AdminBlogArticleForm, \
-    AdminBlogArticleTagsForm
+    AdminBlogArticleTagsForm, AdminBlogVideoForm
 from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, AdminCommonTranslateForm
-from core.models.blog import BlogArticle, BlogCategories, BlogServices, CommonTags
+from core.models.blog import BlogArticle, BlogCategories, BlogServices, CommonTags, BlogVideo
 from core.models.core import CommonSeo, CommonTranslate, CommonMediaFiles
 from core.views.core import AdminCommonMediaHeroFiles, AdminCommonMediaImagesFiles, \
     AdminCommonMediaVideoFiles, AdminCommonTranslate, AdminCommonSeo
@@ -362,6 +364,9 @@ def AdminBlogArticleCreate(request):
             title_tr = request.POST.get('title_tr')
             keyword_tr = request.POST.get('keyword_tr')
             body_tr = request.POST.get('body_tr')
+            author= request.POST.get('author')
+            country = request.POST.get('country')
+            sport = request.POST.get('sport')
             ########## Image #########
             hero_image = request.FILES.get('hero_image')
             images = request.FILES.getlist('images')
@@ -374,16 +379,24 @@ def AdminBlogArticleCreate(request):
             meta_description = keyword
             seo_image = hero_image
             ########## Category #########
-            category_id = BlogCategories.objects.get(id=category)
-            user = request.user.id
-            author = User.objects.get(id=user)
+            if category == '' or category == None:
+                category_id = None
+            else:
+                category_id = BlogCategories.objects.get(id=category)
+
+            if sport == '' or sport == None:
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
+
 
             article_object = BlogArticle(title=title, keyword=keyword, category=category_id, body=body,
                                          pub_time=pub_time, pub_type=pub_type, is_featured=is_featured,
+                                         sport=sport, country=country,
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-            AdminCommonSeo(request, meta_title, meta_description, meta_keywords, author.id, seo_image, 'BlogArticle',
+            AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
             AdminCommonMediaHeroFiles(request, hero_image, 'BlogArticle', article_object.id)
             AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogArticle', article_object.id)
@@ -480,15 +493,23 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             image_url = request.POST.getlist('image_url')
             video_url = request.POST.get('video_url')
             video_cover = request.FILES.get('video_cover')
+            author = request.POST.get('author')
+            country = request.POST.get('country')
+            sport = request.POST.get('sport')
             ########## Seo #########
             meta_title = title
             meta_keywords = keyword
             meta_description = keyword
             seo_image = hero_image
             ########## Category #########
-            category_id = BlogCategories.objects.get(id=category)
-            user = request.user.id
-            author = User.objects.get(id=user)
+            if category == '' or category == None:
+                category_id = None
+            else:
+                category_id = BlogCategories.objects.get(id=category)
+            if sport == '' or sport == None:
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
             article_object = BlogArticle.objects.get(slug=slug)
             article_object.title = title
             article_object.keyword = keyword
@@ -499,9 +520,11 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             article_object.is_featured = is_featured
             article_object.comment_status = comment_status
             article_object.author = author
+            article_object.country = country
+            article_object.sport = sport
             article_object.save()
 
-            AdminCommonSeo(request, meta_title, meta_description, meta_keywords, author.id, seo_image, 'BlogArticle',
+            AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
 
@@ -910,3 +933,44 @@ def AdminApiBlogServicesImageDelete(request, slug):
             return HttpResponse(status=status.HTTP_404_NOT_FOUND)
     else:
         return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+##########################      Blog Video Admin            ################################
+
+
+@authenticated_staf
+@staff_only
+def AdminBlogVideoList(request):
+    videos = BlogVideo.objects.all()
+
+    if request.method == "POST":
+        video_form = AdminBlogVideoForm(request.POST or None, request.FILES or None)
+        if video_form:
+            title = request.POST.get('title')
+            keyword = request.POST.get('keyword')
+            country = request.POST.get('country')
+            sport = request.POST.get('sport')
+            author = request.POST.get('author')
+            image = request.FILES.get('image')
+            image_path = request.POST.get('image_path')
+            video_source = request.POST.get('video_source')
+            video_url = request.POST.get('video_url')
+
+            sport= Sport.objects.get(id=sport)
+            video_object = BlogVideo(title=title, keyword=keyword, country=country, sport=sport,
+                                     author=author, image=image,image_path=image_path, video_source=video_source, video_url=video_url)
+
+            video_object.save()
+            messages.success(request, _("Video Add Successfully, check it out on the home page!"),
+                             extra_tags='Video')
+            return HttpResponseRedirect(reverse('core:AdminBlogVideoList'))
+        else:
+            messages.error(request, _("Video Not Add , Please Try Again"), extra_tags='Video')
+
+    context = {
+        'videos': videos,
+        'video_form': AdminBlogVideoForm(),
+        'current_page': _('Videos')
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/blog/video/admin.html', context)

@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from core.models.blog import BlogServices, BlogCategories, CommonTags,BlogArticle
+from core.models.blog import *
 
 User = get_user_model()
 
@@ -61,3 +61,10 @@ class AdminBlogArticleForm(forms.ModelForm):
 
 
 
+class AdminBlogVideoForm(forms.ModelForm):
+    category_id = forms.IntegerField(required=False)
+
+
+    class Meta:
+        model = BlogVideo
+        fields = '__all__'

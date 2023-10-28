@@ -10,7 +10,7 @@ from mptt.models import MPTTModel
 from slugify import slugify
 
 from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
-    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type
+    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -32,7 +32,7 @@ class SportCategory(MPTTModel):
     title = models.CharField(max_length=200, validators=[UnicodeUsernameValidator])
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=200, choices=Active_Status,default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
@@ -74,11 +74,12 @@ class Sport(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    title = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True,unique=True)
+    title = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sport_category',blank=True, null=True)
+    country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
@@ -126,9 +127,10 @@ class Leagues(models.Model):
     sub_category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sub_category_league', null=True, blank=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
+    gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
@@ -165,7 +167,7 @@ class Season(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_season', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_season', null=True, blank=True)
     tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    name = models.CharField(max_length=40, unique=True)
+    name = models.CharField(max_length=40)
     keyword = models.TextField(null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     pending = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
@@ -369,7 +371,7 @@ class Venues(models.Model):
     city = models.CharField(max_length=200, choices=Governorates_List, default='Cairo', null=True, blank=True)
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     zipcode = models.CharField(max_length=100, null=True, blank=True)
@@ -389,6 +391,9 @@ class Venues(models.Model):
     class Meta:
         # ordering = ('title',)
         verbose_name = 'venue'  # verbose_name_plural = 'categories'
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -544,7 +549,7 @@ class Clubs(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_club', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     founded = models.CharField(max_length=100, null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
@@ -589,7 +594,7 @@ class Teams(models.Model):
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
     short_code = models.CharField(max_length=100, unique=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     founded = models.CharField(max_length=100, null=True, blank=True)
     club_color_1 = models.CharField(max_length=100, null=True, blank=True)
@@ -782,14 +787,14 @@ class Players(models.Model):
     type = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
 
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     height = models.CharField(max_length=100, null=True, blank=True)
     weight = models.CharField(max_length=100, null=True, blank=True)
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    in_team = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    in_team = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -862,7 +867,7 @@ class TVStations(models.Model):
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     language = models.CharField(max_length=100, choices=Language_List, default='Arabic', null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, choices=Tv_Type, default='Tv', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -906,7 +911,7 @@ class Coaches(models.Model):
     display_name = models.CharField(max_length=100, null=True, blank=True)
     short_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_url = models.URLField(blank=True, null=True)
+    image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     height = models.CharField(max_length=100, null=True, blank=True)
     weight = models.CharField(max_length=100, null=True, blank=True)
@@ -1292,10 +1297,11 @@ class Match(models.Model):
     fixture = models.ForeignKey(Fixtures, on_delete=models.CASCADE, related_name='fixture_match', null=True, blank=True)
     home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match', null=True, blank=True)
     away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_away', null=True, blank=True)
+    venues = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_match', null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
     start_time = models.DateTimeField(null=True, blank=True)
-    played = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

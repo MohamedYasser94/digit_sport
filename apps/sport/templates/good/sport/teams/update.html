@@ -134,6 +134,23 @@
 
                                         <!--end::Input-->
                                     </div>
+                                <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                          <select name="status" aria-label="{% translate 'Status' %}"
+                                                data-control="select2"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ team.status }}">{{ team.status }}</option>
+                                            {% for value, text in teams_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+
+
+                                        <!--end::Input-->
+                                    </div>
                                 </div>
                                 <!--end::Input group--> <!--begin::Input group-->
                              <!--begin::Input group-->
@@ -153,7 +170,7 @@
                                         <label class="required form-label">{% translate 'Image Url' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_url" value="{{ team.image_url }}"
+                                        <input class="form-control" type="url"  name="image_path" value="{{ team.image_path }}"
                                                placeholder="{% translate 'Image Url' %}"/>
 
 

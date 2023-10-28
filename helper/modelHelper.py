@@ -29,43 +29,45 @@ Importance_Status = ((1, "Critical"), (2, "Very Important"), (3, "Important"))
 Active_Status = (('Active', _('Active')), ('Archive', _('Archive')), ('Inactive', _('Inactive')),)
 Waiting_Status = (('Active', _('Active')), ('Waiting', _('Waiting for activation')), ('Inactive', _('Inactive')),)
 Public_Status = (('Yes', _('Yes')), ('NO', _('NO')),)
-Publish_Status = (('Published', _('Published')), ('Scheduled', _('Scheduled')), ('Inactive', _('Inactive')),)
+Publish_Status = (('Published', _('Published')), ('Scheduled', _('Scheduled')), ('Draft', _('Draft')),)
 WALLET_STATUS = (('Create', _('Create')), ('Login', _('Login')), ('Logout', _('Logout')), ('Suspend', _('Suspend')),)
 Signin_Type = (('NeedActive', _('Need Active')), ('NotNeedActive', _('Not Need Active')), ('Paid', _('Paid')))
 AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google', 'twitter': 'twitter', 'email': 'email'}
 Social_Providers = (
     ('facebook', 'facebook'), ('twitter', 'twitter'), ('instagram', 'instagram'), ('linkedIn ', 'linkedIn'),
     ('behance ', 'behance'), ('youtube ', 'youtube'), ('other ', 'other'),)
-Friend_Request_Status = (('NOREQUEST', 'NOREQUEST'), ('SENT', 'SENT'), ('PENDING', 'PENDING'), ('APPROVED', 'APPROVED'),
-                         ('DECLINE', 'DECLINE'))
+Friend_Request_Status = (
+('NOREQUEST', 'NOREQUEST'), ('SENT', 'SENT'), ('PENDING', 'PENDING'), ('APPROVED', 'APPROVED'), ('DECLINE', 'DECLINE'))
 Follower_Type = (('FOLLOWER', _('FOLLOWER')), ('FOLLOWING', _('FOLLOWING')))
 Otp_Type = (
     ('App', _("App")), ('Email', _("Email")), ('WhatsApp', _("WhatsApp")), ('SMS', _("SMS")), ('None', _("None")),)
 
 Email_Type = (('Personal', _('Personal')), ('Work', _('Work')), ('Other', _('Other')))
 Email_status = (
-('Read', _('Read')), ('Unread', _('Unread')), ('Archive', _('Archive')), ('Trash', _('Trash')), ('Spam', _('Spam')),
-('Important', _('Important')), ('Starred', _('Starred')), ('Draft', _('Draft')), ('Sent', _('Sent')),
-('Scheduled', _('Scheduled')), ('Inactive', _('Inactive')),)
-Attendees_History_Type = (('CheckIn', _('CheckIn')), ('CheckOut', _('CheckOut')), ('Break', _('Break')),('Leave', _('Leave')),( 'Absent', _('Absent')),
-                          ( 'Early', _('Early')),('NotChecked', _('Not Checked')))
+    ('Read', _('Read')), ('Unread', _('Unread')), ('Archive', _('Archive')), ('Trash', _('Trash')), ('Spam', _('Spam')),
+    ('Important', _('Important')), ('Starred', _('Starred')), ('Draft', _('Draft')), ('Sent', _('Sent')),
+    ('Scheduled', _('Scheduled')), ('Inactive', _('Inactive')),)
+Attendees_History_Type = (
+('CheckIn', _('CheckIn')), ('CheckOut', _('CheckOut')), ('Break', _('Break')), ('Leave', _('Leave')),
+('Absent', _('Absent')), ('Early', _('Early')), ('NotChecked', _('Not Checked')))
 ################### FRONTEND TEMPLATES #############################
 BACKEND_TEMPLATES = (('good', 'good'), ('multikart', 'multikart'), ('kundol', 'kundol'),)
-MAINTENANCE_TEMPLATES = (('creasoon', 'creasoon'), ('marvio', 'marvio'), ('landio', 'landio'), )
+MAINTENANCE_TEMPLATES = (('creasoon', 'creasoon'), ('marvio', 'marvio'), ('landio', 'landio'),)
 FRONTEND_TEMPLATES = (
-    ('arino', 'arino'),('via', 'via'), ('opal', 'opal'), ('particle', 'particle'), ('landio', 'landio'), ('adara', 'adara'),
-    ('multikart', 'multikart'), ('kundol', 'kundol'), ('techy', 'techy'), ('podes', 'podes'), ('centrix ', 'centrix'),
-    ('kons', 'kons'), ('record', 'record'), ('rexlaw', 'rexlaw'), ('mintech', 'mintech'), ('volna', 'volna'),
-    ('carenow', 'carenow'), ('medin', 'medin'), ('medikal', 'medikal'), ('dentisto', 'dentisto'),
-    ('doccure', 'doccure'), ('creasoon', 'creasoon'), ('marvio', 'marvio'),('exhibiz', 'exhibiz'), ('exvent', 'exvent'),('soccer','soccer'))
+    ('arino', 'arino'), ('via', 'via'), ('opal', 'opal'), ('particle', 'particle'), ('landio', 'landio'),
+    ('adara', 'adara'), ('multikart', 'multikart'), ('kundol', 'kundol'), ('techy', 'techy'), ('podes', 'podes'),
+    ('centrix ', 'centrix'), ('kons', 'kons'), ('record', 'record'), ('rexlaw', 'rexlaw'), ('mintech', 'mintech'),
+    ('volna', 'volna'), ('carenow', 'carenow'), ('medin', 'medin'), ('medikal', 'medikal'), ('dentisto', 'dentisto'),
+    ('doccure', 'doccure'), ('creasoon', 'creasoon'), ('marvio', 'marvio'), ('exhibiz', 'exhibiz'),
+    ('exvent', 'exvent'), ('soccer', 'soccer'))
 
 Home_Index = (('Home', 'Home'), ('Home2', 'Home2'), ('Home3', 'Home3'), ('Home4', 'Home4'), ('Home5', 'Home5'),)
 
 ############### Country List ###############
 
-Continents_List = (('Africa', _('Africa')), ('Antarctica', _('Antarctica')), ('Asia', _('Asia')),
-                     ('Australia', _('Australia')), ('Europe', _('Europe')), ('North America', _('North America')),
-                        ('South America', _('South America')),)
+Continents_List = (
+('Africa', _('Africa')), ('Antarctica', _('Antarctica')), ('Asia', _('Asia')), ('Australia', _('Australia')),
+('Europe', _('Europe')), ('North America', _('North America')), ('South America', _('South America')),)
 
 Country_List = (('Afghanistan', _('Afghanistan')), ('Albania', _('Albania')), ('Algeria', _('Algeria')),
                 ('American Samoa', _('American Samoa')), ('Andorra', _('Andorra')), ('Angola', _('Angola')),
@@ -171,13 +173,13 @@ Country_List = (('Afghanistan', _('Afghanistan')), ('Albania', _('Albania')), ('
 
 ############### Governorates List ###############
 Governorates_List = (
-('Alexandria', _('Alexandria')), ('Aswan', _('Aswan')), ('Asyut', _('Asyut')), ('Beheira', _('Beheira')),
-('Beni Suef', _('Beni Suef')), ('Cairo', _('Cairo')), ('Dakahlia', _('Dakahlia')), ('Damietta', _('Damietta')),
-('Faiyum', _('Faiyum')), ('Gharbia', _('Gharbia')), ('Giza', _('Giza')), ('Ismailia', _('Ismailia')),
-('Kafr El Sheikh', _('Kafr El Sheikh')), ('Luxor', _('Luxor')), ('Matruh', _('Matruh')), ('Minya', _('Minya')),
-('Monufia', _('Monufia')), ('New Valley', _('New Valley')), ('North Sinai', _('North Sinai')),
-('Port Said', _('Port Said')), ('Qalyubia', _('Qalyubia')), ('Qena', _('Qena')), ('Red Sea', _('Red Sea')),
-('Sharqia', _('Sharqia')), ('Sohag', _('Sohag')), ('South Sinai', _('South Sinai')), ('Suez', _('Suez')),)
+    ('Alexandria', _('Alexandria')), ('Aswan', _('Aswan')), ('Asyut', _('Asyut')), ('Beheira', _('Beheira')),
+    ('Beni Suef', _('Beni Suef')), ('Cairo', _('Cairo')), ('Dakahlia', _('Dakahlia')), ('Damietta', _('Damietta')),
+    ('Faiyum', _('Faiyum')), ('Gharbia', _('Gharbia')), ('Giza', _('Giza')), ('Ismailia', _('Ismailia')),
+    ('Kafr El Sheikh', _('Kafr El Sheikh')), ('Luxor', _('Luxor')), ('Matruh', _('Matruh')), ('Minya', _('Minya')),
+    ('Monufia', _('Monufia')), ('New Valley', _('New Valley')), ('North Sinai', _('North Sinai')),
+    ('Port Said', _('Port Said')), ('Qalyubia', _('Qalyubia')), ('Qena', _('Qena')), ('Red Sea', _('Red Sea')),
+    ('Sharqia', _('Sharqia')), ('Sohag', _('Sohag')), ('South Sinai', _('South Sinai')), ('Suez', _('Suez')),)
 ############### City List ###############
 
 
@@ -371,9 +373,9 @@ Timezone_List = (('Africa/Abidjan', _('Africa/Abidjan')), ('Africa/Accra', _('Af
                  ('Asia/Dubai', _('Asia/Dubai')), ('Asia/Dushanbe', _('Asia/Dushanbe')),)
 
 Language_List = (('Arabic', _('Arabic')), ('English', _('English')), ('French', _('French')), ('German', _('German')),
-                    ('Italian', _('Italian')), ('Japanese', _('Japanese')), ('Korean', _('Korean')),
-                    ('Portuguese', _('Portuguese')), ('Russian', _('Russian')), ('Spanish', _('Spanish')),
-                    ('Turkish', _('Turkish')), ('Chinese', _('Chinese')),)
+                 ('Italian', _('Italian')), ('Japanese', _('Japanese')), ('Korean', _('Korean')),
+                 ('Portuguese', _('Portuguese')), ('Russian', _('Russian')), ('Spanish', _('Spanish')),
+                 ('Turkish', _('Turkish')), ('Chinese', _('Chinese')),)
 
 ############### Help Categories Helper ###############
 
@@ -399,26 +401,26 @@ Commission_System = (('Category', 'Category'), ('DigitalMarketing', 'Digital Mar
                      ('ShippingRate', 'Shipping Rate'),)
 Shipping_Status = (('Active', 'Active'), ('Inactive', 'Inactive'), ('Free', 'Free'),)
 Product_Transaction = (('BUY', 'BUY'), ('SELL', 'SELL'), ('REFUND', 'REFUND'))
-Payment_Status = (
-("Pending", "Pending"), ("Complete", "Complete"), ("Partial", "Partial"), ("Other", "Other"), ("Refunded", "Refunded"),
-("Failed", "Failed"), ("Abandoned", "Abandoned"), ("Revoked", "Revoked"), ("Preapproval", "Preapproval"),
-("Cancelled", "Cancelled"), ("Subscription", "Subscription"),)
+Payment_Status = (("Pending", "Pending"), ("Complete", "Complete"), ("Partial", "Partial"), ("Other", "Other"),
+                  ("Refunded", "Refunded"), ("Failed", "Failed"), ("Abandoned", "Abandoned"), ("Revoked", "Revoked"),
+                  ("Preapproval", "Preapproval"), ("Cancelled", "Cancelled"), ("Subscription", "Subscription"),)
 Payment_Methods = (("Online Payment", "Online Payment"), ("Cash on Delivery", "Cash on Delivery"),)
 Payment_Gateway = (('COD', 'COD'), ('Fawry', 'Fawry'), ('Paymob', 'Paymob'))
 Invoice_Status = [('CURRENT', 'CURRENT'), ('OVERDUE', 'OVERDUE'), ('PAID', 'PAID'), ]
 
 Invoice_CreatedBy = [('CUSTOMER', 'CUSTOMER'), ('ADMIN', 'ADMIN'), ('STAFF', 'STAFF'), ('VENDOR', 'VENDOR'),
                      ('SHIPPING', 'SHIPPING'), ]
-Transaction_Money_Type = (
-("Buy", _("Buy")), ("Sell", _("Sell")), ('Refund', _('Refund')), ('Withdraw', _('Withdraw')), ('Deposit', _('Deposit')),
-('Transfer', _('Transfer')), ('Commission', _('Commission')), ('Shipping', _('Shipping')), ('Referral', _('Referral')),
-('Rent', _('Rent')), ('Leasing', _('Leasing')), ('Salary', _('Salary')), ('Cost', _('Cost')),
-('Leasing Cost', _('Leasing Cost')), ('Expenses', _('Expenses')), ('Timesheet', _('Timesheet')),)
+Transaction_Money_Type = (("Buy", _("Buy")), ("Sell", _("Sell")), ('Refund', _('Refund')), ('Withdraw', _('Withdraw')),
+                          ('Deposit', _('Deposit')), ('Transfer', _('Transfer')), ('Commission', _('Commission')),
+                          ('Shipping', _('Shipping')), ('Referral', _('Referral')), ('Rent', _('Rent')),
+                          ('Leasing', _('Leasing')), ('Salary', _('Salary')), ('Cost', _('Cost')),
+                          ('Leasing Cost', _('Leasing Cost')), ('Expenses', _('Expenses')),
+                          ('Timesheet', _('Timesheet')),)
 
 Transaction_Money_Mode = (("Cash", _("Cash")), ("Credit", _("Credit")), ('Debit', _('Debit')), ('Wallet', _('Wallet')),
                           ('Treasury', _('Treasury')), ("Pending", _("Pending")))
 Transaction_Method = (
-("Cash", _("Cash")), ("Visa", _("Visa")), ('Wallet', _('Wallet')), ('Cheque', _('Cheque')), ('Bank', _('Bank')),)
+    ("Cash", _("Cash")), ("Visa", _("Visa")), ('Wallet', _('Wallet')), ('Cheque', _('Cheque')), ('Bank', _('Bank')),)
 Transaction_Money_Status = (
     ("Pending", _("Pending")), ('Partial', _('Partial')), ("Complete", _("Complete")), ('Failed', _('Failed')),)
 Transaction_Money_Category = (("Income", _("Income")), ("Expense", _("Expense")),)
@@ -426,51 +428,58 @@ Transaction_Product_Type = (("Buy", _("Buy")), ("Sell", _("Sell")), ('Refund', _
 Transaction_percent_type = (("1", 65), ("2", 3), ("3", 5),)
 
 Duration_Type = (('Days', 'Days'), ('Weeks', 'Weeks'), ('Months', 'Months'), ('Years', 'Years'),)
-Wallet_Mode = (
-("Administrator", _("Administrator")), ("Auditor", _("Auditor")), ("Accountant", _("Accountant")), ("User", _("User")),)
+Wallet_Mode = (("Administrator", _("Administrator")), ("Auditor", _("Auditor")), ("Accountant", _("Accountant")),
+               ("User", _("User")),)
 Current_App = (("Event", _("Event")), ("Press", _("Press")), ("Medical", _("Medical")), ("Digithup", _("Digithup")),
                ("Other", _("Other")),)
 Barcode_Class = (("ean13", _("ean13")), ("code128", _("code128")), ("code39", _("code39")), ("code93", _("code93")),
-                    ("code11", _("code11")), ("msi", _("msi")), ("codabar", _("codabar")), ("upc", _("upc")),
-                    ("ean8", _("ean8")), ("upce", _("upce")), ("i2of5", _("i2of5")), ("ext_i2of5", _("ext_i2of5")),
-                    ("postnet", _("postnet")), ("fim", _("fim")), ("itf14", _("itf14")), ("pzn", _("pzn")),
-                    ("plessey", _("plessey")), ("msi10", _("msi10")), ("msi11", _("msi11")), ("msi1010", _("msi1010")),
-                    ("msi1110", _("msi1110")), ("pharmacode", _("pharmacode")), ("code32", _("code32")),
-                    ("code39ext", _("code39ext")), ("itf6", _("itf6")), ("itf16", _("itf16")), ("gs1_128", _("gs1_128")),
-                    ("gs1_128_hr", _("gs1_128_hr")), ("gs1_128_hrt", _("gs1_128_hrt")), ("gs1_128_lgt", _("gs1_128_lgt")),
-                    ("gs1_128_lgto", _("gs1_128_lgto")), ("gs1_128_lgts", _("gs1_128_lgts")),
-                    ("gs1_128_exp", _("gs1_128_exp")), ("telepen", _("telepen")), ("telepen_num", _("telepen_num")),
-                    ("pharmacode2", _("pharmacode2")), ("code25", _("code25")), ("code25_iata", _("code25_iata")),
-                    ("code25_matrix", _("code25_matrix")), ("code25_interleaved", _("code25_interleaved")),
-                    ("code25_industrial", _("code25_industrial")), ("code39_pmod", _("code39_pmod")),
-                    ("code39_mod43", _("code39_mod43")), ("code93ext", _("code93ext")), ("code93_pmod", _("code93_pmod")),
-                    ("bcs_code128", _("bcs_code128")), ("bcs_code128_pmod", _("bcs_code128_pmod")),
-                    ("bcs_code128_mod43", _("bcs_code128_mod43")), ("bcs_code39", _("bcs_code39")),
-                    ("bcs_code39_pmod", _("bcs_code39_pmod")), ("bcs_code39_mod43", _("bcs_code39_mod43")),
-                    ("bcs_code93", _("bcs_code93")), ("bcs_code93_pmod", _("bcs_code93_pmod")),
-                    ("bcs_code93_mod43", _("bcs_code93_mod43")), ("bcs_datamatrix", _("bcs_datamatrix")),
-                    ("bcs_ean", _("bcs_ean")), ("bcs_ean2", _("bcs_ean2")), ("bcs_ean5", _("bcs_ean5")),
-                    ("bcs_ean8", _("bcs_ean8")), ("bcs_ean13", _("bcs_ean13")), ("bcs_ean14", _("bcs_ean14")),
-                    ("bcs_ean128", _("bcs_ean128")), ("bcs_ean128_pmod", _("bcs_ean128_pmod")),
-                    ("bcs_ean128_mod43", _("bcs_ean128_mod43")), ("bcs_gs1", _("bcs_gs1")), ("bcs_gs1_pmod", _("bcs_gs1_pmod")),
-                    ("bcs_gs1_mod43", _("bcs_gs1_mod43")), ("bcs_itf14", _("bcs_itf14")), ("bcs_itf", _("bcs_itf")),
-                    ("bcs_itf_pmod", _("bcs_itf_pmod")), ("bcs_itf_mod43", _("bcs_itf_mod43")),
-                    ("bcs_msi", _("bcs_msi")), ("bcs_msi_pmod", _("bcs_msi_pmod")), ("bcs_msi_mod11", _("bcs_msi_mod11")),
-                    ("bcs_msi_mod1010", _("bcs_msi_mod1010")), ("bcs_msi_mod1110", _("bcs_msi_mod1110")),
-                    ("bcs_pharmacode", _("bcs_pharmacode")), ("bcs_pharmacode2", _("bcs_pharmacode2")),
-                    ("bcs_pzn", _("bcs_pzn")), ("bcs_pzn8", _("bcs_pzn8")), ("bcs_rss14", _("bcs_rss14")),
-                    ("bcs_rss14_stacked", _("bcs_rss14_stacked")), ("bcs_rss14_stacked_omni", _("bcs_rss14_stacked_omni")),
-                    ("bcs_rss14_truncated", _("bcs_rss14_truncated")), ("bcs_rss14_limited", _("bcs_rss14_limited")),
-                    ("bcs_rss14_expanded", _("bcs_rss14_expanded")), ("bcs_rss14_expanded_stacked", _("bcs_rss14_expanded_stacked")),
-                    ("bcs_rss14_expanded_stacked_omni", _("bcs_rss14_expanded_stacked_omni")),
-                    ("bcs_rss14_expanded_stacked_omni", _("bcs_rss14_expanded_stacked_omni")),
-                    ("bcs_rss14_lim_stack", _("bcs_rss14_lim_stack")), ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),
-                    ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")), ("bcs_rss14_exp_stack", _("bcs_rss14_exp_stack")),
-                    ("bcs_rss14_exp_stack_omni", _("bcs_rss14_exp_stack_omni")), ("bcs_rss14_exp_stack_omni", _("bcs_rss14_exp_stack_omni")),
-                    ("bcs_rss14_trunc_stack", _("bcs_rss14_trunc_stack")), ("bcs_rss14_trunc_stack_omni", _("bcs_rss14_trunc_stack_omni")),
-                    ("bcs_rss14_trunc_stack_omni", _("bcs_rss14_trunc_stack_omni")), ("bcs_rss14_lim_stack", _("bcs_rss14_lim_stack")),
-                    ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")), ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),
-                 )
+                 ("code11", _("code11")), ("msi", _("msi")), ("codabar", _("codabar")), ("upc", _("upc")),
+                 ("ean8", _("ean8")), ("upce", _("upce")), ("i2of5", _("i2of5")), ("ext_i2of5", _("ext_i2of5")),
+                 ("postnet", _("postnet")), ("fim", _("fim")), ("itf14", _("itf14")), ("pzn", _("pzn")),
+                 ("plessey", _("plessey")), ("msi10", _("msi10")), ("msi11", _("msi11")), ("msi1010", _("msi1010")),
+                 ("msi1110", _("msi1110")), ("pharmacode", _("pharmacode")), ("code32", _("code32")),
+                 ("code39ext", _("code39ext")), ("itf6", _("itf6")), ("itf16", _("itf16")), ("gs1_128", _("gs1_128")),
+                 ("gs1_128_hr", _("gs1_128_hr")), ("gs1_128_hrt", _("gs1_128_hrt")), ("gs1_128_lgt", _("gs1_128_lgt")),
+                 ("gs1_128_lgto", _("gs1_128_lgto")), ("gs1_128_lgts", _("gs1_128_lgts")),
+                 ("gs1_128_exp", _("gs1_128_exp")), ("telepen", _("telepen")), ("telepen_num", _("telepen_num")),
+                 ("pharmacode2", _("pharmacode2")), ("code25", _("code25")), ("code25_iata", _("code25_iata")),
+                 ("code25_matrix", _("code25_matrix")), ("code25_interleaved", _("code25_interleaved")),
+                 ("code25_industrial", _("code25_industrial")), ("code39_pmod", _("code39_pmod")),
+                 ("code39_mod43", _("code39_mod43")), ("code93ext", _("code93ext")), ("code93_pmod", _("code93_pmod")),
+                 ("bcs_code128", _("bcs_code128")), ("bcs_code128_pmod", _("bcs_code128_pmod")),
+                 ("bcs_code128_mod43", _("bcs_code128_mod43")), ("bcs_code39", _("bcs_code39")),
+                 ("bcs_code39_pmod", _("bcs_code39_pmod")), ("bcs_code39_mod43", _("bcs_code39_mod43")),
+                 ("bcs_code93", _("bcs_code93")), ("bcs_code93_pmod", _("bcs_code93_pmod")),
+                 ("bcs_code93_mod43", _("bcs_code93_mod43")), ("bcs_datamatrix", _("bcs_datamatrix")),
+                 ("bcs_ean", _("bcs_ean")), ("bcs_ean2", _("bcs_ean2")), ("bcs_ean5", _("bcs_ean5")),
+                 ("bcs_ean8", _("bcs_ean8")), ("bcs_ean13", _("bcs_ean13")), ("bcs_ean14", _("bcs_ean14")),
+                 ("bcs_ean128", _("bcs_ean128")), ("bcs_ean128_pmod", _("bcs_ean128_pmod")),
+                 ("bcs_ean128_mod43", _("bcs_ean128_mod43")), ("bcs_gs1", _("bcs_gs1")),
+                 ("bcs_gs1_pmod", _("bcs_gs1_pmod")), ("bcs_gs1_mod43", _("bcs_gs1_mod43")),
+                 ("bcs_itf14", _("bcs_itf14")), ("bcs_itf", _("bcs_itf")), ("bcs_itf_pmod", _("bcs_itf_pmod")),
+                 ("bcs_itf_mod43", _("bcs_itf_mod43")), ("bcs_msi", _("bcs_msi")), ("bcs_msi_pmod", _("bcs_msi_pmod")),
+                 ("bcs_msi_mod11", _("bcs_msi_mod11")), ("bcs_msi_mod1010", _("bcs_msi_mod1010")),
+                 ("bcs_msi_mod1110", _("bcs_msi_mod1110")), ("bcs_pharmacode", _("bcs_pharmacode")),
+                 ("bcs_pharmacode2", _("bcs_pharmacode2")), ("bcs_pzn", _("bcs_pzn")), ("bcs_pzn8", _("bcs_pzn8")),
+                 ("bcs_rss14", _("bcs_rss14")), ("bcs_rss14_stacked", _("bcs_rss14_stacked")),
+                 ("bcs_rss14_stacked_omni", _("bcs_rss14_stacked_omni")),
+                 ("bcs_rss14_truncated", _("bcs_rss14_truncated")), ("bcs_rss14_limited", _("bcs_rss14_limited")),
+                 ("bcs_rss14_expanded", _("bcs_rss14_expanded")),
+                 ("bcs_rss14_expanded_stacked", _("bcs_rss14_expanded_stacked")),
+                 ("bcs_rss14_expanded_stacked_omni", _("bcs_rss14_expanded_stacked_omni")),
+                 ("bcs_rss14_expanded_stacked_omni", _("bcs_rss14_expanded_stacked_omni")),
+                 ("bcs_rss14_lim_stack", _("bcs_rss14_lim_stack")),
+                 ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),
+                 ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),
+                 ("bcs_rss14_exp_stack", _("bcs_rss14_exp_stack")),
+                 ("bcs_rss14_exp_stack_omni", _("bcs_rss14_exp_stack_omni")),
+                 ("bcs_rss14_exp_stack_omni", _("bcs_rss14_exp_stack_omni")),
+                 ("bcs_rss14_trunc_stack", _("bcs_rss14_trunc_stack")),
+                 ("bcs_rss14_trunc_stack_omni", _("bcs_rss14_trunc_stack_omni")),
+                 ("bcs_rss14_trunc_stack_omni", _("bcs_rss14_trunc_stack_omni")),
+                 ("bcs_rss14_lim_stack", _("bcs_rss14_lim_stack")),
+                 ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),
+                 ("bcs_rss14_lim_stack_omni", _("bcs_rss14_lim_stack_omni")),)
 
 ########################## Podcast ############################
 Video_Source = (('Youtube', 'Youtube'), ('Vimeo', 'Vimeo'), ('Self', 'Self'),)
@@ -481,13 +490,15 @@ Absent_Status = (('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 
 
 ########################## Ticket#########################
 Ticket_Status = (('Open', 'Open'), ('Closed', 'Closed'), ('Pending', 'Pending'), ('Solved', 'Solved'),)
-Transportation_Type = (('Car', 'Car'), ('Bus', 'Bus'), ('Train', 'Train'), ('Plane', 'Plane'), ('Ship', 'Ship'),('limousine', 'limousine'),)
+Transportation_Type = (
+('Car', 'Car'), ('Bus', 'Bus'), ('Train', 'Train'), ('Plane', 'Plane'), ('Ship', 'Ship'), ('limousine', 'limousine'),)
 ########################## Clinic ############################
 Gander_type = (("Male", _("Male")), ("Female", _("Female")),)
 Marital_Status = ("Single", _("Single")), ("Married", _("Married")), ("Divorced", _("Divorced")), (
     "Widowed", _("Widowed"))
-Blood_type = (("A+", _("A+")), ("A-", _("A-")), ("B+", _("B+")), ("B-", _("B-")), ("O+", _("O+")), ("O-", _("O-")),
-              ("AB+", _("AB+")), ("AB-", _("AB-")),)
+Blood_type = (
+("A+", _("A+")), ("A-", _("A-")), ("B+", _("B+")), ("B-", _("B-")), ("O+", _("O+")), ("O-", _("O-")), ("AB+", _("AB+")),
+("AB-", _("AB-")),)
 Dose_Time = (
     ("Morning", _("Morning")), ("Afternoon", _("Afternoon")), ("Evening", _("Evening")), ("Night", _("Night")),)
 Medical_Out_Service = (("X-ray", _("X-ray")), ("Lab", _("Lab")), ("Ultrasound", _("Ultrasound")), ("ECG", _("ECG")),
@@ -495,11 +506,11 @@ Medical_Out_Service = (("X-ray", _("X-ray")), ("Lab", _("Lab")), ("Ultrasound", 
 Complete_Status = (
     ("New", _("New")), ("Pending", _("Pending")), ("InProgress", _("InProgress")), ("Complete", _("Complete")),
     ("Cancel", _("Cancel")),)
-Examination_type = (('Examination', _('Examination')), ('Followup', _('Followup')), ('Urgent', _('Urgent')),
-                    ('Completed', _('Completed')))
-Appointment_Status = (('New', _('New')), ('Scheduled', _('Scheduled')), ('Medical Service', _('Medical Service')),
-                      ('Results', _('Results')), ('Completed', _('Completed')), ('Followup', _('Followup')),
-                      ('Late', _('Late')), ('Cancelled', _('Cancelled')),)
+Examination_type = (
+('Examination', _('Examination')), ('Followup', _('Followup')), ('Urgent', _('Urgent')), ('Completed', _('Completed')))
+Appointment_Status = (
+('New', _('New')), ('Scheduled', _('Scheduled')), ('Medical Service', _('Medical Service')), ('Results', _('Results')),
+('Completed', _('Completed')), ('Followup', _('Followup')), ('Late', _('Late')), ('Cancelled', _('Cancelled')),)
 Clinic_Category = (
     ('Anesthesiologist ', _('Anesthesiologist ')), ('Cardiologist', _('Cardiologist')), ('Dentist', _('Dentist')),
     ('Dermatologist', _('Dermatologist')), ('Endocrinologist', _('Endocrinologist')),
@@ -593,9 +604,9 @@ Job_Status = (
     ("Completed", _("Completed")), ("Canceled", _("Canceled")), ("Refund", _("Refund")), ("Rejected", _("Rejected")),
     ("Returned", _("Returned")), ("Draft", _("Draft")),)
 Calculation_Method = (
-("Unit", _("Unit")), ("Dimensions", _("Dimensions")),("Options", _("Options")), ("Weight", _("Weight")), ("Area", _("Area")),
-("Volume", _("Volume")), ("Quantity", _("Quantity")), ("Time", _("Time")),
-("Other", _("Other")),(None, _("None")),)
+    ("Unit", _("Unit")), ("Dimensions", _("Dimensions")), ("Options", _("Options")), ("Weight", _("Weight")),
+    ("Area", _("Area")), ("Volume", _("Volume")), ("Quantity", _("Quantity")), ("Time", _("Time")),
+    ("Other", _("Other")), (None, _("None")),)
 ########################## Notification  ############################
 Notification_CHOICES = (("New", _("New")), ("Message", _("Message")), ("Application", _("Application")),
                         ("NewR egistration", _("New Registration")), ("New Vendor", _("NewV endor")),
@@ -616,9 +627,8 @@ Subscription_Status = (
     ("New", _("New")), ("Accepted", _("Accepted")), ("Rejected", _("Rejected")), ("Canceled", _("Canceled")),
     ("Completed", _("Completed")), ("Expired", _("Expired")), ("Suspend", _("Suspend")),)
 ################### Blog ##############################
-Service_Type = (
-('Service', 'Service'), ('Work', 'Work'), ('Product', 'Product'), ('Project', 'Project'), ('Portfolio', 'Portfolio'),
-('Other', 'Other'))
+Service_Type = (('Service', 'Service'), ('Work', 'Work'), ('Product', 'Product'), ('Project', 'Project'),
+                ('Portfolio', 'Portfolio'), ('Other', 'Other'))
 Service_Status = (('Active', 'Active'), ('Waiting', 'Waiting for activation'), ('Inactive', 'Inactive'),)
 Featured_Status = (('Active', 'Active'), ('Inactive', 'Inactive'),)
 MultiFile_Type = (
@@ -637,18 +647,18 @@ Access_Level = (('Customer', 'Customer'), ('Staff', 'Staff'), ('Accountant', 'Ac
                 ('SuperAdmin', 'SuperAdmin'), ('Vendor', 'Vendor'), ('Shipping', 'Shipping'),
                 ('Custodian', 'Custodian'), ('Moderator', 'Moderator'), ('Member', 'Member'), ('Guest', 'Guest'),
                 ('Other', 'Other'), ('Employee', 'Employee'), ('Manager', 'Manager'), ('Owner', 'Owner'),
-                ('Partner', 'Partner'), ('SuperAdmin', 'SuperAdmin'), ('ThirdPartyService', 'ThirdPartyService'),('Attendees', 'Attendees'),)
+                ('Partner', 'Partner'), ('SuperAdmin', 'SuperAdmin'), ('ThirdPartyService', 'ThirdPartyService'),
+                ('Attendees', 'Attendees'),)
 User_Status = (('Active', 'Active'), ('Inactive', 'Inactive'), ('Suspend', 'Suspend'), ('Banned', 'Banned'),)
 
 ############### Clients Helper ###############
 Client_Type = (
     ("Supplier", _("Supplier")), ("Client", _("Client")), ("Major", _("Major  Client")), ("walkIn", _("walkIn")),
-    ("Vendor", _("Vendor")), ("Contractor", _("Contractor")), ("Company", _("Company")), ("Owner", _("Owner")),("Attendees", _("Attendees")),
-    ("Other", _("Other")),)
+    ("Vendor", _("Vendor")), ("Contractor", _("Contractor")), ("Company", _("Company")), ("Owner", _("Owner")),
+    ("Attendees", _("Attendees")), ("Other", _("Other")),)
 
-Employee_Type = (
-("Employee", _("Employee")), ("Accountant", _("Accountant")), ("Moderator", _("Moderator")), ("Manager", _("Manager")),
-("Owner", _("Owner")), ("Partner", _("Partner")),)
+Employee_Type = (("Employee", _("Employee")), ("Accountant", _("Accountant")), ("Moderator", _("Moderator")),
+                 ("Manager", _("Manager")), ("Owner", _("Owner")), ("Partner", _("Partner")),)
 Address_Type = (('Home', 'Home'), ('Business', 'Business'),)
 Employee_Overtime_Type = (
     ('Hourly', _('Hourly')), ('Daily', _('Daily')), ('Weekly', _('Weekly')), ('Monthly', _('Monthly')),)
@@ -712,53 +722,64 @@ Mdny_Type = (('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'
              (' مستأتف ضده', 'مستأتف ضده'), (' طاعن', 'طاعن'), (' مطعون ضده', 'مطعون ضده'),
 
              )
-Sr_Type = (('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'),
-           (' طاعن', 'طاعن'), (' مطعون ضده', 'مطعون ضده'),)
+Sr_Type = (
+('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'), (' طاعن', 'طاعن'),
+(' مطعون ضده', 'مطعون ضده'),)
 
-Mly_Type = (('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'),
-            (' طاعن', 'طاعن'), (' مطعون ضده', 'مطعون ضده'),)
-Ldry_Type = (('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'),
-             (' طاعن', 'طاعن'), (' مطعون ضده', 'مطعون ضده'),)
-Jnyt_Type = (
-('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'), (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'),
+Mly_Type = (
+('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'), (' طاعن', 'طاعن'),
 (' مطعون ضده', 'مطعون ضده'),)
-JnH_Type = (
-('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'), (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'),
+Ldry_Type = (
+('مدعي', 'مدعي'), ('مدعي عليه', 'مدعي عليه'), (' مستأتف', 'مستأتف'), (' مستأتف ضده', 'مستأتف ضده'), (' طاعن', 'طاعن'),
 (' مطعون ضده', 'مطعون ضده'),)
-Skry_Type = (
-('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'), (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'),
-(' مطعون ضده', 'مطعون ضده'),)
+Jnyt_Type = (('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'),
+             (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'), (' مطعون ضده', 'مطعون ضده'),)
+JnH_Type = (('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'),
+            (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'), (' مطعون ضده', 'مطعون ضده'),)
+Skry_Type = (('متهم', 'متهم'), ('مجني عليه', 'مجني عليه'), ('سلطة اتهام', 'سلطة اتهام'),
+             (' محكوم عليه - طاعن', 'محكوم عليه - طاعن'), (' مطعون ضده', 'مطعون ضده'),)
 Case_Task = (('public', 'عامة'), ('private', 'خاصة'),)
 Transaction_Type = (('administrative', 'administrative'), ('cases', 'cases'), ('other', 'other'))
-  ########################## Sport ############################
+########################## Sport ############################
 
-Sport_Type = (('Football', 'Football'), ('Basketball', 'Basketball'), ('Volleyball', 'Volleyball'), ('Tennis', 'Tennis'),
-                ('Handball', 'Handball'), ('Swimming', 'Swimming'), ('Running', 'Running'), ('Other', 'Other'),)
+Sport_Type = (
+('Football', 'Football'), ('Basketball', 'Basketball'), ('Volleyball', 'Volleyball'), ('Tennis', 'Tennis'),
+('Handball', 'Handball'), ('Swimming', 'Swimming'), ('Running', 'Running'), ('Other', 'Other'),)
 Sport_Status = (('Active', 'Active'), ('Inactive', 'Inactive'), ('Suspend', 'Suspend'), ('Banned', 'Banned'),)
-Sport_Level = (('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced'), ('Other', 'Other'),)
-Match_Status = (('New', 'New'), ('Accepted', 'Accepted'), ('Rejected', 'Rejected'), ('Canceled', 'Canceled'),
-                ('Completed', 'Completed'), ('Expired', 'Expired'), ('Suspend', 'Suspend'),)
+Sport_Level = (
+('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced'), ('Other', 'Other'),)
+Match_Status = (('Yes', 'Yes'), ('No', 'No'), ('Live', 'Live'), )
 Match_Type = (('Friendly', 'Friendly'), ('Tournament', 'Tournament'), ('League', 'League'), ('Other', 'Other'),)
 Match_Result = (('Win', 'Win'), ('Lose', 'Lose'), ('Draw', 'Draw'), ('Other', 'Other'),)
-Match_Round = (('Round 1', 'Round 1'), ('Round 2', 'Round 2'), ('Round 3', 'Round 3'), ('Round 4', 'Round 4'),
-                ('Round 5', 'Round 5'), ('Round 6', 'Round 6'), ('Round 7', 'Round 7'), ('Round 8', 'Round 8'),
-                ('Round 9', 'Round 9'), ('Round 10', 'Round 10'), ('Round 11', 'Round 11'), ('Round 12', 'Round 12'),
-                ('Round 13', 'Round 13'), ('Round 14', 'Round 14'), ('Round 15', 'Round 15'), ('Round 16', 'Round 16'),)
+Match_Round = (
+('Round 1', 'Round 1'), ('Round 2', 'Round 2'), ('Round 3', 'Round 3'), ('Round 4', 'Round 4'), ('Round 5', 'Round 5'),
+('Round 6', 'Round 6'), ('Round 7', 'Round 7'), ('Round 8', 'Round 8'), ('Round 9', 'Round 9'),
+('Round 10', 'Round 10'), ('Round 11', 'Round 11'), ('Round 12', 'Round 12'), ('Round 13', 'Round 13'),
+('Round 14', 'Round 14'), ('Round 15', 'Round 15'), ('Round 16', 'Round 16'),)
 Match_Round_Type = (('Round Robin', 'Round Robin'), ('Knockout', 'Knockout'), ('Other', 'Other'),)
 Match_Round_Status = (('New', 'New'), ('Accepted', 'Accepted'), ('Rejected', 'Rejected'), ('Canceled', 'Canceled'),
-                        ('Completed', 'Completed'), ('Expired', 'Expired'), ('Suspend', 'Suspend'),)
-Sport_Core_type = (('1st-half', '1st Half'), ('2nd-half', '2nd Half'), ('Extra-time', 'Extra Time'), ('Penalty', 'Penalty'),
-                    ('Referee', 'Referee'), ('1st_assistant', '1st_assistant'), ('2nd_assistant', '2nd_assistant'),
-                    ('4th_official', '4th_official'), ('5th_official', '5th_official'), ('6th_official', '6th_official'),
-                   ('VAR', 'VAR'), ('Lineup', 'Lineup'), ('Substitution', 'Substitution'), ('Goal', 'Goal'),
-                     ('Yellow_card', 'Yellow Card'), ('Red_card', 'Red Card'), ('Injury', 'Injury'), ('Other', 'Other'),
-                   ('Sidelined', 'Sidelined'),  ('Own Goal', 'Own Goal'), ('Missed Penalty', 'Missed Penalty'),
-                   ('Penalties', 'Penalties'),
-                    )
+                      ('Completed', 'Completed'), ('Expired', 'Expired'), ('Suspend', 'Suspend'),)
+Sport_Core_type = (
+('1st-half', '1st Half'), ('2nd-half', '2nd Half'), ('Extra-time', 'Extra Time'), ('Penalty', 'Penalty'),
+('Referee', 'Referee'), ('1st_assistant', '1st_assistant'), ('2nd_assistant', '2nd_assistant'),
+('4th_official', '4th_official'), ('5th_official', '5th_official'), ('6th_official', '6th_official'), ('VAR', 'VAR'),
+('Lineup', 'Lineup'), ('Substitution', 'Substitution'), ('Goal', 'Goal'), ('Yellow_card', 'Yellow Card'),
+('Red_card', 'Red Card'), ('Injury', 'Injury'), ('Other', 'Other'), ('Sidelined', 'Sidelined'),
+('Own Goal', 'Own Goal'), ('Missed Penalty', 'Missed Penalty'), ('Penalties', 'Penalties'),)
 
-Sport_Stat_Type = (('Id', 'Id'), ('Sport', 'Sport'), )
+Sport_Stat_Type = (('Id', 'Id'), ('Sport', 'Sport'),)
 
-Position_List = (('Goalkeeper', 'Goalkeeper'), ('Defender', 'Defender'), ('Midfielder', 'Midfielder'), ('Forward', 'Forward'), ('Other', 'Other'),)
-
+Position_List = (
+('Goalkeeper', 'Goalkeeper'), ('Defender', 'Defender'), ('Midfielder', 'Midfielder'), ('Forward', 'Forward'),
+('Other', 'Other'),)
 
 Tv_Type = (('Satellite', 'Satellite'), ('Cable', 'Cable'), ('IPTV', 'IPTV'), ('Channel', 'Channel'),)
+
+########## Blog ##############################
+
+
+COMMENT_STATUS = (('Open', 'Open'), ('Close', 'Close'),)
+Article_Type = (('Article', 'Article'), ('Page', 'Page'),)
+Video_Source = (('Youtube', 'Youtube'), ('Vimeo', 'Vimeo'),
+                ('Self', 'Self'), ('Other', 'Other'),)
+

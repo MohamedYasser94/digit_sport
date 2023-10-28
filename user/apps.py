@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
 
-from api.v1.utils import import_elm_from_str
+from api.v3.utils import import_elm_from_str
 
 
 class UserConfig(AppConfig):

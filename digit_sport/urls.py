@@ -45,7 +45,7 @@ urlpatterns = [path('i18n/', include('django.conf.urls.i18n')),
                path('dj-rest-auth/', include('dj_rest_auth.urls')),
                path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
                path('', include(tf_urls)),
-               path('api/v1/', include('api.v1.urls', namespace='api-v1')),
+               path('api/', include('api.v3.urls', namespace='APIV3')),
 
                ]
 
@@ -53,7 +53,7 @@ urlpatterns += i18n_patterns(
 
     path('dashboard/', include('core.urls'), name='core'),
     path('dashboard/', include('apps.catalog.urls'), name='catalog'),
-    path('dashboard/', include('apps.sport.urls'), name='sport'),
+    path('dashboard/sport/', include('apps.sport.urls'), name='sport'),
 
     path('dashboard/', include('apps.wallet.urls'), name='wallet'), path('', include('home.urls'), name='home'),
     path('', include('user.urls', namespace='user')),

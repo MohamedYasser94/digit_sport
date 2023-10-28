@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from api.v1.serializers.core import CommonMediaFilesSerializer
+from api.v3.serializers.core import CommonMediaFilesSerializer
 from apps.catalog.models.models import Categories, Variants, ProductVariants, Products
 
 from core.models.core import CommonMediaFiles

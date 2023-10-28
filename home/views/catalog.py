@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from api.v1.serializers.common import FrontCommonMediaFilesSerializer
+from api.v3.serializers.common import FrontCommonMediaFilesSerializer
 from apps.catalog.models.models import Categories, Products
 
 from core.models.core import CommonMediaFiles

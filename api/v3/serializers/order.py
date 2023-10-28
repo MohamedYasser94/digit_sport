@@ -1,9 +1,9 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from api.v1.serializers.catalog import ProductsSerializer
-from api.v1.serializers.client import ClientsSerializer
-from api.v1.serializers.core import CommonProfileSerializer
+from api.v3.serializers.catalog import ProductsSerializer
+from api.v3.serializers.client import ClientsSerializer
+from api.v3.serializers.core import CommonProfileSerializer
 from apps.catalog.models.models import Products
 
 
