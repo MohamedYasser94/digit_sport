@@ -1,231 +1,308 @@
-from rest_framework import serializers
+from collections import OrderedDict
+
+from django.core.files.storage import get_storage_class
 
 from api.v3.serializers.blog import *
-from apps.sport.models.models import  *
+from apps.sport.models.models import *
 from core.models.blog import *
 
 
-class AdminSportCategorySerializer(serializers.ModelSerializer)    :
+class AdminSportCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SportCategory
         fields = "__all__"
 
-class SportSerializer(serializers.ModelSerializer)    :
-    Leagues = serializers.SerializerMethodField()
-    teams = serializers.SerializerMethodField()
-    matches = serializers.SerializerMethodField()
-    news = serializers.SerializerMethodField()
-    videos = serializers.SerializerMethodField()
+
+class SportSerializer(serializers.ModelSerializer):
+
+
     class Meta:
         model = Sport
-        fields = "__all__"
+        fields = ['id','name',]
 
-    def get_Leagues(self, obj):
-        return LeaguesSerializer(Leagues.objects.filter(sport=obj.id,),many=True).data
+
+
+class TeamsBySportSerializer(serializers.ModelSerializer):
+    # teams = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sport
+        fields = ['id','name',]
+
+
+
+
 
     def get_teams(self, obj):
-        return TeamsSerializer(Teams.objects.filter(sport=obj.id,),many=True).data
 
-    def get_matches(self, obj):
-        return MatchSerializer(Match.objects.filter(sport=obj.id,),many=True).data
+        return TeamsSerializer(Teams.objects.filter(sport=obj.id, ), many=True).data
 
-    def get_news(self, obj):
-        return AdminBlogArticleSerializer(BlogArticle.objects.filter(sport=obj.id,),many=True).data
 
-    def get_videos(self, obj):
-        return AdminBlogVideoSerializer(BlogVideo.objects.filter(sport=obj.id,),many=True).data
+class LeaguesBySportSerializer(serializers.ModelSerializer):
 
-class LeaguesSerializer(serializers.ModelSerializer)    :
+
+    class Meta:
+        model = Sport
+        fields = [
+            'id', 'name', 'image_path', 'image', 'leagues'
+        ]
+
+
+
+class MatchesBySportSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Sport
+        fields = [
+            'id', 'name', 'image_path', 'image', 'matches'
+        ]
+
+
+
+
+class NewsBySportSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Sport
+        fields = [
+            'id', 'name', 'image_path', 'image', 'news'
+        ]
+
+
+
+
+class VideosBySportSerializer(serializers.ModelSerializer):
+
+
+
+    class Meta:
+        model = Sport
+        fields = [
+            'id', 'name', 'image_path', 'image', 'videos'
+        ]
+
+
+
+
+
+
+
+
+
+class LeaguesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
-        fields = "__all__"
+        fields = [
+               'id','name','image_path',
+        ]
 
-class SeasonSerializer(serializers.ModelSerializer)    :
+
+class SeasonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Season
         fields = "__all__"
 
 
-class StagesSerializer(serializers.ModelSerializer)    :
+class StagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stages
         fields = "__all__"
 
 
-class GroupSerializer(serializers.ModelSerializer)    :
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = "__all__"
 
 
-class AggregateSerializer(serializers.ModelSerializer)    :
+class AggregateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aggregate
         fields = "__all__"
 
-class RoundSerializer(serializers.ModelSerializer)    :
+
+class RoundSerializer(serializers.ModelSerializer):
     class Meta:
         model = Round
         fields = "__all__"
 
-class VenuesSerializer(serializers.ModelSerializer)    :
+
+class VenuesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Venues
         fields = "__all__"
 
-class SportStateSerializer(serializers.ModelSerializer)    :
+
+class SportStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SportState
         fields = "__all__"
 
 
-class FixturesSerializer(serializers.ModelSerializer)    :
+class FixturesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fixtures
         fields = "__all__"
 
 
-class LiveScoresSerializer(serializers.ModelSerializer)    :
+class LiveScoresSerializer(serializers.ModelSerializer):
     class Meta:
         model = LiveScores
         fields = "__all__"
 
 
-class ClubsSerializer(serializers.ModelSerializer)    :
+class ClubsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clubs
         fields = "__all__"
 
-class TeamsSerializer(serializers.ModelSerializer)    :
+
+class TeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
-        fields = "__all__"
+        fields = [
+            'id', 'name', 'image_path',]
 
 
-class StatisticsSerializer(serializers.ModelSerializer)    :
+
+
+
+
+class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         fields = "__all__"
 
 
-class StandingsSerializer(serializers.ModelSerializer)    :
+class StandingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Standings
         fields = "__all__"
 
 
-class LiveStandingsSerializer(serializers.ModelSerializer)    :
+class LiveStandingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = LiveStandings
         fields = "__all__"
 
-class SchedulesSerializer(serializers.ModelSerializer)    :
+
+class SchedulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedules
         fields = "__all__"
 
-class PlayersSerializer(serializers.ModelSerializer)    :
+
+class PlayersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Players
         fields = "__all__"
 
 
-
-class SquadsSerializer(serializers.ModelSerializer)    :
+class SquadsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Squads
         fields = "__all__"
 
 
-class TVStationsSerializer(serializers.ModelSerializer)    :
+class TVStationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TVStations
         fields = "__all__"
 
 
-class CoachesSerializer(serializers.ModelSerializer)    :
+class CoachesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coaches
         fields = "__all__"
 
 
-class TopScorersSerializer(serializers.ModelSerializer)    :
+class TopScorersSerializer(serializers.ModelSerializer):
     class Meta:
         model = TopScorers
         fields = "__all__"
 
 
-
-
-class RivalsSerializer(serializers.ModelSerializer)    :
+class RivalsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rivals
         fields = "__all__"
 
-class CommentariesSerializer(serializers.ModelSerializer)    :
+
+class CommentariesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commentaries
         fields = "__all__"
 
 
-class RefereesSerializer(serializers.ModelSerializer)    :
+class RefereesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Referees
         fields = "__all__"
 
 
-class TransfersSerializer(serializers.ModelSerializer)    :
+class TransfersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transfers
         fields = "__all__"
 
 
-class PreMatchOddsSerializer(serializers.ModelSerializer)    :
+class PreMatchOddsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PreMatchOdds
         fields = "__all__"
 
 
-class InPlayOddsSerializer(serializers.ModelSerializer)    :
+class InPlayOddsSerializer(serializers.ModelSerializer):
     class Meta:
         model = InPlayOdds
         fields = "__all__"
 
-class MarketsSerializer(serializers.ModelSerializer)    :
+
+class MarketsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Markets
         fields = "__all__"
 
 
-class BookmakersSerializer(serializers.ModelSerializer)    :
+class BookmakersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bookmakers
         fields = "__all__"
 
 
-class MatchSerializer(serializers.ModelSerializer)    :
+class MatchSerializer(serializers.ModelSerializer):
+    home_team = serializers.SerializerMethodField()
+    away_team = serializers.SerializerMethodField()
+    venues = serializers.ReadOnlyField(source='venues.name')
 
     class Meta:
         model = Match
-        fields = "__all__"
+        fields = [
+               'id','name','home_team','away_team','venues'
+        ]
+
+    def get_home_team(self, obj):
+        return TeamsSerializer(Teams.objects.filter(id=obj.home_team.id, ), many=True).data
+
+    def get_away_team(self, obj):
+        return TeamsSerializer(Teams.objects.filter(id=obj.away_team.id, ), many=True).data
 
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     match_team_player = serializers.SerializerMethodField()
-
 
     class Meta:
         model = Match
         fields = "__all__"
 
     def get_match_team_player(self, obj):
-        print( obj)
-        return MatchTeamPlayerSerializer(MatchTeamPlayer.objects.filter(match=obj.id,),many=True).data
+        print(obj)
+        return MatchTeamPlayerSerializer(MatchTeamPlayer.objects.filter(match=obj.id, ), many=True).data
 
 
-
-
-class MatchTeamPlayerSerializer(serializers.ModelSerializer)    :
+class MatchTeamPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MatchTeamPlayer
         fields = "__all__"

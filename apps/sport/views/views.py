@@ -892,15 +892,16 @@ def AdminTeamsUpdate(request, slug):
         if teams_form:
             name = request.POST.get('name')
             short_code = request.POST.get('short_code')
-            league = request.POST.get('league')
+            country = request.POST.get('country')
             club = request.POST.get('club')
             sport = request.POST.get('sport')
             venue = request.POST.get('venue')
             gender = request.POST.get('gender')
             keyword = request.POST.get('keyword')
+
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
-            status = request.POST.get('status')
+            status = 'Active'
 
             print(request.POST)
 
@@ -911,10 +912,7 @@ def AdminTeamsUpdate(request, slug):
             except:
                 pass
 
-            if league == None or league == '':
-                league = None
-            else:
-                league = Leagues.objects.get(id=league)
+
 
             if venue == None or venue == '':
                 venue = None
@@ -934,7 +932,7 @@ def AdminTeamsUpdate(request, slug):
             team_object = Teams.objects.get(slug=slug)
             team_object.name = name
             team_object.short_code = short_code
-            team_object.league = league
+            team_object.country = country
             team_object.club = club
             team_object.sport = sport
             team_object.venue = venue

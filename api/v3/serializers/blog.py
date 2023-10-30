@@ -25,14 +25,11 @@ class AdminBlogServicesSerializer(serializers.ModelSerializer)    :
 class AdminBlogArticleSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogArticle
-        fields = "__all__"
-        extra_kwargs = {
-            'tags': {'required': False},
-            'extra_image': {'required': False},
-        }
+        fields =[ 'id','title','image_path','body','author','create_at']
+
 
 
 class AdminBlogVideoSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogVideo
-        fields = "__all__"
+        fields = [ 'id','title','image_path','author','video_source','video_url','create_at']

@@ -29,7 +29,7 @@ class SportCategory(MPTTModel):
     owner_model = models.ForeignKey(ContentType,related_name='sport_category_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='sport_children', on_delete=models.CASCADE)
-    title = models.CharField(max_length=200, validators=[UnicodeUsernameValidator])
+    name = models.CharField(max_length=200, validators=[UnicodeUsernameValidator])
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
@@ -41,20 +41,20 @@ class SportCategory(MPTTModel):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'category'  # verbose_name_plural = 'categories'
 
     class MPTTMeta:
-        order_insertion_by = ['title']
+        order_insertion_by = ['name']
 
     class TranslatableMeta:
-        fields = ['title', ]
+        fields = ['name', ]
 
     def get_absolute_url(self):
         return reverse("category_list")
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -74,7 +74,7 @@ class Sport(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    title = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True)
+    name = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sport_category',blank=True, null=True)
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
@@ -88,20 +88,20 @@ class Sport(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'sport'  # verbose_name_plural = 'categories'
 
     class MPTTMeta:
-        order_insertion_by = ['title']
+        order_insertion_by = ['name']
 
     class TranslatableMeta:
-        fields = ['title', ]
+        fields = ['name', ]
 
     def get_absolute_url(self):
         return reverse("sport_list")
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -183,7 +183,7 @@ class Season(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'season'  # verbose_name_plural = 'categories'
 
     def __str__(self):
@@ -229,7 +229,7 @@ class Stages(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'stage'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -272,7 +272,7 @@ class Group(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'group'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -304,7 +304,7 @@ class Aggregate(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'aggregate'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -344,7 +344,7 @@ class Round(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'round'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -389,7 +389,7 @@ class Venues(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'venue'  # verbose_name_plural = 'categories'
 
     def __str__(self):
@@ -424,7 +424,7 @@ class SportState(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'sport type'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -476,7 +476,7 @@ class Fixtures(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'fixture'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -524,7 +524,7 @@ class LiveScores(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'live scores'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -559,7 +559,7 @@ class Clubs(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'club'
 
     def __str__(self):
@@ -593,8 +593,8 @@ class Teams(models.Model):
     venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_team', null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
     short_code = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_path = models.URLField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to=get_file_path, default='image')
+    image_path = models.URLField(blank=True, null=True,default='url')
     url = models.URLField(blank=True, null=True)
     founded = models.CharField(max_length=100, null=True, blank=True)
     club_color_1 = models.CharField(max_length=100, null=True, blank=True)
@@ -613,7 +613,7 @@ class Teams(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'team'  # verbose_name_plural = 'categories'
 
     def __str__(self):
@@ -671,7 +671,7 @@ class Standings(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'standing'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -708,7 +708,7 @@ class LiveStandings(models.Model):
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'live standing'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -748,7 +748,7 @@ class Schedules(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'schedule'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -802,7 +802,7 @@ class Players(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'player'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -841,7 +841,7 @@ class Squads(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'squad'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -877,7 +877,7 @@ class TVStations(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'tv station'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -925,7 +925,7 @@ class Coaches(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'coach'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -960,7 +960,7 @@ class TopScorers(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'top scorer'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -992,7 +992,7 @@ class Rivals(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'rival'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1027,7 +1027,7 @@ class Commentaries(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'commentary'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1071,7 +1071,7 @@ class Referees(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'referee'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1115,7 +1115,7 @@ class Transfers(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'transfer'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1158,7 +1158,7 @@ class PreMatchOdds(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'pre match odd'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1205,7 +1205,7 @@ class InPlayOdds(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'in play odd'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1238,7 +1238,7 @@ class Markets(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'market'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1268,7 +1268,7 @@ class Bookmakers(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'bookmaker'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1308,7 +1308,7 @@ class Match(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'match'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
@@ -1342,7 +1342,7 @@ class MatchTeamPlayer(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     class Meta:
-        # ordering = ('title',)
+        # ordering = ('name',)
         verbose_name = 'match team player'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):

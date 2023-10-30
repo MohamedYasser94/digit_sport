@@ -98,7 +98,7 @@
                                         <td>
                                             <a href="{% url 'sport:AdminLeaguesBySport' item.slug %}"
                                                     class="text-gray-800 text-hover-primary mb-1">
-                                                {{ item.title }}
+                                                {{ item.name }}
                                             </a>
                                         </td>
                                         <!--end::Name=-->
@@ -318,15 +318,15 @@
                                                     <label class="required fs-6 fw-bold mb-2">{% translate 'Title' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
-                                                    <select name="title" aria-label="{% translate 'Title' %}"
+                                                    <select name="name" aria-label="{% translate 'Name' %}"
                                                             data-control="select2"
-                                                            data-placeholder="{% translate 'Title' %}"
+                                                            data-placeholder="{% translate 'Name' %}"
                                                             data-dropdown-parent="#kt_modal_add_category"
                                                             data-allow-clear="true"
 
                                                             class="form-select form-select-solid fw-bolder">
                                                         <option value="" selected="">---------</option>
-                                                        {% for value, text in sport_form.title.field.choices %}
+                                                        {% for value, text in sport_form.name.field.choices %}
                                                             <option value="{{ value }}">{{ text }}</option>
                                                         {% endfor %}
 
