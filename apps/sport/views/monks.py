@@ -322,6 +322,85 @@ def AdminMonksSeasonGetData(request):
         data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
         return JsonResponse(data=data, safe=False)
 
+@csrf_exempt
+def AdminMonksVenuesGetData(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+    if request.method == "POST":
+        teams_form = AdminTeamsForm(request.POST or None, request.FILES or None)
+        data = ''
+        if teams_form:
+            page = request.POST.get('pages')
+            sport = request.POST.get('sport')
+
+            i = 1
+            for i in range(int(page)):
+
+                i = i + 1
+
+                response = requests.get(
+                    base_url + f'{sport}/venues?page={i}&api_token={api_key}',
+                    headers={
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        "Authorization": f"Bearer {api_key}",
+                    },
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+
+                    data_to_db = data['data']
+
+                    for data in data_to_db:
+
+                        try:
+
+                            check_venues = Venues.objects.get(name=data['name'])
+                            check_venues.api_id = data['id']
+                            check_venues.name = data['name']
+                            check_venues.api_country = data['country_id']
+                            check_venues.api_city = data['city_id']
+                            check_venues.address = data['address']
+                            check_venues.address = data['address']
+                            check_venues.latitude = data['latitude']
+                            check_venues.longitude = data['longitude']
+                            check_venues.capacity = data['capacity']
+                            check_venues.image_path = data['image_path']
+                            check_venues.city_name = data['city_name']
+                            check_venues.surface = data['surface']
+                            check_venues.national_team = data['national_team']
+
+                        except:
+
+                            venues_object = Venues(api_id=data['id'], name=data['name'],
+                                                    api_country=data['country_id'],api_city=data['city_id'],
+                                                    address=data['address'],latitude=data['latitude'],
+                                                    longitude=data['longitude'],capacity=data['capacity'],
+                                                    image_path=data['image_path'],city_name=data['city_name'],
+                                                    surface=data['surface'],national_team=data['national_team'],
+
+
+
+                                                     )
+                            venues_object.save()
+                    data = {'type': 'Success', 'message': 'Data Add Successfully'}
+                else:
+                    data = {'type': 'Error',
+                            'message': f'Data Not Add Successfully Response Code {response.status_code} '}
+
+            return JsonResponse(data=data, safe=False)
+
+
+        else:
+            data = {'type': 'Error', 'message': f'Data Not Add Successfully '}
+            return JsonResponse(data=data, safe=False)
+    else:
+        data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
+        return JsonResponse(data=data, safe=False)
+
+
 
 @csrf_exempt
 def AdminMonksTeamsGetData(request):

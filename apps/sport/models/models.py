@@ -362,6 +362,7 @@ class Round(models.Model):
 
 
 class Venues(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_venue_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -374,7 +375,10 @@ class Venues(models.Model):
     name = models.CharField(max_length=40, unique=True)
     keyword = models.TextField( blank=True, null=True)
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=200,  null=True, blank=True)
     city = models.CharField(max_length=200, choices=Governorates_List, default='Cairo', null=True, blank=True)
+    city_name = models.CharField(max_length=200,  null=True, blank=True)
+    api_city = models.CharField(max_length=200,  null=True, blank=True)
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
@@ -386,7 +390,7 @@ class Venues(models.Model):
     capacity = models.CharField(max_length=100, null=True, blank=True)
     opened = models.CharField(max_length=100, null=True, blank=True)
     surface = models.CharField(max_length=100, null=True, blank=True)
-    national_team = models.CharField(max_length=100, null=True, blank=True)
+    national_team = models.BooleanField(default=False)
     club_team = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)

@@ -75,6 +75,8 @@ urlpatterns = [
     path('venues/update/<slug:slug>/', views.AdminVenuesUpdate, name='AdminVenuesUpdate'),
     path('venues/archive/<slug:slug>/', views.AdminVenuesArchive, name='AdminVenuesArchive'),
     path('venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
+    path('monk/venues/api/get/', monks.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
+
 
 
 
