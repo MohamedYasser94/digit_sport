@@ -483,3 +483,9 @@ import os
 #     os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
 #     os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
 #     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
+
+
+
+SPORT_MONKS_KEY = env('SPORT_MONKS_KEY')
+SPORT_MONKS_URL = env('SPORT_MONKS_URL')
+SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')

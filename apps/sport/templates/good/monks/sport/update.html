@@ -1,0 +1,234 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminSportUpdate' sport.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Category Data' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="title"
+                                               placeholder="{% translate 'category Name' %}"
+                                               value="{{ sport.title }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Category' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="category" aria-label="{% translate 'Category' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Category' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ sport.category.id }}">{{ sport.category }}</option>
+                                            {% for value, text in sport_form.category.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Status' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Status' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ sport.status }}">{{ sport.status }}</option>
+
+                                            {% for value, text in sport_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="file" accept="image/*" name="image"
+
+                                              />
+                                        <!--end::Input-->
+                                    </div>
+                                        <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="url"  name="image_url" value="{{ sport.image_url }}"
+                                               placeholder="{% translate 'Image Url' %}"/>
+
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group--> <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Keyword' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <textarea class="form-control" name="keyword" rows="3"
+                                               placeholder="{% translate 'Keyword' %}">{{ sport.keyword }}</textarea>
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+
+
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if category_form.errors %}
+                                {% for error_field, error_message in category_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if translate_form.errors %}
+                                {% for error_field, error_message in translate_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'Category' %}
+
+                                    <div class="alert alert-danger">
+                                        {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+    {% if uploaded_file_url %}
+        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    {% endif %}
+
+{% endblock %}
+{% block custom_js %}
+
+
+    <script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/listing.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/add.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/export.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+    <!--end::Page Custom Javascript-->
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

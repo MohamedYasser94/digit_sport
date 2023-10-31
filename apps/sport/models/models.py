@@ -112,6 +112,7 @@ class Sport(models.Model):
 
 
 class Leagues(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_league_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -124,17 +125,21 @@ class Leagues(models.Model):
     name = models.CharField(max_length=40, unique=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_league', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='category_league', null=True, blank=True)
+    api_category = models.CharField(max_length=200,  default='league', null=True, blank=True)
     sub_category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sub_category_league', null=True, blank=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
-    type = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    type = models.CharField(max_length=200,  default='league', null=True, blank=True)
+    sub_type = models.CharField(max_length=200,  default='domestic', null=True, blank=True)
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
-    has_jersey = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    has_jerseys = models.BooleanField(default=True)
+    api_active = models.BooleanField(default=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -155,6 +160,7 @@ class Leagues(models.Model):
 
 
 class Season(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_season_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -169,13 +175,13 @@ class Season(models.Model):
     tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     name = models.CharField(max_length=40)
     keyword = models.TextField(null=True, blank=True)
-    finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    pending = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    starting_at = models.DateTimeField(null=True, blank=True)
-    ending_at = models.DateTimeField(null=True, blank=True)
+    finished =models.BooleanField(default=False)
+    pending = models.BooleanField(default=False)
+    is_current = models.BooleanField(default=False)
+    starting_at = models.DateField(null=True, blank=True)
+    ending_at = models.DateField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
-    games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    games_in_current_week = models.BooleanField(default=False)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -575,6 +581,7 @@ class Clubs(models.Model):
 
 
 class Teams(models.Model):
+    api_id = models.IntegerField(null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_team_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -590,9 +597,11 @@ class Teams(models.Model):
     club = models.ForeignKey(Clubs, on_delete=models.CASCADE, related_name='clubs_team', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_team', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=100, null=True, blank=True)
     venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_team', null=True, blank=True)
+    api_venue = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    short_code = models.CharField(max_length=100, unique=True)
+    short_code = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path, default='image')
     image_path = models.URLField(blank=True, null=True,default='url')
     url = models.URLField(blank=True, null=True)
@@ -601,7 +610,7 @@ class Teams(models.Model):
     club_color_2 = models.CharField(max_length=100, null=True, blank=True)
     club_color_3 = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
-    placeholder = models.CharField(max_length=100, null=True, blank=True)
+    placeholder = models.BooleanField(default=False,null=True, blank=True)
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
     has_jersey = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
@@ -760,6 +769,7 @@ class Schedules(models.Model):
 
 
 class Players(models.Model):
+    api_id = models.IntegerField(null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_player_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -779,12 +789,18 @@ class Players(models.Model):
     keyword = models.TextField(null=True,blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_player', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=100, null=True, blank=True)
+    api_nationality = models.CharField(max_length=100, null=True, blank=True)
+
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
+    api_city = models.CharField(max_length=100, null=True, blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    api_position = models.CharField(max_length=100, null=True, blank=True)
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
-    type = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    api_detailed_position = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=100,  null=True, blank=True)
 
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)

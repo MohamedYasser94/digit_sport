@@ -1,0 +1,332 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminTeamsUpdate' team.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'teams' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="name"
+                                               placeholder="{% translate 'Name' %}"
+                                               value="{{ team.name }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Short Code' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="short_code"
+                                               placeholder="{% translate 'Short Code' %}"
+                                               value="{{ team.short_code }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Name' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Keyword' %}" value="{{ team.name_en }}"
+                                                           name="title_tr"/>
+                                                    <!--end::Input-->
+
+                                                </div>
+                                                <!--end::Input group-->
+
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Keyword' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Translate Keyword' %}" value="{{ team.keyword_en }}"
+                                                           name="keyword_tr"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                            <!--end::Input group-->
+
+                             <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="country" aria-label="{% translate 'Country' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Country' %}"
+
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ team.country }}" selected>{{ team.country }}</option>
+                                                {% for value, text in teams_form.country.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Club' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="club" aria-label="{% translate 'Club' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Club' %}"
+
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ team.club.id }}" selected>{{ team.club }}</option>
+                                                {% for value, text in teams_form.club.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+                                    </div>
+                             <!--end::Input group-->
+                                    <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="sport" aria-label="{% translate 'Sport' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Sport' %}"
+
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                 <option value="{{ team.sport.id }}" selected>{{ team.sport }}</option>
+                                                {% for value, text in teams_form.sport.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="gender" aria-label="{% translate 'Gender' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Gender' %}"
+
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                 <option value="{{ team.gender }}" selected>{{ team.gender }}</option>
+                                                {% for value, text in teams_form.gender.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+                                    </div>
+                             <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="file" accept="image/*" name="image"
+
+                                              />
+                                        <!--end::Input-->
+                                    </div>
+                                        <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="url"  name="image_path" value="{{ team.image_path }}"
+                                               placeholder="{% translate 'Image Url' %}"/>
+
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group--> <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Keyword' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <textarea class="form-control" name="keyword" rows="3"
+                                               placeholder="{% translate 'Keyword' %}">{{ team.keyword }}</textarea>
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+
+
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if category_form.errors %}
+                                {% for error_field, error_message in category_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if translate_form.errors %}
+                                {% for error_field, error_message in translate_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'Category' %}
+
+                                    <div class="alert alert-danger">
+                                        {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+    {% if uploaded_file_url %}
+        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    {% endif %}
+
+{% endblock %}
+{% block custom_js %}
+
+
+    <script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/listing.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/add.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/export.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+    <!--end::Page Custom Javascript-->
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

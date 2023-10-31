@@ -169,7 +169,7 @@ def AdminSportList(request):
         sport_form = AdminSportForm(request.POST or None, request.FILES or None)
 
         if sport_form:
-            title = request.POST.get('title')
+            name = request.POST.get('name')
             country = request.POST.get('country')
             keyword = request.POST.get('keyword')
             image = request.FILES.get('image')
@@ -177,7 +177,7 @@ def AdminSportList(request):
 
 
 
-            sport_object = Sport(title=title, country=country, keyword=keyword, image=image, image_path=image_path,
+            sport_object = Sport(name=name, country=country, keyword=keyword, image=image, image_path=image_path,
                                  status='Active')
 
             sport_object.save()
@@ -205,7 +205,7 @@ def AdminSportUpdate(request, slug):
     sport = Sport.objects.get(slug=slug)
 
     if request.method == "POST":
-        title = request.POST.get('title')
+        name = request.POST.get('title')
         country = request.POST.get('country')
         keyword = request.POST.get('keyword')
         image = request.FILES.get('image')
@@ -219,7 +219,7 @@ def AdminSportUpdate(request, slug):
             image = image
 
         sport_object = Sport.objects.get(slug=slug)
-        sport_object.title = title
+        sport_object.name = name
         sport_object.country = country
         sport_object.keyword = keyword
         if image == None or image == '':

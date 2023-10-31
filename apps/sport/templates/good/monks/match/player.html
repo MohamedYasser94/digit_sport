@@ -1,0 +1,1629 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="app">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Card-->
+            <div class="card">
+                <!--begin::Card header-->
+                <div class="card-header border-0 pt-6">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <!--begin::Search-->
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                            <span class="svg-icon svg-icon-1 position-absolute ms-6">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none">
+													<rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546"
+                                                          height="2" rx="1" transform="rotate(45 17.0365 15.1223)"
+                                                          fill="black"/>
+													<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                          fill="black"/>
+												</svg>
+											</span>
+                            <!--end::Svg Icon-->
+                            <input type="text" data-kt-customer-table-filter="search"
+                                   class="form-control form-control-solid w-250px ps-15"
+                                   placeholder="{% translate 'Search' %}"/>
+                        </div>
+                        <!--end::Search-->
+                    </div>
+                    <!--begin::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Toolbar-->
+                        <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                            {#                              {% block filter %}{% include 'good/common/filter-export.html' %}{% endblock %}#}
+                            <!--begin::Add customer-->
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#kt_modal_add_customer">{% translate 'Add Player To Match' %}
+                            </button>
+                            <!--end::Add customer-->
+                        </div>
+                        <!--end::Toolbar-->
+                        <!--begin::Group actions-->
+                        <div class="d-flex justify-content-end align-items-center d-none"
+                             data-kt-customer-table-toolbar="selected">
+                            <div class="fw-bolder me-5">
+                                <span class="me-2" data-kt-customer-table-select="selected_count"></span>Selected
+                            </div>
+                            <button type="button" class="btn btn-danger"
+                                    data-kt-customer-table-select="delete_selected">Delete Selected
+                            </button>
+                        </div>
+                        <!--end::Group actions-->
+                    </div>
+                    <!--end::Card toolbar-->
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_customers_table">
+                        <!--begin::Table head-->
+                        <thead>
+                        <!--begin::Table row-->
+                        <tr class="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="w-10px pe-2">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                    <input class="form-check-input" type="checkbox" data-kt-check="true"
+                                           data-kt-check-target="#kt_customers_table .form-check-input" value="1"/>
+                                </div>
+                            </th>
+                            <th class="min-w-20px">{% translate '#' %}</th>
+                            <th class="min-w-125px">{% translate 'Name' %}</th>
+                            <th class="min-w-125px">{% translate 'Code' %}</th>
+                            <th class="min-w-125px">{% translate 'Sport' %}</th>
+                            <th class="min-w-125px">{% translate 'Home' %}</th>
+                            <th class="min-w-125px">{% translate 'Away' %}</th>
+                            <th class="min-w-125px">{% translate 'Start Time' %}</th>
+                            <th class="min-w-125px">{% translate 'Status' %}</th>
+                            <th class="text-end min-w-70px">{% translate 'Action' %}</th>
+                        </tr>
+                        <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="fw-bold text-gray-600">
+                        {% for item in match_team_players %}
+                            <tr>
+                                <!--begin::Checkbox-->
+                                <td>
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" value="1"/>
+                                    </div>
+                                </td>
+                                <!--end::Checkbox-->
+                                <!--begin::counter=-->
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+                                <!--end::counter=-->
+                                <!--begin::Name=-->
+                                <td>
+                                    <a
+                                            class="text-gray-800 text-hover-primary mb-1">
+
+                                        {{ item.player.name }}
+
+                                    </a>
+                                </td>
+                                <!--end::Name=-->
+                                <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.player.code }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                            <!--begin::Email=-->
+                                <td>
+                                    <a href="{% url 'sport:AdminPlayersDetails' item.slug  %}"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.player.sport }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                            <!--begin::Email=-->
+                                <td>
+                                    <a
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.player.position }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                            <!--begin::Email=-->
+                                 <td>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Thumbnail-->
+                                                <a class="symbol symbol-50px">
+                                                 {% if item.player.image_url  %}
+                                                        <span class="symbol-label"
+                                                              style="background-image:url({{ item.player.image_url }});"></span>
+
+                                                    {% elif item.player.image %}
+                                                        <span class="symbol-label"
+                                                              style="background-image:url({{ item.player.image.url }});"></span>
+                                                    {% else %}
+                                                        <span class="symbol-label" style="background-image:url(
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>
+                                                    {% endif %}
+
+                                                </a>
+                                                <!--end::Thumbnail-->
+
+                                            </div>
+                                        </td>
+                                <!--end::Email=-->
+                             <!--begin::Email=-->
+                                 <td>
+                                      <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.player.short_code}}
+                                    </a>
+
+                                        </td>
+                                <!--end::Email=-->
+                                <!--begin::Payment method=-->
+                                <td>
+                                    {% if item.status == 'Active' %}
+                                        <div class="badge badge-light-info">
+                                    {% elif item.status == 'Archive' %}
+                                        <div class="badge badge-light-warning">
+                                    {% elif item.status == 'Inactive' %}
+                                        <div class="badge badge-light-danger">
+                                    {% endif %}
+                                    {{ item.status }}</div>
+
+                                </td>
+                                <!--end::Payment method=-->
+
+                                <!--begin::Action=-->
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary"
+                                       data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon svg-icon-5 m-0">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                                                                  fill="black"/>
+														</svg>
+													</span>
+                                        <!--end::Svg Icon--></a>
+                                    <!--begin::Menu-->
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
+                                         data-kt-menu="true">
+                                        <!--begin::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <a href="{% url 'sport:AdminMatchUpdate' item.slug %}"
+                                               class="menu-link px-3">{% translate 'Edit' %}</a>
+                                        </div>
+                                        <!--end::Menu item-->
+                                        <div class="menu-item px-3">
+                                            <form id="{{ item.slug }}" method="POST"
+                                                  action="{% url 'sport:AdminMatchDelete' item.slug %}">
+                                                {% csrf_token %} </form>
+
+
+                                            <a class="menu-link px-3" onclick="
+                                                    if (confirm('Are You Sure To Delete {{ item.title }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
+                                               title="Link Title">
+                                                {% translate 'Delete' %}
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                    <!--end::Menu-->
+                                </td>
+                                <!--end::Action=-->
+                            </tr>
+                        {% empty %}
+                            {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+                        {% endfor %}
+
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+            <!--begin::Modals-->
+            <!--begin::Modal - Customers - Add-->
+            <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
+                <!--begin::Modal dialog-->
+                <div class="modal-dialog modal-dialog-centered mw-650px">
+                    <!--begin::Modal content-->
+                    <div class="modal-content">
+                        <!--begin::Form-->
+                        <form class="form" enctype="multipart/form-data" action="{% url 'sport:AdminMatchTeamPlayerList'  match.slug team.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Modal header-->
+                            <div class="modal-header" id="kt_modal_add_customer_header">
+                                <!--begin::Modal title-->
+                                <h2 class="fw-bolder">{% translate 'Add Players' %}</h2>
+                                <!--end::Modal title-->
+                                <!--begin::Close-->
+                                <div id="kt_modal_add_customer_close"
+                                     class="btn btn-icon btn-sm btn-active-icon-primary">
+                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                    <span class="svg-icon svg-icon-1">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
+                                                                  rx="1" transform="rotate(-45 6 17.3137)"
+                                                                  fill="black"/>
+															<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
+														</svg>
+													</span>
+                                    <!--end::Svg Icon-->
+                                </div>
+                                <!--end::Close-->
+                            </div>
+                            <!--end::Modal header-->
+                            <!--begin::Modal body-->
+                            <div class="modal-body py-10 px-lg-17">
+                                <!--begin::Scroll-->
+                                <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                                     data-kt-scroll-activate="{default: false, lg: true}"
+                                     data-kt-scroll-max-height="auto"
+                                     data-kt-scroll-dependencies="#kt_modal_add_customer_header"
+                                     data-kt-scroll-wrappers="#kt_modal_add_customer_scroll"
+                                     data-kt-scroll-offset="300px">
+                                    <!--begin::Input group-->
+                                    <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+
+                                             <!--begin::Repeater-->
+                                                <div class="fs-1 text-gray-800 w-bolder mb-17"
+                                                     id="kt_docs_repeater_speaker">
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <div data-repeater-list="kt_docs_repeater_speaker">
+                                                            <div data-repeater-item="">
+                                                                <div class="form-group row mb-5">
+                                                                    <div class="col-md-6">
+                                                                        <label class="required form-label">{% translate 'Player' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_player"
+                                                                                data-kt-repeater="select2" required
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for item in players %}
+                                                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="col-md-4">
+                                                                        <label class=" form-label">{% translate 'Position' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_position"
+                                                                                data-kt-repeater="select2"
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for value, text in players_form.position.field.choices %}
+                                                                                <option value="{{ value }}">{{ text }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2">
+                                                                        <a href="javascript:" data-repeater-delete=""
+                                                                           class="btn btn-sm btn-light-danger mt-3 mt-md-9">
+                                                                            <i class="la la-trash-o fs-3"></i>Delete</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--end::Form group-->
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <a href="javascript:" data-repeater-create=""
+                                                           class="btn btn-light-primary">
+                                                            <i class="la la-plus"></i>Add</a>
+                                                    </div>
+                                                    <!--end::Form group-->
+                                                </div>
+                                                <!--end::Repeater-->
+
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+                                    </div>
+
+
+
+
+
+                                </div>
+                                <!--end::Scroll-->
+                            </div>
+                            <!--end::Modal body-->
+                            <!--begin::Modal footer-->
+                            <div class="modal-footer flex-center">
+                                <!--begin::Button-->
+                                <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">
+                                    {% translate 'Discard' %}
+                                </button>
+                                <!--end::Button-->
+                                <!--begin::Button-->
+                                <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">{% translate 'Please wait...' %}
+													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                                <!--end::Button-->
+                            </div>
+                            <!--end::Modal footer-->
+                        </form>
+                        <!--end::Form-->
+                    </div>
+                </div>
+            </div>
+            <!--end::Modal - Customers - Add-->
+            <!--begin::Modal - Adjust Balance-->
+            <div class="modal fade" id="kt_customers_export_modal" tabindex="-1" aria-hidden="true">
+                <!--begin::Modal dialog-->
+                <div class="modal-dialog modal-dialog-centered mw-650px">
+                    <!--begin::Modal content-->
+                    <div class="modal-content">
+                        <!--begin::Modal header-->
+                        <div class="modal-header">
+                            <!--begin::Modal title-->
+                            <h2 class="fw-bolder">Export Customers</h2>
+                            <!--end::Modal title-->
+                            <!--begin::Close-->
+                            <div id="kt_customers_export_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                <span class="svg-icon svg-icon-1">
+													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                         viewBox="0 0 24 24" fill="none">
+														<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
+                                                              rx="1" transform="rotate(-45 6 17.3137)" fill="black"/>
+														<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                              transform="rotate(45 7.41422 6)" fill="black"/>
+													</svg>
+												</span>
+                                <!--end::Svg Icon-->
+                            </div>
+                            <!--end::Close-->
+                        </div>
+                        <!--end::Modal header-->
+                        <!--begin::Modal body-->
+                        <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                            <!--begin::Form-->
+                            <form id="kt_customers_export_form" class="form" action="#">
+                                <!--begin::Input group-->
+                                <div class="fv-row mb-10">
+                                    <!--begin::Label-->
+                                    <label class="fs-5 fw-bold form-label mb-5">Select Export Format:</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select data-control="select2" data-placeholder="Select a format"
+                                            data-hide-search="true" name="format" class="form-select form-select-solid">
+                                        <option value="excell">Excel</option>
+                                        <option value="pdf">PDF</option>
+                                        <option value="cvs">CVS</option>
+                                        <option value="zip">ZIP</option>
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="fv-row mb-10">
+                                    <!--begin::Label-->
+                                    <label class="fs-5 fw-bold form-label mb-5">Select Date Range:</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input class="form-control form-control-solid" placeholder="Pick a date"
+                                           name="date"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Row-->
+                                <div class="row fv-row mb-15">
+                                    <!--begin::Label-->
+                                    <label class="fs-5 fw-bold form-label mb-5">Payment Type:</label>
+                                    <!--end::Label-->
+                                    <!--begin::Radio group-->
+                                    <div class="d-flex flex-column">
+                                        <!--begin::Radio button-->
+                                        <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                            <input class="form-check-input" type="checkbox" value="1" checked="checked"
+                                                   name="payment_type"/>
+                                            <span class="form-check-label text-gray-600 fw-bold">All</span>
+                                        </label>
+                                        <!--end::Radio button-->
+                                        <!--begin::Radio button-->
+                                        <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                            <input class="form-check-input" type="checkbox" value="2" checked="checked"
+                                                   name="payment_type"/>
+                                            <span class="form-check-label text-gray-600 fw-bold">Visa</span>
+                                        </label>
+                                        <!--end::Radio button-->
+                                        <!--begin::Radio button-->
+                                        <label class="form-check form-check-custom form-check-sm form-check-solid mb-3">
+                                            <input class="form-check-input" type="checkbox" value="3"
+                                                   name="payment_type"/>
+                                            <span class="form-check-label text-gray-600 fw-bold">Mastercard</span>
+                                        </label>
+                                        <!--end::Radio button-->
+                                        <!--begin::Radio button-->
+                                        <label class="form-check form-check-custom form-check-sm form-check-solid">
+                                            <input class="form-check-input" type="checkbox" value="4"
+                                                   name="payment_type"/>
+                                            <span class="form-check-label text-gray-600 fw-bold">American Express</span>
+                                        </label>
+                                        <!--end::Radio button-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Row-->
+                                <!--begin::Actions-->
+                                <div class="text-center">
+                                    <button type="reset" id="kt_customers_export_cancel" class="btn btn-light me-3">
+                                        Discard
+                                    </button>
+                                    <button type="submit" id="kt_customers_export_submit" class="btn btn-primary">
+                                        <span class="indicator-label">Submit</span>
+                                        <span class="indicator-progress">Please wait...
+														<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
+                                </div>
+                                <!--end::Actions-->
+                            </form>
+                            <!--end::Form-->
+                        </div>
+                        <!--end::Modal body-->
+                    </div>
+                    <!--end::Modal content-->
+                </div>
+                <!--end::Modal dialog-->
+            </div>
+            <!--end::Modal - New Card-->
+            <!--end::Modals-->
+            <div class="card-body pt-15">
+                {% if form_show_errors %}
+                {% endif %}
+                {% if match_team_player_form.errors %}
+                    {% for error_field, error_message in match_team_player_form.errors.items %}
+
+                        <div class="alert alert-danger">
+                            {{ error_field|striptags }}: {{ error_message|striptags }}
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+
+                {% for message in messages %}
+                    {% if message.extra_tags == 'Match Team Player' %}
+                        {% if message.tags == 'Match Team Player success' %}
+                            <p class="alert alert-info">
+                                {% elif message.tags == 'Match Team Player danger' %}
+                            <p class="alert alert-danger">
+                                {% elif message.tags == 'Match Team Player warning' %}
+                            <p class="alert alert-warning">
+
+                        {% endif %}
+                    {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                    </p>
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <!--end::Container-->
+
+    </div>
+    <!--end::Content-->
+
+
+{% endblock %}
+{% block custom_js %}
+
+ <script>
+        const DoctorAppointmentApp = Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    searchTerm: '',
+                    suggestions: '',
+                    filteredSuggestions: '',
+                    medicineSuggestions: '',
+                    showSuggestions: false,
+                    noItem: false,
+                    items: [{prescription_medicine: "", prescription_dose: ""}],
+                    timeSlot: [],
+                    nextFollowUp: false,
+                    nextFollowUpOBS: false,
+                    showPrescription: false,
+                    showOutService: false,
+                    showLabTest: false,
+                    showFollowUpOBS: false,
+                    clinicThirdPartyServices: {{ thirdparty_services_list|safe }},
+                    servicesOfThirdParty: [],
+                }
+            },
+            methods: {
+                getAppointmentDate(event) {
+                    console.log('addNewAppointment', event);
+
+                    payload = {
+
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+
+                        "date": event,
+
+                    }
+                    jQuery.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        data: payload,
+
+                        success: (data) => {
+
+                            console.log('data', data)
+                            this.timeSlot = data
+
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
+                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
+                            });
+                            app.showSuggestions = true;
+
+                        },
+                    });
+
+
+                },
+                getDiagnosisStatus(event) {
+                    console.log('getDiagnosisStatus', event);
+                    if (event == 'Followup') {
+                        this.nextFollowUp = true
+                        this.showPrescription = true
+                        this.showOutService = false
+                        this.showFollowUpOBS = false
+
+                    } else if (event == 'clinic Service') {
+                        this.nextFollowUp = true
+                        this.showPrescription = false
+                        this.showOutService = true
+                        this.showFollowUpOBS = false
+                    } else if (event == 'FollowupOBS') {
+                        this.nextFollowUp = true
+                        this.showPrescription = true
+                        this.showOutService = false
+                        this.showFollowUpOBS = true
+                    } else if (event == 'FollowupOBSMedicalService') {
+                        this.nextFollowUp = true
+                        this.showPrescription = false
+                        this.showOutService = true
+                        this.showFollowUpOBS = true
+                    } else {
+                        this.nextFollowUp = false
+                        this.showPrescription = false
+                        this.showOutService = false
+                        this.showFollowUpOBS = false
+                    }
+                },
+                getSuggestionsDoctorsMedicine: function (event) {
+                    console.log('getCurrentTrack event', encodeURIComponent(event), this.searchTerm)
+                    this.medicineSuggestions = encodeURIComponent(event.target.value)
+
+                    jQuery.ajax({
+                        type: 'GET',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+                            console.log('data', data)
+                            if (data == 'No Data Found') {
+                                this.suggestions = 'No Data Found'
+
+                                this.showSuggestions = false;
+                                this.noItem = true;
+
+                            } else {
+                                this.suggestions = data
+                                this.filteredSuggestions = this.suggestions.title
+                                this.showSuggestions = true;
+                                this.noItem = false;
+                            }
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+
+
+                        },
+                    });
+
+
+                },
+                addNewDoctorsMedicine: function (event) {
+                    console.log('getCurrentTrack', encodeURIComponent(event))
+
+
+                    jQuery.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+
+                            console.log('data', data)
+                            this.suggestions = data
+
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
+                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
+                            });
+                            app.showSuggestions = true;
+
+                        },
+                    });
+                },
+                selectMedicineSuggestion: function (suggestion, index) {
+                    this.searchTerm = suggestion;
+                    this.showSuggestions = false;
+                },
+                addItem() {
+                    this.items.push({prescription_medicine: "", prescription_dose: ""});
+                },
+                removeItem(index) {
+                    this.items.splice(index, 1);
+                },
+                getThirdPartyServices: function (event) {
+                    console.log('getThirdPartyServices event', encodeURIComponent(event),)
+
+
+                    jQuery.ajax({
+                        type: 'GET',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+                            console.log('data', data)
+                            if (data == 'No Data Found') {
+                                this.servicesOfThirdParty = 'No Data Found'
+
+                            } else {
+                                this.servicesOfThirdParty = data
+
+                            }
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.servicesOfThirdParty = 'No Data Found'
+
+
+                        },
+                    });
+
+
+                },
+
+
+            },
+
+
+        })
+        DoctorAppointmentApp.mount('#docpacapo-app')
+        DoctorAppointmentApp.config.devtools = true
+    </script>
+
+    <script>
+        "use strict";
+        var KTFormRepeaterSpeaker = {
+            init: function () {
+                $("#kt_docs_repeater_speaker").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select2"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select2"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterSpeaker.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterSponsor = {
+            init: function () {
+                $("#kt_docs_repeater_sponsor").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select3"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select3"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterSponsor.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterEmployee = {
+            init: function () {
+                $("#kt_docs_repeater_employee").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select4"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select4"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterEmployee.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterCustody = {
+            init: function () {
+                $("#kt_docs_repeater_custody").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select5"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select5"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterCustody.init();
+        });
+    </script>
+
+    <script>
+        var identity = function (t) {
+                return t;
+            },
+            isArray = function (t) {
+                return $.isArray(t);
+            },
+            isObject = function (t) {
+                return !isArray(t) && t instanceof Object;
+            },
+            isNumber = function (t) {
+                return t instanceof Number;
+            },
+            isFunction = function (t) {
+                return t instanceof Function;
+            },
+            indexOf = function (t, e) {
+                return $.inArray(e, t);
+            },
+            inArray = function (t, e) {
+                return -1 !== indexOf(t, e);
+            },
+            foreach = function (t, e) {
+                for (var n in t) t.hasOwnProperty(n) && e(t[n], n, t);
+            },
+            last = function (t) {
+                return t[t.length - 1];
+            },
+            argumentsToArray = function (t) {
+                return Array.prototype.slice.call(t);
+            },
+            extend = function () {
+                var t = {};
+                return (
+                    foreach(argumentsToArray(arguments), function (e) {
+                        foreach(e, function (e, n) {
+                            t[n] = e;
+                        });
+                    }),
+                        t
+                );
+            },
+            mapToArray = function (t, e) {
+                var n = [];
+                return (
+                    foreach(t, function (t, r, i) {
+                        n.push(e(t, r, i));
+                    }),
+                        n
+                );
+            },
+            mapToObject = function (t, e, n) {
+                var r = {};
+                return (
+                    foreach(t, function (t, i, a) {
+                        (i = n ? n(i, t) : i), (r[i] = e(t, i, a));
+                    }),
+                        r
+                );
+            },
+            map = function (t, e, n) {
+                return isArray(t) ? mapToArray(t, e) : mapToObject(t, e, n);
+            },
+            pluck = function (t, e) {
+                return map(t, function (t) {
+                    return t[e];
+                });
+            },
+            filter = function (t, e) {
+                var n;
+                return (
+                    isArray(t)
+                        ? ((n = []),
+                            foreach(t, function (t, r, i) {
+                                e(t, r, i) && n.push(t);
+                            }))
+                        : ((n = {}),
+                            foreach(t, function (t, r, i) {
+                                e(t, r, i) && (n[r] = t);
+                            })),
+                        n
+                );
+            },
+            call = function (t, e, n) {
+                return map(t, function (t, r) {
+                    return t[e].apply(t, n || []);
+                });
+            },
+            throttle = function (t, e) {
+                var n = null;
+                return function () {
+                    var r = this,
+                        i = arguments;
+                    null === n &&
+                    ((n = setTimeout(function () {
+                        n = null;
+                    }, t)),
+                        e.apply(r, i));
+                };
+            },
+            mixinPubSub = function (t) {
+                var e = {};
+                return (
+                    ((t = t || {}).publish = function (t, n) {
+                        foreach(e[t], function (t) {
+                            t(n);
+                        });
+                    }),
+                        (t.subscribe = function (t, n) {
+                            (e[t] = e[t] || []), e[t].push(n);
+                        }),
+                        (t.unsubscribe = function (t) {
+                            foreach(e, function (e) {
+                                var n = indexOf(e, t);
+                                -1 !== n && e.splice(n, 1);
+                            });
+                        }),
+                        t
+                );
+            };
+        !(function (t) {
+            "use strict";
+            var e = function (t, e) {
+                    var n,
+                        r = mixinPubSub(),
+                        i = t.$;
+                    return (
+                        (r.getType = function () {
+                            throw 'implement me (return type. "text", "radio", etc.)';
+                        }),
+                            (r.$ = function (t) {
+                                return t ? i.find(t) : i;
+                            }),
+                            (r.disable = function () {
+                                r.$().prop("disabled", !0), r.publish("isEnabled", !1);
+                            }),
+                            (r.enable = function () {
+                                r.$().prop("disabled", !1), r.publish("isEnabled", !0);
+                            }),
+                            (e.equalTo = function (t, e) {
+                                return t === e;
+                            }),
+                            (e.publishChange = function (t, i) {
+                                var a = r.get();
+                                e.equalTo(a, n) || r.publish("change", {e: t, domElement: i}),
+                                    (n = a);
+                            }),
+                            r
+                    );
+                },
+                n = function (t, n) {
+                    var r = e(t, n);
+                    return (
+                        (r.get = function () {
+                            return r.$().val();
+                        }),
+                            (r.set = function (t) {
+                                r.$().val(t);
+                            }),
+                            (r.clear = function () {
+                                r.set("");
+                            }),
+                            (n.buildSetter = function (t) {
+                                return function (e) {
+                                    t.call(r, e);
+                                };
+                            }),
+                            r
+                    );
+                },
+                r = function (t, e) {
+                    (t = isArray(t) ? t : [t]), (e = isArray(e) ? e : [e]);
+                    var n = !0;
+                    return (
+                        t.length !== e.length
+                            ? (n = !1)
+                            : foreach(t, function (t) {
+                                inArray(e, t) || (n = !1);
+                            }),
+                            n
+                    );
+                },
+                i = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "button";
+                        }),
+                            r.$().on("change", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                a = function (e) {
+                    var i = {},
+                        a = n(e, i);
+                    return (
+                        (a.getType = function () {
+                            return "checkbox";
+                        }),
+                            (a.get = function () {
+                                var e = [];
+                                return (
+                                    a
+                                        .$()
+                                        .filter(":checked")
+                                        .each(function () {
+                                            e.push(t(this).val());
+                                        }),
+                                        e
+                                );
+                            }),
+                            (a.set = function (e) {
+                                (e = isArray(e) ? e : [e]),
+                                    a.$().each(function () {
+                                        t(this).prop("checked", !1);
+                                    }),
+                                    foreach(e, function (t) {
+                                        a.$()
+                                            .filter('[value="' + t + '"]')
+                                            .prop("checked", !0);
+                                    });
+                            }),
+                            (i.equalTo = r),
+                            a.$().change(function (t) {
+                                i.publishChange(t, this);
+                            }),
+                            a
+                    );
+                },
+                u = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "email";
+                        }),
+                            e
+                    );
+                },
+                c = function (n) {
+                    var r = {},
+                        i = e(n, r);
+                    return (
+                        (i.getType = function () {
+                            return "file";
+                        }),
+                            (i.get = function () {
+                                return last(i.$().val().split("\\"));
+                            }),
+                            (i.clear = function () {
+                                this.$().each(function () {
+                                    t(this).wrap("<form>").closest("form").get(0).reset(),
+                                        t(this).unwrap();
+                                });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                o = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "hidden";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                f = function (n) {
+                    var r = {},
+                        i = e(n, r);
+                    return (
+                        (i.getType = function () {
+                            return "file[multiple]";
+                        }),
+                            (i.get = function () {
+                                var t,
+                                    e = i.$().get(0).files || [],
+                                    n = [];
+                                for (t = 0; t < (e.length || 0); t += 1) n.push(e[t].name);
+                                return n;
+                            }),
+                            (i.clear = function () {
+                                this.$().each(function () {
+                                    t(this).wrap("<form>").closest("form").get(0).reset(),
+                                        t(this).unwrap();
+                                });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                s = function (t) {
+                    var e = {},
+                        i = n(t, e);
+                    return (
+                        (i.getType = function () {
+                            return "select[multiple]";
+                        }),
+                            (i.get = function () {
+                                return i.$().val() || [];
+                            }),
+                            (i.set = function (t) {
+                                i.$().val("" === t ? [] : isArray(t) ? t : [t]);
+                            }),
+                            (e.equalTo = r),
+                            i.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                l = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "password";
+                        }),
+                            e
+                    );
+                },
+                p = function (e) {
+                    var r = {},
+                        i = n(e, r);
+                    return (
+                        (i.getType = function () {
+                            return "radio";
+                        }),
+                            (i.get = function () {
+                                return i.$().filter(":checked").val() || null;
+                            }),
+                            (i.set = function (e) {
+                                e
+                                    ? i
+                                        .$()
+                                        .filter('[value="' + e + '"]')
+                                        .prop("checked", !0)
+                                    : i.$().each(function () {
+                                        t(this).prop("checked", !1);
+                                    });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                h = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "range";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                d = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "select";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                m = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "text";
+                        }),
+                            r.$().on("change keyup keydown", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                v = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "textarea";
+                        }),
+                            r.$().on("change keyup keydown", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                y = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "url";
+                        }),
+                            e
+                    );
+                },
+                g = function (e) {
+                    var n = {},
+                        r = e.$,
+                        g = e.constructorOverride || {
+                            button: i,
+                            text: m,
+                            url: y,
+                            email: u,
+                            password: l,
+                            range: h,
+                            textarea: v,
+                            select: d,
+                            "select[multiple]": s,
+                            radio: p,
+                            checkbox: a,
+                            file: c,
+                            "file[multiple]": f,
+                            hidden: o
+                        },
+                        $ = function (e, i) {
+                            (isObject(i) ? i : r.find(i)).each(function () {
+                                var r = t(this).attr("name");
+                                n[r] = g[e]({$: t(this)});
+                            });
+                        },
+                        b = function (e, i) {
+                            var a = [],
+                                u = isObject(i) ? i : r.find(i);
+                            isObject(i)
+                                ? (n[u.attr("name")] = g[e]({$: u}))
+                                : (u.each(function () {
+                                    -1 === indexOf(a, t(this).attr("name")) &&
+                                    a.push(t(this).attr("name"));
+                                }),
+                                    foreach(a, function (t) {
+                                        n[t] = g[e]({$: r.find('input[name="' + t + '"]')});
+                                    }));
+                        };
+                    return (
+                        r.is("input, select, textarea")
+                            ? r.is('input[type="button"], button, input[type="submit"]')
+                                ? $("button", r)
+                                : r.is("textarea")
+                                    ? $("textarea", r)
+                                    : r.is('input[type="text"]') || (r.is("input") && !r.attr("type"))
+                                        ? $("text", r)
+                                        : r.is('input[type="password"]')
+                                            ? $("password", r)
+                                            : r.is('input[type="email"]')
+                                                ? $("email", r)
+                                                : r.is('input[type="url"]')
+                                                    ? $("url", r)
+                                                    : r.is('input[type="range"]')
+                                                        ? $("range", r)
+                                                        : r.is("select")
+                                                            ? r.is("[multiple]")
+                                                                ? $("select[multiple]", r)
+                                                                : $("select", r)
+                                                            : r.is('input[type="file"]')
+                                                                ? r.is("[multiple]")
+                                                                    ? $("file[multiple]", r)
+                                                                    : $("file", r)
+                                                                : r.is('input[type="hidden"]')
+                                                                    ? $("hidden", r)
+                                                                    : r.is('input[type="radio"]')
+                                                                        ? b("radio", r)
+                                                                        : r.is('input[type="checkbox"]')
+                                                                            ? b("checkbox", r)
+                                                                            : $("text", r)
+                            : ($("button", 'input[type="button"], button, input[type="submit"]'),
+                                $("text", 'input[type="text"]'),
+                                $("password", 'input[type="password"]'),
+                                $("email", 'input[type="email"]'),
+                                $("url", 'input[type="url"]'),
+                                $("range", 'input[type="range"]'),
+                                $("textarea", "textarea"),
+                                $("select", "select:not([multiple])"),
+                                $("select[multiple]", "select[multiple]"),
+                                $("file", 'input[type="file"]:not([multiple])'),
+                                $("file[multiple]", 'input[type="file"][multiple]'),
+                                $("hidden", 'input[type="hidden"]'),
+                                b("radio", 'input[type="radio"]'),
+                                b("checkbox", 'input[type="checkbox"]')),
+                            n
+                    );
+                };
+            (t.fn.inputVal = function (e) {
+                var n = t(this),
+                    r = g({$: n});
+                return n.is("input, textarea, select")
+                    ? void 0 === e
+                        ? r[n.attr("name")].get()
+                        : (r[n.attr("name")].set(e), n)
+                    : void 0 === e
+                        ? call(r, "get")
+                        : (foreach(e, function (t, e) {
+                            r[e].set(t);
+                        }),
+                            n);
+            }),
+                (t.fn.inputOnChange = function (e) {
+                    var n = t(this),
+                        r = g({$: n});
+                    return (
+                        foreach(r, function (t) {
+                            t.subscribe("change", function (t) {
+                                e.call(t.domElement, t.e);
+                            });
+                        }),
+                            n
+                    );
+                }),
+                (t.fn.inputDisable = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "disable"), e;
+                }),
+                (t.fn.inputEnable = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "enable"), e;
+                }),
+                (t.fn.inputClear = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "clear"), e;
+                });
+        })(jQuery),
+            ($.fn.repeaterVal = function () {
+                var t,
+                    e,
+                    n = function (t) {
+                        if (
+                            1 === t.length &&
+                            (0 === t[0].key.length || (1 === t[0].key.length && !t[0].key[0]))
+                        )
+                            return t[0].val;
+                        foreach(t, function (t) {
+                            t.head = t.key.shift();
+                        });
+                        var e,
+                            r = (function () {
+                                var e = {};
+                                return (
+                                    foreach(t, function (t) {
+                                        e[t.head] || (e[t.head] = []), e[t.head].push(t);
+                                    }),
+                                        e
+                                );
+                            })();
+                        return (
+                            /^[0-9]+$/.test(t[0].head)
+                                ? ((e = []),
+                                    foreach(r, function (t) {
+                                        e.push(n(t));
+                                    }))
+                                : ((e = {}),
+                                    foreach(r, function (t, r) {
+                                        e[r] = n(t);
+                                    })),
+                                e
+                        );
+                    };
+                return n(
+                    ((t = $(this).inputVal()),
+                        (e = []),
+                        foreach(t, function (t, n) {
+                            var r = [];
+                            "undefined" !== n &&
+                            (r.push(n.match(/^[^\[]*/)[0]),
+                                (r = r.concat(
+                                    map(n.match(/\[[^\]]*\]/g), function (t) {
+                                        return t.replace(/[\[\]]/g, "");
+                                    })
+                                )),
+                                e.push({val: t, key: r}));
+                        }),
+                        e)
+                );
+            }),
+            ($.fn.repeater = function (t) {
+                var e;
+                return (
+                    (t = t || {}),
+                        $(this).each(function () {
+                            var n = $(this),
+                                r =
+                                    t.show ||
+                                    function () {
+                                        $(this).show();
+                                    },
+                                i =
+                                    t.hide ||
+                                    function (t) {
+                                        t();
+                                    },
+                                a = n.find("[data-repeater-list]").first(),
+                                u = function (t, e) {
+                                    return t.filter(function () {
+                                        return (
+                                            !e ||
+                                            0 === $(this).closest(pluck(e, "selector").join(",")).length
+                                        );
+                                    });
+                                },
+                                c = function () {
+                                    return u(a.find("[data-repeater-item]"), t.repeaters);
+                                },
+                                o = a.find("[data-repeater-item]").first().clone().hide(),
+                                f = u(
+                                    u($(this).find("[data-repeater-item]"), t.repeaters)
+                                        .first()
+                                        .find("[data-repeater-delete]"),
+                                    t.repeaters
+                                );
+                            t.isFirstItemUndeletable && f && f.remove();
+                            var s = function () {
+                                    var e = a.data("repeater-list");
+                                    return t.$parent ? t.$parent.data("item-name") + "[" + e + "]" : e;
+                                },
+                                l = function (e) {
+                                    t.repeaters &&
+                                    e.each(function () {
+                                        var e = $(this);
+                                        foreach(t.repeaters, function (t) {
+                                            e.find(t.selector).repeater(extend(t, {$parent: e}));
+                                        });
+                                    });
+                                },
+                                p = function (t, e, n) {
+                                    t &&
+                                    foreach(t, function (t) {
+                                        n.call(e.find(t.selector)[0], t);
+                                    });
+                                },
+                                h = function (t, e, n) {
+                                    t.each(function (t) {
+                                        var r = $(this);
+                                        r.data("item-name", e + "[" + t + "]"),
+                                            u(r.find("[name]"), n).each(function () {
+                                                var i = $(this),
+                                                    a = i.attr("name").match(/\[[^\]]+\]/g),
+                                                    c = a ? last(a).replace(/\[|\]/g, "") : i.attr("name"),
+                                                    o =
+                                                        "[" +
+                                                        c +
+                                                        "]" +
+                                                        (i.is(":checkbox") || i.attr("multiple") ? "[]" : "");
+                                                i.attr("name", o),
+                                                    p(n, r, function (n) {
+                                                        var r = $(this);
+                                                        h(
+                                                            u(r.find("[data-repeater-item]"), n.repeaters || []),
+                                                            e +
+                                                            "[" +
+                                                            t +
+                                                            "][" +
+                                                            r
+                                                                .find("[data-repeater-list]")
+                                                                .first()
+                                                                .data("repeater-list") +
+                                                            "]",
+                                                            n.repeaters
+                                                        );
+                                                    });
+                                            });
+                                    }),
+                                        a
+                                            .find("input[name][checked]")
+                                            .removeAttr("checked")
+                                            .prop("checked", !0);
+                                };
+                            h(c(), s(), t.repeaters),
+                                l(c()),
+                            t.initEmpty && c().remove(),
+                            t.ready &&
+                            t.ready(function () {
+                                h(c(), s(), t.repeaters);
+                            });
+                            var d,
+                                m =
+                                    ((d = function (e, n, r) {
+                                        if (n || t.defaultValues) {
+                                            var i = {};
+                                            u(e.find("[name]"), r).each(function () {
+                                                var t = $(this)
+                                                    .attr("name")
+                                                    .match(/\[([^\]]*)(\]|\]\[\])$/)[1];
+                                                i[t] = $(this).attr("name");
+                                            }),
+                                                e.inputVal(
+                                                    map(
+                                                        filter(n || t.defaultValues, function (t, e) {
+                                                            return i[e];
+                                                        }),
+                                                        identity,
+                                                        function (t) {
+                                                            return i[t];
+                                                        }
+                                                    )
+                                                );
+                                        }
+                                        p(r, e, function (t) {
+                                            var e = $(this);
+                                            u(e.find("[data-repeater-item]"), t.repeaters).each(
+                                                function () {
+                                                    var r = e
+                                                        .find("[data-repeater-list]")
+                                                        .data("repeater-list");
+                                                    if (n && n[r]) {
+                                                        var i = $(this).clone();
+                                                        e.find("[data-repeater-item]").remove(),
+                                                            foreach(n[r], function (n) {
+                                                                var r = i.clone();
+                                                                d(r, n, t.repeaters || []),
+                                                                    e.find("[data-repeater-list]").append(r);
+                                                            });
+                                                    } else d($(this), t.defaultValues, t.repeaters || []);
+                                                }
+                                            );
+                                        });
+                                    }),
+                                        function (e, n) {
+                                            a.append(e),
+                                                h(c(), s(), t.repeaters),
+                                                e.find("[name]").each(function () {
+                                                    $(this).inputClear();
+                                                }),
+                                                d(e, n || t.defaultValues, t.repeaters);
+                                        }),
+                                v = function (e) {
+                                    var n = o.clone();
+                                    m(n, e), t.repeaters && l(n), r.call(n.get(0));
+                                };
+                            (e = function (t) {
+                                c().remove(), foreach(t, v);
+                            }),
+                                u(n.find("[data-repeater-create]"), t.repeaters).click(function () {
+                                    v();
+                                }),
+                                a.on("click", "[data-repeater-delete]", function () {
+                                    var e = $(this).closest("[data-repeater-item]").get(0);
+                                    i.call(e, function () {
+                                        $(e).remove(), h(c(), s(), t.repeaters);
+                                    });
+                                });
+                        }),
+                        (this.setList = e),
+                        this
+                );
+            });
+
+
+    </script>
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

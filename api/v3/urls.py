@@ -1,7 +1,7 @@
 from django.urls import path
 
 from api.v3.views import blog
-from api.v3.views.apps.sport import sport
+from api.v3.views.apps.sport import sport,sportmonks
 
 app_name = 'api'
 # DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
@@ -39,20 +39,6 @@ urlpatterns = [
     path('v3/blog/service/<int:pk>/', blog.BlogServicesDetail.as_view(), name='AdminBlogServicesAPiList'),
     path('v3/blog/article/', blog.AdminBlogArticleSerializerList, name='AdminBlogArticleAPiList'),
     path('v3/blog/article/<int:pk>/', blog.BlogArticleDetail.as_view(), name='AdminBlogArticleAPiList'),
-
-    ##################### Mix Sport API ########################
-
-    path('v3/genral/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
-    path('v3/sport/genral/teams/<str:country>/<str:sport>/', sport.SportTeamsByCountryApiList,
-         name='SportTeamsByCountryApiList'),
-    path('v3/sport/genral/leagues/<str:country>/<str:sport>/', sport.SportLeaguesByCountryApiList,
-         name='SportLeaguesByCountryApiList'),
-    path('v3/sport/genral/matches/<str:country>/<str:sport>/', sport.SportMatchesByCountryApiList,
-         name='SportMatchesByCountryApiList'),
-    path('v3/sport/genral/news/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
-         name='SportNewsByCountryApiList'),
-    path('v3/sport/genral/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
-         name='SportVideosByCountryApiList'),
 
     ##################### Sport API ########################
     path('v3/sport/category/', sport.SportCategoryList.as_view(), name='AdminSportCategoryAPiList'),
@@ -157,5 +143,27 @@ urlpatterns = [
          name='AdminMatchTeamPlayerAPiByMatchList'),
     path('v3/sport/match/matchteamplayer/search/<str:name>/', sport.AdminMatchTeamPlayerAPiSearchList.as_view(),
          name='AdminMatchTeamPlayerAPiSearchList'),
+
+    ##################### Mix Sport API ########################
+
+    path('v3/genral/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
+    path('v3/sport/genral/teams/<str:country>/<str:sport>/', sport.SportTeamsByCountryApiList,
+         name='SportTeamsByCountryApiList'),
+    path('v3/sport/genral/leagues/<str:country>/<str:sport>/', sport.SportLeaguesByCountryApiList,
+         name='SportLeaguesByCountryApiList'),
+    path('v3/sport/genral/matches/<str:country>/<str:sport>/', sport.SportMatchesByCountryApiList,
+         name='SportMatchesByCountryApiList'),
+    path('v3/sport/genral/news/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
+         name='SportNewsByCountryApiList'),
+    path('v3/sport/genral/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
+         name='SportVideosByCountryApiList'),
+
+
+    ##################### Mix Sport Monks API ########################
+    path('v3/sport/sportmonks/teams/<str:country>/<str:sport>/', sportmonks.SportWithMonkTeamsByCountryApiList,
+         name='SportWithMonkTeamsByCountryApiList'),
+
+
+
 
 ]  # scheduler.interval(UserToken.objects.delete_expired_tokens, DELETE_EXPIRED_TOKENS_INTERVAL)

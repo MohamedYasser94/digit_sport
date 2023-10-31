@@ -47,6 +47,7 @@
 
        {% endif %}
         {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
+        {% block monks %}{% include 'good/monks/partials/sidebar-partials.html' %}{% endblock monks %}
 
             {% if user_access == 'SuperAdmin' %}
                 {% block blog %}{% include 'good/blog/partials/sidebar-partials.html' %}{% endblock blog %}
