@@ -1,7 +1,7 @@
 from django.urls import path
 
 from api.v3.views import blog
-from api.v3.views.apps.sport import sport,sportmonks
+from api.v3.views.apps.sport import sport, sportmonks
 
 app_name = 'api'
 # DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
@@ -41,6 +41,7 @@ urlpatterns = [
     path('v3/blog/article/<int:pk>/', blog.BlogArticleDetail.as_view(), name='AdminBlogArticleAPiList'),
 
     ##################### Sport API ########################
+    path('v3/country/', sport.SportCountryList, name='SportCountryList'),
     path('v3/sport/category/', sport.SportCategoryList.as_view(), name='AdminSportCategoryAPiList'),
     path('v3/sport/category/<int:pk>/', sport.SportCategoryDetail.as_view(), name='AdminSportCategoryAPiList'),
     path('v3/sport/v3/sport/', sport.AdminSportSerializerList.as_view(), name='AdminSportAPiList'),
@@ -153,17 +154,18 @@ urlpatterns = [
          name='SportLeaguesByCountryApiList'),
     path('v3/sport/genral/matches/<str:country>/<str:sport>/', sport.SportMatchesByCountryApiList,
          name='SportMatchesByCountryApiList'),
-    path('v3/sport/genral/news/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
+
+    path('v3/sport/genral/matches/last/<str:sport>/<str:date>/', sport.SportMatchesLastApiList,
+            name='SportMatchesLastApiList'),
+
+    path('v3/sport/genral/news/list/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
          name='SportNewsByCountryApiList'),
+    path('v3/sport/genral/news/details/<int:newsid>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
     path('v3/sport/genral/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
          name='SportVideosByCountryApiList'),
-
 
     ##################### Mix Sport Monks API ########################
     path('v3/sport/sportmonks/teams/<str:country>/<str:sport>/', sportmonks.SportWithMonkTeamsByCountryApiList,
          name='SportWithMonkTeamsByCountryApiList'),
-
-
-
 
 ]  # scheduler.interval(UserToken.objects.delete_expired_tokens, DELETE_EXPIRED_TOKENS_INTERVAL)

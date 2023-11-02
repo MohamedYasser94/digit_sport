@@ -35,8 +35,9 @@ urlpatterns = [
     path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
 
 
-    # ##########   Stages  #########
-    # path('stages/', views.AdminStagesList, name='AdminStagesList'),
+    ##########   Stages  #########
+    path('stages/', views.AdminStagesList, name='AdminStagesList'),
+    path('monk/stages/api/get/', monks.AdminMonksStagesGetData, name='AdminMonksStagesGetData'),
     # path('stages/update/<slug:slug>/', views.AdminStagesUpdate, name='AdminStagesUpdate'),
     # path('stages/archive/<slug:slug>/', views.AdminStagesArchive, name='AdminStagesArchive'),
     # path('stages/delete/<slug:slug>/', views.AdminStagesDelete, name='AdminStagesDelete'),
@@ -56,8 +57,9 @@ urlpatterns = [
     # path('aggregate/delete/<slug:slug>/', views.AdminAggregateDelete, name='AdminAggregateDelete'),
     #
     #
-    # ##########   Round  #########
-    # path('round/', views.AdminRoundList, name='AdminRoundList'),
+    ##########   Round  #########
+    path('round/', views.AdminRoundList, name='AdminRoundList'),
+    path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
     # path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
     # path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
     # path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
@@ -99,7 +101,7 @@ urlpatterns = [
     path('monk/players/api/get/', monks.AdminMonksPlayersGetData, name='AdminMonksPlayersGetData'),
 
     ##########   Match  #########
-    path('season/', views.AdminMatchList, name='AdminMatchList'),
+    path('match/', views.AdminMatchList, name='AdminMatchList'),
     path('season/match/<slug:slug>/',  views.AdminMatchBySeason, name='AdminMatchBySeason'),
 
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),

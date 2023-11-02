@@ -280,7 +280,7 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = [
-               'id','name','home_team','away_team','venues'
+               'id','name','home_team','away_team','venues','start_time','is_live'
         ]
 
     def get_home_team(self, obj):

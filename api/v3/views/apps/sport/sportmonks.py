@@ -1,15 +1,14 @@
+import requests
 from django.http import JsonResponse
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-import requests
-from api.v3.serializers.blog import AdminBlogArticleSerializer, AdminBlogVideoSerializer
-from api.v3.serializers.sport import *
-from core.models.blog import BlogArticle, BlogVideo
+from api.v3.serializers.sport.sport import *
+from apps.sport.models.models import *
 from digit_sport import settings
 
 api_key = settings.SPORT_MONKS_TOKEN
 base_url = settings.SPORT_MONKS_URL
+
+
 
 def get_sportmonks_data(request, country, sport):
     """Gets data from the SportMonks API."""

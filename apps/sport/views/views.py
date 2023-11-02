@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -467,7 +468,13 @@ def AdminSeasonList(request):
             keyword = request.POST.get('keyword')
             starting_at = request.POST.get('starting_at')
             ending_at = request.POST.get('ending_at')
-            standings_recalculated_at = request.POST.get('standings_recalculated_at')
+            is_current = request.POST.get('is_current')
+
+            if is_current == None or is_current == '' or is_current == 'None' or is_current == 'No':
+                is_current = False
+            else:
+                is_current = True
+
 
 
             if league == None or league == '':
@@ -476,7 +483,7 @@ def AdminSeasonList(request):
                 league = Leagues.objects.get(id=league)
 
             season_object = Season(name=name, league=league, keyword=keyword, starting_at=starting_at,
-                                        ending_at=ending_at, standings_recalculated_at=standings_recalculated_at,
+                                        ending_at=ending_at, is_current=is_current,
                                      status='Active')
 
             season_object.save()
@@ -599,6 +606,103 @@ def AdminSeasonDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonList'))
     else:
         return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonList'))
+
+
+
+
+##########################  Stages ################################
+@authenticated_staf
+@staff_only
+def AdminStagesList(request):
+    stages = Stages.objects.all()
+
+    if request.method == "POST":
+        stages_form = AdminStagesForm(request.POST or None, request.FILES or None)
+
+        if stages_form:
+            name = request.POST.get('name')
+            league = request.POST.get('league')
+            keyword = request.POST.get('keyword')
+            starting_at = request.POST.get('starting_at')
+            ending_at = request.POST.get('ending_at')
+            is_current = request.POST.get('is_current')
+
+            if is_current == None or is_current == '' or is_current == 'None' or is_current == 'No':
+                is_current = False
+            else:
+                is_current = True
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+            stage_object = Stages(name=name, league=league, keyword=keyword, starting_at=starting_at,
+                                        ending_at=ending_at, is_current=is_current,
+                                        status='Active')
+
+            stage_object.save()
+            messages.success(request, _("Stage Add Successfully"), extra_tags='Stage')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminStagesList'))
+        else:
+
+                messages.error(request, _("Stage Not Add , Please Try Again"), extra_tags='Stage')
+
+    else:
+        context = {'stages': stages, 'stages_form': AdminStagesForm(), 'current_page': _('Stages')
+
+                   }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/stages/admin.html', context)
+
+
+
+
+########################### Round ################################
+@authenticated_staf
+@staff_only
+def AdminRoundList(request):
+    rounds = Round.objects.all()
+
+    if request.method == "POST":
+        rounds_form = AdminRoundForm(request.POST or None, request.FILES or None)
+
+        if rounds_form:
+            name = request.POST.get('name')
+            league = request.POST.get('league')
+            keyword = request.POST.get('keyword')
+            starting_at = request.POST.get('starting_at')
+            ending_at = request.POST.get('ending_at')
+            is_current = request.POST.get('is_current')
+
+            if is_current == None or is_current == '' or is_current == 'None' or is_current == 'No':
+                is_current = False
+            else:
+                is_current = True
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+            round_object = Round(name=name, league=league, keyword=keyword, starting_at=starting_at,
+                                        ending_at=ending_at, is_current=is_current,
+                                        status='Active')
+
+            round_object.save()
+            messages.success(request, _("Round Add Successfully"), extra_tags='Round')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+        else:
+
+                messages.error(request, _("Round Not Add , Please Try Again"), extra_tags='Round')
+
+    else:
+        context = {'rounds': rounds, 'rounds_form': AdminRoundForm(), 'current_page': _('Rounds')
+
+                   }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/round/admin.html', context)
+
 
 
 
@@ -1044,6 +1148,10 @@ def AdminTeamPlayerAdd(request, slug):
 @staff_only
 def AdminPlayersList(request):
     players = Players.objects.all()
+    paginator = Paginator(players, 10)  # Show 25 contacts per page.
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     if request.method == "POST":
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
@@ -1074,7 +1182,7 @@ def AdminPlayersList(request):
         else:
             messages.error(request, _("Players Not Add , Please Try Again"), extra_tags='Players')
     else:
-        context = {'players': players, 'players_form': AdminPlayersForm(), 'current_page': _('Players')}
+        context = {'players': page_obj, 'players_form': AdminPlayersForm(), 'current_page': _('Players')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
 
 
@@ -1166,15 +1274,23 @@ def AdminMatchList(request):
         if matches_form:
             home_team = request.POST.get('home_team')
             away_team = request.POST.get('away_team')
-            location = request.POST.get('location')
+            venues = request.POST.get('venues')
             start_time = request.POST.get('start_time')
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
+            is_live = request.POST.get('is_live')
 
             name = home_team.name + ' vs ' + away_team.name
 
+            if venues == None or venues == '':
+                venues = None
+            else:
+
+                venues = Venues.objects.get(id=venues)
+
             match_object = Match(name=name,
-                home_team=home_team,away_team=away_team,location=location,start_time=start_time
+                home_team=home_team,away_team=away_team,venues=venues,start_time=start_time,
+                is_live=is_live
             )
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
@@ -1201,6 +1317,7 @@ def AdminMatchBySeason(request, slug):
             start_time = request.POST.get('start_time')
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
+            is_live = request.POST.get('is_live')
 
 
 
@@ -1215,7 +1332,8 @@ def AdminMatchBySeason(request, slug):
                 venues = Venues.objects.get(id=venues)
 
             match_object = Match(name=name, sport=season.sport, season=season,league=season.league,
-                home_team=home_team,away_team=away_team,venues=venues,start_time=start_time
+                home_team=home_team,away_team=away_team,venues=venues,start_time=start_time,
+                is_live=is_live
             )
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')

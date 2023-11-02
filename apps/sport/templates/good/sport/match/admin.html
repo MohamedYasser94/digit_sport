@@ -322,7 +322,8 @@
                                             <!--begin::Input-->
                                             <select name="home_team" aria-label="{% translate 'Home Team' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Home Team' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                   data-dropdown-parent="#kt_modal_add_category"
+                                                            data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
                                                 {% for value, text in matches_form.home_team.field.choices %}
@@ -336,12 +337,13 @@
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Away Team' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Away Team' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
                                            <select name="away_team" aria-label="{% translate 'Away Team' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Away Team' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                    data-dropdown-parent="#kt_modal_add_category"
+                                                            data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
                                                 {% for value, text in matches_form.away_team.field.choices %}
@@ -359,12 +361,40 @@
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Location' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Venues' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                            <input type="text" class="form-control form-control-solid"
-                                                   placeholder="{% translate 'Location' %}"
-                                                   name="location"/>
+                                           <select name="away_team" aria-label="{% translate 'Venues' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
+                                                    data-dropdown-parent="#kt_modal_add_category"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.away_team.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                    <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="is_live" aria-label="{% translate 'Match Live' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                                    data-dropdown-parent="#kt_modal_add_category"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.is_live.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
                                             <!--end::Input-->
                                         </div>
                                         <!--end::Input group-->

@@ -1,9 +1,12 @@
+from datetime import datetime
+
 from django.http import JsonResponse
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
-from api.v3.serializers.blog import AdminBlogArticleSerializer, AdminBlogVideoSerializer
-from api.v3.serializers.sport import *
+from api.v3.serializers.sport.monk import *
+from api.v3.serializers.sport.sport import *
+from apps.sport.models.models import *
+from apps.sport.models.monks import *
 from core.models.blog import BlogArticle, BlogVideo
 
 
@@ -1108,20 +1111,18 @@ def SportByCountryApiList(request, country):
     return JsonResponse(data, safe=False)
 
 
-
-
 def SportTeamsByCountryApiList(request, country,sport):
-    print()
+
     if country == '' or country == None or country == 'all' or country == ':country':
         country = 'Kuwait'
     else:
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, country=country)
+    sport_list = Sport.objects.filter(name=sport)
 
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport, country=country)
+        get_sport = Sport.objects.get(name=sport)
         teams_list = Teams.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"
@@ -1145,6 +1146,37 @@ def SportTeamsByCountryApiList(request, country,sport):
             }
     return JsonResponse(data, safe=False)
 
+def SportCountryList(request):
+
+    country_list = MonkCountry.objects.all()
+
+
+
+
+    if country_list.count() > 0:
+
+        success = True
+        message = f"Send From Django API mix "
+        country_serializer = AdminMonkCountrySerializer(country_list, many=True)
+
+        sport_data = {
+                      'country': country_serializer.data,
+
+                      }
+    else:
+        success = False
+        message = f"error in get data no data no data with this country "
+
+        sport_data = {
+                      'country': [],
+
+                      }
+
+    data = {'success': success, 'data': sport_data, 'message': message,
+
+            }
+    return JsonResponse(data, safe=False)
+
 
 
 def SportLeaguesByCountryApiList(request, country,sport):
@@ -1155,9 +1187,9 @@ def SportLeaguesByCountryApiList(request, country,sport):
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, country=country)
+    sport_list = Sport.objects.filter(name=sport, )
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport, country=country)
+        get_sport = Sport.objects.get(name=sport)
         leagues_list = Leagues.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"
@@ -1191,9 +1223,9 @@ def SportMatchesByCountryApiList(request, country,sport):
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, country=country)
+    sport_list = Sport.objects.filter(name=sport, )
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport, country=country)
+        get_sport = Sport.objects.get(name=sport)
         matches_list = Match.objects.filter(league__sport=get_sport.id, league__country=country)
         success = True
         message = f"Send From Django API mix {country}"
@@ -1219,7 +1251,45 @@ def SportMatchesByCountryApiList(request, country,sport):
             }
     return JsonResponse(data, safe=False)
 
+def SportMatchesLastApiList(request,sport, date):
 
+    if date == '' or date == None or date == 'all' or date == ':date':
+        date = datetime.now()
+    else:
+        date = date
+    if sport == '' or sport == None or sport == 'all' or sport == ':sport':
+        sport = Sport.objects.all()
+        matches_list = Match.objects.filter( start_time__date=date).order_by('-start_time')
+    else:
+        sport = sport
+        matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('-start_time')
+    if matches_list.count() > 0:
+
+
+
+        success = True
+        message = f"Send From Django API mix "
+
+        match_serializer = MatchSerializer(matches_list, many=True)
+
+        sport_data = {'date': date,
+
+                        'match': match_serializer.data,
+                      }
+
+    else:
+        success = False
+        message = f"error in get data no data no data with this date {date} "
+
+        sport_data = {'date': date,
+
+                        'match': [],
+                      }
+
+    data = {'success': success, 'data': sport_data, 'message': message,
+
+            }
+    return JsonResponse(data, safe=False)
 
 def SportNewsByCountryApiList(request, country,sport):
     print()
@@ -1229,9 +1299,9 @@ def SportNewsByCountryApiList(request, country,sport):
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, country=country)
+    sport_list = Sport.objects.filter(name=sport, )
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport, country=country)
+        get_sport = Sport.objects.get(name=sport)
         news_list = BlogArticle.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"
@@ -1256,7 +1326,33 @@ def SportNewsByCountryApiList(request, country,sport):
             }
     return JsonResponse(data, safe=False)
 
+def SportNewsApiDetails(request, newsid):
 
+    try:
+        news_list = BlogArticle.objects.filter(id=newsid)
+        success = True
+        message = f"Send From Django API News Details {newsid} "
+        news_serializer = AdminBlogArticleDetailsSerializer(news_list, many=True)
+        sport_data = {'news': news_serializer.data,
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=False)
+    except:
+        success = False
+        message = f"error in get data  News Details  "
+
+        sport_data = {'news': [],
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=False)
 
 def SportVideosByCountryApiList(request, country,sport):
     print()
@@ -1266,9 +1362,9 @@ def SportVideosByCountryApiList(request, country,sport):
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, country=country)
+    sport_list = Sport.objects.filter(name=sport, )
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport, country=country)
+        get_sport = Sport.objects.get(name=sport)
         video_list = BlogVideo.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"

@@ -322,6 +322,216 @@ def AdminMonksSeasonGetData(request):
         data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
         return JsonResponse(data=data, safe=False)
 
+
+@csrf_exempt
+def AdminMonksStagesGetData(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+    if request.method == "POST":
+        stages_form = AdminStagesForm(request.POST or None, request.FILES or None)
+        data = ''
+        if stages_form:
+            page = request.POST.get('pages')
+            sport = request.POST.get('sport')
+
+            try:
+                sport_id = Sport.objects.get(name=sport)
+            except:
+                sport_id = None
+            i = 1
+            for i in range(int(page)):
+
+                i = i + 1
+
+                response = requests.get(
+                    base_url + f'{sport}/stages?page={i}&api_token={api_key}',
+                    headers={
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        "Authorization": f"Bearer {api_key}",
+                    },
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+
+                    data_to_db = data['data']
+
+                    for data in data_to_db:
+
+                        try:
+                            try:
+                                league = Leagues.objects.get(api_id=data['league_id'])
+                            except:
+                                league = None
+
+                            try:
+                                season = Season.objects.get(api_id=data['season_id'])
+                            except:
+                                season = None
+
+                            check_stages = Stages.objects.get(name=data['name'])
+                            check_stages.api_id = data['id']
+                            check_stages.sport = sport_id
+                            check_stages.league = league
+                            check_stages.season = season
+                            check_stages.type = data['type_id']
+                            check_stages.name = data['name']
+                            check_stages.sort_order = data['sort_order']
+                            check_stages.finished = data['finished']
+                            check_stages.is_current = data['is_current']
+                            check_stages.starting_at = data['starting_at']
+                            check_stages.ending_at = data['ending_at']
+
+                            check_stages.games_in_current_week = data['games_in_current_week']
+                            check_stages.tie_breaker_rule = data['tie_breaker_rule_id']
+                            check_stages.save()
+                        except:
+                            try:
+                                league = Leagues.objects.get(api_id=data['league_id'])
+                            except:
+                                league = None
+                            try:
+                                season = Season.objects.get(api_id=data['season_id'])
+                            except:
+                                season = None
+                            stages_object = Stages(api_id=data['id'], sport=sport_id,
+                                                    league=league,season=season,
+                                                    type=data['type_id'],name=data['name'],
+                                                    sort_order=data['sort_order'],finished=data['finished'],
+                                                    is_current=data['is_current'],starting_at=data['starting_at'],
+                                                    ending_at=data['ending_at'],
+                                                    games_in_current_week=data['games_in_current_week'],
+                                                    tie_breaker_rule=data['tie_breaker_rule_id'],
+
+                                                         )
+                            stages_object.save()
+                    data = {'type': 'Success', 'message': 'Data Add Successfully'}
+                else:
+                    data = {'type': 'Error',
+                            'message': f'Data Not Add Successfully Response Code {response.status_code} '}
+
+            return JsonResponse(data=data, safe=False)
+
+
+        else:
+            data = {'type': 'Error', 'message': f'Data Not Add Successfully '}
+            return JsonResponse(data=data, safe=False)
+    else:
+        data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
+        return JsonResponse(data=data, safe=False)
+
+
+@csrf_exempt
+def AdminMonksRoundGetData(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+    if request.method == "POST":
+        rounds_form = AdminRoundForm(request.POST or None, request.FILES or None)
+        data = ''
+        if rounds_form:
+            page = request.POST.get('pages')
+            sport = request.POST.get('sport')
+
+            try:
+                sport_id = Sport.objects.get(name=sport)
+            except:
+                sport_id = None
+            i = 1
+            for i in range(int(page)):
+
+                i = i + 1
+
+                response = requests.get(
+                    base_url + f'{sport}/rounds?page={i}&api_token={api_key}',
+                    headers={
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        "Authorization": f"Bearer {api_key}",
+                    },
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+
+                    data_to_db = data['data']
+
+                    for data in data_to_db:
+
+                        try:
+                            try:
+                                league = Leagues.objects.get(api_id=data['league_id'])
+                            except:
+                                league = None
+
+                            try:
+                                season = Season.objects.get(api_id=data['season_id'])
+                            except:
+                                season = None
+
+                            try:
+                               stage = Stages.objects.get(api_id=data['stage_id'])
+                            except:
+                                stage = None
+
+                            check_round = Round.objects.get(name=data['name'])
+                            check_round.api_id = data['id']
+                            check_round.sport = sport_id
+                            check_round.league = league
+                            check_round.season = season
+                            check_round.stage = stage
+                            check_round.name = data['name']
+
+                            check_round.finished = data['finished']
+                            check_round.is_current = data['is_current']
+                            check_round.starting_at = data['starting_at']
+                            check_round.ending_at = data['ending_at']
+
+                            check_round.games_in_current_week = data['games_in_current_week']
+
+                            check_round.save()
+                        except:
+                            try:
+                                league = Leagues.objects.get(api_id=data['league_id'])
+                            except:
+                                league = None
+                            try:
+                                season = Season.objects.get(api_id=data['season_id'])
+                            except:
+                                season = None
+                            try:
+                               stage = Stages.objects.get(api_id=data['stage_id'])
+                            except:
+                                stage = None
+                            round_object = Round(api_id=data['id'], sport=sport_id,
+                                                    league=league,season=season,stage=stage,
+                                                    name=data['name'],
+                                                    finished=data['finished'],
+                                                    is_current=data['is_current'],starting_at=data['starting_at'],
+                                                    ending_at=data['ending_at'],
+                                                    games_in_current_week=data['games_in_current_week'],
+
+
+                                                         )
+                            round_object.save()
+                    data = {'type': 'Success', 'message': 'Data Add Successfully'}
+                else:
+                    data = {'type': 'Error',
+                            'message': f'Data Not Add Successfully Response Code {response.status_code} '}
+
+            return JsonResponse(data=data, safe=False)
+
+
+        else:
+            data = {'type': 'Error', 'message': f'Data Not Add Successfully '}
+            return JsonResponse(data=data, safe=False)
+    else:
+        data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
+        return JsonResponse(data=data, safe=False)
+
+
 @csrf_exempt
 def AdminMonksVenuesGetData(request):
     if not request.user.is_authenticated:

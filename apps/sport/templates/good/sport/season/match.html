@@ -362,7 +362,7 @@
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Location' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Venues' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
                                             <select name="venues" aria-label="{% translate 'Venues' %}"
@@ -372,6 +372,26 @@
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
                                                 {% for value, text in matches_form.venues.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                      <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="is_live" aria-label="{% translate 'Match Live' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                                    data-dropdown-parent="#kt_modal_add_category"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.is_live.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 

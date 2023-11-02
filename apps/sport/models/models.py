@@ -204,6 +204,7 @@ class Season(models.Model):
 
 
 class Stages(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_stage_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -217,16 +218,15 @@ class Stages(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_stage', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_stage', null=True, blank=True)
     type = models.CharField(max_length=200, choices=Sport_Core_type, default='Other', null=True, blank=True)
-    name = models.CharField(max_length=200, unique=True)
-    short_name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    short_name = models.CharField(max_length=200,null=True, blank=True )
     sort_order = models.IntegerField(null=True, blank=True)
-    finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    finished = models.BooleanField(default=False)
+    is_current = models.BooleanField(default=False)
     starting_at = models.DateTimeField(null=True, blank=True)
     ending_at = models.DateTimeField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
-    games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
-                                             blank=True)
+    games_in_current_week = models.BooleanField(default=False)
     tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
@@ -260,8 +260,8 @@ class Group(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_group', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_group', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_group', null=True, blank=True)
-    name = models.CharField(max_length=200, unique=True)
-    short_name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    short_name = models.CharField(max_length=200, null=True, blank=True)
     sort_order = models.IntegerField(null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
@@ -322,6 +322,7 @@ class Aggregate(models.Model):
 
 
 class Round(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_round_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -335,8 +336,8 @@ class Round(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_rounds', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_rounds', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_rounds', null=True, blank=True)
-    name = models.CharField(max_length=200, unique=True)
-    short_name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    short_name = models.CharField(max_length=200, null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     starting_at = models.DateTimeField(null=True, blank=True)
@@ -1322,6 +1323,7 @@ class Match(models.Model):
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
     start_time = models.DateTimeField(null=True, blank=True)
     played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
+    is_live = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

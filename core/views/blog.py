@@ -370,6 +370,7 @@ def AdminBlogArticleCreate(request):
             ########## Image #########
             hero_image = request.FILES.get('hero_image')
             images = request.FILES.getlist('images')
+            image_path = request.POST.get('image_path')
             image_url = request.POST.getlist('image_url')
             video_url = request.POST.get('video_url')
             video_cover = request.FILES.get('video_cover')
@@ -392,7 +393,7 @@ def AdminBlogArticleCreate(request):
 
             article_object = BlogArticle(title=title, keyword=keyword, category=category_id, body=body,
                                          pub_time=pub_time, pub_type=pub_type, is_featured=is_featured,
-                                         sport=sport, country=country,
+                                         sport=sport, country=country,image_path=image_path,image=hero_image,
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
@@ -490,6 +491,7 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             ########## Image #########
             hero_image = request.FILES.get('hero_image')
             images = request.FILES.getlist('images')
+            image_path = request.POST.get('image_path')
             image_url = request.POST.getlist('image_url')
             video_url = request.POST.get('video_url')
             video_cover = request.FILES.get('video_cover')
@@ -522,6 +524,10 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             article_object.author = author
             article_object.country = country
             article_object.sport = sport
+            if hero_image != None or hero_image != '':
+                article_object.image = hero_image
+
+            article_object.image_path = image_path
             article_object.save()
 
             AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
