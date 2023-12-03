@@ -142,7 +142,9 @@ SITE_ID = 1
 DATABASES = {'default': {
 
     'ENGINE': 'django.db.backends.mysql', 'NAME': env('DB_NAME'), 'USER': env('DB_USER'),
-    'PASSWORD': env('DB_PASSWORD'), 'HOST': env('DB_HOST'), 'PORT': env('DB_PORT'), }}
+    'PASSWORD': env('DB_PASSWORD'), 'HOST': env('DB_HOST'), 'PORT': env('DB_PORT'),
+
+}}
 BASE_URL = "http://127.0.0.1:8000"
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

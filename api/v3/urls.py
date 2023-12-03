@@ -147,21 +147,23 @@ urlpatterns = [
 
     ##################### Mix Sport API ########################
 
-    path('v3/genral/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
-    path('v3/sport/genral/teams/<str:country>/<str:sport>/', sport.SportTeamsByCountryApiList,
+    path('v3/general/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
+    path('v3/sport/general/teams/<str:country>/<str:sport>/', sport.SportTeamsByCountryApiList,
          name='SportTeamsByCountryApiList'),
-    path('v3/sport/genral/leagues/<str:country>/<str:sport>/', sport.SportLeaguesByCountryApiList,
+    path('v3/sport/general/leagues/<str:country>/<str:sport>/', sport.SportLeaguesByCountryApiList,
          name='SportLeaguesByCountryApiList'),
-    path('v3/sport/genral/matches/<str:country>/<str:sport>/', sport.SportMatchesByCountryApiList,
+    path('v3/sport/general/players/list/<str:country>/<str:sport>/', sport.SportPlayersByCountryApiList,
+            name='SportPlayersByCountryApiList'),
+    path('v3/sport/general/matches/<str:country>/<str:sport>/', sport.SportMatchesByCountryApiList,
          name='SportMatchesByCountryApiList'),
-
-    path('v3/sport/genral/matches/last/<str:sport>/<str:date>/', sport.SportMatchesLastApiList,
+    path('v3/sport/general/matches/last/<str:sport>/<str:date>/', sport.SportMatchesLastApiList,
             name='SportMatchesLastApiList'),
-
-    path('v3/sport/genral/news/list/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
+    path('v3/sport/matches/details/<int:matchid>/', sport.SportMatchesApiDetails,
+            name='SportMatchesApiDetails'),
+    path('v3/sport/general/news/list/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
          name='SportNewsByCountryApiList'),
-    path('v3/sport/genral/news/details/<int:newsid>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
-    path('v3/sport/genral/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
+    path('v3/sport/general/news/details/<int:newsid>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
+    path('v3/sport/general/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
          name='SportVideosByCountryApiList'),
 
     ##################### Mix Sport Monks API ########################

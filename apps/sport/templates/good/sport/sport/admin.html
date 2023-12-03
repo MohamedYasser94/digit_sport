@@ -96,7 +96,7 @@
                                         <!--end::counter=-->
                                         <!--begin::Name=-->
                                         <td>
-                                            <a href="{% url 'sport:AdminLeaguesBySport' item.slug %}"
+                                            <a href="{% url 'sport:AdminSportByCountry' item.slug %}"
                                                     class="text-gray-800 text-hover-primary mb-1">
                                                 {{ item.name }}
                                             </a>
@@ -112,7 +112,7 @@
                                         <!--end::Email=-->
                                         <!--begin::Email=-->
                                         <td>
-                                            <a href="#"
+                                            <a href="{% url 'sport:AdminSportByCountry' item.slug %}"
                                                class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.country }}
                                             </a>
@@ -345,8 +345,7 @@
                                                             data-control="select2"
                                                             data-placeholder="{% translate 'Country' %}"
                                                             data-dropdown-parent="#kt_modal_add_category"
-                                                            data-allow-clear="true"
-
+                                                            data-allow-clear="true" required
                                                             class="form-select form-select-solid fw-bolder">
                                                         <option value="" selected="">---------</option>
                                                         {% for value, text in sport_form.country.field.choices %}

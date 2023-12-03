@@ -1,21 +1,17 @@
 from django.urls import path
 
-from apps.sport.api import api_views
 from apps.sport.views import views, monks
 
 app_name = 'sport'
 
 urlpatterns = [
 
-
-
-
     ##########   Sport  #########
     path('category/', views.AdminSportList, name='AdminSportList'),
     path('category/update/<slug:slug>/', views.AdminSportUpdate, name='AdminSportUpdate'),
     path('category/archive/<slug:slug>/', views.AdminSportArchive, name='AdminSportArchive'),
     path('category/delete/<slug:slug>/', views.AdminSportDelete, name='AdminSportDelete'),
-
+    path('category/country/<slug:slug>/', views.AdminSportByCountry, name='AdminSportByCountry'),
 
     ##########   Leagues  #########
     path('leagues/', views.AdminLeaguesList, name='AdminLeaguesList'),
@@ -25,7 +21,6 @@ urlpatterns = [
     path('leagues/delete/<slug:slug>/', views.AdminLeaguesDelete, name='AdminLeaguesDelete'),
     path('monk/leagues/api/get/', monks.AdminMonksLeaguesGetData, name='AdminMonksLeaguesGetData'),
 
-
     ##########   Season  #########
     path('season/', views.AdminSeasonList, name='AdminSeasonList'),
     path('leagues/season/<slug:slug>/', views.AdminSeasonByLeague, name='AdminSeasonByLeague'),
@@ -33,7 +28,6 @@ urlpatterns = [
     path('season/archive/<slug:slug>/', views.AdminSeasonArchive, name='AdminSeasonArchive'),
     path('season/delete/<slug:slug>/', views.AdminSeasonDelete, name='AdminSeasonDelete'),
     path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
-
 
     ##########   Stages  #########
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
@@ -79,18 +73,13 @@ urlpatterns = [
     path('venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
     path('monk/venues/api/get/', monks.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
 
-
-
-
     ##########   Team  #########
     path('team/', views.AdminTeamsList, name='AdminTeamsList'),
     path('team/update/<slug:slug>/', views.AdminTeamsUpdate, name='AdminTeamsUpdate'),
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
     path('monk/teams/api/get/', monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
-    path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd,
-         name='AdminTeamPlayerAdd'),
-
+    path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd, name='AdminTeamPlayerAdd'),
 
     ##########   Players  #########
     path('player/', views.AdminPlayersList, name='AdminPlayersList'),
@@ -102,15 +91,20 @@ urlpatterns = [
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),
-    path('season/match/<slug:slug>/',  views.AdminMatchBySeason, name='AdminMatchBySeason'),
-
+    path('season/match/<slug:slug>/', views.AdminMatchBySeason, name='AdminMatchBySeason'),
+    path('match/details/<slug:slug>/', views.AdminMatchDetails, name='AdminMatchDetails'),
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
     path('match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
-    path('match/team/playr/list/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamPlayerList,
-         name='AdminMatchTeamPlayerList'),
-    path('match/team/playr/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamPlayerAdd, name='AdminMatchTeamPlayerAdd'),
+    path('match/event/add/<slug:slug>/', views.AdminMatchEventAdd, name='AdminMatchEventAdd'),
 
+    ##########   Match By Team #########
+    path('match/team/playr/list/<slug:slug>/<slug:team_slug>/', views.AdminMatchDetailsByTeam,
+         name='AdminMatchDetailsByTeam'),
+    path('match/team/playr/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamPlayerAdd,
+         name='AdminMatchTeamPlayerAdd'),
+    path('match/team/event/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamEventAdd,
+         name='AdminMatchTeamEventAdd'),
 
     ##########   Api Data  #########
     path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),
@@ -118,12 +112,5 @@ urlpatterns = [
     path('country/api/update/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
     path('country/api/archive/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
     path('monk/country/api/get/', monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
-
-
-
-
-
-
-
 
 ]

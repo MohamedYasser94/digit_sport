@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from api.v3.serializers.sport.monk import *
@@ -9,6 +10,7 @@ from apps.sport.models.models import *
 from apps.sport.models.monks import *
 from core.models.blog import BlogArticle, BlogVideo
 
+from rest_framework.pagination import PageNumberPagination
 
 class SportCategoryList(ListCreateAPIView):
     queryset = SportCategory.objects.all()
@@ -1180,7 +1182,7 @@ def SportCountryList(request):
 
 
 def SportLeaguesByCountryApiList(request, country,sport):
-    print()
+
     if country == '' or country == None or country == 'all' or country == ':country':
         country = 'Kuwait'
     else:
@@ -1213,6 +1215,40 @@ def SportLeaguesByCountryApiList(request, country,sport):
 
                 }
     return JsonResponse(data, safe=False)
+@api_view(["GET"])
+def SportPlayersByCountryApiList(request, country,sport):
+    if country == '' or country == None or country == 'all' or country == ':country':
+        country = 'Kuwait'
+    else:
+        country = country
+    if sport == '' or sport == None or sport == 'all' or sport == ':sport':
+        sport = 'Volleyball'
+    get_sport = Sport.objects.get(name=sport)
+    players_list = Players.objects.filter(country=country)
+    if players_list.count() > 0:
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        players_list = Players.objects.filter(country=country)
+        result_page = paginator.paginate_queryset(players_list, request)
+
+        success = True
+        message = f"Send From Django API mix {country}"
+        players_serializer = PlayersSerializer(result_page, many=True)
+        sport_data = {'country': country,
+                        'player': players_serializer.data,
+                      }
+    else:
+        success = False
+        message = f"error in get data no data no data with this country {country} or sport {sport}"
+
+        sport_data = {'country': country,
+
+                        'player': [],
+                      }
+    data = {'success': success, 'data': sport_data, 'message': message,
+
+            }
+    return JsonResponse(data, safe=False)
 
 
 def SportMatchesByCountryApiList(request, country,sport):
@@ -1223,10 +1259,10 @@ def SportMatchesByCountryApiList(request, country,sport):
         country = country
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, )
+    sport_list = Sport.objects.all()
     if sport_list.count() > 0:
         get_sport = Sport.objects.get(name=sport)
-        matches_list = Match.objects.filter(league__sport=get_sport.id, league__country=country)
+        matches_list = Match.objects.all()
         success = True
         message = f"Send From Django API mix {country}"
         sport_serializer = SportSerializer(sport_list, many=True)
@@ -1291,6 +1327,55 @@ def SportMatchesLastApiList(request,sport, date):
             }
     return JsonResponse(data, safe=False)
 
+
+def SportMatchesApiDetails(request, matchid):
+
+        try:
+            matches_list = Match.objects.filter(id=matchid)
+            get_match = Match.objects.get(id=matchid)
+            home_team = Teams.objects.filter(id=get_match.home_team.id)
+            away_team = Teams.objects.filter(id=get_match.away_team.id)
+            home_team_players = MatchTeamPlayer.objects.filter(match=matchid, team=get_match.home_team.id)
+            away_team_players = MatchTeamPlayer.objects.filter(match=matchid, team=get_match.away_team.id)
+            summary_list = MatchSummary.objects.filter(match=matchid)
+
+            match_serializer = MatchDetailsSerializer(matches_list, many=True)
+            home_team_serializer = TeamsSerializer(home_team, many=True)
+            away_team_serializer = TeamsSerializer(away_team, many=True)
+            home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True)
+            away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True)
+            summary_serializer = MatchSummarySerializer(summary_list, many=True)
+
+
+            sport_data = {'match': match_serializer.data,
+                        'home_team': home_team_serializer.data,
+                        'away_team': away_team_serializer.data,
+                        'home_team_players': home_team_players_serializer.data,
+                        'away_team_players': away_team_players_serializer.data,
+                        'summary': summary_serializer.data,
+
+                        }
+            success = True
+            message = f"Send From Django API mix {matchid} "
+
+            data = {'success': success, 'data': sport_data, 'message': message,
+
+                    }
+            return JsonResponse(data, safe=False)
+        except Exception as e:
+            print(e)
+            success = False
+            message = f"error in get data  match Details  "
+
+            sport_data = {'match': [],
+
+                        }
+
+            data = {'success': success, 'data': sport_data, 'message': message,
+
+                    }
+            return JsonResponse(data, safe=False)
+
 def SportNewsByCountryApiList(request, country,sport):
     print()
     if country == '' or country == None or country == 'all' or country == ':country':
@@ -1309,7 +1394,7 @@ def SportNewsByCountryApiList(request, country,sport):
         news_serializer = AdminBlogArticleSerializer(news_list, many=True)
         sport_data = {'country': country,
                       'sport': sport_serializer.data,
-                        'news': news_serializer.data,
+                        'articles': news_serializer.data,
                       }
 
     else:
@@ -1318,7 +1403,7 @@ def SportNewsByCountryApiList(request, country,sport):
 
         sport_data = {'country': country,
                       'sport': [],
-                        'news': [],
+                        'articles': [],
                       }
 
     data = {'success': success, 'data': sport_data, 'message': message,

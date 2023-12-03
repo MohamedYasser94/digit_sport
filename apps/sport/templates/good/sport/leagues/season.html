@@ -331,9 +331,9 @@
                                                             data-allow-clear="true"
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in season_form.is_current.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
+                                                <option value="True" selected="">True</option>
+                                                <option value="False" selected="">False</option>
+
 
                                             </select>
                                             <!--end::Input-->

@@ -23,13 +23,6 @@ from rest_framework.pagination import BasePagination, _positive_int, _get_displa
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils.urls import remove_query_param, replace_query_param
-
-
-
-
-
-
-
 class PageNumberPagination(BasePagination):
     """
     A simple page number based style that supports page numbers as

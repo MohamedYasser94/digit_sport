@@ -122,7 +122,7 @@
                                 <!--end::Email=-->
                             <!--begin::Email=-->
                                 <td>
-                                     <a href="{% url 'sport:AdminMatchTeamPlayerList' item.slug item.home_team.slug %}"
+                                     <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.home_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
                                         {{ item.home_team }}
                                     </a>
@@ -130,7 +130,7 @@
                                 <!--end::Email=-->
                                     <!--begin::Email=-->
                                 <td>
-                                     <a href="{% url 'sport:AdminMatchTeamPlayerList' item.slug item.away_team.slug %}"
+                                     <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.away_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
                                         {{ item.away_team }}
                                     </a>

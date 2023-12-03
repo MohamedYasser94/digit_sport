@@ -10,7 +10,8 @@ from mptt.models import MPTTModel
 from slugify import slugify
 
 from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
-    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status
+    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status, Half_List, \
+    Match_Statics
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -181,7 +182,7 @@ class Season(models.Model):
     starting_at = models.DateField(null=True, blank=True)
     ending_at = models.DateField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
-    games_in_current_week = models.BooleanField(default=False)
+    games_in_current_week = models.BooleanField(default=False,null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -1321,7 +1322,9 @@ class Match(models.Model):
     venues = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_match', null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
+    score = models.CharField(max_length=100, null=True, blank=True)
     start_time = models.DateTimeField(null=True, blank=True)
+    current_time = models.CharField(max_length=100, null=True, blank=True)
     played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
     is_live = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
@@ -1339,8 +1342,6 @@ class Match(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(Match, self).save(*args, **kwargs)
-
-
 
 class MatchTeamPlayer(models.Model):
     sender_model = models.ForeignKey(ContentType,related_name='sport_match_team_player_sender', on_delete=models.CASCADE, null=True, blank=True)
@@ -1364,12 +1365,163 @@ class MatchTeamPlayer(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     class Meta:
+
         # ordering = ('name',)
         verbose_name = 'match team player'  # verbose_name_plural = 'categories'
-
+    def __str__(self):
+        return self.player.name
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
             code = f'MatchTeamPlayer-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
         super(MatchTeamPlayer, self).save(*args, **kwargs)
+
+class MatchGoals(models.Model):
+
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_goal', null=True, blank=True)
+    home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_goal', null=True, blank=True)
+    away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_goal_away', null=True, blank=True)
+    home_scorer = models.IntegerField(null=True, blank=True, default=0)
+    away_scorer = models.IntegerField(null=True, blank=True, default=0)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match goal'
+
+    def __str__(self):
+        return self.match.name
+
+class MatchSummary(models.Model):
+
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_summary', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_summary', null=True, blank=True)
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_match_summary', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
+    value = models.CharField(max_length=100, null=True, blank=True)
+    half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
+    period = models.CharField(max_length=100, null=True, blank=True)
+    time = models.CharField(max_length=100, null=True, blank=True)
+    minute = models.IntegerField(null=True, blank=True)
+    extra_minute = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match summary'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchSummary-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchSummary, self).save(*args, **kwargs)
+
+class MatchStatics(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_statics', null=True, blank=True)
+    home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_statics', null=True, blank=True)
+    away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_statics_away', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
+    home = models.IntegerField(null=True, blank=True)
+    away = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match statics'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchStatics-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchStatics, self).save(*args, **kwargs)
+
+
+class MatchTeamLineups(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_lineups', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_lineups', null=True, blank=True)
+    plan = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match lineups'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchLineups-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchTeamLineups, self).save(*args, **kwargs)
+
+
+class MatchTeamLineupsPlayer(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_lineups_player', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_lineups_player', null=True, blank=True)
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_lineups_summary', null=True,
+                               blank=True)
+    position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    captain = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    shirt_number = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128,unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match lineups player'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchLineupsPlayer-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchTeamLineupsPlayer, self).save(*args, **kwargs)
+
+
+class MatchPlayerSummary(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='player_summary', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='match_player_summary', null=True, blank=True)
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='match_player_summary', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
+    percentage = models.CharField(max_length=100, null=True, blank=True)
+    total = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'match player summary'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'MatchPlayerSummary-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(MatchPlayerSummary, self).save(*args, **kwargs)
+
+
+

@@ -1,10 +1,6 @@
 from django import forms
-from django.contrib.auth import get_user_model
 
-from apps.sport.models.models import SportCategory, Sport, Leagues, Season, Stages, Group, Aggregate, \
-    Round, Venues, SportState, Fixtures, LiveScores, Clubs, Teams, Statistics, Standings, LiveStandings, Schedules, \
-    Players, Squads, TVStations, Coaches, TopScorers, Rivals, Commentaries, Referees, Transfers, PreMatchOdds, \
-    InPlayOdds, Markets, Bookmakers, Match, MatchTeamPlayer
+from apps.sport.models.models import *
 
 User = get_user_model()
 
@@ -237,5 +233,43 @@ class AdminMatchForm(forms.ModelForm):
 class AdminMatchTeamPlayerForm(forms.ModelForm):
     class Meta:
         model = MatchTeamPlayer
+        fields = '__all__'
+        exclude = ('slug', 'code')
+
+
+class AdminMatchSummaryForm(forms.ModelForm):
+    class Meta:
+        model = MatchSummary
+        fields = '__all__'
+        exclude = ('slug', 'code')
+
+
+class AdminMatchStaticsForm(forms.ModelForm):
+    class Meta:
+        model = MatchStatics
+        fields = '__all__'
+        exclude = ('slug', 'code')
+
+
+class AdminMatchTeamLineupsForm(forms.ModelForm):
+    class Meta:
+        model = MatchTeamLineups
+        fields = '__all__'
+        exclude = ('slug', 'code')
+
+
+class MatchTeamLineupsPlayerForm(forms.ModelForm):
+    class Meta:
+        model = MatchTeamLineupsPlayer
+        fields = '__all__'
+        exclude = ('slug', 'code')
+
+
+
+
+
+class AdminMatchPlayerSummaryForm(forms.ModelForm):
+    class Meta:
+        model = MatchPlayerSummary
         fields = '__all__'
         exclude = ('slug', 'code')

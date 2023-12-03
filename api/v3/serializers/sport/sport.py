@@ -160,10 +160,13 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Teams
         fields = [
             'id', 'name', 'image_path',]
+
+
 
 
 
@@ -197,7 +200,7 @@ class SchedulesSerializer(serializers.ModelSerializer):
 class PlayersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Players
-        fields = "__all__"
+        fields = ['id','first_name','image_path',]
 
 
 class SquadsSerializer(serializers.ModelSerializer):
@@ -291,18 +294,61 @@ class MatchSerializer(serializers.ModelSerializer):
 
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
-    match_team_player = serializers.SerializerMethodField()
+    venues = serializers.ReadOnlyField(source='venues.name')
+    match_summary = serializers.SerializerMethodField()
+    match_statics = serializers.SerializerMethodField()
+
+
+
 
     class Meta:
         model = Match
         fields = "__all__"
 
-    def get_match_team_player(self, obj):
-        print(obj)
-        return MatchTeamPlayerSerializer(MatchTeamPlayer.objects.filter(match=obj.id, ), many=True).data
+
+
+    def get_match_summary(self, obj):
+        return MatchSummarySerializer(MatchSummary.objects.filter(match=obj.id, ), many=True).data
+
+    def get_match_statics(self, obj):
+        return MatchStaticsSerializer(MatchStatics.objects.filter(match=obj.id, ), many=True).data
+
+
+
+
 
 
 class MatchTeamPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MatchTeamPlayer
+        fields = "__all__"
+
+
+class MatchSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MatchSummary
+        fields = "__all__"
+
+
+class MatchStaticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MatchStatics
+        fields = "__all__"
+
+
+class MatchTeamLineupsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MatchTeamLineups
+        fields = "__all__"
+
+
+class MatchTeamLineupsPlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MatchTeamLineupsPlayer
+        fields = "__all__"
+
+
+class MatchPlayerSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MatchPlayerSummary
         fields = "__all__"

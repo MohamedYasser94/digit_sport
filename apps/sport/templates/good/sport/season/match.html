@@ -98,7 +98,7 @@
                                         <!--end::counter=-->
                                         <!--begin::Name=-->
                                         <td>
-                                            <a
+                                            <a href="{% url 'sport:AdminMatchDetails' item.slug  %}"
                                                     class="text-gray-800 text-hover-primary mb-1">
                                                 {{ item.name }}
                                             </a>
@@ -122,7 +122,7 @@
                                 <!--end::Email=-->
                             <!--begin::Email=-->
                                 <td>
-                                     <a href="{% url 'sport:AdminMatchTeamPlayerList' item.slug item.home_team.slug %}"
+                                     <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.home_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
                                         {{ item.home_team }}
                                     </a>
@@ -130,7 +130,7 @@
                                 <!--end::Email=-->
                                     <!--begin::Email=-->
                                 <td>
-                                     <a href="{% url 'sport:AdminMatchTeamPlayerList' item.slug item.away_team.slug %}"
+                                     <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.away_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
                                         {{ item.away_team }}
                                     </a>
@@ -327,8 +327,8 @@
 
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.home_team.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
                                                 {% endfor %}
 
                                             </select>
@@ -347,8 +347,8 @@
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.away_team.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
                                                 {% endfor %}
 
                                             </select>

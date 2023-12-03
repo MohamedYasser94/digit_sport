@@ -25,12 +25,12 @@ class AdminBlogServicesSerializer(serializers.ModelSerializer)    :
 class AdminBlogArticleSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogArticle
-        fields =[ 'id','title','image_path','keyword']
+        fields =[ 'id','title','image_path','keyword','body','author','create_at',]
 
 class AdminBlogArticleDetailsSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogArticle
-        fields =[ 'id','title','image_path','keyword','body']
+        fields =[ 'id','title','image_path','keyword','body','author','create_at',]
 
 class AdminBlogVideoSerializer(serializers.ModelSerializer)    :
     class Meta:
