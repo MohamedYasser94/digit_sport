@@ -1,7 +1,3 @@
-from collections import OrderedDict
-
-from django.core.files.storage import get_storage_class
-
 from api.v3.serializers.blog import *
 from apps.sport.models.models import *
 from core.models.blog import *
@@ -14,12 +10,9 @@ class AdminSportCategorySerializer(serializers.ModelSerializer):
 
 
 class SportSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Sport
-        fields = ['id','name',]
-
+        fields = ['id', 'name', ]
 
 
 class TeamsBySportSerializer(serializers.ModelSerializer):
@@ -27,76 +20,40 @@ class TeamsBySportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sport
-        fields = ['id','name',]
-
-
-
-
+        fields = ['id', 'name', ]
 
     def get_teams(self, obj):
-
         return TeamsSerializer(Teams.objects.filter(sport=obj.id, ), many=True).data
 
 
 class LeaguesBySportSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Sport
-        fields = [
-            'id', 'name', 'image_path', 'image', 'leagues'
-        ]
-
+        fields = ['id', 'name', 'image_path', 'image', 'leagues']
 
 
 class MatchesBySportSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Sport
-        fields = [
-            'id', 'name', 'image_path', 'image', 'matches'
-        ]
-
-
+        fields = ['id', 'name', 'image_path', 'image', 'matches']
 
 
 class NewsBySportSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Sport
-        fields = [
-            'id', 'name', 'image_path', 'image', 'news'
-        ]
-
-
+        fields = ['id', 'name', 'image_path', 'image', 'news']
 
 
 class VideosBySportSerializer(serializers.ModelSerializer):
-
-
-
     class Meta:
         model = Sport
-        fields = [
-            'id', 'name', 'image_path', 'image', 'videos'
-        ]
-
-
-
-
-
-
-
+        fields = ['id', 'name', 'image_path', 'image', 'videos']
 
 
 class LeaguesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
-        fields = [
-               'id','name','image_path',
-        ]
+        fields = ['id', 'name', 'image_path', ]
 
 
 class SeasonSerializer(serializers.ModelSerializer):
@@ -160,17 +117,9 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Teams
-        fields = [
-            'id', 'name', 'image_path',]
-
-
-
-
-
-
+        fields = ['id', 'name', 'image_path', ]
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
@@ -200,7 +149,7 @@ class SchedulesSerializer(serializers.ModelSerializer):
 class PlayersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Players
-        fields = ['id','first_name','image_path',]
+        fields = ['id', 'first_name', 'image_path', ]
 
 
 class SquadsSerializer(serializers.ModelSerializer):
@@ -282,9 +231,7 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = [
-               'id','name','home_team','away_team','venues','start_time','is_live'
-        ]
+        fields = ['id', 'name', 'home_team', 'away_team', 'venues', 'start_time', 'is_live']
 
     def get_home_team(self, obj):
         return TeamsSerializer(Teams.objects.filter(id=obj.home_team.id, ), many=True).data
@@ -295,27 +242,10 @@ class MatchSerializer(serializers.ModelSerializer):
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues = serializers.ReadOnlyField(source='venues.name')
-    match_summary = serializers.SerializerMethodField()
-    match_statics = serializers.SerializerMethodField()
-
-
-
 
     class Meta:
         model = Match
         fields = "__all__"
-
-
-
-    def get_match_summary(self, obj):
-        return MatchSummarySerializer(MatchSummary.objects.filter(match=obj.id, ), many=True).data
-
-    def get_match_statics(self, obj):
-        return MatchStaticsSerializer(MatchStatics.objects.filter(match=obj.id, ), many=True).data
-
-
-
-
 
 
 class MatchTeamPlayerSerializer(serializers.ModelSerializer):

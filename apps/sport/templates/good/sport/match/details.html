@@ -121,7 +121,7 @@
                                                     <!--begin::Actions-->
                                                     <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
                                                        data-bs-toggle="modal"
-                                                       data-bs-target="#kt_modal_static">{% translate 'Match Static' %}</a>
+                                                       data-bs-target="#kt_modal_static">{% translate 'Match Summary' %}</a>
                                                     {#																	<a href="#" class="btn btn-light btn-sm flex-shrink-0" data-bs-toggle="modal" data-bs-target="#kt_modal_users_search">View Item</a>#}
                                                     <!--end::Actions-->
                                                 </div>
@@ -539,7 +539,7 @@
                                 <div class="card-body pt-5">
                                     <!--begin::Items-->
                                     <div class="">
-                                        {% for item in match_goal %}
+                                        {% for item in match_statics %}
                                             <!--begin::Item-->
                                             <div class="d-flex flex-stack">
                                                 <!--begin::Section-->
@@ -783,7 +783,7 @@
         </div>
         <!--end::Content wrapper-->
         <!--begin::Modal - New Target-->
-        <div class="modal fade" id="kt_modal_players" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="kt_modal_static" tabindex="-1" aria-hidden="true">
             <!--begin::Modal dialog-->
             <div class="modal-dialog modal-dialog-centered mw-650px">
                 <!--begin::Modal content-->
@@ -801,17 +801,18 @@
                     </div>
                     <!--begin::Modal header-->
                     <!--begin::Modal body-->
+                    <!--begin::Modal body-->
                     <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
                         <!--begin:Form-->
-                        <form id="kt_modal_players_form" class="form" enctype="multipart/form-data"
-                              action=""
+                        <form id="kt_modal_static_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchStaticAdd'  match.slug %}"
                               method="post"
                         >
                             {% csrf_token %}
                             <!--begin::Heading-->
                             <div class="mb-13 text-center">
                                 <!--begin::Title-->
-                                <h1 class="mb-3">Place your bids</h1>
+                                <h1 class="mb-3">{% translate 'Match Static' %}</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
                                 <div class="text-muted fw-semibold fs-5">If you need more info, please check
@@ -822,73 +823,62 @@
                             <!--end::Heading-->
                             <!--begin::Input group-->
                             <div class="d-flex flex-wrap gap-5">
-                                <!--begin::Input group-->
                                 <div class="fv-row w-100 flex-md-root">
-
-                                    <!--begin::Repeater-->
-                                    <div class="fs-1 text-gray-800 w-bolder mb-17"
-                                         id="kt_docs_repeater_speaker">
-                                        <!--begin::Form group-->
-                                        <div class="form-group">
-                                            <div data-repeater-list="kt_docs_repeater_speaker">
-                                                <div data-repeater-item="">
-                                                    <div class="form-group row mb-5">
-                                                        <div class="col-md-6">
-                                                            <label class="required form-label">{% translate 'Player' %}</label>
-                                                            <select class="form-select"
-                                                                    name="team_player"
-                                                                    data-kt-repeater="select2" required
-                                                                    data-placeholder="Select an option">
-                                                                <option></option>
-                                                                {% for item in players %}
-                                                                    <option value="{{ item.id }}">{{ item.name }}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="col-md-4">
-                                                            <label class=" form-label">{% translate 'Position' %}</label>
-                                                            <select class="form-select"
-                                                                    name="team_position"
-                                                                    data-kt-repeater="select2"
-                                                                    data-placeholder="Select an option">
-                                                                <option></option>
-                                                                {% for value, text in players_form.position.field.choices %}
-                                                                    <option value="{{ value }}">{{ text }}</option>
-                                                                {% endfor %}
-                                                            </select>
-
-                                                        </div>
-
-                                                        <div class="col-md-2">
-                                                            <a href="javascript:" data-repeater-delete=""
-                                                               class="btn btn-sm btn-light-danger mt-3 mt-md-9">
-                                                                <i class="la la-trash-o fs-3"></i>Delete</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--end::Form group-->
-                                        <!--begin::Form group-->
-                                        <div class="form-group">
-                                            <a href="javascript:" data-repeater-create=""
-                                               class="btn btn-light-primary">
-                                                <i class="la la-plus"></i>Add</a>
-                                        </div>
-                                        <!--end::Form group-->
-                                    </div>
-                                    <!--end::Repeater-->
-
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Home Percentage' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Home Percentage' %}"
+                                           name="home_percent"/>
+                                    <!--end::Input-->
                                 </div>
-                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Away Percentage' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Away Percentage' %}"
+                                           name="away_percent"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
 
+                                <!--end::Input group-->
+                            </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Static Type' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="static_type" aria-label="{% translate 'Static Type' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Static Type' %}"
+                                            data-dropdown-parent="#kt_modal_static"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="" selected="">---------</option>
+                                        {% for value, text in static_form.type.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
 
                             </div>
-                            <!--end::Input group-->
+                            <!--begin::Input group-->
                             <!--end::Notice-->
                             <!--begin::Actions-->
-                            <div class="text-center">
+                            <div class="modal-footer flex-center text-center">
                                 <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
                                     Cancel
                                 </button>
@@ -902,6 +892,7 @@
                         </form>
                         <!--end:Form-->
                     </div>
+                    <!--end::Modal body-->
                     <!--end::Modal body-->
                 </div>
                 <!--end::Modal content-->
@@ -931,7 +922,7 @@
                     <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
                         <!--begin:Form-->
                         <form id="kt_modal_players_form" class="form" enctype="multipart/form-data"
-                              action="{% url 'sport:AdminMatchEventAdd'  match.slug %}"
+                              action="{% url 'sport:AdminMatchSummaryAdd'  match.slug %}"
                               method="post"
                         >
                             {% csrf_token %}
@@ -1073,14 +1064,14 @@
                     <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
                         <!--begin:Form-->
                         <form id="kt_modal_players_form" class="form" enctype="multipart/form-data"
-                              action="{% url 'sport:AdminMatchEventAdd'  match.slug %}"
+                              action="{% url 'sport:AdminMatchSummaryAdd'  match.slug %}"
                               method="post"
                         >
                             {% csrf_token %}
                             <!--begin::Heading-->
                             <div class="mb-13 text-center">
                                 <!--begin::Title-->
-                                <h1 class="mb-3">{% translate 'Match Event' %}</h1>
+                                <h1 class="mb-3">{% translate 'Away Team' %}</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
                                 <div class="text-muted fw-semibold fs-5">If you need more info, please check

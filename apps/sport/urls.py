@@ -96,7 +96,8 @@ urlpatterns = [
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
     path('match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
-    path('match/event/add/<slug:slug>/', views.AdminMatchEventAdd, name='AdminMatchEventAdd'),
+    path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
+    path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
 
     ##########   Match By Team #########
     path('match/team/playr/list/<slug:slug>/<slug:team_slug>/', views.AdminMatchDetailsByTeam,

@@ -1378,6 +1378,9 @@ def AdminMatchDetails(request, slug):
     home_summary = MatchSummary.objects.filter(match=match,team=home_team)
     away_summary = MatchSummary.objects.filter(match=match, team=away_team)
     last_summary = MatchSummary.objects.filter(match=match).last()
+    match_statics = MatchStatics.objects.filter(match=match)
+    last_statics = MatchStatics.objects.filter(match=match).last()
+
 
 
     context = {
@@ -1387,8 +1390,10 @@ def AdminMatchDetails(request, slug):
         'home_summary':home_summary,'away_summary':away_summary,
         'last_summary':last_summary,
         'summary_form': AdminMatchSummaryForm(),
-
-               'current_page': _('Detals')}
+        'static_form': AdminMatchStaticsForm(),
+        'match_statics':match_statics,
+        'last_statics':last_statics,
+        'current_page': _('Details')}
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
 
@@ -1462,7 +1467,7 @@ def AdminMatchDelete(request, slug):
 
 @authenticated_staf
 @staff_only
-def AdminMatchEventAdd(request, slug):
+def AdminMatchSummaryAdd(request, slug):
     match = Match.objects.get(slug=slug)
     home_team = Teams.objects.get(id=match.home_team.id)
     away_team = Teams.objects.get(id=match.away_team.id)
@@ -1512,7 +1517,53 @@ def AdminMatchEventAdd(request, slug):
                    'summary_form': AdminMatchSummaryForm(), 'current_page': _('Match Event')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
+@authenticated_staf
+@staff_only
+def AdminMatchStaticAdd(request, slug):
+    match = Match.objects.get(slug=slug)
+    summary = MatchSummary.objects.filter(match=match, )
+    home_team = Teams.objects.get(id=match.home_team.id)
+    away_team = Teams.objects.get(id=match.away_team.id)
+    home_players = MatchTeamPlayer.objects.filter(match=match, team=home_team.id)
+    away_players = MatchTeamPlayer.objects.filter(match=match, team=away_team.id)
+    match_goal = MatchSummary.objects.filter(match=match)
+    home_summary = MatchSummary.objects.filter(match=match, team=home_team)
+    away_summary = MatchSummary.objects.filter(match=match, team=away_team)
+    last_summary = MatchSummary.objects.filter(match=match).last()
+    match_statics = MatchStatics.objects.filter(match=match)
+    last_statics = MatchStatics.objects.filter(match=match).last()
 
+
+    if request.method == "POST":
+        static_form = AdminMatchStaticsForm(request.POST or None, request.FILES or None)
+        if static_form:
+            home_percent = request.POST.get('home_percent')
+            away_percent = request.POST.get('away_percent')
+            static_type = request.POST.get('static_type')
+
+            match_static_object = MatchStatics(
+                match=match,home_team=home_team,away_team=away_team,home=home_percent,
+                away=away_percent,type=static_type)
+            match_static_object.save()
+
+
+            messages.success(request, _("Match Event Add Successfully"), extra_tags='Match')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails', kwargs={'slug': slug}))
+        else:
+            messages.error(request, _("Match Event Not Add , Please Try Again"), extra_tags='Match')
+    else:
+        context = {
+            'match': match, 'summary': summary, 'home_team': home_team,
+            'away_team': away_team, 'home_players': home_players,
+            'away_players': away_players, 'match_goal': match_goal,
+            'home_summary': home_summary, 'away_summary': away_summary,
+            'last_summary': last_summary,
+            'summary_form': AdminMatchSummaryForm(),
+            'static_form': AdminMatchStaticsForm(),
+            'match_statics': match_statics,
+            'last_statics': last_statics,
+            'current_page': _('Details')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
 ##########################  Match Result ################################
 

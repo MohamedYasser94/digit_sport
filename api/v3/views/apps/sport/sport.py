@@ -1262,7 +1262,7 @@ def SportMatchesByCountryApiList(request, country,sport):
     sport_list = Sport.objects.all()
     if sport_list.count() > 0:
         get_sport = Sport.objects.get(name=sport)
-        matches_list = Match.objects.all()
+        matches_list = Match.objects.all().order_by('-start_time')
         success = True
         message = f"Send From Django API mix {country}"
         sport_serializer = SportSerializer(sport_list, many=True)
@@ -1295,10 +1295,10 @@ def SportMatchesLastApiList(request,sport, date):
         date = date
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = Sport.objects.all()
-        matches_list = Match.objects.filter( start_time__date=date).order_by('-start_time')
+        matches_list = Match.objects.filter( start_time__date=date).order_by('start_time')
     else:
         sport = sport
-        matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('-start_time')
+        matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('start_time')
     if matches_list.count() > 0:
 
 
@@ -1338,6 +1338,7 @@ def SportMatchesApiDetails(request, matchid):
             home_team_players = MatchTeamPlayer.objects.filter(match=matchid, team=get_match.home_team.id)
             away_team_players = MatchTeamPlayer.objects.filter(match=matchid, team=get_match.away_team.id)
             summary_list = MatchSummary.objects.filter(match=matchid)
+            statics_list = MatchStatics.objects.filter(match=matchid)
 
             match_serializer = MatchDetailsSerializer(matches_list, many=True)
             home_team_serializer = TeamsSerializer(home_team, many=True)
@@ -1345,6 +1346,7 @@ def SportMatchesApiDetails(request, matchid):
             home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True)
             away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True)
             summary_serializer = MatchSummarySerializer(summary_list, many=True)
+            statics_serializer = MatchStaticsSerializer(statics_list, many=True)
 
 
             sport_data = {'match': match_serializer.data,
@@ -1353,6 +1355,7 @@ def SportMatchesApiDetails(request, matchid):
                         'home_team_players': home_team_players_serializer.data,
                         'away_team_players': away_team_players_serializer.data,
                         'summary': summary_serializer.data,
+                        'statics': statics_serializer.data,
 
                         }
             success = True

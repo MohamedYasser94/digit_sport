@@ -98,7 +98,7 @@
                                         <!--end::counter=-->
                                         <!--begin::Name=-->
                                         <td>
-                                            <a
+                                            <a href="{% url 'sport:AdminMatchDetails' item.slug  %}"
                                                     class="text-gray-800 text-hover-primary mb-1">
                                                 {{ item.name }}
                                             </a>
@@ -106,7 +106,7 @@
                                         <!--end::Name=-->
                                         <!--begin::Email=-->
                                         <td>
-                                            <a
+                                            <a href="{% url 'sport:AdminMatchDetails' item.slug  %}"
                                                     class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.code }}
                                             </a>
