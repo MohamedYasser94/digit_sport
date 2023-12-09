@@ -204,6 +204,11 @@ class Season(models.Model):
         super(Season, self).save(*args, **kwargs)
 
 
+
+
+
+
+
 class Stages(models.Model):
     api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_stage_sender', on_delete=models.CASCADE, null=True, blank=True)
@@ -1384,6 +1389,7 @@ class MatchGoals(models.Model):
     away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_goal_away', null=True, blank=True)
     home_scorer = models.IntegerField(null=True, blank=True, default=0)
     away_scorer = models.IntegerField(null=True, blank=True, default=0)
+    set = models.IntegerField(null=True, blank=True, default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -1393,6 +1399,8 @@ class MatchGoals(models.Model):
 
     def __str__(self):
         return self.match.name
+
+
 
 class MatchSummary(models.Model):
 
@@ -1524,4 +1532,37 @@ class MatchPlayerSummary(models.Model):
         super(MatchPlayerSummary, self).save(*args, **kwargs)
 
 
+class SeasonTable(models.Model):
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_table', null=True, blank=True)
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_table', null=True, blank=True)
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_table', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_table', null=True, blank=True)
+    position = models.IntegerField(null=True, blank=True,default=0)
+    played = models.IntegerField(null=True, blank=True,default=0)
+    win = models.IntegerField(null=True, blank=True,default=0)
+    draw = models.IntegerField(null=True, blank=True,default=0)
+    lose = models.IntegerField(null=True, blank=True,default=0)
+    goals_for = models.IntegerField(null=True, blank=True,default=0)
+    goals_against = models.IntegerField(null=True, blank=True,default=0)
+    goals_difference = models.IntegerField(null=True, blank=True,default=0)
+    points = models.IntegerField(null=True, blank=True,default=0)
+    percentage = models.CharField(max_length=100, null=True, blank=True,default=0)
+    description = models.TextField(null=True, blank=True)
+    form = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.CharField(max_length=128, null=True, blank=True, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'season table'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'SeasonTable-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(SeasonTable, self).save(*args, **kwargs)

@@ -40,7 +40,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', 'digithup.com', 'aljwala.digithup.net']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1','192.168.1.36', 'digithup.com', 'aljwala.digithup.net']
 
 # Application definition
 
