@@ -204,11 +204,6 @@ class Season(models.Model):
         super(Season, self).save(*args, **kwargs)
 
 
-
-
-
-
-
 class Stages(models.Model):
     api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_stage_sender', on_delete=models.CASCADE, null=True, blank=True)
@@ -1536,6 +1531,7 @@ class SeasonTable(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_table', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_table', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_table', null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_table', null=True, blank=True)
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_table', null=True, blank=True)
     position = models.IntegerField(null=True, blank=True,default=0)
     played = models.IntegerField(null=True, blank=True,default=0)
