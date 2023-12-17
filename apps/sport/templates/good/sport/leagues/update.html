@@ -113,7 +113,6 @@
                                                 data-placeholder="{% translate 'Sub Category' %}"
                                                 class="form-select form-select-solid form-select-lg">
                                             <option value="{{ league.sub_category.id }}">{{ league.sub_category }}</option>
-
                                             {% for value, text in leagues_form.sub_category.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
                                             {% endfor %}
@@ -136,7 +135,7 @@
                                                 data-control="select2"
 
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ league.country.id }}">{{ league.country }}</option>
+                                            <option value="{{ league.country }}">{{ league.country }}</option>
                                             {% for value, text in leagues_form.country.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
                                             {% endfor %}
@@ -148,7 +147,7 @@
                                         <label class="form-label">{% translate 'Short Code' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="text" value="{{ league.short_code }}
+                                        <input class="form-control" type="text" value="{{ league.short_code }}"
 
                                              placeholder="{% translate 'Short Code' %}"
                                                    name="short_code"/>
@@ -175,7 +174,7 @@
                                         <label class="required form-label">{% translate 'Image Url' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_url" value="{{ league.image_url }}"
+                                        <input class="form-control" type="url"  name="image_path" value="{{ league.image_path }}"
                                                placeholder="{% translate 'Image Url' %}"/>
 
 

@@ -273,7 +273,7 @@
                                     <!--begin::Title-->
                                     <h3 class="card-title align-items-start flex-column">
                                         <span class="card-label fw-bold text-gray-800">{% translate 'Match Goal' %}</span>
-                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">8k social visitors</span>
+                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">{{ match.sport.name }}</span>
                                     </h3>
                                     <!--end::Title-->
                                     <!--begin::Toolbar-->
@@ -285,6 +285,7 @@
                                 <div class="card-body pt-5">
                                     <!--begin::Items-->
                                     <div class="">
+                                    {% if match.sport.name == 'Football' %}
                                         {% for item in match_goal %}
                                             <!--begin::Item-->
                                             <div class="d-flex flex-stack">
@@ -379,6 +380,103 @@
                                             <div class="separator separator-dashed my-3"></div>
                                             <!--end::Separator-->
                                         {% endfor %}
+                                    {% elif match.sport.name == 'Volleyball' %}
+                                     {% for item in match_goal %}
+                                            <!--begin::Item-->
+                                            <div class="d-flex flex-stack">
+                                                <!--begin::Section-->
+                                                <div class="d-flex align-items-center me-5">
+                                                    <!--begin::Flag-->
+                                                    <img src="
+                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                         class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                    <!--end::Flag-->
+                                                    <!--begin::Content-->
+                                                    <div class="me-5">
+                                                        <!--begin::Title-->
+                                                        <a href="#"
+                                                           class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                        <!--end::Title-->
+                                                        <!--begin::Desc-->
+                                                        <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.home_score }}-{{ item.away_score }}</span>
+                                                        <!--end::Desc-->
+                                                    </div>
+                                                    <!--end::Content-->
+                                                </div>
+                                                <!--end::Section-->
+                                                <!--begin::Wrapper-->
+                                                <div class="d-flex align-items-center">
+                                                    <!--begin::Number-->
+                                                    <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                    <!--end::Number-->
+                                                    <!--begin::Info-->
+                                                    <div class="m-0">
+                                                        <!--begin::Label-->
+                                                        <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.set }}</span>
+                                                        <!--end::Label-->
+                                                    </div>
+                                                    <!--end::Info-->
+                                                </div>
+                                                <!--end::Wrapper-->
+                                            </div>
+                                            <!--end::Item-->
+                                            <!--begin::Separator-->
+                                            <div class="separator separator-dashed my-3"></div>
+                                            <!--end::Separator-->
+                                        {% empty %}
+                                            <!--begin::Item-->
+                                            <div class="d-flex flex-stack">
+                                                <!--begin::Section-->
+                                                <div class="d-flex align-items-center me-5">
+                                                    <!--begin::Flag-->
+                                                    <img src="
+                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                         class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                    <!--end::Flag-->
+                                                    <!--begin::Content-->
+                                                    <div class="me-5">
+                                                        <!--begin::Title-->
+                                                        <a href="#"
+                                                           class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
+                                                            Ltd.</a>
+                                                        <!--end::Title-->
+                                                        <!--begin::Desc-->
+                                                        <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
+                                                        <!--end::Desc-->
+                                                    </div>
+                                                    <!--end::Content-->
+                                                </div>
+                                                <!--end::Section-->
+                                                <!--begin::Wrapper-->
+                                                <div class="d-flex align-items-center">
+                                                    <!--begin::Number-->
+                                                    <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+                                                    <!--end::Number-->
+                                                    <!--begin::Info-->
+                                                    <div class="m-0">
+                                                        <!--begin::Label-->
+                                                        <span class="badge badge-light-success fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>2.6%</span>
+                                                        <!--end::Label-->
+                                                    </div>
+                                                    <!--end::Info-->
+                                                </div>
+                                                <!--end::Wrapper-->
+                                            </div>
+                                            <!--end::Item-->
+                                            <!--begin::Separator-->
+                                            <div class="separator separator-dashed my-3"></div>
+                                            <!--end::Separator-->
+                                        {% endfor %}
+                                    {% endif %}
+
 
                                     </div>
                                     <!--end::Items-->
@@ -932,12 +1030,13 @@
                                 <h1 class="mb-3">{% translate 'Home Team' %}</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
-                                <div class="text-muted fw-semibold fs-5">If you need more info, please check
-                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                <div class="text-muted fw-semibold fs-5">{% translate 'Match Goal' %}
+                                    <a href="#" class="fw-bold link-primary">{{ match.sport.name }}</a>.
                                 </div>
                                 <!--end::Description-->
                             </div>
                             <!--end::Heading-->
+                        {% if match.sport.name == 'Football' %}
                             <!--begin::Input group-->
                             <div class="d-flex flex-wrap gap-5">
                                 <div class="fv-row w-100 flex-md-root">
@@ -1019,6 +1118,46 @@
                                 <!--end::Input group-->
                             </div>
                             <!--begin::Input group-->
+                        {% elif match.sport.name == 'Volleyball' %}
+                        <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Set' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="event_set" aria-label="{% translate 'Set' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Set' %}"
+                                            data-dropdown-parent="#kt_modal_event_home"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="" selected="">---------</option>
+                                        {% for value, text in summary_form.set.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Total Set Goal' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                     <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Total Set Goal' %}"
+                                           name="event_goal"/>
+                                    <input type="text" hidden class="form-control form-control-solid"
+                                          value="{{ match.home_team.id }}"
+                                           name="event_team"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+                        {% endif %}
                             <!--end::Notice-->
                             <!--begin::Actions-->
                             <div class="modal-footer flex-center text-center">
@@ -1081,6 +1220,8 @@
                             </div>
                             <!--end::Heading-->
                             <!--begin::Input group-->
+                             {% if match.sport.name == 'Football' %}
+                            <!--begin::Input group-->
                             <div class="d-flex flex-wrap gap-5">
                                 <div class="fv-row w-100 flex-md-root">
                                     <!--begin::Label-->
@@ -1092,11 +1233,10 @@
                                             data-placeholder="{% translate 'Player' %}"
                                             data-dropdown-parent="#kt_modal_event_away"
                                             data-allow-clear="true"
-
                                             class="form-select form-select-solid fw-bolder">
                                         <option value="" selected="">---------</option>
-                                        {% for item in away_players %}
-                                            <option value="{{ item.player.slug }}">{{ item.player.name }}</option>
+                                        {% for item in home_players %}
+                                             <option value="{{ item.player.slug }}">{{ item.player.name }}</option>
                                         {% endfor %}
 
                                     </select>
@@ -1161,6 +1301,47 @@
                                 </div>
                                 <!--end::Input group-->
                             </div>
+                            <!--begin::Input group-->
+                        {% elif match.sport.name == 'Volleyball' %}
+                        <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Set' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="event_set" aria-label="{% translate 'Set' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Set' %}"
+                                            data-dropdown-parent="#kt_modal_event_away"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="" selected="">---------</option>
+                                        {% for value, text in summary_form.set.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Total Set Goal' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                     <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Total Set Goal' %}"
+                                           name="event_goal"/>
+                                    <input type="text" hidden class="form-control form-control-solid"
+                                          value="{{ match.away_team.id }}"
+                                           name="event_team"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+                        {% endif %}
                             <!--begin::Input group-->
                             <!--end::Notice-->
                             <!--begin::Actions-->

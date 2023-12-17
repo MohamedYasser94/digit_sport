@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils.crypto import get_random_string
 from slugify import slugify
@@ -113,3 +115,14 @@ class Area(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(Area, self).save(*args, **kwargs)
+
+
+class CalendarLocalization(models.Model):
+    Year = models.CharField(max_length=20,null=True,blank=True,default='')
+    month = models.CharField(max_length=20,null=True,blank=True,default='')
+    month_ch = models.CharField(max_length=20,null=True,blank=True,default='')
+    day = models.CharField(max_length=20,null=True,blank=True,default='')
+    day_ch = models.CharField(max_length=20,null=True,blank=True,default='')
+
+    def __str__(self):
+        return self.day

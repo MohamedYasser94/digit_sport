@@ -96,16 +96,24 @@ urlpatterns = [
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
     path('match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
+
     path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
     path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
 
     ##########   Match By Team #########
+    path('match/team/playr/transfer/<slug:slug>/', views.AdminTeamPlayerMatchAdd, name='AdminTeamPlayerMatchAdd'),
     path('match/team/playr/list/<slug:slug>/<slug:team_slug>/', views.AdminMatchDetailsByTeam,
          name='AdminMatchDetailsByTeam'),
     path('match/team/playr/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamPlayerAdd,
          name='AdminMatchTeamPlayerAdd'),
     path('match/team/event/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamEventAdd,
          name='AdminMatchTeamEventAdd'),
+
+    ##########   Sport Season Table  #########
+    path('season/table/', views.AdminSeasonTableList, name='AdminSeasonTableList'),
+    path('season/table/add/<slug:slug>/', views.AdminSeasonTableAdd, name='AdminSeasonTableAdd'),
+    # path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
+    # path('season/table/archive/<slug:slug>/', views.AdminSeasonTableArchive, name='AdminSeasonTableArchive'),
 
     ##########   Api Data  #########
     path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),

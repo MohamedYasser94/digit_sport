@@ -273,3 +273,10 @@ class AdminMatchPlayerSummaryForm(forms.ModelForm):
         model = MatchPlayerSummary
         fields = '__all__'
         exclude = ('slug', 'code')
+
+
+class AdminSeasonTableForm(forms.ModelForm):
+    class Meta:
+        model = SeasonTable
+        fields = '__all__'
+        exclude = ('slug', 'code')

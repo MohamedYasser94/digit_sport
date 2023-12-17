@@ -103,7 +103,7 @@
 																<!--begin::Body-->
 																<div class="d-flex flex-column border border-1 border-gray-300 text-center pt-5 pb-7 mb-8 card-rounded">
 																	<span class="fw-semibold text-gray-600 fs-7 pb-1">Last Bid</span>
-																	<span class="fw-bold text-gray-800 fs-2hx lh-1 pb-1">2.48 ETH</span>
+																	<span class="fw-bold text-gray-800 fs-2hx lh-1 pb-1">{{ team.name }}</span>
 																	<span class="fw-bold text-gray-600 fs-4 pb-5">$6,047.84</span>
 																	<span class="fw-semibold text-gray-600 fs-7 pb-1">Ending in</span>
 																	<span class="fw-bold text-gray-800 fs-3">06h 52m 47s</span>
@@ -169,7 +169,7 @@
 												<!--begin::Footer-->
 												<div class="card-footer d-flex flex-stack pt-0">
 													<!--begin::Link-->
-													<a class="btn btn-sm btn-primary flex-shrink-0 me-2" data-bs-target="#kt_modal_players" data-bs-toggle="modal">{% translate 'Add Player' %}</a>
+													<a class="btn btn-sm btn-primary flex-shrink-0 me-2" data-bs-target="#kt_modal_players" data-bs-toggle="modal">{% translate 'Add Player To Match' %}</a>
 													<!--end::Link-->
 
 												</div>
@@ -218,11 +218,9 @@
 												<!--begin::Footer-->
 												<div class="card-footer d-flex flex-stack pt-0">
 													<!--begin::Link-->
-													<a class="btn btn-sm btn-primary flex-shrink-0 me-2" data-bs-target="#kt_modal_bidding" data-bs-toggle="modal">Place a Bid</a>
+													<a class="btn btn-sm btn-primary flex-shrink-0 me-2" data-bs-target="#kt_modal_transfer" data-bs-toggle="modal">{% translate 'Add Player To Match' %}</a>
 													<!--end::Link-->
-													<!--begin::Link-->
-													<a class="btn btn-sm btn-light flex-shrink-0" href="apps/ecommerce/sales/listing.html">View Item</a>
-													<!--end::Link-->
+
 												</div>
 												<!--end::Footer-->
 											</div>
@@ -713,11 +711,7 @@
 														<span class="text-gray-500 mt-1 fw-semibold fs-6">Updated 37 minutes ago</span>
 													</h3>
 													<!--end::Title-->
-													<!--begin::Toolbar-->
-													<div class="card-toolbar">
-														<a href="" class="btn btn-sm btn-light">History</a>
-													</div>
-													<!--end::Toolbar-->
+
 												</div>
 												<!--end::Header-->
 												<!--begin::Body-->
@@ -1097,149 +1091,120 @@
 										<!--end::Col-->
 										<!--begin::Col-->
 										<div class="col-xl-8">
-											<!--begin::Table Widget 4-->
+											<!--begin::Table widget 12-->
 											<div class="card card-flush h-xl-100">
-												<!--begin::Card header-->
+												<!--begin::Header-->
 												<div class="card-header pt-7">
 													<!--begin::Title-->
 													<h3 class="card-title align-items-start flex-column">
-														<span class="card-label fw-bold text-gray-800">My Sales in Details</span>
-														<span class="text-gray-500 mt-1 fw-semibold fs-6">Avg. 57 orders per day</span>
+														<span class="card-label fw-bold text-gray-800">{% translate 'Match Player' %}</span>
+														<span class="text-gray-500 mt-1 fw-semibold fs-6">Updated 37 minutes ago</span>
 													</h3>
 													<!--end::Title-->
-													<!--begin::Actions-->
-													<div class="card-toolbar">
-														<!--begin::Filters-->
-														<div class="d-flex flex-stack flex-wrap gap-4">
-															<!--begin::Destination-->
-															<div class="d-flex align-items-center fw-bold">
-																<!--begin::Label-->
-																<div class="text-gray-500 fs-7 me-2">Cateogry</div>
-																<!--end::Label-->
-																<!--begin::Select-->
-																<select class="form-select form-select-transparent text-graY-800 fs-base lh-1 fw-bold py-0 ps-3 w-auto" data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Select an option">
-																	<option></option>
-																	<option value="Show All" selected="selected">Show All</option>
-																	<option value="a">Category A</option>
-																	<option value="b">Category A</option>
-																</select>
-																<!--end::Select-->
-															</div>
-															<!--end::Destination-->
-															<!--begin::Status-->
-															<div class="d-flex align-items-center fw-bold">
-																<!--begin::Label-->
-																<div class="text-gray-500 fs-7 me-2">Status</div>
-																<!--end::Label-->
-																<!--begin::Select-->
-																<select class="form-select form-select-transparent text-gray-900 fs-7 lh-1 fw-bold py-0 ps-3 w-auto" data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Select an option" data-kt-table-widget-4="filter_status">
-																	<option></option>
-																	<option value="Show All" selected="selected">Show All</option>
-																	<option value="Shipped">Shipped</option>
-																	<option value="Confirmed">Confirmed</option>
-																	<option value="Rejected">Rejected</option>
-																	<option value="Pending">Pending</option>
-																</select>
-																<!--end::Select-->
-															</div>
-															<!--end::Status-->
-															<!--begin::Search-->
-															<div class="position-relative my-1">
-																<i class="ki-duotone ki-magnifier fs-2 position-absolute top-50 translate-middle-y ms-4">
-																	<span class="path1"></span>
-																	<span class="path2"></span>
-																</i>
-																<input type="text" data-kt-table-widget-4="search" class="form-control w-150px fs-7 ps-12" placeholder="Search" />
-															</div>
-															<!--end::Search-->
-														</div>
-														<!--begin::Filters-->
-													</div>
-													<!--end::Actions-->
-												</div>
-												<!--end::Card header-->
-												<!--begin::Card body-->
-												<div class="card-body pt-2">
-													<!--begin::Table-->
-													<table class="table align-middle table-row-dashed fs-6 gy-3" id="kt_table_widget_4_table">
-														<!--begin::Table head-->
-														<thead>
-															<!--begin::Table row-->
-															<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-																<th class="min-w-100px">Order ID</th>
-																<th class="text-end min-w-100px">Created</th>
-																<th class="text-end min-w-125px">Customer</th>
-																<th class="text-end min-w-100px">Total</th>
-																<th class="text-end min-w-100px">Profit</th>
-																<th class="text-end min-w-50px">Status</th>
-																<th class="text-end"></th>
-															</tr>
-															<!--end::Table row-->
-														</thead>
-														<!--end::Table head-->
-														<!--begin::Table body-->
-														<tbody class="fw-bold text-gray-600">
-															<tr data-kt-table-widget-4="subtable_template" class="d-none">
-																<td colspan="2">
-																	<div class="d-flex align-items-center gap-3">
-																		<a href="#" class="symbol symbol-50px bg-secondary bg-opacity-25 rounded">
-																			<img src="" data-kt-src-path="{% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/" alt="" data-kt-table-widget-4="template_image" />
-																		</a>
-																		<div class="d-flex flex-column text-muted">
-																			<a href="#" class="text-gray-800 text-hover-primary fw-bold" data-kt-table-widget-4="template_name">Product name</a>
-																			<div class="fs-7" data-kt-table-widget-4="template_description">Product description</div>
-																		</div>
-																	</div>
-																</td>
-																<td class="text-end">
-																	<div class="text-gray-800 fs-7">Cost</div>
-																	<div class="text-muted fs-7 fw-bold" data-kt-table-widget-4="template_cost">1</div>
-																</td>
-																<td class="text-end">
-																	<div class="text-gray-800 fs-7">Qty</div>
-																	<div class="text-muted fs-7 fw-bold" data-kt-table-widget-4="template_qty">1</div>
-																</td>
-																<td class="text-end">
-																	<div class="text-gray-800 fs-7">Total</div>
-																	<div class="text-muted fs-7 fw-bold" data-kt-table-widget-4="template_total">name</div>
-																</td>
-																<td class="text-end">
-																	<div class="text-gray-800 fs-7 me-3">On hand</div>
-																	<div class="text-muted fs-7 fw-bold" data-kt-table-widget-4="template_stock">32</div>
-																</td>
-																<td></td>
-															</tr>
-															<tr>
-																<td>
-																	<a href="apps/ecommerce/catalog/edit-product.html" class="text-gray-800 text-hover-primary">#XGY-346</a>
-																</td>
-																<td class="text-end">7 min ago</td>
-																<td class="text-end">
-																	<a href="#" class="text-gray-600 text-hover-primary">Albert Flores</a>
-																</td>
-																<td class="text-end">$630.00</td>
-																<td class="text-end">
-																	<span class="text-gray-800 fw-bolder">$86.70</span>
-																</td>
-																<td class="text-end">
-																	<span class="badge py-3 px-4 fs-7 badge-light-warning">Pending</span>
-																</td>
-																<td class="text-end">
-																	<button type="button" class="btn btn-sm btn-icon btn-light btn-active-light-primary toggle h-25px w-25px" data-kt-table-widget-4="expand_row">
-																		<i class="ki-duotone ki-plus fs-4 m-0 toggle-off"></i>
-																		<i class="ki-duotone ki-minus fs-4 m-0 toggle-on"></i>
-																	</button>
-																</td>
-															</tr>
 
-														</tbody>
-														<!--end::Table body-->
-													</table>
+												</div>
+												<!--end::Header-->
+												<!--begin::Body-->
+												<div class="card-body">
+													<!--begin::Table container-->
+													<div class="table-responsive">
+														<!--begin::Table-->
+														<table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+															<!--begin::Table head-->
+															<thead>
+																<tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+																	<th class="p-0 pb-3 min-w-175px text-start">{% translate 'Image' %}</th>
+																	<th class="p-0 pb-3 min-w-100px text-end">{% translate 'Name' %}</th>
+																	<th class="p-0 pb-3 min-w-100px text-end">{% translate 'Code' %}</th>
+																	<th class="p-0 pb-3 min-w-125px text-end">{% translate 'Position' %}</th>
+
+																	<th class="p-0 pb-3 w-80px text-end">{% translate 'Code' %}</th>
+																</tr>
+															</thead>
+															<!--end::Table head-->
+															<!--begin::Table body-->
+															<tbody>
+                                                             {% for item in players %}
+																<tr>
+																	<td>
+																		<div class="d-flex align-items-center">
+																			<div class="symbol symbol-50px me-3">
+                                                                                {% if item.player.image_path %}
+                                                                                <img src="{{ item.player.image_path }}" class="" alt="" />
+                                                                                {% else %}
+																				<img src="{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg" class="" alt="" />
+                                                                                {% endif %}
+																			</div>
+																			<div class="d-flex justify-content-start flex-column">
+																				<a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">{{ item.name }}</a>
+																				<span class="text-gray-500 fw-semibold d-block fs-7">Jenny Wilson</span>
+																			</div>
+																		</div>
+																	</td>
+																	<td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">{{ item.player.name }}</span>
+																	</td>
+																	<td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">{{ item.player.code }}</span>
+																	</td>
+                                                                <td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">{{ item.player.position }}</span>
+																	</td>
+
+
+																	<td class="text-end">
+																		<a href="#" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+																			<i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>
+																		</a>
+																	</td>
+																</tr>
+                                                            {% empty %}
+                                                            <tr>
+																	<td>
+																		<div class="d-flex align-items-center">
+																			<div class="symbol symbol-50px me-3">
+																				<img src="{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg" class="" alt="" />
+																			</div>
+																			<div class="d-flex justify-content-start flex-column">
+																				<a href="#" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">The Art</a>
+																				<span class="text-gray-500 fw-semibold d-block fs-7">Jenny Wilson</span>
+																			</div>
+																		</div>
+																	</td>
+																	<td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">0.054 ETH</span>
+																	</td>
+																	<td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">0.089 ETH</span>
+																	</td>
+																	<td class="pe-0">
+																		<div class="d-flex align-items-center justify-content-end">
+																			<div class="symbol symbol-30px me-3">
+																				<img src="{% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-13.jpg" class="" alt="" />
+																			</div>
+																			<span class="text-gray-600 fw-bold d-block fs-6">0.089 ETH</span>
+																		</div>
+																	</td>
+																	<td class="text-end pe-0">
+																		<span class="text-gray-600 fw-bold fs-6">1h 43m 52s</span>
+																	</td>
+																	<td class="text-end">
+																		<a href="#" class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+																			<i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>
+																		</a>
+																	</td>
+																</tr>
+                                                            {% endfor %}
+
+															</tbody>
+															<!--end::Table body-->
+														</table>
+													</div>
 													<!--end::Table-->
 												</div>
-												<!--end::Card body-->
+												<!--end: Card Body-->
 											</div>
-											<!--end::Table Widget 4-->
+											<!--end::Table widget 12-->
 										</div>
 										<!--end::Col-->
 									</div>
@@ -1318,6 +1283,129 @@
                                                                         <select class="form-select"
                                                                                 name="team_position"
                                                                                 data-kt-repeater="select2"
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for value, text in players_form.position.field.choices %}
+                                                                                <option value="{{ value }}">{{ text }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2">
+                                                                        <a href="javascript:" data-repeater-delete=""
+                                                                           class="btn btn-sm btn-light-danger mt-3 mt-md-9">
+                                                                            <i class="la la-trash-o fs-3"></i>Delete</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--end::Form group-->
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <a href="javascript:" data-repeater-create=""
+                                                           class="btn btn-light-primary">
+                                                            <i class="la la-plus"></i>Add</a>
+                                                    </div>
+                                                    <!--end::Form group-->
+                                                </div>
+                                                <!--end::Repeater-->
+                                        </div>
+                                        <!--end::Input group-->
+                                    </div>
+                                    <!--end::Input group-->
+							<!--end::Notice-->
+							<!--begin::Actions-->
+							<div class="text-center">
+								<button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">Cancel</button>
+								<button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+									<span class="indicator-label">{% translate 'Submit' %}</span>
+									<span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+								</button>
+							</div>
+							<!--end::Actions-->
+						</form>
+						<!--end:Form-->
+					</div>
+					<!--end::Modal body-->
+				</div>
+				<!--end::Modal content-->
+			</div>
+			<!--end::Modal dialog-->
+		</div>
+		<!--end::Modal - New Target-->
+                    <!--begin::Modal - New Target-->
+		<div class="modal fade" id="kt_modal_transfer" tabindex="-1" aria-hidden="true">
+			<!--begin::Modal dialog-->
+			<div class="modal-dialog modal-dialog-centered mw-650px">
+				<!--begin::Modal content-->
+				<div class="modal-content rounded">
+					<!--begin::Modal header-->
+					<div class="modal-header pb-0 border-0 justify-content-end">
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+							</i>
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--begin::Modal header-->
+					<!--begin::Modal body-->
+					<div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+						<!--begin:Form-->
+						<form id="kt_modal_transfer_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminTeamPlayerMatchAdd'   team.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+							<!--begin::Heading-->
+							<div class="mb-13 text-center">
+								<!--begin::Title-->
+								<h1 class="mb-3">{% translate 'Transfer Player To Current Team' %}</h1>
+								<!--end::Title-->
+								<!--begin::Description-->
+								<div class="text-muted fw-semibold fs-5">If you need more info, please check
+								<a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.</div>
+								<!--end::Description-->
+							</div>
+							<!--end::Heading-->
+							<!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+
+                                             <!--begin::Repeater-->
+                                                <div class="fs-1 text-gray-800 w-bolder mb-17"
+                                                     id="kt_docs_repeater_transfer">
+                                                    <!--begin::Form group-->
+                                                    <div class="form-group">
+                                                        <div data-repeater-list="kt_docs_repeater_transfer">
+                                                            <div data-repeater-item="">
+                                                                <div class="form-group row mb-5">
+                                                                    <div class="col-md-6">
+                                                                        <label class="required form-label">{% translate 'Player' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_player"
+                                                                                data-dropdown-parent="#kt_modal_transfer"
+                                                                                data-kt-repeater="select3" required
+                                                                                data-placeholder="Select an option">
+                                                                            <option></option>
+                                                                            {% for item in transfer_player %}
+                                                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="col-md-4">
+                                                                        <label class=" form-label">{% translate 'Position' %}</label>
+                                                                        <select class="form-select"
+                                                                                name="team_position"
+                                                                                data-dropdown-parent="#kt_modal_transfer"
+                                                                                data-kt-repeater="select3"
                                                                                 data-placeholder="Select an option">
                                                                             <option></option>
                                                                             {% for value, text in players_form.position.field.choices %}
@@ -1555,204 +1643,6 @@
 {% block custom_js %}
 
 
-<script>
-        const DoctorAppointmentApp = Vue.createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    searchTerm: '',
-                    suggestions: '',
-                    filteredSuggestions: '',
-                    medicineSuggestions: '',
-                    showSuggestions: false,
-                    noItem: false,
-                    items: [{prescription_medicine: "", prescription_dose: ""}],
-                    timeSlot: [],
-                    nextFollowUp: false,
-                    nextFollowUpOBS: false,
-                    showPrescription: false,
-                    showOutService: false,
-                    showLabTest: false,
-                    showFollowUpOBS: false,
-                    clinicThirdPartyServices: {{ thirdparty_services_list|safe }},
-                    servicesOfThirdParty: [],
-                }
-            },
-            methods: {
-                getAppointmentDate(event) {
-                    console.log('addNewAppointment', event);
-
-                    payload = {
-
-                        "csrfmiddlewaretoken": "{{ csrf_token }}",
-
-                        "date": event,
-
-                    }
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        data: payload,
-
-                        success: (data) => {
-
-                            console.log('data', data)
-                            this.timeSlot = data
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.suggestions = 'No Data Found'
-                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
-                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
-                            });
-                            app.showSuggestions = true;
-
-                        },
-                    });
-
-
-                },
-                getDiagnosisStatus(event) {
-                    console.log('getDiagnosisStatus', event);
-                    if (event == 'Followup') {
-                        this.nextFollowUp = true
-                        this.showPrescription = true
-                        this.showOutService = false
-                        this.showFollowUpOBS = false
-
-                    } else if (event == 'clinic Service') {
-                        this.nextFollowUp = true
-                        this.showPrescription = false
-                        this.showOutService = true
-                        this.showFollowUpOBS = false
-                    } else if (event == 'FollowupOBS') {
-                        this.nextFollowUp = true
-                        this.showPrescription = true
-                        this.showOutService = false
-                        this.showFollowUpOBS = true
-                    } else if (event == 'FollowupOBSMedicalService') {
-                        this.nextFollowUp = true
-                        this.showPrescription = false
-                        this.showOutService = true
-                        this.showFollowUpOBS = true
-                    } else {
-                        this.nextFollowUp = false
-                        this.showPrescription = false
-                        this.showOutService = false
-                        this.showFollowUpOBS = false
-                    }
-                },
-                getSuggestionsDoctorsMedicine: function (event) {
-                    console.log('getCurrentTrack event', encodeURIComponent(event), this.searchTerm)
-                    this.medicineSuggestions = encodeURIComponent(event.target.value)
-
-                    jQuery.ajax({
-                        type: 'GET',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        success: (data) => {
-                            console.log('data', data)
-                            if (data == 'No Data Found') {
-                                this.suggestions = 'No Data Found'
-
-                                this.showSuggestions = false;
-                                this.noItem = true;
-
-                            } else {
-                                this.suggestions = data
-                                this.filteredSuggestions = this.suggestions.title
-                                this.showSuggestions = true;
-                                this.noItem = false;
-                            }
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.suggestions = 'No Data Found'
-
-
-                        },
-                    });
-
-
-                },
-                addNewDoctorsMedicine: function (event) {
-                    console.log('getCurrentTrack', encodeURIComponent(event))
-
-
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        success: (data) => {
-
-                            console.log('data', data)
-                            this.suggestions = data
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.suggestions = 'No Data Found'
-                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
-                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
-                            });
-                            app.showSuggestions = true;
-
-                        },
-                    });
-                },
-                selectMedicineSuggestion: function (suggestion, index) {
-                    this.searchTerm = suggestion;
-                    this.showSuggestions = false;
-                },
-                addItem() {
-                    this.items.push({prescription_medicine: "", prescription_dose: ""});
-                },
-                removeItem(index) {
-                    this.items.splice(index, 1);
-                },
-                getThirdPartyServices: function (event) {
-                    console.log('getThirdPartyServices event', encodeURIComponent(event),)
-
-
-                    jQuery.ajax({
-                        type: 'GET',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        success: (data) => {
-                            console.log('data', data)
-                            if (data == 'No Data Found') {
-                                this.servicesOfThirdParty = 'No Data Found'
-
-                            } else {
-                                this.servicesOfThirdParty = data
-
-                            }
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.servicesOfThirdParty = 'No Data Found'
-
-
-                        },
-                    });
-
-
-                },
-
-
-            },
-
-
-        })
-        DoctorAppointmentApp.mount('#docpacapo-app')
-        DoctorAppointmentApp.config.devtools = true
-    </script>
 
     <script>
         "use strict";
@@ -1784,9 +1674,9 @@
     </script>
     <script>
         "use strict";
-        var KTFormRepeaterSponsor = {
+        var KTFormRepeaterTransfer = {
             init: function () {
-                $("#kt_docs_repeater_sponsor").repeater({
+                $("#kt_docs_repeater_transfer").repeater({
                     initEmpty: !1,
                     defaultValues: {"text-input": "foo"},
                     show: function () {
@@ -1807,65 +1697,10 @@
             }
         };
         KTUtil.onDOMContentLoaded(function () {
-            KTFormRepeaterSponsor.init();
+            KTFormRepeaterTransfer.init();
         });
     </script>
-    <script>
-        "use strict";
-        var KTFormRepeaterEmployee = {
-            init: function () {
-                $("#kt_docs_repeater_employee").repeater({
-                    initEmpty: !1,
-                    defaultValues: {"text-input": "foo"},
-                    show: function () {
-                        $(this).slideDown(),
-                            $(this).find('[data-kt-repeater="select4"]').select2(),
 
-                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
-                    },
-                    hide: function (e) {
-                        $(this).slideUp(e);
-                    },
-                    ready: function () {
-                        $('[data-kt-repeater="select4"]').select2(),
-
-                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
-                    }
-                });
-            }
-        };
-        KTUtil.onDOMContentLoaded(function () {
-            KTFormRepeaterEmployee.init();
-        });
-    </script>
-    <script>
-        "use strict";
-        var KTFormRepeaterCustody = {
-            init: function () {
-                $("#kt_docs_repeater_custody").repeater({
-                    initEmpty: !1,
-                    defaultValues: {"text-input": "foo"},
-                    show: function () {
-                        $(this).slideDown(),
-                            $(this).find('[data-kt-repeater="select5"]').select2(),
-
-                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
-                    },
-                    hide: function (e) {
-                        $(this).slideUp(e);
-                    },
-                    ready: function () {
-                        $('[data-kt-repeater="select5"]').select2(),
-
-                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
-                    }
-                });
-            }
-        };
-        KTUtil.onDOMContentLoaded(function () {
-            KTFormRepeaterCustody.init();
-        });
-    </script>
 
     <script>
         var identity = function (t) {

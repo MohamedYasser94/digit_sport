@@ -10,10 +10,18 @@ class AdminSportCategorySerializer(serializers.ModelSerializer):
 
 
 class SportSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Sport
-        fields = ['id', 'name', ]
+        fields = ['id', 'name','image_path','country', ]
 
+    def get_match(self, obj):
+        return MatchSerializer(Match.objects.filter(sport=obj.id, ), many=True).data
+
+class MatchBySportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sport
+        fields = ['id', 'name','image_path','country' ]
 
 class TeamsBySportSerializer(serializers.ModelSerializer):
     # teams = serializers.SerializerMethodField()
@@ -51,9 +59,13 @@ class VideosBySportSerializer(serializers.ModelSerializer):
 
 
 class LeaguesSerializer(serializers.ModelSerializer):
+    matches = serializers.SerializerMethodField()
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image_path', ]
+        fields = ['id', 'name', 'image_path','country','matches' ]
+
+    def get_matches(self, obj):
+        return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
 
 
 class SeasonSerializer(serializers.ModelSerializer):
@@ -228,10 +240,12 @@ class MatchSerializer(serializers.ModelSerializer):
     home_team = serializers.SerializerMethodField()
     away_team = serializers.SerializerMethodField()
     venues = serializers.ReadOnlyField(source='venues.name')
+    sport = serializers.ReadOnlyField(source='sport.name')
+    league_name = serializers.ReadOnlyField(source='league.name')
 
     class Meta:
         model = Match
-        fields = ['id', 'name', 'home_team', 'away_team', 'venues', 'start_time', 'is_live']
+        fields = "__all__"
 
     def get_home_team(self, obj):
         return TeamsSerializer(Teams.objects.filter(id=obj.home_team.id, ), many=True).data
@@ -242,6 +256,8 @@ class MatchSerializer(serializers.ModelSerializer):
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues = serializers.ReadOnlyField(source='venues.name')
+    league_name = serializers.ReadOnlyField(source='league.name')
+    sport_name = serializers.ReadOnlyField(source='sport.name')
 
     class Meta:
         model = Match
@@ -253,8 +269,16 @@ class MatchTeamPlayerSerializer(serializers.ModelSerializer):
         model = MatchTeamPlayer
         fields = "__all__"
 
+class MatchGoalsSerializer(serializers.ModelSerializer):
+    team_image = serializers.ReadOnlyField(source='team.image_path')
+    player_name = serializers.ReadOnlyField(source='player.name')
+    class Meta:
+        model = MatchGoals
+        fields = "__all__"
 
 class MatchSummarySerializer(serializers.ModelSerializer):
+    team_image = serializers.ReadOnlyField(source='team.image_path')
+    player_name = serializers.ReadOnlyField(source='player.name')
     class Meta:
         model = MatchSummary
         fields = "__all__"
@@ -279,6 +303,15 @@ class MatchTeamLineupsPlayerSerializer(serializers.ModelSerializer):
 
 
 class MatchPlayerSummarySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = MatchPlayerSummary
+        fields = "__all__"
+
+
+class SeasonTableSerializer(serializers.ModelSerializer):
+    team_name = serializers.ReadOnlyField(source='team.name')
+    image_path = serializers.ReadOnlyField(source='player.image_path')
+    class Meta:
+        model = SeasonTable
         fields = "__all__"

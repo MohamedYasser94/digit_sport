@@ -46,6 +46,16 @@
                                         data-bs-target="#kt_modal_add_category">{% translate 'Add Match' %}
                                 </button>
                                 <!--end::Add customer-->
+                                <!--begin::Add customer-->
+                                {% if table_exist == 'True' %}
+                                <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableList'   %}"
+                                        >{% translate 'Update Season Table' %}
+                                    {% elif table_exist == 'False' %}
+                                    <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableAdd' season.slug  %}"
+                                        >{% translate 'Add Season Table' %}
+                                    {% endif %}
+                                </a>
+                                <!--end::Add customer-->
                             </div>
                             <!--end::Card toolbar-->
                         </div>

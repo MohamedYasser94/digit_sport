@@ -11,7 +11,7 @@ from slugify import slugify
 
 from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
     Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status, Half_List, \
-    Match_Statics
+    Match_Statics, Set_List
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -1322,9 +1322,12 @@ class Match(models.Model):
     venues = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_match', null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
     squad = models.ForeignKey(Squads, on_delete=models.CASCADE, related_name='squad_match', null=True, blank=True)
-    score = models.CharField(max_length=100, null=True, blank=True)
+    home_score = models.IntegerField(null=True, blank=True, default=0)
+    away_score = models.IntegerField(null=True, blank=True, default=0)
+    score = models.CharField(max_length=100, null=True, blank=True,default='0-0')
     start_time = models.DateTimeField(null=True, blank=True)
-    current_time = models.CharField(max_length=100, null=True, blank=True)
+    current_minute = models.CharField(max_length=100, null=True, blank=True)
+    current_half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
     played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
     is_live = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
@@ -1382,9 +1385,9 @@ class MatchGoals(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_goal', null=True, blank=True)
     home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_goal', null=True, blank=True)
     away_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_goal_away', null=True, blank=True)
-    home_scorer = models.IntegerField(null=True, blank=True, default=0)
-    away_scorer = models.IntegerField(null=True, blank=True, default=0)
-    set = models.IntegerField(null=True, blank=True, default=0)
+    home_score = models.IntegerField(null=True, blank=True, default=0)
+    away_score = models.IntegerField(null=True, blank=True, default=0)
+    set = models.CharField(max_length=100, choices=Set_List, default='1stSet', null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -1405,6 +1408,7 @@ class MatchSummary(models.Model):
     type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
     value = models.CharField(max_length=100, null=True, blank=True)
     half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
+    set = models.CharField(max_length=100, choices=Set_List, default='1st Set', null=True, blank=True)
     period = models.CharField(max_length=100, null=True, blank=True)
     time = models.CharField(max_length=100, null=True, blank=True)
     minute = models.IntegerField(null=True, blank=True)

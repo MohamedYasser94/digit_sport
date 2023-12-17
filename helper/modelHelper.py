@@ -775,11 +775,12 @@ Position_List = (
 
 Tv_Type = (('Satellite', 'Satellite'), ('Cable', 'Cable'), ('IPTV', 'IPTV'), ('Channel', 'Channel'),)
 Half_List = (('1st Half', '1st Half'), ('2nd Half', '2nd Half'), ('Extra Time', 'Extra Time'), ('Penalty', 'Penalty'),)
+Set_List  = (('1stSet', '1st Set'), ('2ndSet', '2nd Set'), ('3rdSet', '3rdSet'), ('4thSet', '4th Set'), ('5thSet', '5th Set'),)
 Match_Statics = (  ('Goal','Goal'),('Messed Shots', 'Messed Shots'), ('Shots On Target', 'Shots On Target'), ('Shots Off Target', 'Shots Off Target'),
 ('Possession', 'Possession'), ('Passes', 'Passes'), ('Passes Completed', 'Passes Completed'), ('Passes Failed', 'Passes Failed'),
-('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),
+('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),)
 
-                 )
+
 ########## Blog ##############################
 
 
