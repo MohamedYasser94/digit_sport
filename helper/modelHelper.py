@@ -748,7 +748,7 @@ Sport_Type = (
 Sport_Status = (('Active', 'Active'), ('Inactive', 'Inactive'), ('Suspend', 'Suspend'), ('Banned', 'Banned'),)
 Sport_Level = (
 ('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced'), ('Other', 'Other'),)
-Match_Status = (('Yes', 'Yes'), ('No', 'No'), ('Live', 'Live'), )
+Match_Status = (('Yes', 'Yes'), ('No', 'No'), ('Live', 'Live'),('Played','Played') )
 Match_Type = (('Friendly', 'Friendly'), ('Tournament', 'Tournament'), ('League', 'League'), ('Other', 'Other'),)
 Match_Result = (('Win', 'Win'), ('Lose', 'Lose'), ('Draw', 'Draw'), ('Other', 'Other'),)
 Match_Round = (

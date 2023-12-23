@@ -807,6 +807,7 @@ class Players(models.Model):
                                          blank=True)
     api_detailed_position = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100,  null=True, blank=True)
+    ratings  = models.CharField(max_length=100,  null=True, blank=True,default='0')
 
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
@@ -1329,7 +1330,7 @@ class Match(models.Model):
     current_minute = models.CharField(max_length=100, null=True, blank=True)
     current_half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
     played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
-    is_live = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    is_live = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

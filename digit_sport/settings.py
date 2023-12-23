@@ -260,10 +260,12 @@ CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-    'EXCEPTION_HANDLER': 'core.utils.exceptions.core_exception_handler', 'NON_FIELD_ERRORS_KEY': 'error',
-    'DEFAULT_AUTHENTICATION_CLASSES': [# 'rest_framework.authentication.SessionAuthentication',
+    'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
+    'DEFAULT_AUTHENTICATION_CLASSES':
+        [# 'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication', ],
-    'DEFAULT_PAGINATION_CLASS': 'core.utils.pagination.PageNumberPagination', 'PAGE_SIZE': 5
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', 'PAGE_SIZE':10
 
 }
 

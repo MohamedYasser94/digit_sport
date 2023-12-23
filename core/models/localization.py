@@ -121,8 +121,11 @@ class CalendarLocalization(models.Model):
     Year = models.CharField(max_length=20,null=True,blank=True,default='')
     month = models.CharField(max_length=20,null=True,blank=True,default='')
     month_ch = models.CharField(max_length=20,null=True,blank=True,default='')
-    day = models.CharField(max_length=20,null=True,blank=True,default='')
+    day = models.DateField(default=datetime.date.today)
+    day_num = models.CharField(max_length=20,null=True,blank=True,default='')
     day_ch = models.CharField(max_length=20,null=True,blank=True,default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.day

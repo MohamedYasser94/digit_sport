@@ -96,7 +96,7 @@ urlpatterns = [
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),
     path('match/delete/<slug:slug>/', views.AdminMatchDelete, name='AdminMatchDelete'),
-
+    path('match/control/<slug:slug>/', views.AdminMatchControl, name='AdminMatchControl'),
     path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
     path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
 

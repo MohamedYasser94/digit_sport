@@ -3,7 +3,6 @@ from datetime import datetime
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from api.v3.serializers.sport.monk import *
@@ -11,6 +10,7 @@ from api.v3.serializers.sport.sport import *
 from apps.sport.models.models import *
 from apps.sport.models.monks import *
 from core.models.blog import BlogArticle, BlogVideo
+from core.utils.pagination import PageNumberPagination
 
 
 class SportCategoryList(ListCreateAPIView):
@@ -1110,35 +1110,6 @@ def SportByCountryApiList(request, country):
     return JsonResponse(data, safe=False)
 
 
-def SportTeamsByCountryApiList(request, country, sport):
-    if country == '' or country == None or country == 'all' or country == ':country':
-        country = 'Kuwait'
-    else:
-        country = country
-    if sport == '' or sport == None or sport == 'all' or sport == ':sport':
-        sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport)
-
-    if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport)
-        teams_list = Teams.objects.filter(sport=get_sport.id, country=country)
-        success = True
-        message = f"Send From Django API mix {country}"
-        sport_serializer = SportSerializer(sport_list, many=True)
-        team_serializer = TeamsSerializer(teams_list, many=True)
-        sport_data = {'country': country, 'sport': sport_serializer.data, 'team': team_serializer.data, }
-    else:
-        success = False
-        message = f"error in get data no data no data with this country {country} or sport {sport}"
-
-        sport_data = {'country': country, 'sport': [], 'team': [], }
-
-    data = {'success': success, 'data': sport_data, 'message': message,
-
-            }
-    return JsonResponse(data, safe=False)
-
-
 def SportCountryList(request):
     country_list = MonkCountry.objects.all()
 
@@ -1226,6 +1197,7 @@ def SportPlayersByCountryApiList(request, country, sport):
             }
     return JsonResponse(data, safe=False)
 
+
 # def SportMatchesApiList(request, sport):
 #
 #     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
@@ -1251,10 +1223,9 @@ def SportPlayersByCountryApiList(request, country, sport):
 #             }
 #     return JsonResponse(data, safe=False)
 def SportMatchesApiLast(request, sport):
-
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = Sport.objects.get(name='Football')
-        matches_list = Match.objects.filter(league__sport=sport,).order_by('start_time')
+        matches_list = Match.objects.filter(league__sport=sport, ).order_by('start_time')
     else:
 
         sport = Sport.objects.get(name=sport)
@@ -1268,15 +1239,15 @@ def SportMatchesApiLast(request, sport):
     else:
         success = False
         message = f"error in get data no data no data with this date {sport} "
-        sport_data = { 'match': [], }
+        sport_data = {'match': [], }
 
     data = {'success': success, 'data': sport_data, 'message': message,
 
             }
     return JsonResponse(data, safe=False)
 
-def SportMatchesByCountryApiList(request, country, sport):
 
+def SportMatchesByCountryApiList(request, country, sport):
     if country == '' or country == None or country == 'all' or country == ':country':
         country = 'Kuwait'
     else:
@@ -1364,7 +1335,8 @@ def SportMatchesApiDetails(request, matchid):
         sport_data = {'match': match_serializer.data, 'home_team': home_team_serializer.data,
                       'away_team': away_team_serializer.data, 'home_team_players': home_team_players_serializer.data,
                       'away_team_players': away_team_players_serializer.data, 'summary': summary_serializer.data,
-                      'statics': statics_serializer.data, 'goals': goals_serializer.data,'season_table': table_serializer.data,
+                      'statics': statics_serializer.data, 'goals': goals_serializer.data,
+                      'season_table': table_serializer.data,
 
                       }
         success = True
@@ -1419,32 +1391,34 @@ def SportNewsByCountryApiList(request, country, sport):
     return JsonResponse(data, safe=False)
 
 
-def SportNewsApiDetails(request, newsid):
+def SportNewsApiDetails(request, article_id):
     try:
-        news_list = BlogArticle.objects.filter(id=newsid)
+        news_list = BlogArticle.objects.filter(id=article_id)
         success = True
-        message = f"Send From Django API News Details {newsid} "
+        message = f"Send From Django API News Details {article_id} "
         news_serializer = AdminBlogArticleDetailsSerializer(news_list, many=True)
-        sport_data = {'news': news_serializer.data,
+        sport_data = {'articles': news_serializer.data,
 
                       }
 
         data = {'success': success, 'data': sport_data, 'message': message,
 
                 }
-        return JsonResponse(data, safe=False)
-    except:
+        return JsonResponse(data, safe=True)
+    except Exception as e:
+        print(e)
         success = False
         message = f"error in get data  News Details  "
 
-        sport_data = {'news': [],
+        sport_data = {'articles': [],
 
                       }
 
         data = {'success': success, 'data': sport_data, 'message': message,
 
                 }
-        return JsonResponse(data, safe=False)
+        return JsonResponse(data, safe=True)
+
 
 def SportVideosApiList(request, ):
     try:
@@ -1452,7 +1426,7 @@ def SportVideosApiList(request, ):
         success = True
         message = f"Send From Django API  "
         video_serializer = AdminBlogVideoSerializer(video_list, many=True)
-        serializer = {  'video': video_serializer.data, }
+        serializer = {'video': video_serializer.data, }
         data = {'success': success, 'data': serializer, 'message': message, }
         return JsonResponse(data, safe=False)
     except Exception as e:
@@ -1461,6 +1435,8 @@ def SportVideosApiList(request, ):
         message = f"error in get data    "
         data = {'success': success, 'data': [], 'message': message, }
         return JsonResponse(data, safe=False)
+
+
 def SportVideosByCountryApiList(request, country, sport):
     print()
     if country == '' or country == None or country == 'all' or country == ':country':
@@ -1509,6 +1485,7 @@ def SportApiList(request):
             }
     return JsonResponse(data, safe=False)
 
+
 def SportLeaguesApiList(request):
     league_list = Leagues.objects.all()
     try:
@@ -1537,6 +1514,7 @@ def SportLeaguesApiList(request):
                 }
         return JsonResponse(data, safe=False)
 
+
 def SportLeaguesApiDetails(request, leagueid):
     leagues_list = Leagues.objects.all()
     leagues_serializer = LeaguesSerializer(leagues_list, many=True)
@@ -1547,8 +1525,7 @@ def SportLeaguesApiDetails(request, leagueid):
         league_serializer = LeaguesSerializer(league_list, many=True)
 
         sport_data = {'league': league_serializer.data,
-            'leagues': leagues_serializer.data,
-
+                      'leagues': leagues_serializer.data,
 
                       }
 
@@ -1561,7 +1538,7 @@ def SportLeaguesApiDetails(request, leagueid):
         message = f"error in get data  News Details  "
 
         sport_data = {'leagues': leagues_serializer.data,
-            'league': [],
+                      'league': [],
 
                       }
 
@@ -1570,20 +1547,36 @@ def SportLeaguesApiDetails(request, leagueid):
                 }
         return JsonResponse(data, safe=False)
 
+
 ####################  Match API ############################
+
+def MatchesByLeaguesApiList(request):
+    try:
+        leagues_list = Leagues.objects.all()
+        leagues_serializer = LeaguesSerializer(leagues_list, many=True)
+        success = True
+        message = f"Send From Django API mix "
+    except Exception as e:
+        print('error', e)
+        leagues_serializer = []
+        success = False
+        message = f"error in get data  News Details  "
+
+    serializer = {'leagues': leagues_serializer.data, }
+    data = {'success': success, 'data': serializer, 'message': message, }
+    return JsonResponse(data, safe=False)
+
+
 def SportMatchesApiList(request):
     matches_list = Match.objects.all().order_by('-start_time')
     try:
         success = True
         message = f"Send From Django API mix "
         match_serializer = MatchSerializer(matches_list, many=True)
-
         sport_data = {'match': match_serializer.data,
-
                       }
 
         data = {'success': success, 'data': sport_data, 'message': message,
-
                 }
         return JsonResponse(data, safe=False)
     except:
@@ -1598,62 +1591,114 @@ def SportMatchesApiList(request):
 
                 }
         return JsonResponse(data, safe=False)
-def SportByLeagueApiList(request, league_id):
-    if league_id == '' or league_id == None or league_id == 'all' or league_id == ':league_id':
-        league_id = 1
+
+
+def MatchBySportApiList(request, sportName):
+    if sportName == '' or sportName == None or sportName == 'all' or sportName == ':sportName':
+        sportName = 'Football'
     else:
-        league_id = league_id
+        sportName = sportName
 
-    try :
-        league = Leagues.objects.get(id=league_id)
-        matches_list = Match.objects.filter(league=league).order_by('-start_time')
-        team_list = Teams.objects.filter(league=league)
-        news_list = BlogArticle.objects.filter(league=league)
-        video_list = BlogVideo.objects.filter(league=league)
-        success = True
-        message = f"Send From Django API mix "
-    except Exception as e:
-        print('error',e)
-        success = False
-        message = f"error in get data  News Details  "
-        matches_list = Match.objects.filter(sport=Sport.objects.get(name='Football')).order_by('-start_time')
-        team_list = Teams.objects.filter(sport=Sport.objects.get(name='Football'))
-        news_list = BlogArticle.objects.filter(sport=Sport.objects.get(name='Football'))
-        video_list = BlogVideo.objects.filter(sport=Sport.objects.get(name='Football'))
-    match_serializer = MatchSerializer(matches_list, many=True)
-    team_serializer = TeamsSerializer(team_list, many=True)
-    news_serializer = AdminBlogArticleSerializer(news_list, many=True)
-    video_serializer = AdminBlogVideoSerializer(video_list, many=True)
-
-    serializer = {'match': match_serializer.data, 'team': team_serializer.data, 'news': news_serializer.data,
-                    'video': video_serializer.data, }
-    data = {'success': success, 'data': serializer, 'message': message,}
-    return JsonResponse(data, safe=False)
-
-
-
-def MatchBySportApiList(request):
-
-
-    try :
-        sports = Sport.objects.all()
-        matches_list = Match.objects.all().order_by('-start_time')
+    try:
+        sports = Sport.objects.filter(name=sportName)
+        sport = Sport.objects.get(name=sportName)
+        matches_list = Match.objects.filter(sport=sport).order_by('-start_time')
         sport_serializer = SportSerializer(sports, many=True)
         match_serializer = MatchSerializer(matches_list, many=True)
         success = True
-        message = f"Send From Django API mix "
+        message = f"Send From Django API MatchBySportApiList "
         serializer = {'sport': sport_serializer.data, 'match': match_serializer.data, }
         data = {'success': success, 'data': serializer, 'message': message, }
         return JsonResponse(data, safe=False)
     except Exception as e:
-        print('error',e)
+        print('error', e)
         success = False
-        message = f"error in get data  News Details  "
+        message = f"error in get data MatchBySportApiList  "
         data = {'success': success, 'data': [], 'message': message, }
         return JsonResponse(data, safe=False)
 
 
+################# Team API ##############################
+
+def SportTeamsApiList(request):
+    try:
+        team_list = Teams.objects.all()
+        success = True
+        message = f"Send From Django API mix "
+        team_serializer = TeamsSerializer(team_list, many=True)
+        sport_data = {'team': team_serializer.data,
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+                }
+        return JsonResponse(data, safe=False)
+    except:
+        success = False
+        message = f"error in get data  News Details  "
+
+        sport_data = {'team': [],
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=False)
 
 
+####################### Playrs Api #################
 
 
+def PlayersApiList(request):
+    try:
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        players_list = Players.objects.all()
+        success = True
+        message = f"Send From Django API mix "
+        players_serializer = PlayersSerializer(players_list, many=True)
+        sport_data = {'player': players_serializer.data, }
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(e)
+        success = False
+        message = f"error in get data no data no data with this country"
+
+        sport_data = {
+
+            'player': [], }
+    data = {'success': success, 'data': sport_data, 'message': message,
+
+            }
+    return JsonResponse(data, safe=False)
+
+def PlayersApiDetails(request, playerid):
+    try:
+        players_list = Players.objects.filter(id=playerid)
+        success = True
+        message = f"Send From Django API mix {playerid} "
+        players_serializer = PlayersSerializer(players_list, many=True)
+        sport_data = {'player': players_serializer.data,
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=True)
+    except Exception as e:
+        print(e)
+        success = False
+        message = f"error in get data  News Details  "
+
+        sport_data = {'player': [],
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=True)

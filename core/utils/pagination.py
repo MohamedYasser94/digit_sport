@@ -84,10 +84,19 @@ class PageNumberPagination(BasePagination):
         return list(self.page)
 
     def get_page_number(self, request, paginator):
-        page_number = request.query_params.get(self.page_query_param) or 1
+        page_number = request.query_param.get(self.page_query_param) or 1
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
+        if hasattr(self.context['request'], 'query_params'):
+            fields = self.context['request'].query_params.get('fields', None)
+        elif hasattr(self.context['request'], 'GET'):
+            fields = self.context['request'].GET.get('fields', None)
+        else:
+            fields = None
+
         return page_number
+
+
 
     def get_paginated_response(self, data):
         return Response({

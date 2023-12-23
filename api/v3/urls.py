@@ -148,12 +148,10 @@ urlpatterns = [
     ##################### Mix Sport API ########################
 
     path('v3/general/bycountry/<str:country>/', sport.SportByCountryApiList, name='AdminMixSportCategoryAPiList'),
-    path('v3/sport/general/teams/<str:country>/<str:sport>/', sport.SportTeamsByCountryApiList,
-         name='SportTeamsByCountryApiList'),
+
     path('v3/sport/general/leagues/<str:country>/<str:sport>/', sport.SportLeaguesByCountryApiList,
          name='SportLeaguesByCountryApiList'),
-    path('v3/sport/general/players/list/<str:country>/<str:sport>/', sport.SportPlayersByCountryApiList,
-         name='SportPlayersByCountryApiList'),
+
 
     path('v3/sport/general/matches/list/<str:sport>/', sport.SportMatchesApiList, name='SportMatchesApiList'),
     path('v3/sport/general/matches/last/<str:sport>/', sport.SportMatchesApiLast, name='SportMatchesApiLast'),
@@ -165,7 +163,7 @@ urlpatterns = [
 
     path('v3/sport/general/news/list/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
          name='SportNewsByCountryApiList'),
-    path('v3/sport/general/news/details/<int:newsid>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
+    path('v3/sport/news/details/<int:article_id>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
     path('v3/videos/list/', sport.SportVideosApiList,
          name='SportVideosApiList'),
     path('v3/sport/general/videos/<str:country>/<str:sport>/', sport.SportVideosByCountryApiList,
@@ -178,19 +176,21 @@ urlpatterns = [
 
     ##################### New Sport API ########################
     path('v3/sport/leagues/list/', sport.SportLeaguesApiList, name='SportLeaguesApiList'),
-    # path('v3/sport/leagues/bysport/<str:sport>/', sport.SportLeaguesBySportApiList, name='SportLeaguesBySportApiList'),
-    # path('v3/sport/leagues/bycountry/<str:country>/', sport.SportLeaguesByCountryApiList,
-    #         name='SportLeaguesByCountryApiList'),
-
     path('v3/sport/leagues/details/<int:leagueid>/', sport.SportLeaguesApiDetails, name='SportLeaguesApiDetails'),
     path('v3/sport/matches/list/', sport.SportMatchesApiList, name='SportMatchesApiList'),
-    path('v3/sport/matches/byleague/<str:league_id>/', sport.SportByLeagueApiList, name='SportByLeagueApiList'),
-    path('v3/sport/matches/bysport/list/', sport.MatchBySportApiList, name='MatchBySportApiList'),
-    # path('v3/sport/matches/bydate/<str:date>/', sport.SportByDateApiList, name='SportByDateApiList'),
+    path('v3/sport/matches/last/<str:sport>/', sport.SportMatchesApiLast, name='SportMatchesApiLast'),
+    path('v3/sport/matches/bysport/<str:sportName>/', sport.MatchBySportApiList, name='MatchBySportApiList'),
+    path('v3/sport/matches/byleague/list/', sport.MatchesByLeaguesApiList, name='MatchesByLeaguesApiList'),
+    path('v3/sport/matches/bydate/<str:sport>/<str:date>/', sport.SportMatchesByDateApiList, name='SportByDateApiList'),
     path('v3/sport/matches/bycountry/<str:country>/', sport.SportByCountryApiList, name='SportByCountryApiList'),
-
     path('v3/sport/matches/details/<int:matchid>/', sport.SportMatchesApiDetails, name='SportMatchesApiDetails'),
-    path('v3/sport/matches/last/', sport.SportMatchesApiLast, name='SportMatchesApiLast'),
+    path('v3/sport/teams/list/', sport.SportTeamsApiList,
+         name='SportTeamsApiList'),
+    path('v3/sport/players/list/', sport.PlayersApiList, name='PlayersApiList'),
+    path('v3/sport/players/details/<int:playerid>/', sport.PlayersApiDetails, name='PlayersApiDetails'),
+
+
+
 
 
 ]  # scheduler.interval(UserToken.objects.delete_expired_tokens, DELETE_EXPIRED_TOKENS_INTERVAL)

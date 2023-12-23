@@ -60,9 +60,10 @@ class VideosBySportSerializer(serializers.ModelSerializer):
 
 class LeaguesSerializer(serializers.ModelSerializer):
     matches = serializers.SerializerMethodField()
+    sport = serializers.ReadOnlyField(source='sport.name')
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image_path','country','matches' ]
+        fields = ['id', 'name', 'image_path','country','matches' ,'sport']
 
     def get_matches(self, obj):
         return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
@@ -129,9 +130,12 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
+    sport = serializers.ReadOnlyField(source='sport.name')
+    league = serializers.ReadOnlyField(source='league.name')
+
     class Meta:
         model = Teams
-        fields = ['id', 'name', 'image_path', ]
+        fields = ['id', 'name', 'image_path','sport','league' ]
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
@@ -161,7 +165,7 @@ class SchedulesSerializer(serializers.ModelSerializer):
 class PlayersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Players
-        fields = ['id', 'first_name', 'image_path', ]
+        fields = '__all__'
 
 
 class SquadsSerializer(serializers.ModelSerializer):

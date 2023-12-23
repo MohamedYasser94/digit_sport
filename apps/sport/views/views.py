@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
@@ -1440,6 +1442,7 @@ def AdminMatchDetails(request, slug):
         'static_form': AdminMatchStaticsForm(),
         'match_statics':match_statics,
         'last_statics':last_statics,
+        'match_form': AdminMatchForm(instance=match),
         'current_page': _('Details')}
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
@@ -1514,6 +1517,27 @@ def AdminMatchDelete(request, slug):
 
 @authenticated_staf
 @staff_only
+def AdminMatchControl(request, slug):
+
+    if request.method == 'POST':
+        match_object = Match.objects.get(slug=slug)
+        if request.POST.get('start_time') == None or request.POST.get('start_time') == '':
+            match_object.start_time = None
+        else:
+            match_object.start_time = request.POST.get('start_time')
+        match_object.current_minute = request.POST.get('current_minute')
+        match_object.current_half = request.POST.get('current_half')
+        match_object.played = request.POST.get('played')
+        match_object.is_live = request.POST.get('is_live')
+        match_object.save()
+        messages.success(request, _("Match Control Successfully"), extra_tags='Match')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails' , kwargs={'slug': slug}))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails' , kwargs={'slug': slug}))
+
+
+@authenticated_staf
+@staff_only
 def AdminMatchSummaryAdd(request, slug):
     match = Match.objects.get(slug=slug)
     home_team = Teams.objects.get(id=match.home_team.id)
@@ -1555,9 +1579,13 @@ def AdminMatchSummaryAdd(request, slug):
                     if event_team == home_team:
                         match_goal.home_score += 1
                         match_goal.save()
+                        match.home_score += 1
+                        match.save()
                     else:
                         match_goal.away_score += 1
                         match_goal.save()
+                        match.away_score += 1
+                        match.save()
                 match.score = str(match_goal.home_score) + ' - ' + str(match_goal.away_score)
                 match.save()
 
@@ -1590,9 +1618,13 @@ def AdminMatchSummaryAdd(request, slug):
                 if event_team == home_team:
                     match_goal.home_score = event_goal
                     match_goal.save()
+                    match.home_score = event_goal
+                    match.save()
                 else:
                     match_goal.away_score = event_goal
                     match_goal.save()
+                    match.away_score = event_goal
+                    match.save()
 
                 match.score = str(match_goal.home_score) + ' - ' + str(match_goal.away_score)
                 match.save()

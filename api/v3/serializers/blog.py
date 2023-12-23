@@ -28,9 +28,13 @@ class AdminBlogArticleSerializer(serializers.ModelSerializer)    :
         fields =[ 'id','title','image_path','keyword','body','author','create_at',]
 
 class AdminBlogArticleDetailsSerializer(serializers.ModelSerializer)    :
+    body = serializers.SerializerMethodField()
     class Meta:
         model = BlogArticle
         fields =[ 'id','title','image_path','keyword','body','author','create_at',]
+
+    def get_body(self, obj):
+        return obj.body
 
 class AdminBlogVideoSerializer(serializers.ModelSerializer)    :
     class Meta:
