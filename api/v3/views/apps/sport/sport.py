@@ -1109,6 +1109,42 @@ def SportByCountryApiList(request, country):
             }
     return JsonResponse(data, safe=False)
 
+def SportByCountrySportApiList(request,country,sportName):
+    try :
+        sport = Sport.objects.get(name=sportName,country=country)
+    except Exception as e:
+        print(e)
+        sport =Sport.objects.get(name='Volleyball',country='Kuwait')
+    try:
+        leagues_list = Leagues.objects.filter(sport=sport,country=country)
+        league_list = Leagues.objects.filter( country=country)
+
+        success = True
+        message = f"Send From Django API mix {country}"
+
+        leagues_serializer = LeaguesSerializer(leagues_list, many=True)
+        league_serializer = LeaguesSerializer(league_list, many=True)
+
+
+        sport_data = {'leagues': leagues_serializer.data, 'league': league_serializer.data,}
+
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+
+    except Exception as e:
+        print(e)
+        success = False
+        message = f"error in get data no data no data with this country {country} or sport {sport}"
+
+        sport_data = {'country': country, 'sport': [], 'match': [], }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+    return JsonResponse(data, safe=False)
+
 
 def SportCountryList(request):
     country_list = MonkCountry.objects.all()

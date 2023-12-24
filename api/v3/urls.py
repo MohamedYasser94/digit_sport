@@ -183,6 +183,7 @@ urlpatterns = [
     path('v3/sport/matches/byleague/list/', sport.MatchesByLeaguesApiList, name='MatchesByLeaguesApiList'),
     path('v3/sport/matches/bydate/<str:sport>/<str:date>/', sport.SportMatchesByDateApiList, name='SportByDateApiList'),
     path('v3/sport/matches/bycountry/<str:country>/', sport.SportByCountryApiList, name='SportByCountryApiList'),
+    path('v3/sport/matches/bycountrysport/<str:country>/<str:sportName>/', sport.SportByCountrySportApiList, name='SportByCountrySportApiList'),
     path('v3/sport/matches/details/<int:matchid>/', sport.SportMatchesApiDetails, name='SportMatchesApiDetails'),
     path('v3/sport/teams/list/', sport.SportTeamsApiList,
          name='SportTeamsApiList'),

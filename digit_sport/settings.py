@@ -214,7 +214,7 @@ STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
 
-MyFatoorah_base_url = env('MyFatoorah_base_url')
+
 MyFatoorah_api_key = env('MyFatoorah_api_key')
 MyFatoorah_WEBHOOK_SECRET = env('MyFatoorah_WEBHOOK_SECRET')
 
