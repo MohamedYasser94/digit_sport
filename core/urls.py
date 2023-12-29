@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
 from api.v3.views import chat as api_chat
 from core.templatetags.social_share import post_to_facebook
@@ -22,6 +23,13 @@ urlpatterns = [
     path('log/<str:model>', activity.AdminActivityLog, name="AdminActivityLog"),
     path('fb/whatsapp/webhooks/', activity.AdminFaceBookWhatsappWebHooks.as_view(),
          name="AdminFaceBookWhatsappWebHooks"),
+# path("firebase-messaging-sw.js",
+#         TemplateView.as_view(
+#             template_name="firebase-messaging-sw.js",
+#             content_type="application/javascript",
+#         ),
+#         name="firebase-messaging-sw.js"
+#     ),
 
 
 

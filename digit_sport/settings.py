@@ -16,6 +16,9 @@ from datetime import timedelta
 from pathlib import Path
 from typing import List
 
+import firebase_admin
+from firebase_admin import initialize_app, credentials
+from google.auth import load_credentials_from_file
 import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.contrib import messages
@@ -40,7 +43,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1','192.168.1.36', 'digithup.com', 'aljwala.digithup.net']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1','192.168.1.36', 'digithup.com', 'aljwala.digithup.net','aljawlakw.com','localhost']
 
 # Application definition
 
@@ -49,8 +52,13 @@ INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib
     'django.contrib.sitemaps', 'django.contrib.humanize', ]
 
 OWN_APPS = [## internal apps
-    'core.apps.CoreConfig', 'home.apps.HomeConfig', 'user.apps.UserConfig', 'api.apps.ApiConfig',
-    'apps.catalog.apps.CatalogConfig', 'apps.sport.apps.SportConfig', 'apps.wallet.apps.WalletConfig',
+    'core.apps.CoreConfig',
+    'home.apps.HomeConfig',
+    'user.apps.UserConfig',
+    'api.apps.ApiConfig',
+    'apps.catalog.apps.CatalogConfig',
+    'apps.sport.apps.SportConfig',
+    'apps.wallet.apps.WalletConfig',
 
 ]
 
@@ -71,7 +79,7 @@ THIRD_PARTY_APPS = [
     'two_factor',
     'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
     'two_factor.plugins.email',  # <- if you want email capability.
-    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook',
+    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook',  'fcm_django',
 
 
 ]
@@ -161,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [{'NAME': 'django.contrib.auth.password_validation.Us
 TIME_ZONE = 'Egypt'
 USE_TZ = False
 
-LANGUAGE_CODE = 'ar'
+LANGUAGE_CODE = 'en'
 USE_I18N = True
 gettext = lambda s: s
 MODELTRANSLATION_LANGUAGES = ('ar', 'en',)
@@ -260,7 +268,7 @@ CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-    'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler.custom_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES':
         [# 'rest_framework.authentication.SessionAuthentication',
@@ -390,50 +398,7 @@ c3ts3cr3t
 -----END PRIVATE KEY-----
 """}}}
 
-##  CKEDITOR CONFIGURATION ##
-AWS_QUERYSTRING_AUTH = False
-CKEDITOR_ALLOW_NONIMAGE_FILES = False
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_IMAGE_BACKEND = 'pillow'
-CKEDITOR_CONFIGS = {'default': {
 
-    # 'skin': 'moono',
-    # 'skin': 'office2013',
-    'toolbar_Basic': [['Source', '-', 'Bold', 'Italic']], 'toolbar_YourCustomToolbarConfig': [
-        {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
-        {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
-        {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']}, {'name': 'forms',
-                                                                              'items': ['Form', 'Checkbox', 'Radio',
-                                                                                        'TextField', 'Textarea',
-                                                                                        'Select', 'Button',
-                                                                                        'ImageButton', 'HiddenField']},
-        '/', {'name': 'basicstyles',
-              'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-        {'name': 'paragraph',
-         'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
-                   'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
-                   'Language']}, {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']}, {'name': 'insert',
-                                                                                            'items': ['Image', 'Flash',
-                                                                                                      'Table',
-                                                                                                      'HorizontalRule',
-                                                                                                      'Smiley',
-                                                                                                      'SpecialChar',
-                                                                                                      'PageBreak',
-                                                                                                      'Iframe']}, '/',
-        {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
-        {'name': 'colors', 'items': ['TextColor', 'BGColor']}, {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
-        {'name': 'about', 'items': ['About']}, '/',  # put this to force next toolbar on new line
-        {'name': 'yourcustomtools', 'items': [# put the name of your editor.ui.addButton here
-            'Preview', 'Maximize',
-
-        ]}, ], 'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
-    'toolbarGroups': [{'name': 'document', 'groups': ['mode', 'document', 'doctools']}], # 'height': 291,
-    'width': '1200', 'filebrowserWindowHeight': 725, 'filebrowserWindowWidth': 940, # 'toolbarCanCollapse': True,
-    'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML', 'tabSpaces': 4,
-    'extraPlugins': ','.join(['uploadimage',  # the upload image feature
-        # your extra plugins here
-        'div', 'autolink', 'autoembed', 'embedsemantic', 'autogrow', # 'devtools',
-        'widget', 'lineutils', 'clipboard', 'dialog', 'dialogui', 'elementspath']), }}
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
@@ -493,3 +458,30 @@ import os
 SPORT_MONKS_KEY = env('SPORT_MONKS_KEY')
 SPORT_MONKS_URL = env('SPORT_MONKS_URL')
 SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
+
+
+# Optional ONLY IF you have initialized a firebase app already:
+# Visit https://firebase.google.com/docs/admin/setup/#python
+# for more options for the following:
+# Store an environment variable called GOOGLE_APPLICATION_CREDENTIALS
+# which is a path that point to a json file with your credentials.
+# Additional arguments are available: credentials, options, name
+# FIREBASE_APP = initialize_app()
+# To learn more, visit the docs here:
+# https://cloud.google.com/docs/authentication/getting-started>
+# Firebase Configuration
+
+cred = credentials.Certificate(env('serviceAccountKey'))
+firebase_admin.initialize_app(cred)
+
+FCM_DJANGO_SETTINGS = {
+     # default: _('FCM Django')
+    "APP_VERBOSE_NAME":  _('FCM Django'),
+     # true if you want to have only one active device per registered user at a time
+     # default: False
+    "ONE_DEVICE_PER_USER": False,
+     # devices to which notifications cannot be sent,
+     # are deleted upon receiving error response from FCM
+     # default: False
+    "DELETE_INACTIVE_DEVICES": False,
+}

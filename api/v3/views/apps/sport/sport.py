@@ -11,6 +11,7 @@ from apps.sport.models.models import *
 from apps.sport.models.monks import *
 from core.models.blog import BlogArticle, BlogVideo
 from core.utils.pagination import PageNumberPagination
+from core.views.notifications import AdminFcmNotifications
 
 
 class SportCategoryList(ListCreateAPIView):
@@ -1320,24 +1321,28 @@ def SportMatchesByDateApiList(request, sport, date):
         date = date
     if sport == '' or sport == None or sport == 'all' or sport == ':sport':
         sport = Sport.objects.get(name='Football')
-        matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('start_time')
     else:
 
         sport = Sport.objects.get(name=sport)
         matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('start_time')
-
-    if matches_list.count() > 0:
+    try:
+        matches_list = Match.objects.filter(league__sport=sport, start_time__date=date).order_by('start_time')
         match_serializer = MatchSerializer(matches_list, many=True)
         success = True
         message = f"Send From Django API mix "
 
         sport_data = {'date': date,
                       'match': match_serializer.data, }
-    else:
+    except Exception as e:
+        print(e)
+        matches_list = Match.objects.filter(league__sport=sport, ).order_by('start_time')
         success = False
         message = f"error in get data no data no data with this date {date} "
         sport_data = {'date': date,
                       'match': [], }
+
+   
+
 
     data = {'success': success, 'data': sport_data, 'message': message,
 
@@ -1346,6 +1351,7 @@ def SportMatchesByDateApiList(request, sport, date):
 
 
 def SportMatchesApiDetails(request, matchid):
+    AdminFcmNotifications(request)
     try:
         matches_list = Match.objects.filter(id=matchid)
         get_match = Match.objects.get(id=matchid)

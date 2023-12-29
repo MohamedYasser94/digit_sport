@@ -1,19 +1,20 @@
 from datetime import datetime
 
+import firebase_admin
 from asgiref.sync import async_to_sync
-from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from fcm_django.models import FCMDevice
+from firebase_admin import messaging, credentials
+from firebase_admin.messaging import Notification
 
 from core.models.notifications import Notification
-from core.utils.utils import get_user_channel_name
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
 
@@ -73,6 +74,26 @@ def AdminNotificationsDetails(request,slug):
     url = '{domain}{path}'.format(domain=domain, path=path)
     print('url', url)
     return HttpResponseRedirect(url)
+
+
+
+def AdminFcmNotifications(request):
+    devices = FCMDevice.objects.all()
+    print('AdminFcmNotifications')
+    for device in devices:
+        print('devices',device)
+        message = messaging.Message(
+            data={
+                'title': 'Hello',
+                'body': 'World',
+            },
+            token=device.registration_id,
+        )
+        response = messaging.send(message)
+        print('Successfully sent message:', response)
+    return HttpResponse(status=200)
+    #     return redirect('admin_fcm_notifications')
+    # return render(request, f'{BACKEND_TEMPLATES}/notification/fcm_notifications.html')
 
 
 

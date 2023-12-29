@@ -54,8 +54,8 @@ urlpatterns += i18n_patterns(
     path('dashboard/', include('core.urls'), name='core'),
     path('dashboard/', include('apps.catalog.urls'), name='catalog'),
     path('dashboard/sport/', include('apps.sport.urls'), name='sport'),
-
-    path('dashboard/', include('apps.wallet.urls'), name='wallet'), path('', include('home.urls'), name='home'),
+    path('dashboard/', include('apps.wallet.urls'), name='wallet'),
+    path('', include('home.urls'), name='home'),
     path('', include('user.urls', namespace='user')),
 
     # path('^inbox/notifications/', include(notifications.urls, namespace='notifications')),

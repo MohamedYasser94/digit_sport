@@ -37,19 +37,12 @@
 
             </div>
             <!--end:Menu item-->
-        {% if dashboard_app == 'Press' %}
-            {% block press %}{% include 'good/press/partials/sidebar-partials.html' %}{% endblock press %}
-        {% elif dashboard_app == 'Event' %}
-            {% block event %}{% include 'good/event/partials/sidebar-partials.html' %}{% endblock event %}
-             {% block operations %}{% include 'good/operations/partials/sidebar-partials.html' %}{% endblock operations %}
-             {% block catalog %}{% include 'good/catalog/partials/sidebar-partials.html' %}{% endblock catalog %}
-             {% block hr %}{% include 'good/hr/partials/sidebar-partials.html' %}{% endblock hr %}
-
-       {% endif %}
-        {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
-        {% block monks %}{% include 'good/monks/partials/sidebar-partials.html' %}{% endblock monks %}
+        
+      
 
             {% if user_access == 'SuperAdmin' %}
+                  {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
+        {% block monks %}{% include 'good/monks/partials/sidebar-partials.html' %}{% endblock monks %}
                 {% block blog %}{% include 'good/blog/partials/sidebar-partials.html' %}{% endblock blog %}
                  {% block apps %}{% include 'good/utilities/partials/sidebar-partials.html' %}{% endblock apps %}
                 {% block wallet %}{% include 'good/wallet/partials/sidebar-partials.html' %}{% endblock wallet %}

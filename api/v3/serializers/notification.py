@@ -4,7 +4,7 @@ from django.core.serializers.python import Serializer
 from django.utils.timezone import now
 from rest_framework import serializers
 
-from core.models.notifications import Notification
+from core.models.notifications import *
 
 User = get_user_model()
 
@@ -97,3 +97,9 @@ class LazyNotificationEncoder(Serializer):
             })
 
         return dump_object
+
+
+class DeviceInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeviceInfo
+        fields = "__all__"

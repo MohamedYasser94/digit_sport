@@ -1,11 +1,23 @@
-from django.urls import path
+from django.urls import path, include
 
 from api.v3.views import blog
 from api.v3.views.apps.sport import sport, sportmonks
+from api.v3.views import notification
 
 app_name = 'api'
 # DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
+from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
+
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register('devices', FCMDeviceAuthorizedViewSet)
+router.register('devices/notification/device/info',notification.AdminDeviceInfoFromApp, basename='AdminDeviceInfoFromApp')
 urlpatterns = [
+path('v3/', include(router.urls)),
+
+    path('v3/devices/fcm/token/post/', notification.DeviceInfoFromApp, name='DeviceInfoFromApp'),
 
     #     ##########User API################
     #     path('register/', RegisterView.as_view(), name="register"),

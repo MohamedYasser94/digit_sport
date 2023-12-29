@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.sport.forms.forms import *
 from apps.sport.models.models import *
 from core.models.core import CommonTranslate
+from core.views.notifications import AdminFcmNotifications
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
 
@@ -167,6 +168,7 @@ def AdminSportCategoryDelete(request, slug):
 @staff_only
 def AdminSportList(request):
     sports = Sport.objects.all()
+    AdminFcmNotifications(request)
 
     if request.method == "POST":
         sport_form = AdminSportForm(request.POST or None, request.FILES or None)

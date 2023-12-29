@@ -65,6 +65,93 @@ class Notification(models.Model):
         super(Notification, self).save(*args, **kwargs)
 
 
+class NotificationSetting(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.notification_type
+
+
+class DeviceInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,null=True, blank=True)
+    device_id = models.CharField(max_length=250, null=True, blank=True)
+    device_type = models.CharField(max_length=250, null=True, blank=True)
+    device_token = models.CharField(max_length=250, null=True, blank=True)
+    device_info = models.TextField(null=True, blank=True)
+    version_securitypatch = models.CharField(max_length=250, null=True, blank=True)
+    version_sdk = models.CharField(max_length=250, null=True, blank=True)
+    version_release = models.CharField(max_length=250, null=True, blank=True)
+    version_incremental = models.CharField(max_length=250, null=True, blank=True)
+    version_codename = models.CharField(max_length=250, null=True, blank=True)
+    version_baseos = models.CharField(max_length=250, null=True, blank=True)
+    version_preview_sdk = models.CharField(max_length=250, null=True, blank=True)
+    version_sdk_int = models.CharField(max_length=250, null=True, blank=True)
+    board = models.CharField(max_length=250, null=True, blank=True)
+    bootloader = models.CharField(max_length=250, null=True, blank=True)
+    brand = models.CharField(max_length=250, null=True, blank=True)
+    device = models.CharField(max_length=250, null=True, blank=True)
+    display = models.CharField(max_length=250, null=True, blank=True)
+    fingerprint = models.CharField(max_length=250, null=True, blank=True)
+    hardware = models.CharField(max_length=250, null=True, blank=True)
+    host = models.CharField(max_length=250, null=True, blank=True)
+    manufacturer = models.CharField(max_length=250, null=True, blank=True)
+    model = models.CharField(max_length=250, null=True, blank=True)
+    product = models.CharField(max_length=250, null=True, blank=True)
+    serial = models.CharField(max_length=250, null=True, blank=True)
+    tags = models.CharField(max_length=250, null=True, blank=True)
+    type = models.CharField(max_length=250, null=True, blank=True)
+    is_physical_device = models.BooleanField(default=False)
+    support_ted32 = models.BooleanField(default=False)
+    support_ted64 = models.BooleanField(default=False)
+    support_arm32 = models.BooleanField(default=False)
+    support_arm64 = models.BooleanField(default=False)
+    system_feature = models.TextField(null=True, blank=True)
+    display_size = models.CharField(max_length=250, null=True, blank=True)
+    display_density = models.CharField(max_length=250, null=True, blank=True)
+    system_name = models.CharField(max_length=250, null=True, blank=True)
+    system_version = models.CharField(max_length=250, null=True, blank=True)
+    identifier_for_vendor = models.CharField(max_length=250, null=True, blank=True)
+    is_advertising_tracking_enabled = models.BooleanField(default=False)
+    is_jailbroken = models.BooleanField(default=False)
+    is_tablet = models.BooleanField(default=False)
+    is_simulator = models.BooleanField(default=False)
+    is_debugger_attached = models.BooleanField(default=False)
+    is_running_on_virtual_machine = models.BooleanField(default=False)
+    is_running_on_chrome_os = models.BooleanField(default=False)
+    is_running_on_fire_os = models.BooleanField(default=False)
+    is_running_on_android_things = models.BooleanField(default=False)
+    is_running_on_kaios = models.BooleanField(default=False)
+    is_running_on_tvos = models.BooleanField(default=False)
+    is_running_on_watchos = models.BooleanField(default=False)
+    is_running_on_ios = models.BooleanField(default=False)
+    is_running_on_macos = models.BooleanField(default=False)
+    is_running_on_windows = models.BooleanField(default=False)
+    is_running_on_linux = models.BooleanField(default=False)
+    is_running_on_android = models.BooleanField(default=False)
+    utsname_sysname = models.CharField(max_length=250, null=True, blank=True)
+    utsname_nodename = models.CharField(max_length=250, null=True, blank=True)
+    utsname_release = models.CharField(max_length=250, null=True, blank=True)
+    utsname_version = models.CharField(max_length=250, null=True, blank=True)
+    utsname_machine = models.CharField(max_length=250, null=True, blank=True)
+    status = models.BooleanField(default=False)
+    code = models.CharField(max_length=50, null=True, blank=True)
+    slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.device_id
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'DeviceInfo-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(DeviceInfo, self).save(*args, **kwargs)
+
+
 
 
 class ChatNotification(models.Model):
