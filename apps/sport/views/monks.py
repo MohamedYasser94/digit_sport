@@ -623,6 +623,7 @@ def AdminMonksTeamsGetData(request):
         if teams_form:
             page = request.POST.get('pages')
             sport = request.POST.get('sport')
+            print('sport',sport)
 
             try:
                 sport_id = Sport.objects.get(name=sport)
@@ -650,7 +651,6 @@ def AdminMonksTeamsGetData(request):
                     for data in data_to_db:
 
                         try:
-
                             check_teams = Teams.objects.get(name=data['name'])
                             check_teams.api_id = data['id']
                             check_teams.name = data['name']
@@ -783,5 +783,98 @@ def AdminMonksPlayersGetData(request):
     else:
         data = {'type': 'Error', 'message': 'Data Not Add Successfully '}
         return JsonResponse(data=data, safe=False)
+
+
+@csrf_exempt
+def AdminMonksFixturesGetData(request):
+    print('sportIndex',request)
+
+    fixtures_form = AdminFixturesForm(request.POST or None, request.FILES or None)
+    data = ''
+    if fixtures_form:
+        page = request.POST.get('pages')
+        sport = request.POST.get('sport')
+
+        try:
+            sport_id = Sport.objects.get(name=sport)
+        except:
+            sport_id = None
+        i = 1
+        for i in range(int(page)):
+
+            i = i + 1
+
+            response = requests.get(
+                base_url + f'{sport}/fixtures?&api_token={api_key}',
+                headers={
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    "Authorization": f"Bearer {api_key}",
+                },
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                print('data',data)
+
+                data_to_db = data['data']
+
+                # for data in data_to_db:
+                #
+                #     try:
+                #
+                #         check_fixture = Fixtures.objects.get(api_id=data['id'])
+                #
+                #         check_fixture.api_id = data['id']
+                #         check_fixture.sport = sport_id
+                #         check_fixture.api_league = data['league_id']
+                #         check_fixture.api_season = data['season_id']
+                #         check_fixture.api_stage = data['stage_id']
+                #         check_fixture.api_group = data['group_id']
+                #         check_fixture.api_aggregate = data['aggregate_id']
+                #         check_fixture.api_round = data['round_id']
+                #         check_fixture.api_state_id = data['state_id']
+                #         check_fixture.api_venue = data['venue_id']
+                #         check_fixture.name = data['name']
+                #         check_fixture.time_starting_at_date = data['starting_at']['date']
+                #         check_fixture.result_info = data['result_info']
+                #         check_fixture.leg = data['leg']
+                #         check_fixture.details = data['details']
+                #         check_fixture.length = data['length']
+                #         check_fixture.placeholder = data['placeholder']
+                #         check_fixture.has_odds = data['has_odds']
+                #         check_fixture.starting_at_timestamp = data['starting_at_timestamp']
+                #         check_fixture.save()
+                #     except:
+                #         fixture_object = Fixtures(api_id=data['id'], sport=sport_id,
+                #                                 api_league=data['league_id'],
+                #                                 api_season=data['season_id'],
+                #                                 api_stage=data['stage_id'],api_group=data['group_id'],
+                #                                 api_aggregate=data['aggregate_id'],
+                #                                 api_round=data['round_id'],api_state_id=data['state_id'],
+                #                                 api_venue=data['venue_id'],name=data['name'],
+                #                                 time_starting_at_date=data['starting_at']['date'],
+                #                                 result_info=data['result_info'],leg=data['leg'],
+                #                                 details=data['details'],length=data['length'],
+                #                                 placeholder=data['placeholder'],has_odds=data['has_odds'],
+                #                                 starting_at_timestamp=data['starting_at_timestamp'],
+                #                                 )
+                #
+                #         fixture_object.save()
+                data = {'type': 'Success', 'message': 'Data Add Successfully'}
+            else:
+                data = {'type': 'Error', 'message': f'Data Not Add Successfully Response Code {response.status_code} '}
+        return JsonResponse(data=data, safe=False)
+    else:
+          data = {'type': 'Error', 'message': f'Data Not Add Successfully '}
+          return JsonResponse(data=data, safe=False)
+
+
+
+
+
+
+
+
 
 

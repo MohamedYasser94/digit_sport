@@ -56,7 +56,7 @@
                                         <!--begin::Input-->
                                         <select name="membership" aria-label="{% translate 'Membership' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Membership' %}"
-                                                    data-dropdown-parent="#kt_modal_add_category"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
                                                     class="form-select form-select-solid fw-bolder">
                                                  <option value="{{ subscription.membership.id }}">{{ subscription.membership.title }}</option>
                                                 {% for value, text in subscriptions_form.membership.field.choices %}

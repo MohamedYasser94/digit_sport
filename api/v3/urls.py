@@ -1,7 +1,8 @@
 from django.urls import path, include
 
+
 from api.v3.views import blog
-from api.v3.views.apps.sport import sport, sportmonks
+from api.v3.views.apps.sport import sport, sportmonks,media
 from api.v3.views import notification
 
 app_name = 'api'
@@ -18,6 +19,9 @@ urlpatterns = [
 path('v3/', include(router.urls)),
 
     path('v3/devices/fcm/token/post/', notification.DeviceInfoFromApp, name='DeviceInfoFromApp'),
+
+
+
 
     #     ##########User API################
     #     path('register/', RegisterView.as_view(), name="register"),
@@ -199,8 +203,19 @@ path('v3/', include(router.urls)),
     path('v3/sport/matches/details/<int:matchid>/', sport.SportMatchesApiDetails, name='SportMatchesApiDetails'),
     path('v3/sport/teams/list/', sport.SportTeamsApiList,
          name='SportTeamsApiList'),
+    path('v3/sport/teams/details/<int:teamid>/', sport.SportTeamsApiDetails, name='SportTeamsApiDetails'),
     path('v3/sport/players/list/', sport.PlayersApiList, name='PlayersApiList'),
     path('v3/sport/players/details/<int:playerid>/', sport.PlayersApiDetails, name='PlayersApiDetails'),
+
+
+    ##################### Season Table ########################
+    path('v3/sport/season/table/list/', sport.SportSeasonTableApiList, name='SportSeasonTableApiList'),
+
+
+
+
+##################### Youtube Channel API ########################
+    path('v3/media/youtube/channel/', media.YoutubeChannelApiList, name='YoutubeChannelApiList'),
 
 
 

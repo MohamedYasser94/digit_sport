@@ -11,7 +11,7 @@ from slugify import slugify
 
 from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
     Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status, Half_List, \
-    Match_Statics, Set_List
+    Match_Statics, Set_List, Season_Order
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -198,7 +198,7 @@ class Season(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
+            code = f'Season-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
         super(Season, self).save(*args, **kwargs)
@@ -1538,15 +1538,21 @@ class SeasonTable(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_table', null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_table', null=True, blank=True)
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_table', null=True, blank=True)
+    order = models.CharField(max_length=100,choices=Season_Order, default='NotOrder' ,null=True, blank=True)
     position = models.IntegerField(null=True, blank=True,default=0)
+    points = models.IntegerField(null=True, blank=True,default=0)
     played = models.IntegerField(null=True, blank=True,default=0)
     win = models.IntegerField(null=True, blank=True,default=0)
     draw = models.IntegerField(null=True, blank=True,default=0)
     lose = models.IntegerField(null=True, blank=True,default=0)
+    remaining = models.IntegerField(null=True, blank=True,default=0)
     goals_for = models.IntegerField(null=True, blank=True,default=0)
     goals_against = models.IntegerField(null=True, blank=True,default=0)
     goals_difference = models.IntegerField(null=True, blank=True,default=0)
-    points = models.IntegerField(null=True, blank=True,default=0)
+    goals_for_run = models.IntegerField(null=True, blank=True, default=0)
+    goals_against_run = models.IntegerField(null=True, blank=True, default=0)
+    goals_difference_run = models.IntegerField(null=True, blank=True, default=0)
+
     percentage = models.CharField(max_length=100, null=True, blank=True,default=0)
     description = models.TextField(null=True, blank=True)
     form = models.CharField(max_length=100, null=True, blank=True)

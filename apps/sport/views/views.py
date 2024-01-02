@@ -175,14 +175,14 @@ def AdminSportList(request):
 
         if sport_form:
             name = request.POST.get('name')
-            country = request.POST.get('country')
+
             keyword = request.POST.get('keyword')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
 
 
 
-            sport_object = Sport(name=name, country=country, keyword=keyword, image=image, image_path=image_path,
+            sport_object = Sport(name=name,  keyword=keyword, image=image, image_path=image_path,
                                  status='Active')
 
             sport_object.save()
@@ -1369,7 +1369,8 @@ def AdminMatchList(request):
 def AdminMatchBySeason(request, slug):
     season = Season.objects.get(slug=slug)
     matches = Match.objects.filter(season=season)
-    teams = Teams.objects.filter(sport=season.sport.id,country=season.league.country)
+    teams = Teams.objects.filter(sport=season.sport.id,)
+    # teams = Teams.objects.filter(sport=season.sport.id, country=season.league.country)
     season_table = SeasonTable.objects.filter(season=season)
     if season_table.count()>0:
         table_exist = 'True'
@@ -1792,7 +1793,8 @@ def AdminMatchTeamEventAdd(request,slug,team_slug):
 
 @authenticated_staf
 @staff_only
-def AdminSeasonTableList(request):
+def AdminSeasonTableList(request,slug):
+    season = Season.objects.get(slug=slug)
     season_table = SeasonTable.objects.all()
 
     if request.method == "POST":
@@ -1826,42 +1828,69 @@ def AdminSeasonTableList(request):
         else:
             messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
     else:
-        context = {'season_table': season_table, 'season_table_form': AdminSeasonTableForm(), 'current_page': _('Season Table')}
+        context = {'season':season,'season_table': season_table, 'season_table_form': AdminSeasonTableForm(), 'current_page': _('Season Table')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/admin.html', context)
 
 
 @authenticated_staf
 @staff_only
-def AdminSeasonTableAdd(request,slug):
+def AdminSeasonTableCreate(request,slug):
     season = Season.objects.get(slug=slug)
-    season_table = SeasonTable.objects.all()
     league = Leagues.objects.get(id=season.league.id)
-    teams = Teams.objects.filter(sport=season.sport.id,country=season.league.country)
-    for team in teams:
-        season_table_object = SeasonTable(
-            season=season, league=season.league, sport=season.sport,
-            team=team
-        )
-        season_table_object.save()
-
+    sport = Sport.objects.get(id=season.sport.id)
+    teams = Teams.objects.filter(sport=season.sport.id)
+    season_table = SeasonTable.objects.all()
 
     if request.method == "POST":
         season_table_form = AdminSeasonTableForm(request.POST or None, request.FILES or None)
         if season_table_form:
-            for team in teams:
+            team = request.POST.get('team')
+            points= request.POST.get('points')
+            order = request.POST.get('order')
+            played = request.POST.get('played')
+            win = request.POST.get('win')
+            lose = request.POST.get('lose')
+            remaining = request.POST.get('remaining')
+            goals_for = request.POST.get('goals_for')
+            goals_against = request.POST.get('goals_against')
+            goals_difference = request.POST.get('goals_difference')
+            goals_for_run = request.POST.get('goals_for_run')
+            goals_against_run = request.POST.get('goals_against_run')
+            goals_difference_run = request.POST.get('goals_difference_run')
 
+            team = Teams.objects.get(id=team)
+            try:
+                season_table_object = SeasonTable.objects.get(season=season,league=league,team=team)
+                season_table_object.points = points
+                season_table_object.order = order
+                season_table_object.played = played
+                season_table_object.win = win
+                season_table_object.lose = lose
+                season_table_object.remaining = remaining
+                season_table_object.goals_for = goals_for
+                season_table_object.goals_against = goals_against
+                season_table_object.goals_difference = goals_difference
+                season_table_object.goals_for_run = goals_for_run
+                season_table_object.goals_against_run = goals_against_run
+                season_table_object.goals_difference_run = goals_difference_run
+                season_table_object.save()
+            except:
                 season_table_object = SeasonTable(
-                    season=season,league=season.league,sport=season.sport,group=season.group,
-                    team=team
+                    season=season,league=league,sport=sport,team=team,points=points,order=order,played=played,win=win,lose=lose,
+                    remaining=remaining,goals_for=goals_for,goals_against=goals_against,goals_difference=goals_difference,
+                    goals_for_run=goals_for_run,goals_against_run=goals_against_run,goals_difference_run=goals_difference_run,
                 )
                 season_table_object.save()
             messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
-            return redirect(request.META['HTTP_REFERER'])
+            return HttpResponseRedirect(
+                reverse_lazy('sport:AdminSeasonTableList', kwargs={'slug': slug, }))
         else:
             messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
     else:
-        context = {'season_table': season_table, 'season_table_form': AdminSeasonTableForm(), 'current_page': _('Season Table')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/admin.html',context)
+        context = {'season':season,'teams':teams,
+                   'season_table': season_table, 'season_table_form': AdminSeasonTableForm(),
+                   'current_page': _('Season Table')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/add.html',context)
 
 
 @authenticated_staf

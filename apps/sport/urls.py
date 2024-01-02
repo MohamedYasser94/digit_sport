@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.sport.views import views, monks
+from apps.sport.views import views, monks, media
 
 app_name = 'sport'
 
@@ -28,6 +28,12 @@ urlpatterns = [
     path('season/archive/<slug:slug>/', views.AdminSeasonArchive, name='AdminSeasonArchive'),
     path('season/delete/<slug:slug>/', views.AdminSeasonDelete, name='AdminSeasonDelete'),
     path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
+
+    ##########   Sport Season Table  #########
+    path('season/table/<slug:slug>/', views.AdminSeasonTableList, name='AdminSeasonTableList'),
+    path('season/table/add/<slug:slug>/', views.AdminSeasonTableCreate, name='AdminSeasonTableCreate'),
+    # path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
+    # path('season/table/archive/<slug:slug>/', views.AdminSeasonTableArchive, name='AdminSeasonTableArchive'),
 
     ##########   Stages  #########
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
@@ -109,11 +115,7 @@ urlpatterns = [
     path('match/team/event/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamEventAdd,
          name='AdminMatchTeamEventAdd'),
 
-    ##########   Sport Season Table  #########
-    path('season/table/', views.AdminSeasonTableList, name='AdminSeasonTableList'),
-    path('season/table/add/<slug:slug>/', views.AdminSeasonTableAdd, name='AdminSeasonTableAdd'),
-    # path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
-    # path('season/table/archive/<slug:slug>/', views.AdminSeasonTableArchive, name='AdminSeasonTableArchive'),
+
 
     ##########   Api Data  #########
     path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),
@@ -121,5 +123,12 @@ urlpatterns = [
     path('country/api/update/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
     path('country/api/archive/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
     path('monk/country/api/get/', monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
+
+
+    ################## Media ##################
+    path('media/', media.AdminYoutubeChannelList, name='AdminYoutubeChannelList'),
+    # path('media/update/<slug:slug>/', views.AdminMediaUpdate, name='AdminMediaUpdate'),
+    # path('media/archive/<slug:slug>/', views.AdminMediaArchive, name='AdminMediaArchive'),
+    # path('media/delete/<slug:slug>/', views.AdminMediaDelete, name='AdminMediaDelete'),
 
 ]

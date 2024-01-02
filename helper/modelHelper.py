@@ -743,8 +743,8 @@ Transaction_Type = (('administrative', 'administrative'), ('cases', 'cases'), ('
 ########################## Sport ############################
 
 Sport_Type = (
-('Football', 'Football'), ('Basketball', 'Basketball'), ('Volleyball', 'Volleyball'), ('Tennis', 'Tennis'),
-('Handball', 'Handball'), ('Swimming', 'Swimming'), ('Running', 'Running'), ('Other', 'Other'),)
+('football', 'football'), ('basketball', 'basketball'), ('volleyball', 'volleyball'), ('tennis', 'tennis'),
+('handball', 'handball'), ('swimming', 'swimming'), ('running', 'running'), ('other', 'other'),)
 Sport_Status = (('Active', 'Active'), ('Inactive', 'Inactive'), ('Suspend', 'Suspend'), ('Banned', 'Banned'),)
 Sport_Level = (
 ('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced'), ('Other', 'Other'),)
@@ -779,6 +779,13 @@ Set_List  = (('1stSet', '1st Set'), ('2ndSet', '2nd Set'), ('3rdSet', '3rdSet'),
 Match_Statics = (  ('Goal','Goal'),('Messed Shots', 'Messed Shots'), ('Shots On Target', 'Shots On Target'), ('Shots Off Target', 'Shots Off Target'),
 ('Possession', 'Possession'), ('Passes', 'Passes'), ('Passes Completed', 'Passes Completed'), ('Passes Failed', 'Passes Failed'),
 ('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),)
+Season_Order = (('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'), ('4th', '4th'), ('5th', '5th'), ('6th', '6th'), ('7th', '7th'), ('8th', '8th'), ('9th', '9th'), ('10th', '10th'),
+('11th', '11th'), ('12th', '12th'), ('13th', '13th'), ('14th', '14th'), ('15th', '15th'), ('16th', '16th'), ('17th', '17th'), ('18th', '18th'), ('19th', '19th'), ('20th', '20th'),
+('21st', '21st'), ('22nd', '22nd'), ('23rd', '23rd'), ('24th', '24th'), ('25th', '25th'), ('26th', '26th'), ('27th', '27th'), ('28th', '28th'), ('29th', '29th'), ('30th', '30th'),
+('31st', '31st'), ('32nd', '32nd'), ('33rd', '33rd'), ('34th', '34th'), ('35th', '35th'), ('36th', '36th'), ('37th', '37th'), ('38th', '38th'), ('39th', '39th'), ('40th', '40th'),
+('41st', '41st'), ('42nd', '42nd'), ('43rd', '43rd'), ('44th', '44th'), ('45th', '45th'), ('46th', '46th'), ('47th', '47th'), ('48th', '48th'), ('49th', '49th'), ('50th', '50th'),
+('51st', '51st'), ('52nd', '52nd'), ('53rd', '53rd'), ('54th', '54th'), ('55th', '55th'), ('56th', '56th'), ('57th', '57th'), ('58th', '58th'), ('59th', '59th'), ('60th', '60th'),
+('61st', '61st'), ('62nd', '62nd'), )
 
 
 ########## Blog ##############################

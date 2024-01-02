@@ -1,0 +1,299 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminSeasonTableCreate' season.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Team Season Order' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                 <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Team' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="team" aria-label="{% translate 'Team' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Team' %}"
+                                                data-allow-clear="true"
+                                                data-dropdown-parent="#kt_ecommerce_edit_order_form"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Point' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="points" type="number" min="0"
+                                               placeholder="{% translate 'Points' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Order' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="order" aria-label="{% translate 'Order' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Order' %}"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                            {% for value, text in season_table_form.order.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Matches' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Played' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="played" type="number" min="0"
+                                               placeholder="{% translate 'Played' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Win' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="win" type="number" min="0"
+                                               placeholder="{% translate 'Win' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Lose' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="lose" type="number" min="0"
+                                               placeholder="{% translate 'Lose' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Remaining' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="remaining" type="number" min="0"
+                                               placeholder="{% translate 'Remaining' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+                                </div>
+                                <!--end::Input group-->
+
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Matches Runs' %}</div>
+                                <!--end::Title-->
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals For' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_for" type="number" min="0"
+                                               placeholder="{% translate 'Goals For' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals Against' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_against" type="number" min="0"
+                                               placeholder="{% translate 'Goals Against' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals Difference' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_difference" type="number" min="0"
+                                               placeholder="{% translate 'Goals Difference' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Matches Runs Point' %}</div>
+                                <!--end::Title-->
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals For' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_for_run" type="number" min="0"
+                                               placeholder="{% translate 'Goals For' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals Against' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_against_run" type="number" min="0"
+                                               placeholder="{% translate 'Goals Against' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Goals Difference' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="goals_difference_run" type="number" min="0"
+                                               placeholder="{% translate 'Goals Difference' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+
+                            {% if season_table_form.errors %}
+                                {% for error_field, error_message in season_table_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                           {% for message in messages %}
+                            {% if message.extra_tags == 'Season Table' %}
+                                {% if message.tags == 'Season Table success' %}
+                                    <div class="alert alert-info">
+                                {% elif message.tags == 'Season Table danger' %}
+                                    <div class="alert alert-danger">
+                                {% endif %}
+                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

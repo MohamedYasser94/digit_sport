@@ -42,9 +42,9 @@
                             <!--begin::Card toolbar-->
                             <div class="card-toolbar">
                                 <!--begin::Add customer-->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#kt_modal_add_category">{% translate 'Add Match' %}
-                                </button>
+                                <a type="button" class="btn btn-primary" href="{% url 'sport:AdminSeasonTableCreate' season.slug %}" >
+                                       {% translate 'Add Table Order' %}
+                                </a>
                                 <!--end::Add customer-->
                             </div>
                             <!--end::Card toolbar-->
@@ -54,7 +54,7 @@
                         <div class="card-body pt-0">
                             <!--begin::Table-->
                             <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                   id="kt_ecommerce_category_table">
+                                   id="kt_customers_table">
                                 <!--begin::Table head-->
                                 <thead>
                                 <!--begin::Table row-->
@@ -62,17 +62,15 @@
                                     <th class="w-10px pe-2">
                                         <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                             <input class="form-check-input" type="checkbox" data-kt-check="true"
-                                                   data-kt-check-target="#kt_ecommerce_category_table .form-check-input"
+                                                   data-kt-check-target="#kt_customers_table .form-check-input"
                                                    value="1"/>
                                         </div>
                                     </th>
                                     <th class="min-w-20px">{% translate '#' %}</th>
-                                    <th class="min-w-125px">{% translate 'Name' %}</th>
+                                    <th class="min-w-125px">{% translate 'Team' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
-                                    <th class="min-w-125px">{% translate 'League' %}</th>
-                                    <th class="min-w-125px">{% translate 'Home' %}</th>
-                            <th class="min-w-125px">{% translate 'Away' %}</th>
-                            <th class="min-w-125px">{% translate 'Start Time' %}</th>
+                                    <th class="min-w-125px">{% translate 'Order' %}</th>
+                                    <th class="min-w-125px">{% translate 'Points' %}</th>
                                     <th class="min-w-125px">{% translate 'Status' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                                 </tr>
@@ -98,53 +96,39 @@
                                         <!--end::counter=-->
                                         <!--begin::Name=-->
                                         <td>
-                                            <a href="{% url 'sport:AdminMatchDetails' item.slug  %}"
+                                            <a href=""
                                                     class="text-gray-800 text-hover-primary mb-1">
-                                                {{ item.name }}
+                                                {{ item.team.name }}
                                             </a>
                                         </td>
                                         <!--end::Name=-->
                                         <!--begin::Email=-->
                                         <td>
-                                            <a href="{% url 'sport:AdminMatchDetails' item.slug  %}"
+                                            <a
                                                     class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.code }}
                                             </a>
                                         </td>
                                         <!--end::Email=-->
-                                    <!--begin::Email=-->
-                                <td>
-                                    <a href="#"
-                                       class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.league }}
-                                    </a>
-                                </td>
-                                <!--end::Email=-->
-                            <!--begin::Email=-->
-                                <td>
-                                     <a href=""
-                                       class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.home_team }}
-                                    </a>
-                                </td>
-                                <!--end::Email=-->
-                                    <!--begin::Email=-->
-                                <td>
-                                     <a href=""
-                                       class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.away_team }}
-                                    </a>
-                                </td>
-                                <!--end::Email=-->
-
                                         <!--begin::Email=-->
                                         <td>
-                                            <a
-                                                    class="text-gray-600 text-hover-primary mb-1">
-                                               {{ item.start_time|date:"d-m-Y"}}
+                                            <a href="#"
+                                               class="text-gray-600 text-hover-primary mb-1">
+                                                {{ item.order }}
                                             </a>
                                         </td>
                                         <!--end::Email=-->
+                                     <!--begin::Email=-->
+                                        <td>
+                                            <a href="#"
+                                               class="text-gray-600 text-hover-primary mb-1">
+                                                {{ item.points }}
+                                            </a>
+                                        </td>
+                                        <!--end::Email=-->
+
+
+
 
                                         <!--begin::Payment method=-->
                                         <td>
@@ -177,41 +161,7 @@
                                             <!--begin::Menu-->
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
                                                  data-kt-menu="true">
-                                                <!--begin::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <a href=""
-                                                       class="menu-link px-3">{% translate 'Edit' %}</a>
-                                                </div>
-                                                <!--end::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <form id="{{ item.slug }}" method="POST"
-                                                          action="">
-                                                        {% csrf_token %} </form>
 
-
-                                                    <a class="menu-link px-3" onclick="
-                                                            if (confirm('Are You Sure To Archive {{ item.name }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
-                                                       title="Link Title">
-                                                        {% translate 'Archive' %}
-                                                    </a>
-
-                                                </div>
-                                                <!--end::Menu item-->
-                                                <!--end::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <form id="{{ item.id }}" method="POST"
-                                                          action="">
-                                                        {% csrf_token %} </form>
-
-
-                                                    <a class="menu-link px-3" onclick="
-                                                            if (confirm('Are You Sure To Delete {{ item.name }} ?')){document.getElementById('{{ item.id }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
-                                                       title="Link Title">
-                                                        {% translate 'Delete' %}
-                                                    </a>
-
-                                                </div>
-                                                <!--end::Menu item-->
                                             </div>
                                             <!--end::Menu-->
                                         </td>
@@ -229,215 +179,8 @@
                         </div>
                         <!--end::Card body-->
                     </div>
-                    <div class="card-body pt-15">
-                        {% if form_show_errors %}
-                        {% endif %}
-                        {% if matches_form.errors %}
-                            {% for error_field, error_message in matches_form.errors.items %}
-
-                                <div class="alert alert-danger">
-                                    {{ error_field|striptags }}: {{ error_message|striptags }}
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-
-                        {% endif %}
-                        {% if translate_form.errors %}
-                            {% for error_field, error_message in translate_form.errors.items %}
-
-                                <div class="alert alert-danger">
-                                    {{ error_field|striptags }}: {{ error_message|striptags }}
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-
-                        {% endif %}
-                        {% for message in messages %}
-                            {% if message.extra_tags == 'Match' %}
-                                {% if message.tags == 'Match success' %}
-                                    <div class="alert alert-info">
-                                {% elif message.tags == 'Match danger' %}
-                                    <div class="alert alert-danger">
-                                {% endif %}
-                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
-
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                        </div>
-                        <!--end::item-->
-                    </div>
-                    <!--begin::Modal - item - Add-->
-                    <div class="modal fade" id="kt_modal_add_category" tabindex="-1" aria-hidden="true">
-                        <!--begin::Modal dialog-->
-                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                            <!--begin::Modal content-->
-                            <div class="modal-content">
-                                <!--begin::Form-->
-                                <form class="form" id="kt_modal_add_category" enctype="multipart/form-data"
-                                      action="{% url 'sport:AdminMatchList' %}"
-                                      method="POST"
-                                >
-                                    {% csrf_token %}
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header" id="kt_modal_add_category_header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Add' %}</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div id="kt_modal_add_category_close" data-bs-dismiss="modal" aria-label="Close"
-                                             class="btn btn-icon btn-sm btn-active-icon-primary">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                                            <span class="svg-icon svg-icon-1">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                                                                  rx="1" transform="rotate(-45 6 17.3137)"
-                                                                  fill="black"/>
-															<rect x="7.41422" y="6" width="16" height="2" rx="1"
-                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
-														</svg>
-													</span>
-                                            <!--end::Svg Icon-->
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body py-10 px-lg-17">
-                                        <!--begin::Scroll-->
-                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_category_scroll"
-                                             data-kt-scroll="true"
-                                             data-kt-scroll-activate="{default: false, lg: true}"
-                                             data-kt-scroll-max-height="auto"
-                                             data-kt-scroll-dependencies="#kt_modal_add_category_header"
-                                             data-kt-scroll-wrappers="#kt_modal_add_category_scroll"
-                                             data-kt-scroll-offset="300px">
-                                             <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Home Team' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <select name="home_team" aria-label="{% translate 'Home Team' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Home Team' %}"
-                                                   data-dropdown-parent="#kt_modal_add_category"
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.home_team.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Away Team' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <select name="away_team" aria-label="{% translate 'Away Team' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Away Team' %}"
-                                                    data-dropdown-parent="#kt_modal_add_category"
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.away_team.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
 
 
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Venues' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <select name="away_team" aria-label="{% translate 'Venues' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
-                                                    data-dropdown-parent="#kt_modal_add_category"
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.away_team.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                    <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <select name="is_live" aria-label="{% translate 'Match Live' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
-                                                    data-dropdown-parent="#kt_modal_add_category"
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.is_live.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <input type="date"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Start Time' %}"
-
-                                                   name="start_time"/>
-                                            <!--end::Input-->
-                                        </div>
-
-
-                                    </div>
-                                        </div>
-                                        <!--end::Scroll-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                    <!--begin::Modal footer-->
-                                    <div class="modal-footer flex-center">
-                                        <!--begin::Button-->
-                                        <button type="reset" id="kt_modal_add_category_cancel"
-                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
-                                        <!--end::Button-->
-                                        <!--begin::Button-->
-                                        <button type="submit" id="" class="btn btn-primary">
-                                            <span class="indicator-label">{% translate 'Submit' %}</span>
-                                            <span class="indicator-progress">{% translate 'Please wait...' %}
-													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                        <!--end::Button-->
-                                    </div>
-                                    <!--end::Modal footer-->
-                                </form>
-                                <!--end::Form-->
-                            </div>
-                        </div>
-                    </div>
-                    <!--end::Modal - item - Add-->
 
                     <!--end::Content container-->
                 </div>
