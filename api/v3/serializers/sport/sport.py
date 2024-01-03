@@ -315,7 +315,7 @@ class MatchPlayerSummarySerializer(serializers.ModelSerializer):
 
 class SeasonTableSerializer(serializers.ModelSerializer):
     team_name = serializers.ReadOnlyField(source='team.name')
-    image_path = serializers.ReadOnlyField(source='player.image_path')
+    image_path = serializers.ReadOnlyField(source='team.image_path')
     sport_name = serializers.ReadOnlyField(source='sport.name')
     class Meta:
         model = SeasonTable

@@ -1794,26 +1794,23 @@ def PlayersApiDetails(request, playerid):
 
 
 ############## Season Table Api #####################
-def SportSeasonTableApiList(request):
+def SportSeasonTableApiList(request,sportName):
+    print('sportName',sportName)
     try:
-        table_list = SeasonTable.objects.all()
+        sport = Sport.objects.get(name=sportName)
+        table_list = SeasonTable.objects.filter(sport=sport)
+        print('table_list',table_list)
         success = True
         message = f"Send From Django API mix "
         table_serializer = SeasonTableSerializer(table_list, many=True)
-        sport_data = {'table': table_serializer.data,
-                      }
-        data = {'success': success, 'data': sport_data, 'message': message,
-                }
+        sport_data = {'sport': sportName, 'table': table_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message,}
+
         return JsonResponse(data, safe=False)
     except:
         success = False
         message = f"error in get data  News Details  "
-
-        sport_data = {'table': [],
-
-                      }
-
-        data = {'success': success, 'data': sport_data, 'message': message,
-
-                }
+        sport_data = {'sport': sportName, 'table': [], }
+        data = {'success': success, 'data': sport_data, 'message': message,}
         return JsonResponse(data, safe=False)

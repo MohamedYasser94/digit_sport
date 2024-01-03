@@ -209,7 +209,7 @@ path('v3/', include(router.urls)),
 
 
     ##################### Season Table ########################
-    path('v3/sport/season/table/list/', sport.SportSeasonTableApiList, name='SportSeasonTableApiList'),
+    path('v3/sport/season/table/list/<str:sportName>/', sport.SportSeasonTableApiList, name='SportSeasonTableApiList'),
 
 
 
