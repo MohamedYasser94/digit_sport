@@ -212,7 +212,10 @@ path('v3/', include(router.urls)),
     path('v3/sport/season/table/list/<str:sportName>/', sport.SportSeasonTableApiList, name='SportSeasonTableApiList'),
 
 
-
+################# Volleyball #################
+path('v3/sport/volleyball/matches/list/', sport.SportVolleyballMatchesApiList, name='SportVolleyballMatchesApiList'),
+path('v3/sport/volleyball/season/table/list/', sport.SportVolleyballSeasonTableApiList, name='SportVolleyballSeasonTableApiList'),
+path('v3/sport/volleyball/players/list/', sport.SportVolleyballPlayersApiList, name='SportVolleyballPlayersApiList'),
 
 ##################### Youtube Channel API ########################
     path('v3/media/youtube/channel/', media.YoutubeChannelApiList, name='YoutubeChannelApiList'),

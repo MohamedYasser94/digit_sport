@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import firebase_admin
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
@@ -11,7 +10,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from fcm_django.models import FCMDevice
-from firebase_admin import messaging, credentials
+from firebase_admin import messaging
 from firebase_admin.messaging import Notification
 
 from core.models.notifications import Notification

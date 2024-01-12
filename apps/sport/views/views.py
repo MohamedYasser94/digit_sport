@@ -944,7 +944,7 @@ def AdminVenuesDelete(request, slug):
 @authenticated_staf
 @staff_only
 def AdminTeamsList(request):
-    teams = Teams.objects.all()
+    teams = Teams.objects.filter(sport = Sport.objects.get(name='volleyball'))
 
     if request.method == "POST":
         teams_form = AdminTeamsForm(request.POST or None, request.FILES or None)
@@ -1209,8 +1209,9 @@ def AdminTeamPlayerMatchAdd(request, slug):
 @authenticated_staf
 @staff_only
 def AdminPlayersList(request):
-    players = Players.objects.all()
-    paginator = Paginator(players, 10)  # Show 25 contacts per page.
+    players = Players.objects.filter(sport= Sport.objects.get(name='volleyball'))
+    paginator = Paginator(players, 100)  # Show 25 contacts per page.
+    teams = Teams.objects.filter(sport= Sport.objects.get(name='volleyball'))
 
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -1219,11 +1220,14 @@ def AdminPlayersList(request):
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
         if players_form:
             name = request.POST.get('name')
-            short_code = request.POST.get('short_code')
+            position = request.POST.get('position')
+            age = request.POST.get('age')
+            height = request.POST.get('height')
             country = request.POST.get('country')
+            team = request.POST.get('team')
             sport = request.POST.get('sport')
             gender = request.POST.get('gender')
-            nationality = request.POST.get('nationality')
+
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             keyword = request.POST.get('keyword')
@@ -1234,9 +1238,8 @@ def AdminPlayersList(request):
                 sport = Sport.objects.get(id=sport)
 
             player_object = Players(
-                name=name,short_code=short_code,country=country,
-                sport=sport,gender=gender,nationality=nationality,image=image,
-                image_path=image_path,keyword=keyword
+                name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,
+                gender=gender,keyword=keyword,image=image,image_path=image_path
             )
             player_object.save()
             messages.success(request, _("Players Add Successfully"), extra_tags='Players')
@@ -1244,7 +1247,8 @@ def AdminPlayersList(request):
         else:
             messages.error(request, _("Players Not Add , Please Try Again"), extra_tags='Players')
     else:
-        context = {'players': page_obj, 'players_form': AdminPlayersForm(), 'current_page': _('Players')}
+        context = {'players': page_obj,'teams': teams, 'players_form': AdminPlayersForm(), 'current_page': _('Players')}
+
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
 
 

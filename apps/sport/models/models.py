@@ -774,7 +774,7 @@ class Schedules(models.Model):
         super(Schedules, self).save(*args, **kwargs)
 
 
-class Players(models.Model):
+class  Players(models.Model):
     api_id = models.IntegerField(null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_player_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
@@ -785,6 +785,7 @@ class Players(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_player_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
+    team = models.ForeignKey(Teams , on_delete=models.CASCADE, null=True, blank=True)
     common_name = models.CharField(max_length=100, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
@@ -797,11 +798,11 @@ class Players(models.Model):
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     api_country = models.CharField(max_length=100, null=True, blank=True)
     api_nationality = models.CharField(max_length=100, null=True, blank=True)
-
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
     api_city = models.CharField(max_length=100, null=True, blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    number =  models.CharField(max_length=100, null=True, blank=True)
     api_position = models.CharField(max_length=100, null=True, blank=True)
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
@@ -813,6 +814,7 @@ class Players(models.Model):
     image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
     height = models.CharField(max_length=100, null=True, blank=True)
+    age = models.CharField(max_length=100, null=True, blank=True)
     weight = models.CharField(max_length=100, null=True, blank=True)
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)

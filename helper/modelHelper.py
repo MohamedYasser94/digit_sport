@@ -769,7 +769,8 @@ Sport_Core_type = (
 
 Sport_Stat_Type = (('Id', 'Id'), ('Sport', 'Sport'),)
 
-Position_List = (
+Position_List = (('Setter', 'Setter'),('Outside Hitter', 'Outside Hitter'),('Middle Hitter', 'Middle Hitter'),
+('Right Side Hitter', 'Right Side Hitter'),('Libero', 'Libero'),('Defensive Specialist', 'Defensive Specialist'),
 ('Goalkeeper', 'Goalkeeper'), ('Defender', 'Defender'), ('Midfielder', 'Midfielder'), ('Forward', 'Forward'),
 ('Other', 'Other'),)
 

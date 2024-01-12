@@ -246,6 +246,7 @@ class MatchSerializer(serializers.ModelSerializer):
     venues = serializers.ReadOnlyField(source='venues.name')
     sport = serializers.ReadOnlyField(source='sport.name')
     league_name = serializers.ReadOnlyField(source='league.name')
+    league_image = serializers.ReadOnlyField(source='league.image_path')
 
     class Meta:
         model = Match

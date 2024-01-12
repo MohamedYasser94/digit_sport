@@ -47,8 +47,8 @@
                                 </button>
                                 <!--end::Add customer-->
                                 <!--begin::Add customer-->
-                                <a  class="btn btn-primary m-10" data-bs-toggle="modal"
-                                        data-bs-target="#kt_modal_add_monks">{% translate 'Add Players From Api' %}
+                                <a class="btn btn-primary m-10" data-bs-toggle="modal"
+                                   data-bs-target="#kt_modal_add_monks">{% translate 'Add Players From Api' %}
                                 </a>
                                 <!--end::Add customer-->
                             </div>
@@ -247,7 +247,7 @@
                         </div>
                         <!--end::Card body-->
                     </div>
-                <div v-show="CheckOutVisible" v-if="CheckStatus == 'Show'"
+                    <div v-show="CheckOutVisible" v-if="CheckStatus == 'Show'"
                          class="notice d-flex bg-light-danger rounded border-danger border border-dashed p-6 m-20">
                         <!--begin::Icon-->
                         <!--begin::Svg Icon | path: icons/duotune/finance/fin001.svg-->
@@ -359,186 +359,208 @@
                                              data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                                              data-kt-scroll-wrappers="#kt_modal_add_customer_scroll"
                                              data-kt-scroll-offset="300px">
-                                           <!--begin::Input group-->
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <input type="text" class="form-control form-control-solid"
-                                                   placeholder="{% translate 'Name' %}"
-                                                   name="name"/>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Short Code' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <input type="text"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Short Code' %}"
-
-                                                   name="short_code"/>
-                                            <!--end::Input-->
-                                        </div>
-
-
-                                    </div>
-                                 <!--begin::Input group-->
                                             <!--begin::Input group-->
                                             <div class="d-flex flex-wrap gap-5">
                                                 <!--begin::Input group-->
                                                 <div class="fv-row w-100 flex-md-root">
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Name' %}</label>
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
                                                     <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Keyword' %}"
-                                                           name="title_tr"/>
+                                                           placeholder="{% translate 'Name' %}"
+                                                           name="name"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                              <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select name="position" aria-label="{% translate 'Position' %}"
+                                                            data-control="select2"
+                                                            data-placeholder="{% translate 'Position' %}"
+                                                            data-dropdown-parent="#kt_modal_add_customer"
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        {% for value, text in players_form.position.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
+
+                                                    </select>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+
+                                            </div>
+                                            <!--begin::Input group-->
+                                         <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+
+                                             <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Age' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Age' %}"
+                                                           name="age"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Height' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                  <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Height' %}"
+                                                           name="height"/>
                                                     <!--end::Input-->
 
                                                 </div>
                                                 <!--end::Input group-->
 
+                                            </div>
+                                            <!--begin::Input group-->
+
+                                            <div class="d-flex flex-wrap gap-5">
                                                 <!--begin::Input group-->
                                                 <div class="fv-row w-100 flex-md-root">
                                                     <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Keyword' %}</label>
+                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
-                                                    <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Translate Keyword' %}"
-                                                           name="keyword_tr"/>
+                                                    <select name="country" aria-label="{% translate 'Country' %}"
+                                                            data-control="select2"
+                                                            data-placeholder="{% translate 'Country' %}"
+                                                            data-dropdown-parent="#kt_modal_add_customer"
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        {% for value, text in players_form.country.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
+
+                                                    </select>
                                                     <!--end::Input-->
                                                 </div>
                                                 <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Team' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select name="team" aria-label="{% translate 'Team' %}"
+                                                            data-control="select2"
+                                                            data-placeholder="{% translate 'Team' %}"
+                                                            data-dropdown-parent="#kt_modal_add_customer"
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        {% for item in teams %}
+                                                            <option value="{{ item.id }}">{{ item.name }}</option>
+                                                        {% endfor %}
+
+                                                    </select>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+
+
+
                                             </div>
-                                            <!--end::Input group-->
-                                             <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <select name="country" aria-label="{% translate 'Country' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Country' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in players_form.country.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select name="sport" aria-label="{% translate 'Sport' %}"
+                                                            data-control="select2"
+                                                            data-placeholder="{% translate 'Sport' %}"
+                                                            data-dropdown-parent="#kt_modal_add_customer"
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        {% for value, text in players_form.sport.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
 
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Nationality' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <input type="text"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Nationality' %}"
-                                                   name="nationality"/>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
+                                                    </select>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <select name="gender" aria-label="{% translate 'Gender' %}"
+                                                            data-control="select2"
+                                                            data-placeholder="{% translate 'Gender' %}"
+                                                            data-dropdown-parent="#kt_modal_add_customer"
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        {% for value, text in players_form.gender.field.choices %}
+                                                            <option value="{{ value }}">{{ text }}</option>
+                                                        {% endfor %}
 
-
-                                    </div>
-                                    <!--begin::Input group-->
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <select name="sport" aria-label="{% translate 'Sport' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Sport' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in players_form.sport.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <select name="gender" aria-label="{% translate 'Gender' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Gender' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in players_form.gender.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
+                                                    </select>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
 
 
-                                    </div>
-                                 <!--begin::Input group-->
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <input type="file" accept="image/*" class="form-control form-control-solid"
+                                            </div>
+                                            <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="file" accept="image/*"
+                                                           class="form-control form-control-solid"
 
-                                                   name="image"/>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Image Url' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <input type="url" class="form-control form-control-solid"
-                                                   placeholder="{% translate 'Image Url' %}"
-                                                   name="image_url"/>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
+                                                           name="image"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Image Url' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="url" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Image Url' %}"
+                                                           name="image_path"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
 
-                                    </div>
+                                            </div>
 
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="form-label">{% translate 'Keyword' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <textarea class="form-control" name="keyword" rows="3"
-                                                      placeholder="{% translate 'Keyword' %}"></textarea>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Keyword' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <textarea class="form-control" name="keyword" rows="3"
+                                                              placeholder="{% translate 'Keyword' %}"></textarea>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
 
-                                    </div>
+                                            </div>
 
 
                                         </div>
@@ -566,7 +588,7 @@
                         </div>
                     </div>
                     <!--end::Modal - item - Add-->
-                 <!--begin::Modal - item - Add-->
+                    <!--begin::Modal - item - Add-->
                     <div class="modal fade" id="kt_modal_add_monks" tabindex="-1" aria-hidden="true">
                         <!--begin::Modal dialog-->
                         <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -627,27 +649,25 @@
 
                                                 </div>
                                                 <!--end::Input group-->
-                                                 <!--begin::Input group-->
+                                                <!--begin::Input group-->
                                                 <div class="fv-row w-100 flex-md-root">
                                                     <label class="required fs-6 fw-bold mb-2">{% translate 'sportType Number Of Pages' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
                                                     <select name="type" aria-label="{% translate 'Sport' %}"
-                                                    data-placeholder="{% translate 'Sport' %}"
-                                                    data-dropdown-parent="#kt_modal_add_monks"
+                                                            data-placeholder="{% translate 'Sport' %}"
+                                                            data-dropdown-parent="#kt_modal_add_monks"
                                                             data-allow-clear="true" v-model="sportType"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                <option value="football" >{% translate 'Football' %}</option>
-                                                <option value="basketball" >{% translate 'Basketball' %}</option>
-                                                <option value="volleyball" >{% translate 'Volleyball' %}</option>
-                                                <option value="handball" >{% translate 'Handball' %}</option>
-                                                <option value="ice-hockey" >{% translate 'Ice Hockey' %}</option>
+                                                            class="form-select form-select-solid fw-bolder">
+                                                        <option value="" selected="">---------</option>
+                                                        <option value="football">{% translate 'Football' %}</option>
+                                                        <option value="basketball">{% translate 'Basketball' %}</option>
+                                                        <option value="volleyball">{% translate 'Volleyball' %}</option>
+                                                        <option value="handball">{% translate 'Handball' %}</option>
+                                                        <option value="ice-hockey">{% translate 'Ice Hockey' %}</option>
 
 
-
-
-                                            </select>
+                                                    </select>
                                                     <!--end::Input-->
 
                                                 </div>
@@ -696,7 +716,7 @@
 {% endblock %}
 {% block custom_js %}
 
-<script>
+    <script>
         const MonkPlayerApp = Vue.createApp({
             delimiters: ['[[', ']]'],
             data() {
