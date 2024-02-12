@@ -130,7 +130,10 @@
                                                     <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#kt_modal_static">{% translate 'Match Summary' %}</a>
-                                                    {#																	<a href="#" class="btn btn-light btn-sm flex-shrink-0" data-bs-toggle="modal" data-bs-target="#kt_modal_users_search">View Item</a>#}
+                                                    <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#kt_modal_goals">{% translate 'Match Goals' %}</a>
+
                                                     <!--end::Actions-->
                                                 </div>
                                                 <!--end::Footer-->
@@ -295,7 +298,7 @@
                                 <div class="card-body pt-5">
                                     <!--begin::Items-->
                                     <div class="">
-                                        {% if match.sport.name == 'Football' %}
+                                        {% if match.sport.name == 'football' %}
                                             {% for item in match_goal %}
                                                 <!--begin::Item-->
                                                 <div class="d-flex flex-stack">
@@ -392,7 +395,7 @@
                                                 <div class="separator separator-dashed my-3"></div>
                                                 <!--end::Separator-->
                                             {% endfor %}
-                                        {% elif match.sport.name == 'Volleyball' %}
+                                        {% elif match.sport.name == 'volleyball' %}
                                             {% for item in match_goal %}
                                                 <!--begin::Item-->
                                                 <div class="d-flex flex-stack">
@@ -1080,7 +1083,7 @@
                         <!--end::Close-->
                     </div>
                     <!--begin::Modal header-->
-                    <!--begin::Modal body-->
+
                     <!--begin::Modal body-->
                     <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
                         <!--begin:Form-->
@@ -1173,7 +1176,104 @@
                         <!--end:Form-->
                     </div>
                     <!--end::Modal body-->
+
+
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+     <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_goals" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_goals_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchGoalsAdd'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Match Goals' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">If you need more info, please check
+                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-75 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Home Score' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Home Score' %}"
+                                           name="home_score"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Away Score' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Away Score' %}"
+                                               name="away_score"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
                     <!--end::Modal body-->
+
+
                 </div>
                 <!--end::Modal content-->
             </div>
@@ -1218,7 +1318,7 @@
                                 <!--end::Description-->
                             </div>
                             <!--end::Heading-->
-                            {% if match.sport.name == 'Football' %}
+                            {% if match.sport.name == 'football' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">
@@ -1300,7 +1400,7 @@
                                     <!--end::Input group-->
                                 </div>
                                 <!--begin::Input group-->
-                            {% elif match.sport.name == 'Volleyball' %}
+                            {% elif match.sport.name == 'volleyball' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">
@@ -1402,7 +1502,7 @@
                             </div>
                             <!--end::Heading-->
                             <!--begin::Input group-->
-                            {% if match.sport.name == 'Football' %}
+                            {% if match.sport.name == 'football' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">
@@ -1484,7 +1584,7 @@
                                     <!--end::Input group-->
                                 </div>
                                 <!--begin::Input group-->
-                            {% elif match.sport.name == 'Volleyball' %}
+                            {% elif match.sport.name == 'volleyball' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">

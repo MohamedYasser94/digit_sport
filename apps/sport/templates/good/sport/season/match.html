@@ -46,6 +46,9 @@
                                         data-bs-target="#kt_modal_add_customer">{% translate 'Add Match' %}
                                 </button>
                                 <!--end::Add customer-->
+                             <button  class="btn btn-primary m-10" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#kt_modal_add_team"
+                             >{% translate 'Add Team' %}</button>
                                 <!--begin::Add customer-->
                                 {% if table_exist == 'True' %}
                                 <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableList'  season.slug  %}"
@@ -392,6 +395,24 @@
                                       <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Round' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text"  class="form-control form-control-solid"
+                                                    placeholder="{% translate 'Round' %}" required
+
+                                                   name="round"/>
+                                            <!--end::Input-->
+                                        </div>
+
+
+
+                                    </div>
+                                          <div class="d-flex flex-wrap gap-5">
+
+                                      <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
                                             <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
@@ -415,7 +436,7 @@
                                             <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <input type="date"  class="form-control form-control-solid"
+                                           <input type="datetime-local"  class="form-control form-control-solid"
                                                     placeholder="{% translate 'Start Time' %}" required
 
                                                    name="start_time"/>
@@ -432,6 +453,272 @@
                                     <div class="modal-footer flex-center">
                                         <!--begin::Button-->
                                         <button type="reset" id="kt_modal_add_customer_cancel"
+                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
+                                        <!--end::Button-->
+                                        <!--begin::Button-->
+                                        <button type="submit" id="" class="btn btn-primary">
+                                            <span class="indicator-label">{% translate 'Submit' %}</span>
+                                            <span class="indicator-progress">{% translate 'Please wait...' %}
+													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                        </button>
+                                        <!--end::Button-->
+                                    </div>
+                                    <!--end::Modal footer-->
+                                </form>
+                                <!--end::Form-->
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Modal - item - Add-->
+                <!--begin::Modal - item - Add-->
+                    <div class="modal fade" id="kt_modal_add_team" tabindex="-1" aria-hidden="true">
+                        <!--begin::Modal dialog-->
+                        <div class="modal-dialog modal-dialog-centered mw-650px">
+                            <!--begin::Modal content-->
+                            <div class="modal-content">
+                                <!--begin::Form-->
+                                <form class="form" id="kt_modal_add_team" enctype="multipart/form-data"
+                                      action="{% url 'sport:AdminTeamsCreate' season.sport.slug %}"
+                                      method="POST"
+                                >
+                                    {% csrf_token %}
+                                    <!--begin::Modal header-->
+                                    <div class="modal-header" id="kt_modal_add_team_header">
+                                        <!--begin::Modal title-->
+                                        <h2 class="fw-bolder">{% translate 'Add' %}</h2>
+                                        <!--end::Modal title-->
+                                        <!--begin::Close-->
+                                        <div id="kt_modal_add_team_close" data-bs-dismiss="modal" aria-label="Close"
+                                             class="btn btn-icon btn-sm btn-active-icon-primary">
+                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                            <span class="svg-icon svg-icon-1">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                             viewBox="0 0 24 24" fill="none">
+															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
+                                                                  rx="1" transform="rotate(-45 6 17.3137)"
+                                                                  fill="black"/>
+															<rect x="7.41422" y="6" width="16" height="2" rx="1"
+                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
+														</svg>
+													</span>
+                                            <!--end::Svg Icon-->
+                                        </div>
+                                        <!--end::Close-->
+                                    </div>
+                                    <!--end::Modal header-->
+                                    <!--begin::Modal body-->
+                                    <div class="modal-body py-10 px-lg-17">
+                                        <!--begin::Scroll-->
+                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_team_scroll"
+                                             data-kt-scroll="true"
+                                             data-kt-scroll-activate="{default: false, lg: true}"
+                                             data-kt-scroll-max-height="auto"
+                                             data-kt-scroll-dependencies="#kt_modal_add_team_header"
+                                             data-kt-scroll-wrappers="#kt_modal_add_team_scroll"
+                                             data-kt-scroll-offset="300px">
+
+
+                                             <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="text" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Name' %}"
+                                                   name="name"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Short Code' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <input type="text"  class="form-control form-control-solid"
+                                                    placeholder="{% translate 'Short Code' %}"
+
+                                                   name="short_code"/>
+                                            <!--end::Input-->
+                                        </div>
+
+
+                                    </div>
+                                        <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Name' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Keyword' %}"
+                                                           name="title_tr"/>
+                                                    <!--end::Input-->
+
+                                                </div>
+                                                <!--end::Input group-->
+
+                                                <!--begin::Input group-->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Keyword' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Input-->
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Translate Keyword' %}"
+                                                           name="keyword_tr"/>
+                                                    <!--end::Input-->
+                                                </div>
+                                                <!--end::Input group-->
+                                            </div>
+                                 <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="country" aria-label="{% translate 'Country' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Country' %}"
+                                                    data-dropdown-parent="#kt_modal_add_team"
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in teams_form.country.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Club' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="club" aria-label="{% translate 'Club' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Club' %}"
+                                                    data-dropdown-parent="#kt_modal_add_team"
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in teams_form.club.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="sport" aria-label="{% translate 'Sport' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Sport' %}"
+                                                   data-dropdown-parent="#kt_modal_add_team"
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in teams_form.sport.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="gender" aria-label="{% translate 'Gender' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Gender' %}"
+                                                    data-dropdown-parent="#kt_modal_add_team"
+                                                            data-allow-clear="true"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in teams_form.gender.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+                                    </div>
+                                 <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="file" accept="image/*" class="form-control form-control-solid"
+
+                                                   name="image"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Image Url' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="url" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Image Url' %}"
+                                                   name="image_path"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="form-label">{% translate 'Keyword' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <textarea class="form-control" name="keyword" rows="3"
+                                                      placeholder="{% translate 'Keyword' %}"></textarea>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+                                    </div>
+
+
+                                        </div>
+                                        <!--end::Scroll-->
+                                    </div>
+                                    <!--end::Modal body-->
+                                    <!--begin::Modal footer-->
+                                    <div class="modal-footer flex-center">
+                                        <!--begin::Button-->
+                                        <button type="reset" id="kt_modal_add_team_cancel"
                                                 class="btn btn-light me-3">{% translate 'Discard' %}</button>
                                         <!--end::Button-->
                                         <!--begin::Button-->

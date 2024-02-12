@@ -65,6 +65,17 @@
 
                                         <!--end::Input-->
                                     </div>
+                                   <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Position' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="position" type="number" min="0"
+                                               value="{{ season_table.position }}"
+                                               placeholder="{% translate 'Position' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
                                       <div class="flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="form-label">{% translate 'Order' %}</label>

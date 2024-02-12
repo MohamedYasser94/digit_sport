@@ -1,6 +1,10 @@
+from rest_framework.fields import SerializerMethodField
+from rest_framework.templatetags import rest_framework
+
 from api.v3.serializers.blog import *
 from apps.sport.models.models import *
 from core.models.blog import *
+from digit_sport.settings import env
 
 
 class AdminSportCategorySerializer(serializers.ModelSerializer):
@@ -57,16 +61,42 @@ class VideosBySportSerializer(serializers.ModelSerializer):
         model = Sport
         fields = ['id', 'name', 'image_path', 'image', 'videos']
 
-
 class LeaguesSerializer(serializers.ModelSerializer):
     matches = serializers.SerializerMethodField()
     sport = serializers.ReadOnlyField(source='sport.name')
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image_path','country','matches' ,'sport']
+        fields = "__all__"
 
     def get_matches(self, obj):
         return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
+
+    def get_image_url(self, obj):
+        try:
+            image_url = 'https://aljawlakw.com' + str(obj.image.url)
+            return image_url
+        except:
+            image_url = None
+            return image_url
+class LeaguesByItemSerializer(serializers.ModelSerializer):
+
+    image_url = serializers.SerializerMethodField()
+    class Meta:
+        model = Leagues
+        fields = ['id', 'name', 'image_url']
+
+    def get_matches(self, obj):
+        return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
+
+    def get_image_url(self, obj):
+        try:
+            image_url = 'https://aljawlakw.com' + str(obj.image.url)
+            return image_url
+        except:
+            image_url = None
+            return image_url
+
 
 
 class SeasonSerializer(serializers.ModelSerializer):
@@ -94,9 +124,15 @@ class AggregateSerializer(serializers.ModelSerializer):
 
 
 class RoundSerializer(serializers.ModelSerializer):
+    matches = serializers.SerializerMethodField()
     class Meta:
         model = Round
-        fields = "__all__"
+        fields = ['id', 'name', 'matches']
+
+    def get_matches(self, obj,):
+        first_date = self.context['first_date']
+        last_date = self.context['last_date']
+        return MatchSerializer(Match.objects.filter(round=obj.id,start_time__range=[first_date,last_date] ).order_by('start_time'), many=True).data
 
 
 class VenuesSerializer(serializers.ModelSerializer):
@@ -130,12 +166,29 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
-    sport = serializers.ReadOnlyField(source='sport.name')
-    league = serializers.ReadOnlyField(source='league.name')
+    image_url = serializers.SerializerMethodField()
+
+
 
     class Meta:
         model = Teams
-        fields = ['id', 'name', 'image_path','sport','league' ]
+        fields = "__all__"
+
+    def get_image_url(self, obj):
+       try:
+           image_url = 'https://aljawlakw.com' + str(obj.image.url)
+           return image_url
+       except:
+        image_url = None
+        return image_url
+
+
+
+
+
+
+
+
 
 
 class StatisticsSerializer(serializers.ModelSerializer):
@@ -163,15 +216,28 @@ class SchedulesSerializer(serializers.ModelSerializer):
 
 
 class PlayersSerializer(serializers.ModelSerializer):
+    team = serializers.ReadOnlyField(source='team.name')
+    sport = serializers.ReadOnlyField(source='sport.name')
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Players
         fields = '__all__'
+
+    def get_image(self, obj):
+        try:
+            image = 'https://aljawlakw.com' + str(obj.image.url)
+            return image
+        except:
+            image = None
+            return image
 
 
 class SquadsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Squads
         fields = "__all__"
+
+
 
 
 class TVStationsSerializer(serializers.ModelSerializer):
@@ -243,10 +309,6 @@ class BookmakersSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     home_team = serializers.SerializerMethodField()
     away_team = serializers.SerializerMethodField()
-    venues = serializers.ReadOnlyField(source='venues.name')
-    sport = serializers.ReadOnlyField(source='sport.name')
-    league_name = serializers.ReadOnlyField(source='league.name')
-    league_image = serializers.ReadOnlyField(source='league.image_path')
 
     class Meta:
         model = Match
@@ -260,8 +322,9 @@ class MatchSerializer(serializers.ModelSerializer):
 
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
-    venues = serializers.ReadOnlyField(source='venues.name')
+    venues_name = serializers.ReadOnlyField(source='venues.name')
     league_name = serializers.ReadOnlyField(source='league.name')
+
     sport_name = serializers.ReadOnlyField(source='sport.name')
 
     class Meta:
@@ -318,6 +381,16 @@ class SeasonTableSerializer(serializers.ModelSerializer):
     team_name = serializers.ReadOnlyField(source='team.name')
     image_path = serializers.ReadOnlyField(source='team.image_path')
     sport_name = serializers.ReadOnlyField(source='sport.name')
+    team_image = serializers.SerializerMethodField()
     class Meta:
         model = SeasonTable
         fields = "__all__"
+
+
+    def get_team_image(self, obj):
+       try:
+           team_image = 'https://aljawlakw.com' + str(obj.team.image.url)
+           return team_image
+       except:
+        team_image = None
+        return team_image

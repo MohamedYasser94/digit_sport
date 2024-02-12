@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.sport.views import views, monks, media
+from apps.sport.views import views, monks, media,operations
 
 app_name = 'sport'
 
@@ -32,8 +32,9 @@ urlpatterns = [
     ##########   Sport Season Table  #########
     path('season/table/<slug:slug>/', views.AdminSeasonTableList, name='AdminSeasonTableList'),
     path('season/table/add/<slug:slug>/', views.AdminSeasonTableCreate, name='AdminSeasonTableCreate'),
-    # path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
+    path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
     # path('season/table/archive/<slug:slug>/', views.AdminSeasonTableArchive, name='AdminSeasonTableArchive'),
+    path('season/table/delete/<slug:slug>/', views.AdminSeasonTableDelete, name='AdminSeasonTableDelete'),
 
     ##########   Stages  #########
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
@@ -81,6 +82,7 @@ urlpatterns = [
 
     ##########   Team  #########
     path('team/', views.AdminTeamsList, name='AdminTeamsList'),
+    path('team/add/<slug:slug>/', views.AdminTeamsCreate, name='AdminTeamsCreate'),
     path('team/update/<slug:slug>/', views.AdminTeamsUpdate, name='AdminTeamsUpdate'),
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
@@ -105,6 +107,8 @@ urlpatterns = [
     path('match/control/<slug:slug>/', views.AdminMatchControl, name='AdminMatchControl'),
     path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
     path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
+    path('match/goals/add/<slug:slug>/', views.AdminMatchGoalsAdd, name='AdminMatchGoalsAdd'),
+
 
     ##########   Match By Team #########
     path('match/team/playr/transfer/<slug:slug>/', views.AdminTeamPlayerMatchAdd, name='AdminTeamPlayerMatchAdd'),
@@ -130,5 +134,19 @@ urlpatterns = [
     # path('media/update/<slug:slug>/', views.AdminMediaUpdate, name='AdminMediaUpdate'),
     # path('media/archive/<slug:slug>/', views.AdminMediaArchive, name='AdminMediaArchive'),
     # path('media/delete/<slug:slug>/', views.AdminMediaDelete, name='AdminMediaDelete'),
+
+
+################## Match Report ##################
+    path('match/report/', operations.AdminMatchReportList, name='AdminMatchReportList'),
+    path('match/report/update/<slug:slug>/', operations.AdminMatchReportUpdate, name='AdminMatchReportUpdate'),
+    path('match/report/archive/<slug:slug>/', operations.AdminMatchReportArchive, name='AdminMatchReportArchive'),
+    path('match/report/delete/<slug:slug>/', operations.AdminMatchReportDelete, name='AdminMatchReportDelete'),
+
+
+    ################## Match Player Report ##################
+    path('match/player/report/', operations.AdminMatchPlayerReportList, name='AdminMatchPlayerReportList'),
+    path('match/player/report/update/<slug:slug>/', operations.AdminMatchPlayerReportUpdate, name='AdminMatchPlayerReportUpdate'),
+    path('match/player/report/archive/<slug:slug>/', operations.AdminMatchPlayerReportArchive, name='AdminMatchPlayerReportArchive'),
+    path('match/player/report/delete/<slug:slug>/', operations.AdminMatchPlayerReportDelete, name='AdminMatchPlayerReportDelete'),
 
 ]

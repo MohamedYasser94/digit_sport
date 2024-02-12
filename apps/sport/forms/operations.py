@@ -1,21 +1,19 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from apps.event.models.models import EventCategory, Ticket, Event, EventAttendees, EventAttendeesHistory, Speaker, Sponsor, \
-    Event
-from apps.event.models.operations import EventManagement, EventTime
+from apps.sport.models import *
 
 User = get_user_model()
 
 
-class AdminEventManagementForm(forms.ModelForm):
+class AdminMatchReportForm(forms.ModelForm):
     class Meta:
-        model = EventManagement
+        model = MatchReport
         fields = '__all__'
         exclude = ('slug', 'code')
 
-class AdminEventTimeForm(forms.ModelForm):
+class AdminMatchPlayerReportForm(forms.ModelForm):
     class Meta:
-        model = EventTime
+        model = MatchPlayerReport
         fields = '__all__'
         exclude = ('slug', 'code')

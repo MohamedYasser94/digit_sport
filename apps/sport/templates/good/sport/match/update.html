@@ -12,7 +12,7 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Form-->
             <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'sport:AdminPlayersUpdate' player.slug %}"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminMatchUpdate' match.slug %}"
                   method="post">
                 {% csrf_token %}
 
@@ -39,22 +39,39 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Name' %}</label>
+                                        <label class="required form-label">{% translate 'Home Team' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" name="name"
-                                               placeholder="{% translate 'Name' %}"
-                                               value="{{ player.name }}"/>
+                                        <select name="home_team" aria-label="{% translate 'Home Team' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Home Team' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ match.home_team.id }}" selected="">{{ match.home_team.name }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                                {% endfor %}
+
+                                            </select>
                                         <!--end::Input-->
                                     </div>
                                       <div class="flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Short Code' %}</label>
+                                        <label class="form-label">{% translate 'Away Team' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" name="short_code"
-                                               placeholder="{% translate 'Short Code' %}"
-                                               value="{{ player.short_code }}"/>
+                                       <select name="away_team" aria-label="{% translate 'Away Team' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Away Team' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ match.away_team.id }}" selected="">{{ match.away_team }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                                {% endfor %}
+
+                                            </select>
                                         <!--end::Input-->
                                     </div>
                                 </div>
@@ -64,28 +81,30 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Country' %}</label>
+                                        <label class="required form-label">{% translate 'Venues' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="country" aria-label="{% translate 'Country' %}"
-                                                data-control="select2"
+                                        <select name="venues" aria-label="{% translate 'Venues' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.venues.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
 
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ player.country }}">{{ player.country }}</option>
-                                            {% for value, text in players_form.country.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
+                                            </select>
                                         <!--end::Input-->
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Nationality' %}</label>
+                                        <label class="required form-label">{% translate 'Round' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                           <input class="form-control" name="nationality"
-                                               placeholder="{% translate 'Nationality' %}"
-                                               value="{{ player.nationality }}"/>
+                                           <input class="form-control" name="round"
+                                               placeholder="{% translate 'Round' %}"
+                                               value="{{ match.round.name }}"/>
 
 
                                         <!--end::Input-->
@@ -96,83 +115,39 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Sport' %}</label>
+                                        <label class="required form-label">{% translate 'Match Live' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="sport" aria-label="{% translate 'Sport' %}"
-                                                data-control="select2"
+                                        <select name="is_live" aria-label="{% translate 'Match Live' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.is_live.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
 
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ player.sport.id }}">{{ player.sport }}</option>
-                                            {% for value, text in players_form.sport.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
+                                            </select>
                                         <!--end::Input-->
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Gender' %}</label>
+                                        <label class="required form-label">{% translate 'Start Time' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                          <select name="gender" aria-label="{% translate 'Gender' %}"
-                                                data-control="select2"
+                                          <input type="datetime-local"  class="form-control form-control-solid"
+                                                    placeholder="{% translate 'Start Time' %}" required
 
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ player.gender }}">{{ player.gender }}</option>
-                                            {% for value, text in players_form.gender.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
+                                                   name="start_time"/>
 
 
                                         <!--end::Input-->
                                     </div>
                                 </div>
                                 <!--end::Input group--> <!--begin::Input group-->
-                             <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input class="form-control" type="file" accept="image/*" name="image"
-
-                                              />
-                                        <!--end::Input-->
-                                    </div>
-                                        <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image Url' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_url" value="{{ player.image_url }}"
-                                               placeholder="{% translate 'Image Url' %}"/>
 
 
-                                        <!--end::Input-->
-                                    </div>
-
-
-
-                                </div>
-                                <!--end::Input group--> <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Keyword' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <textarea class="form-control" name="keyword" rows="3"
-                                               placeholder="{% translate 'Keyword' %}">{{ player.keyword }}</textarea>
-                                        <!--end::Input-->
-                                    </div>
-
-
-
-                                </div>
-                                <!--end::Input group-->
 
 
 

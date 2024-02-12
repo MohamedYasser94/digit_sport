@@ -282,7 +282,7 @@
                                     <!--begin::Modal header-->
                                     <div class="modal-header" id="kt_modal_add_customer_header">
                                         <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Add' %}</h2>
+                                        <h2 class="fw-bolder">{% translate 'Add Match' %}</h2>
                                         <!--end::Modal title-->
                                         <!--begin::Close-->
                                         <div id="kt_modal_add_customer_close" data-bs-dismiss="modal" aria-label="Close"
@@ -359,6 +359,42 @@
 
                                     </div>
                                     <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Location' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="venues" aria-label="{% translate 'Venues' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.venues.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <input type="date"  class="form-control form-control-solid"
+                                                    placeholder="{% translate 'Start Time' %}" required
+
+                                                   name="start_time"/>
+                                            <!--end::Input-->
+                                        </div>
+
+
+                                    </div>
+                                        <div class="d-flex flex-wrap gap-5">
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->

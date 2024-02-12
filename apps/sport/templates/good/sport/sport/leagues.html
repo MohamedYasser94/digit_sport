@@ -45,6 +45,11 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#kt_modal_add_customer">{% translate 'Add Leagues' %}
                                 </button>
+                                <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableList'  sport.slug  %}"
+                                        >{% translate 'Add Team' %}
+
+
+                                </a>
                                 <!--end::Add customer-->
                             </div>
                             <!--end::Card toolbar-->

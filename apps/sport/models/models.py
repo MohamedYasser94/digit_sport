@@ -9,9 +9,7 @@ from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 from slugify import slugify
 
-from helper.modelHelper import Active_Status, Public_Status, Country_List, Governorates_List, Sport_Core_type, \
-    Sport_Stat_Type, Gander_type, Position_List, Language_List, Tv_Type, Sport_Type, Match_Status, Half_List, \
-    Match_Statics, Set_List, Season_Order
+from helper.modelHelper import *
 from helper.viewHelper import get_file_path
 
 # Create your models here.
@@ -1318,6 +1316,7 @@ class Match(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_match', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_match', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_match', null=True, blank=True)
+    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='round_match', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_match', null=True, blank=True)
     fixture = models.ForeignKey(Fixtures, on_delete=models.CASCADE, related_name='fixture_match', null=True, blank=True)
     home_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match', null=True, blank=True)
