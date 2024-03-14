@@ -39,33 +39,11 @@ urlpatterns = [
     ##########   Stages  #########
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
     path('monk/stages/api/get/', monks.AdminMonksStagesGetData, name='AdminMonksStagesGetData'),
-    # path('stages/update/<slug:slug>/', views.AdminStagesUpdate, name='AdminStagesUpdate'),
-    # path('stages/archive/<slug:slug>/', views.AdminStagesArchive, name='AdminStagesArchive'),
-    # path('stages/delete/<slug:slug>/', views.AdminStagesDelete, name='AdminStagesDelete'),
-    #
-    #
-    # ##########   Group  #########
-    # path('group/', views.AdminGroupList, name='AdminGroupList'),
-    # path('group/update/<slug:slug>/', views.AdminGroupUpdate, name='AdminGroupUpdate'),
-    # path('group/archive/<slug:slug>/', views.AdminGroupArchive, name='AdminGroupArchive'),
-    # path('group/delete/<slug:slug>/', views.AdminGroupDelete, name='AdminGroupDelete'),
-    #
-    #
-    # ##########   Aggregate  #########
-    # path('aggregate/', views.AdminAggregateList, name='AdminAggregateList'),
-    # path('aggregate/update/<slug:slug>/', views.AdminAggregateUpdate, name='AdminAggregateUpdate'),
-    # path('aggregate/archive/<slug:slug>/', views.AdminAggregateArchive, name='AdminAggregateArchive'),
-    # path('aggregate/delete/<slug:slug>/', views.AdminAggregateDelete, name='AdminAggregateDelete'),
-    #
-    #
+
     ##########   Round  #########
     path('round/', views.AdminRoundList, name='AdminRoundList'),
     path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
-    # path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
-    # path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
-    # path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
-    #
-    #
+
 
     ##########   Clubs  #########
     path('clubs/', views.AdminClubsList, name='AdminClubsList'),
@@ -87,6 +65,7 @@ urlpatterns = [
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
     path('monk/teams/api/get/', monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
+    path('team/playr/list/<slug:slug>/', views.AdminTeamPlayerList, name='AdminTeamPlayerList'),
     path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd, name='AdminTeamPlayerAdd'),
 
     ##########   Players  #########
@@ -95,6 +74,7 @@ urlpatterns = [
     path('player/update/<slug:slug>/', views.AdminPlayersUpdate, name='AdminPlayersUpdate'),
     path('player/archive/<slug:slug>/', views.AdminPlayersArchive, name='AdminPlayersArchive'),
     path('player/delete/<slug:slug>/', views.AdminPlayersDelete, name='AdminPlayersDelete'),
+    path('player/static/add/<slug:slug>/', views.AdminPlayerStaticAdd, name='AdminPlayerStaticAdd'),
     path('monk/players/api/get/', monks.AdminMonksPlayersGetData, name='AdminMonksPlayersGetData'),
 
     ##########   Match  #########
@@ -107,10 +87,17 @@ urlpatterns = [
     path('match/control/<slug:slug>/', views.AdminMatchControl, name='AdminMatchControl'),
     path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
     path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
+
     path('match/goals/add/<slug:slug>/', views.AdminMatchGoalsAdd, name='AdminMatchGoalsAdd'),
 
 
     ##########   Match By Team #########
+    path('match/team/player/<slug:match_slug>/<slug:slug>/', views.AdminMatchTeamPlayerList,
+         name='AdminMatchTeamPlayerList'),
+    path('match/player/static/add/<slug:match_slug>/<slug:slug>/', views.AdminMatchPlayerStaticAdd,
+            name='AdminMatchPlayerStaticAdd'),
+
+
     path('match/team/playr/transfer/<slug:slug>/', views.AdminTeamPlayerMatchAdd, name='AdminTeamPlayerMatchAdd'),
     path('match/team/playr/list/<slug:slug>/<slug:team_slug>/', views.AdminMatchDetailsByTeam,
          name='AdminMatchDetailsByTeam'),
@@ -118,22 +105,6 @@ urlpatterns = [
          name='AdminMatchTeamPlayerAdd'),
     path('match/team/event/add/<slug:slug>/<slug:team_slug>/', views.AdminMatchTeamEventAdd,
          name='AdminMatchTeamEventAdd'),
-
-
-
-    ##########   Api Data  #########
-    path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),
-    path('country/api/add/', monks.AdminMonksCountryList, name='AdminMonksCountryAdd'),
-    path('country/api/update/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
-    path('country/api/archive/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
-    path('monk/country/api/get/', monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
-
-
-    ################## Media ##################
-    path('media/', media.AdminYoutubeChannelList, name='AdminYoutubeChannelList'),
-    # path('media/update/<slug:slug>/', views.AdminMediaUpdate, name='AdminMediaUpdate'),
-    # path('media/archive/<slug:slug>/', views.AdminMediaArchive, name='AdminMediaArchive'),
-    # path('media/delete/<slug:slug>/', views.AdminMediaDelete, name='AdminMediaDelete'),
 
 
 ################## Match Report ##################
@@ -148,5 +119,18 @@ urlpatterns = [
     path('match/player/report/update/<slug:slug>/', operations.AdminMatchPlayerReportUpdate, name='AdminMatchPlayerReportUpdate'),
     path('match/player/report/archive/<slug:slug>/', operations.AdminMatchPlayerReportArchive, name='AdminMatchPlayerReportArchive'),
     path('match/player/report/delete/<slug:slug>/', operations.AdminMatchPlayerReportDelete, name='AdminMatchPlayerReportDelete'),
+
+    ##########   Api Data  #########
+    path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),
+    path('country/api/add/', monks.AdminMonksCountryList, name='AdminMonksCountryAdd'),
+    path('country/api/update/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
+    path('country/api/archive/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
+    path('monk/country/api/get/', monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
+
+    ################## Media ##################
+    path('media/', media.AdminYoutubeChannelList, name='AdminYoutubeChannelList'),
+    # path('media/update/<slug:slug>/', views.AdminMediaUpdate, name='AdminMediaUpdate'),
+    # path('media/archive/<slug:slug>/', views.AdminMediaArchive, name='AdminMediaArchive'),
+    # path('media/delete/<slug:slug>/', views.AdminMediaDelete, name='AdminMediaDelete'),
 
 ]

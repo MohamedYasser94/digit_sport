@@ -59,6 +59,42 @@
                                     </div>
                                 </div>
                                 <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Team' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="t_team" aria-label="{% translate 'Team' %}"
+                                                data-control="select2"
+
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ player.team.id }}">{{ player.team.title }}</option>
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Position' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="position" aria-label="{% translate 'Position' %}"
+                                                data-control="select2"
+
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ player.position }}">{{ player.position }}</option>
+                                            {% for value, text in transfer_form.position.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
 
                              <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-5">

@@ -91,7 +91,7 @@
                         <!--end::Table head-->
                         <!--begin::Table body-->
                         <tbody class="fw-bold text-gray-600">
-                        {% for item in match_team_players %}
+                        {% for item in team_players %}
                             <tr>
                                 <!--begin::Checkbox-->
                                 <td>
@@ -107,10 +107,10 @@
                                 <!--end::counter=-->
                                 <!--begin::Name=-->
                                 <td>
-                                    <a
+                                    <a href="{% url 'sport:AdminMatchPlayerStaticAdd' match.slug item.slug  %}"
                                             class="text-gray-800 text-hover-primary mb-1">
 
-                                        {{ item.player.name }}
+                                        {{ item.name }}
 
                                     </a>
                                 </td>
@@ -119,7 +119,7 @@
                                 <td>
                                     <a href="#"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.player.code }}
+                                        {{ item.code }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
@@ -127,7 +127,7 @@
                                 <td>
                                     <a href="{% url 'sport:AdminPlayersDetails' item.slug  %}"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.player.sport }}
+                                        {{ item.sport }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
@@ -225,8 +225,8 @@
                                 </td>
                                 <!--end::Action=-->
                             </tr>
-                        {% empty %}
-                            {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+{#                        {% empty %}#}
+{#                            {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}#}
                         {% endfor %}
 
                         </tbody>
@@ -287,7 +287,6 @@
                                     <div class="d-flex flex-wrap gap-5">
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
-
                                              <!--begin::Repeater-->
                                                 <div class="fs-1 text-gray-800 w-bolder mb-17"
                                                      id="kt_docs_repeater_speaker">
@@ -296,7 +295,7 @@
                                                         <div data-repeater-list="kt_docs_repeater_speaker">
                                                             <div data-repeater-item="">
                                                                 <div class="form-group row mb-5">
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-10">
                                                                         <label class="required form-label">{% translate 'Player' %}</label>
                                                                         <select class="form-select"
                                                                                 name="team_player"
@@ -308,21 +307,6 @@
                                                                             {% endfor %}
                                                                         </select>
                                                                     </div>
-
-                                                                    <div class="col-md-4">
-                                                                        <label class=" form-label">{% translate 'Position' %}</label>
-                                                                        <select class="form-select"
-                                                                                name="team_position"
-                                                                                data-kt-repeater="select2"
-                                                                                data-placeholder="Select an option">
-                                                                            <option></option>
-                                                                            {% for value, text in players_form.position.field.choices %}
-                                                                                <option value="{{ value }}">{{ text }}</option>
-                                                                            {% endfor %}
-                                                                        </select>
-
-                                                                    </div>
-
                                                                     <div class="col-md-2">
                                                                         <a href="javascript:" data-repeater-delete=""
                                                                            class="btn btn-sm btn-light-danger mt-3 mt-md-9">
@@ -342,17 +326,9 @@
                                                     <!--end::Form group-->
                                                 </div>
                                                 <!--end::Repeater-->
-
                                         </div>
                                         <!--end::Input group-->
-
-
-
                                     </div>
-
-
-
-
 
                                 </div>
                                 <!--end::Scroll-->

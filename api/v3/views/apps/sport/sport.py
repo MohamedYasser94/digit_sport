@@ -315,7 +315,7 @@ def PlayersBySportApiList(request,sport_name):
         success = True
         message = f"Send From Django API mix "
         players_serializer = PlayersSerializer(players_list, many=True)
-        sport_data = {'sport': 'volleyball', 'players': players_serializer.data, }
+        sport_data = {'sport': sport_name, 'players': players_serializer.data, }
 
         data = {'success': success, 'data': sport_data, 'message': message, }
 
@@ -323,36 +323,30 @@ def PlayersBySportApiList(request,sport_name):
     except Exception as e:
         success = False
         message = f"error in get data   {e}  "
-        sport_data = {'sport': 'volleyball', 'table': [], }
+        sport_data = {'sport': sport_name, 'table': [], }
         data = {'success': success, 'data': sport_data, 'message': message, }
         return JsonResponse(data, safe=False)
 
 
 ################## News ##################
 
-def SportNewsByCountryApiList(request, country, sport):
-    print()
-    if country == '' or country == None or country == 'all' or country == ':country':
-        country = 'Kuwait'
-    else:
-        country = country
-    if sport == '' or sport == None or sport == 'all' or sport == ':sport':
-        sport = 'Volleyball'
-    sport_list = Sport.objects.filter(name=sport, )
+def SportNewsByCountryApiList(request,):
+
+    sport_list = Sport.objects.all()
     if sport_list.count() > 0:
-        get_sport = Sport.objects.get(name=sport)
-        news_list = BlogArticle.objects.filter(sport=get_sport.id, country=country)
+
+        news_list = BlogArticle.objects.all()
         success = True
-        message = f"Send From Django API mix {country}"
+        message = f"Send From Django API mix "
         sport_serializer = SportSerializer(sport_list, many=True)
         news_serializer = AdminBlogArticleSerializer(news_list, many=True)
-        sport_data = {'country': country, 'sport': sport_serializer.data, 'articles': news_serializer.data, }
+        sport_data = { 'sport': sport_serializer.data, 'articles': news_serializer.data, }
 
     else:
         success = False
-        message = f"error in get data no data no data with this country {country} or sport {sport}"
+        message = f"error in get data no data no data with this country "
 
-        sport_data = {'country': country, 'sport': [], 'articles': [], }
+        sport_data = { 'articles': [], }
 
     data = {'success': success, 'data': sport_data, 'message': message,
 

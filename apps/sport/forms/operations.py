@@ -17,3 +17,10 @@ class AdminMatchPlayerReportForm(forms.ModelForm):
         model = MatchPlayerReport
         fields = '__all__'
         exclude = ('slug', 'code')
+
+
+class AdminPlayerStaticsForm(forms.ModelForm):
+    class Meta:
+        model = PlayerStatics
+        fields = '__all__'
+        exclude = ('slug', 'code')

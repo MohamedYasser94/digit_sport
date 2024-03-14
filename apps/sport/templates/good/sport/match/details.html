@@ -202,6 +202,8 @@
                                        data-bs-target="#kt_modal_event_home"
                                        data-bs-toggle="modal">{% translate 'Add Event' %}</a>
                                     <!--end::Link-->
+                                     <a class="btn btn-sm btn-light flex-shrink-0"
+                                       href="{% url 'sport:AdminMatchTeamPlayerList' match.slug home_team.slug %}">{% translate 'Player Static' %}</a>
 
                                 </div>
                                 <!--end::Footer-->
@@ -264,7 +266,7 @@
                                     <!--end::Link-->
                                     <!--begin::Link-->
                                     <a class="btn btn-sm btn-light flex-shrink-0"
-                                       href="">View Item</a>
+                                       href="{% url 'sport:AdminMatchTeamPlayerList' match.slug away_team.slug %}">{% translate 'Player Static' %}</a>
                                     <!--end::Link-->
                                 </div>
                                 <!--end::Footer-->
@@ -1111,7 +1113,7 @@
                                     <label class="required fs-6 fw-bold mb-2">{% translate 'Home Percentage' %}</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" class="form-control form-control-solid"
+                                    <input type="text" class="form-control form-control-solid"
                                            placeholder="{% translate 'Home Percentage' %}"
                                            name="home_percent"/>
                                     <!--end::Input-->
@@ -1123,7 +1125,7 @@
                                         <label class="required fs-6 fw-bold mb-2">{% translate 'Away Percentage' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="number" class="form-control form-control-solid"
+                                        <input type="text" class="form-control form-control-solid"
                                                placeholder="{% translate 'Away Percentage' %}"
                                                name="away_percent"/>
                                         <!--end::Input-->

@@ -2,6 +2,8 @@ from rest_framework.fields import SerializerMethodField
 from rest_framework.templatetags import rest_framework
 
 from api.v3.serializers.blog import *
+from api.v3.serializers.sport.operations import *
+from apps.sport.models import *
 from apps.sport.models.models import *
 from core.models.blog import *
 from digit_sport.settings import env
@@ -219,6 +221,7 @@ class PlayersSerializer(serializers.ModelSerializer):
     team = serializers.ReadOnlyField(source='team.name')
     sport = serializers.ReadOnlyField(source='sport.name')
     image = serializers.SerializerMethodField()
+    static = serializers.SerializerMethodField()
     class Meta:
         model = Players
         fields = '__all__'
@@ -230,6 +233,9 @@ class PlayersSerializer(serializers.ModelSerializer):
         except:
             image = None
             return image
+
+    def get_static(self, obj):
+        return PlayerStaticsSerializer(PlayerStatics.objects.filter(player=obj.id, ), many=True).data
 
 
 class SquadsSerializer(serializers.ModelSerializer):
@@ -324,7 +330,6 @@ class MatchSerializer(serializers.ModelSerializer):
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues_name = serializers.ReadOnlyField(source='venues.name')
     league_name = serializers.ReadOnlyField(source='league.name')
-
     sport_name = serializers.ReadOnlyField(source='sport.name')
 
     class Meta:

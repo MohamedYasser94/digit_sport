@@ -779,7 +779,12 @@ Half_List = (('1st Half', '1st Half'), ('2nd Half', '2nd Half'), ('Extra Time', 
 Set_List  = (('1stSet', '1st Set'), ('2ndSet', '2nd Set'), ('3rdSet', '3rdSet'), ('4thSet', '4th Set'), ('5thSet', '5th Set'),)
 Match_Statics = (  ('Goal','Goal'),('Messed Shots', 'Messed Shots'), ('Shots On Target', 'Shots On Target'), ('Shots Off Target', 'Shots Off Target'),
 ('Possession', 'Possession'), ('Passes', 'Passes'), ('Passes Completed', 'Passes Completed'), ('Passes Failed', 'Passes Failed'),
-('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),)
+('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),
+('Red Cards', 'Red Cards'), ('Injuries', 'Injuries'), ('Substitutions', 'Substitutions'), ('Other', 'Other'),
+                   ('Sidelined', 'Sidelined'), ('Own Goal', 'Own Goal'), ('Missed Penalty', 'Missed Penalty'), ('Penalties', 'Penalties'),
+                   ('Set', 'Set'),  ('Serv', 'Serv'),  ('Reception', 'Reception'), ('Shot', 'Shot'),('Block', 'Block'),
+                  ('Attack', 'Attack'),  ('Defense', 'Defense'), ('Spike', 'Spike'), ('Dig', 'Dig'), )
+
 Season_Order = (('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'), ('4th', '4th'), ('5th', '5th'), ('6th', '6th'), ('7th', '7th'), ('8th', '8th'), ('9th', '9th'), ('10th', '10th'),
 ('11th', '11th'), ('12th', '12th'), ('13th', '13th'), ('14th', '14th'), ('15th', '15th'), ('16th', '16th'), ('17th', '17th'), ('18th', '18th'), ('19th', '19th'), ('20th', '20th'),
 ('21st', '21st'), ('22nd', '22nd'), ('23rd', '23rd'), ('24th', '24th'), ('25th', '25th'), ('26th', '26th'), ('27th', '27th'), ('28th', '28th'), ('29th', '29th'), ('30th', '30th'),
@@ -788,12 +793,13 @@ Season_Order = (('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'), ('4th', '4th'), 
 ('51st', '51st'), ('52nd', '52nd'), ('53rd', '53rd'), ('54th', '54th'), ('55th', '55th'), ('56th', '56th'), ('57th', '57th'), ('58th', '58th'), ('59th', '59th'), ('60th', '60th'),
 ('61st', '61st'), ('62nd', '62nd'), )
 
+Statics_Type = (('General', 'General'), ('Match', 'General'), )
+
 
 ########## Blog ##############################
 
 
 COMMENT_STATUS = (('Open', 'Open'), ('Close', 'Close'),)
 Article_Type = (('Article', 'Article'), ('Page', 'Page'),)
-Video_Source = (('Youtube', 'Youtube'), ('Vimeo', 'Vimeo'),
-                ('Self', 'Self'), ('Other', 'Other'),)
+
 

@@ -1,0 +1,464 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminPlayerStaticAdd' player.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{{ player.name }}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                 <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Team' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="team" aria-label="{% translate 'Team' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Team' %}"
+                                                data-allow-clear="true"
+                                                data-dropdown-parent="#kt_ecommerce_edit_order_form"
+                                                class="form-select form-select-solid form-select-lg">
+
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Point' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="point_total" type="number" min="0"
+                                               value="{{ player_statics.point_total }}"
+                                               placeholder="{% translate 'Points' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                   <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Position' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="position" type="number" min="0"
+                                               value="{{ player_statics.position }}"
+                                               placeholder="{% translate 'Position' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Total Cut' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <input class="form-control" name="cut_ball" type="number" min="0"
+                                               value="{{ player_statics.cut_ball }}"
+                                               placeholder="{% translate 'Total Cut' %}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Total Shot' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="shot_ball" type="number" min="0"
+                                                  value="{{ player_statics.shot_ball }}"
+                                               placeholder="{% translate 'Total Shot' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'total Score' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="score_ball" type="number" min="0"
+                                                  value="{{ player_statics.score_ball }}"
+                                               placeholder="{% translate 'total Score' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Set Points' %}</div>
+                                <!--end::Title-->
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Set One' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="set1" type="number" min="0"
+                                                  value="{{ player_statics.set1 }}"
+                                               placeholder="{% translate 'Set One' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+                                        <div class="fv-row flex-row-fluid">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Set Two' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input class="form-control" name="set2" type="number" min="0"
+                                                    value="{{ player_statics.set2 }}"
+                                                placeholder="{% translate 'Set Two' %}"/>
+
+                                            <!--end::Input-->
+                                        </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Set Three' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input class="form-control" name="set3" type="number" min="0"
+                                                    value="{{ player_statics.set3 }}"
+                                                placeholder="{% translate 'Set Three' %}"/>
+
+                                            <!--end::Input-->
+                                            </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Set Four' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input class="form-control" name="set4" type="number" min="0"
+                                                    value="{{ player_statics.set4 }}"
+                                                placeholder="{% translate 'Set Four' %}"/>
+
+                                            <!--end::Input-->
+                                            </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <!--begin::Label-->
+                                            <label class="required form-label">{% translate 'Set Five' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input class="form-control" name="set5" type="number" min="0"
+                                                    value="{{ player_statics.set5 }}"
+                                                placeholder="{% translate 'Set Five' %}"/>
+
+                                            <!--end::Input-->
+                                            </div>
+
+
+
+
+
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Matches Runs Point' %}</div>
+                                <!--end::Title-->
+
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'point_bp' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="point_bp" type="number" min="0"
+                                                  value="{{ player_statics.point_bp }}"
+                                               placeholder="{% translate 'point_bp' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'point_wl' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="point_wl" type="number" min="0"
+                                                    value="{{ player_statics.point_wl }}"
+                                               placeholder="{% translate 'point_wl' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'serve_total' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="serve_total" type="number" min="0"
+                                                    value="{{ player_statics.serve_total }}"
+                                               placeholder="{% translate 'serve_total' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'serve_err' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="serve_err" type="number" min="0"
+                                                    value="{{ player_statics.serve_err }}"
+                                               placeholder="{% translate 'serve_err' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'serve_pts' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="serve_pts" type="number" min="0"
+                                                    value="{{ player_statics.serve_pts }}"
+                                               placeholder="{% translate 'serve_pts' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                                 <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'reception_total' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="reception_total" type="number" min="0"
+                                                  value="{{ player_statics.reception_total }}"
+                                               placeholder="{% translate 'reception_total' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'reception_err' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="reception_err" type="number" min="0"
+                                                    value="{{ player_statics.reception_err }}"
+                                               placeholder="{% translate 'reception_err' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'reception_pos' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="reception_pos" type="number" min="0"
+                                                    value="{{ player_statics.reception_pos }}"
+                                               placeholder="{% translate 'reception_pos' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'reception_exc' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="reception_exc" type="number" min="0"
+                                                    value="{{ player_statics.reception_exc }}"
+                                               placeholder="{% translate 'reception_exc' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+                                 <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'attack_total' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="attack_total" type="number" min="0"
+                                                  value="{{ player_statics.attack_total }}"
+                                               placeholder="{% translate 'attack_total' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'attack_err' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="attack_err" type="number" min="0"
+                                                    value="{{ player_statics.attack_err }}"
+                                               placeholder="{% translate 'attack_err' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'attack_pos' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="attack_pos" type="number" min="0"
+                                                    value="{{ player_statics.attack_pos }}"
+                                               placeholder="{% translate 'attack_pos' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'attack_exc' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="attack_exc" type="number" min="0"
+                                                    value="{{ player_statics.attack_exc }}"
+                                               placeholder="{% translate 'attack_exc' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'block_pts' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="block_pts" type="number" min="0"
+                                                  value="{{ player_statics.block_pts }}"
+                                               placeholder="{% translate 'block_pts' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+
+                            {% if season_table_form.errors %}
+                                {% for error_field, error_message in season_table_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                           {% for message in messages %}
+                            {% if message.extra_tags == 'Season Table' %}
+                                {% if message.tags == 'Season Table success' %}
+                                    <div class="alert alert-info">
+                                {% elif message.tags == 'Season Table danger' %}
+                                    <div class="alert alert-danger">
+                                {% endif %}
+                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

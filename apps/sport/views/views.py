@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, datetime
 
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from apps.sport.forms.forms import *
+from apps.sport.forms.operations import *
 from apps.sport.models.models import *
 from core.models.core import CommonTranslate
 from core.views.notifications import AdminFcmNotifications
@@ -175,7 +176,6 @@ def AdminSportList(request):
 
         if sport_form:
             name = request.POST.get('name')
-
             keyword = request.POST.get('keyword')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
@@ -1158,9 +1158,58 @@ def AdminTeamsDelete(request, slug):
 
 @authenticated_staf
 @staff_only
+def AdminTeamPlayerList(request, slug):
+    team = Teams.objects.get(slug=slug)
+    players = Players.objects.filter(team=team)
+    if request.method == "POST":
+        players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
+        if players_form:
+            name = request.POST.get('name')
+            position = request.POST.get('position')
+            age = request.POST.get('age')
+            height = request.POST.get('height')
+            country = request.POST.get('country')
+            # team = request.POST.get('team')
+            sport = request.POST.get('sport')
+            gender = request.POST.get('gender')
+            image = request.FILES.get('image')
+            image_path = request.POST.get('image_path')
+            keyword = request.POST.get('keyword')
+
+            if sport == None or sport == '':
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
+
+
+            team = Teams.objects.get(id=team.id)
+            in_team = 'Yes'
+
+            player_object = Players(
+                name=name, position=position, age=age, height=height, country=country, team=team, sport=sport,
+                in_team=in_team,
+                gender=gender, keyword=keyword, image=image, image_path=image_path)
+            player_object.save()
+            team.player_count += 1
+            team.save()
+            # match_team_player_object = MatchTeamPlayer( team=team, player=player_object)
+            # match_team_player_object.save()
+            messages.success(request, _("Players Add Successfully"), extra_tags='Players')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminTeamPlayerList', kwargs={'slug': slug}))
+        else:
+            messages.error(request, _("Players Not Add , Please Try Again"), extra_tags='Players')
+
+    context = {'team': team, 'players': players,
+               'players_form': AdminPlayersForm(), 'transfer_form': AdminTransfersForm(),
+               'current_page': _('Add Player'),
+               'prev_Page': _('Teams'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/teams/players.html', context)
+@authenticated_staf
+@staff_only
 def AdminTeamPlayerAdd(request, slug):
     team = Teams.objects.get(slug=slug)
     players = Players.objects.filter(in_team='No')
+
 
     if request.method == "POST":
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
@@ -1207,7 +1256,42 @@ def AdminTeamPlayerAdd(request, slug):
                'current_page': _('Add Player'),
                'prev_Page': _('Teams'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/teams/player.html', context)
+@authenticated_staf
+@staff_only
+def AdminMatchTeamPlayerList(request,match_slug, slug):
+    match = Match.objects.get(slug=match_slug)
+    team = Teams.objects.get(slug=slug)
+    players = Players.objects.filter(in_team='No')
+    team_players = Players.objects.filter(team=team)
+    match_players = MatchTeamPlayer.objects.filter(team=team)
+    print('match_players', match_players)
 
+    if request.method == "POST":
+        match_team_player_form = AdminMatchTeamPlayerForm(request.POST or None, request.FILES or None)
+        if match_team_player_form:
+            team_player = request.POST.getlist('[team_player]')
+            print('team_player', request.POST)
+
+            for player in zip(team_player):
+                player_object = Players.objects.get(id=player)
+                match_team_player_object = MatchTeamPlayer(match=match,team=team,player=player_object)
+                match_team_player_object.save()
+            messages.success(request, _("Player Add Successfully"), extra_tags='Match Team Player')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'match_slug': match_slug, 'slug': slug}))
+        else:
+            messages.error(request, _("Player Not Add , Please Try Again"), extra_tags='Match Team Player')
+
+    context = {
+                'match': match,
+                'team': team,
+                'team_players': team_players,
+               'match_players': match_players,
+                'players': players,
+               'match_team_player_form': AdminMatchTeamPlayerForm(),
+               'summary_form': AdminMatchSummaryForm(),
+               'static_form': AdminMatchStaticsForm(),
+               'current_page': _('Match Team Players')}
+    return render(request, f'{BACKEND_TEMPLATES}/sport/match/player.html', context)
 @authenticated_staf
 @staff_only
 def AdminTeamPlayerMatchAdd(request, slug):
@@ -1219,9 +1303,9 @@ def AdminTeamPlayerMatchAdd(request, slug):
         transfer_form = AdminTransfersForm(request.POST or None, request.FILES or None)
         if players_form:
             team_player = request.POST.getlist('[team_player]')
-            team_position = request.POST.getlist('[team_position]')
-            print(request.POST)
-            for player,  position in zip(team_player,  team_position):
+
+
+            for player in zip(team_player):
 
                 player_object = Players.objects.get(id=player)
                 player_object.owner_model = ContentType.objects.get(model = 'Teams')
@@ -1229,8 +1313,7 @@ def AdminTeamPlayerMatchAdd(request, slug):
                 player_object.in_team = 'Yes'
                 player_object.save()
 
-                transfer_object = Transfers(player=player_object,  position=position,)
-
+                transfer_object = Transfers(player=player_object)
                 transfer_object.save()
                 team_object = Teams.objects.get(slug=slug)
                 team_object.player_count += 1
@@ -1249,14 +1332,86 @@ def AdminTeamPlayerMatchAdd(request, slug):
                'prev_Page': _('Teams'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/teams/player.html', context)
 
+@authenticated_staf
+@staff_only
+def AdminMatchPlayerStaticAdd(request, match_slug, slug):
+    match = Match.objects.get(slug=match_slug)
+    player = Players.objects.get(slug=slug)
+    try:
+        player_statics = MatchPlayerReport.objects.get(player=player, match=match)
+    except:
+        player_statics = None
+    try:
+        total_statics = PlayerStatics.objects.get(player=player)
+    except:
+        total_statics = None
+    if request.method == "POST":
+        static_form = AdminPlayerStaticsForm(request.POST or None, request.FILES or None)
+        if static_form:
+
+            set_ball = request.POST.get('set_ball')
+            serve_ball = request.POST.get('serve_ball')
+            cut_ball= request.POST.get('cut_ball')
+            shot_ball = request.POST.get('shot_ball')
+            score_ball = request.POST.get('score_ball')
+            try:
+                player_ms_object = MatchPlayerReport.objects.get(player=player.id, match=match)
+                player_ms_object.set_ball = set_ball
+                player_ms_object.serve_ball = serve_ball
+                player_ms_object.cut_ball = cut_ball
+                player_ms_object.shot_ball = shot_ball
+                player_ms_object.score_ball = score_ball
+                player_ms_object.static_type = 'General'
+                player_ms_object.save()
+            except:
+
+                player_ms_object = MatchPlayerReport(player=player,match=match,
+                                                        set_ball=set_ball, serve_ball=serve_ball, cut_ball=cut_ball,
+                                                        shot_ball=shot_ball, score_ball=score_ball,
+                                                      static_type='General')
+                player_ms_object.save()
+            try:
+                player_ts_object = PlayerStatics.objects.get(player=player)
+                player_ts_object.set_ball += int(set_ball)
+                player_ts_object.serve_ball += int(serve_ball)
+                player_ts_object.cut_ball += int(cut_ball)
+                player_ts_object.shot_ball += int(shot_ball)
+                player_ts_object.score_ball += int(score_ball)
+                player_ts_object.save()
+            except Exception as e:
+                print('player_ts_object', e)
+                player_ts_object = PlayerStatics(player=player, set_ball=set_ball, serve_ball=serve_ball, cut_ball=cut_ball,
+                                              shot_ball=shot_ball, score_ball=score_ball)
+                player_ts_object.save()
+
+
+
+
+            messages.success(request, _("Player Statics Add Successfully"), extra_tags='Players')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'match_slug': match_slug, 'slug': player.team.slug}))
+        else:
+            messages.error(request, _("Player Statics Not Add , Please Try Again"), extra_tags='Players')
+
+    context = {'match': match, 'player': player,
+
+               'player_statics': player_statics,'total_statics': total_statics,
+               'static_form': AdminPlayerStaticsForm(), 'current_page': _('Add Statics'),
+
+                'prev_Page': _('Players'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics.html', context)
+
+
+
+
+
+
+
 ##########################  Players ################################
 @authenticated_staf
 @staff_only
 def AdminPlayersList(request):
     sport_list = [ 'basketball', 'volleyball']
-
     players = Players.objects.all()
-
     teams = Teams.objects.all()
 
     if request.method == "POST":
@@ -1281,14 +1436,19 @@ def AdminPlayersList(request):
 
             if team == None or team == '':
                 team = None
+                in_team = 'No'
             else:
                 team = Teams.objects.get(id=team)
+                in_team = 'Yes'
 
             player_object = Players(
-                name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,
-                gender=gender,keyword=keyword,image=image,image_path=image_path
-            )
+                name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
+                gender=gender,keyword=keyword,image=image,image_path=image_path)
             player_object.save()
+            team.player_count += 1
+            team.save()
+            # match_team_player_object = MatchTeamPlayer( team=team, player=player_object)
+            # match_team_player_object.save()
             messages.success(request, _("Players Add Successfully"), extra_tags='Players')
             return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
         else:
@@ -1302,13 +1462,21 @@ def AdminPlayersList(request):
 @authenticated_staf
 @staff_only
 def AdminPlayersUpdate(request, slug):
+
     player = Players.objects.get(slug=slug)
+    player_transform = Transfers.objects.filter(player=player)
+    teams = Teams.objects.all()
+
 
     if request.method == "POST":
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None, instance=player)
+        transfer_form = AdminTransfersForm(request.POST or None, request.FILES or None)
+
         if players_form:
             name = request.POST.get('name')
             short_code = request.POST.get('short_code')
+            t_team = request.POST.get('t_team')
+            position = request.POST.get('position')
             country = request.POST.get('country')
             sport = request.POST.get('sport')
             gender = request.POST.get('gender')
@@ -1321,6 +1489,12 @@ def AdminPlayersUpdate(request, slug):
                 sport = None
             else:
                 sport = Sport.objects.get(id=sport)
+            if t_team == None or t_team == '':
+                t_team = None
+                in_team = 'No'
+            else:
+                t_team = Teams.objects.get(id=t_team)
+                in_team = 'Yes'
 
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
@@ -1335,7 +1509,17 @@ def AdminPlayersUpdate(request, slug):
             player_object.image_path = image_path
             player_object.gender = gender
             player_object.keyword = keyword
+            player_object.team = t_team
+            player_object.in_team = in_team
             player_object.save()
+            date = datetime.now()
+
+            transfer_object = Transfers(player=player_object, date=date, position=position,
+                                         to_team=t_team)
+            transfer_object.save()
+            t_team.player_count += 1
+            t_team.save()
+
 
             messages.success(request, _("Players Update Successfully"), extra_tags='Players')
             return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
@@ -1343,7 +1527,10 @@ def AdminPlayersUpdate(request, slug):
             messages.error(request, _("Players Not Update , Please Try Again"), extra_tags='Players')
     else:
         messages.error(request, _("Players Not Update , Please Try Again"), extra_tags='Players')
-    context = {'player': player, 'players_form': AdminPlayersForm(instance=player), 'current_page': _('Update'),
+    context = {'player': player, 'player_transform': player_transform,'teams': teams,
+               'players_form': AdminPlayersForm(instance=player), 'transfer_form': AdminTransfersForm(),
+
+               'current_page': _('Update'),
                 'prev_Page': _('Players'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/update.html', context)
 
@@ -1375,6 +1562,95 @@ def AdminPlayersDelete(request, slug):
     else:
         return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
 
+
+@authenticated_staf
+@staff_only
+def AdminPlayerStaticAdd(request, slug):
+    player = Players.objects.get(slug=slug)
+    try:
+        player_statics = PlayerStatics.objects.get(player=player)
+    except:
+        player_statics = None
+
+    if request.method == "POST":
+        static_form = AdminPlayerStaticsForm(request.POST or None, request.FILES or None)
+        if static_form:
+
+            cut_ball= request.POST.get('cut_ball')
+            shot_ball = request.POST.get('shot_ball')
+            score_ball = request.POST.get('score_ball')
+            set1 = request.POST.get('set1')
+            set2 = request.POST.get('set2')
+            set3 = request.POST.get('set3')
+            set4 = request.POST.get('set4')
+            set5 = request.POST.get('set5')
+            vote =  request.POST.get('vote')
+            point_total = request.POST.get('point_total')
+            position = request.POST.get('position')
+            point_bp = request.POST.get('point_bp')
+            point_wl = request.POST.get('point_wl')
+            serve_total = request.POST.get('serve_total')
+            serve_err = request.POST.get('serve_err')
+            serve_pts = request.POST.get('serve_pts')
+            reception_total = request.POST.get('reception_total')
+            reception_err = request.POST.get('reception_err')
+            reception_pos = request.POST.get('reception_pos')
+            reception_exc = request.POST.get('reception_exc')
+            attack_total = request.POST.get('attack_total')
+            attack_err = request.POST.get('attack_err')
+            attack_pos = request.POST.get('attack_pos')
+            attack_exc = request.POST.get('attack_exc')
+            block_pts = request.POST.get('block_pts')
+            static_type = request.POST.get('static_type')
+
+            try:
+                player_statics_object = PlayerStatics.objects.get(player=player)
+                player_statics_object.cut_ball = cut_ball
+                player_statics_object.shot_ball = shot_ball
+                player_statics_object.score_ball = score_ball
+                player_statics_object.set1 = set1
+                player_statics_object.set2 = set2
+                player_statics_object.set3 = set3
+                player_statics_object.set4 = set4
+                player_statics_object.set5 = set5
+                player_statics_object.vote = vote
+                player_statics_object.point_total = point_total
+                player_statics_object.position = position
+                player_statics_object.point_bp = point_bp
+                player_statics_object.point_wl = point_wl
+                player_statics_object.serve_total = serve_total
+                player_statics_object.serve_err = serve_err
+                player_statics_object.serve_pts = serve_pts
+                player_statics_object.reception_total = reception_total
+                player_statics_object.reception_err = reception_err
+                player_statics_object.reception_pos = reception_pos
+                player_statics_object.reception_exc = reception_exc
+                player_statics_object.attack_total = attack_total
+                player_statics_object.attack_err = attack_err
+                player_statics_object.attack_pos = attack_pos
+                player_statics_object.attack_exc = attack_exc
+                player_statics_object.block_pts = block_pts
+                player_statics_object.static_type = 'General'
+                player_statics_object.save()
+            except:
+
+                player_statics_object = PlayerStatics(player=player,cut_ball=cut_ball,shot_ball=shot_ball,score_ball=score_ball,set1=set1,set2=set2,set3=set3,set4=set4,set5=set5,
+                                                 vote=vote,point_total=point_total,position=position,
+                                                      point_bp=point_bp,point_wl=point_wl,serve_total=serve_total,
+                                                 serve_err=serve_err,serve_pts=serve_pts,reception_total=reception_total,reception_err=reception_err,
+                                                 reception_pos=reception_pos,reception_exc=reception_exc,attack_total=attack_total,attack_err=attack_err,
+                                                 attack_pos=attack_pos,attack_exc=attack_exc,block_pts=block_pts,static_type='General')
+            player_statics_object.save()
+            messages.success(request, _("Player Statics Add Successfully"), extra_tags='Players')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
+        else:
+            messages.error(request, _("Player Statics Not Add , Please Try Again"), extra_tags='Players')
+
+    context = {'player': player,
+               'player_statics': player_statics, 'static_form': AdminPlayerStaticsForm(), 'current_page': _('Add Statics'),
+
+                'prev_Page': _('Players'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/players/statics.html', context)
 
 ##########################  Match ################################
 @authenticated_staf
@@ -1585,7 +1861,7 @@ def AdminMatchControl(request, slug):
     if request.method == 'POST':
         match_object = Match.objects.get(slug=slug)
         if request.POST.get('start_time') == None or request.POST.get('start_time') == '':
-            match_object.start_time = None
+            match_object.start_time = match_object.start_time
         else:
             match_object.start_time = request.POST.get('start_time')
         match_object.current_minute = request.POST.get('current_minute')
@@ -1748,6 +2024,9 @@ def AdminMatchStaticAdd(request, slug):
             'last_statics': last_statics,
             'current_page': _('Details')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
+
+
+
 
 
 @authenticated_staf

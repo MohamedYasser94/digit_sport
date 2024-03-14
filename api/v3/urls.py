@@ -39,7 +39,7 @@ urlpatterns = [path('v3/', include(router.urls)),
 
     ##################### Youtube Channel API ########################
     path('v3/media/youtube/channel/', media.YoutubeChannelApiList, name='YoutubeChannelApiList'),
-    path('v3/sport/general/news/list/<str:country>/<str:sport>/', sport.SportNewsByCountryApiList,
+    path('v3/sport/general/news/list/', sport.SportNewsByCountryApiList,
          name='SportNewsByCountryApiList'),
     path('v3/sport/news/details/<int:article_id>/', sport.SportNewsApiDetails, name='SportNewsApiDetails'),
     path('v3/videos/list/', sport.SportVideosApiList, name='SportVideosApiList'),

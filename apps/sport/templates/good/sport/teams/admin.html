@@ -120,7 +120,7 @@
                                         <!--end::Email=-->
                                     <!--begin::Email=-->
                                         <td>
-                                            <a href="{% url 'sport:AdminTeamPlayerAdd' item.slug %}"
+                                            <a href="{% url 'sport:AdminTeamPlayerList' item.slug %}"
                                                     class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.player_count }}
                                             </a>
@@ -715,66 +715,66 @@
 {% endblock %}
 {% block custom_js %}
 
- <script>
-        const MonkTeamsApp = Vue.createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    CheckOutVisible: false,
-                    CheckStatus: 'Hide',
-                    GetStatus: '',
-                    GetMessage: '',
-                    numberOfPages: 1,
-                    sportType: '',
-
-                }
-            },
-            methods: {
-                getMonkTeamsData: function () {
-                    event.preventDefault();
-                    console.log('addNewAppointment',);
-                    const url = "{% url 'sport:AdminMonksTeamsGetData'   %}";
-
-                    payload = {
-                        "csrfmiddlewaretoken": "{{ csrf_token }}",
-                        "pages": this.numberOfPages,
-                        "sport": this.sportType,
-
-                    }
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        data: payload,
-                        success: (data) => {
-                            console.log('data', data)
-                            this.CheckOutVisible = true
-                            this.CheckStatus = 'Show'
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.CheckOutVisible = true
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-
-                        },
-                    });
-                },
-            },
-            created() {
-
-            }
-        })
-        MonkTeamsApp.mount('#monkteams-app')
-        MonkTeamsApp.config.devtools = true
-
-
-    </script>
+{# <script>#}
+{#        const MonkTeamsApp = Vue.createApp({#}
+{#            delimiters: ['[[', ']]'],#}
+{#            data() {#}
+{#                return {#}
+{#                    CheckOutVisible: false,#}
+{#                    CheckStatus: 'Hide',#}
+{#                    GetStatus: '',#}
+{#                    GetMessage: '',#}
+{#                    numberOfPages: 1,#}
+{#                    sportType: '',#}
+{##}
+{#                }#}
+{#            },#}
+{#            methods: {#}
+{#                getMonkTeamsData: function () {#}
+{#                    event.preventDefault();#}
+{#                    console.log('addNewAppointment',);#}
+{#                    const url = "{% url 'sport:AdminMonksTeamsGetData'   %}";#}
+{##}
+{#                    payload = {#}
+{#                        "csrfmiddlewaretoken": "{{ csrf_token }}",#}
+{#                        "pages": this.numberOfPages,#}
+{#                        "sport": this.sportType,#}
+{##}
+{#                    }#}
+{#                    jQuery.ajax({#}
+{#                        type: 'POST',#}
+{#                        dataType: "json",#}
+{#                        url: url,#}
+{#                        timeout: 5000,#}
+{#                        data: payload,#}
+{#                        success: (data) => {#}
+{#                            console.log('data', data)#}
+{#                            this.CheckOutVisible = true#}
+{#                            this.CheckStatus = 'Show'#}
+{#                            this.GetStatus = data.type#}
+{#                            this.GetMessage = data.message#}
+{##}
+{#                        },#}
+{#                        error: function (data) {#}
+{#                            console.error("ERROR...", data)#}
+{#                            this.CheckOutVisible = true#}
+{#                            this.GetStatus = data.type#}
+{#                            this.GetMessage = data.message#}
+{##}
+{##}
+{#                        },#}
+{#                    });#}
+{#                },#}
+{#            },#}
+{#            created() {#}
+{##}
+{#            }#}
+{#        })#}
+{#        MonkTeamsApp.mount('#monkteams-app')#}
+{#        MonkTeamsApp.config.devtools = true#}
+{##}
+{##}
+{#    </script>#}
 
 {% endblock custom_js %}
 {% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
