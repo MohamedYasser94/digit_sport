@@ -31,8 +31,7 @@
                                                         {% if match.league.image_path %}
                                                      style="background-image:url('{{ match.league.image_path }}')"
                                                         {% else %}
-                                                     style="background-image:url('
-                                                             {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-42.jpg')"
+                                                     style="background-image:url('{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-42.jpg')"
 
                                                         {% endif %}
                                                 ></div>
@@ -200,7 +199,7 @@
                                     <!--begin::Link-->
                                     <a class="btn btn-sm btn-primary flex-shrink-0 me-2"
                                        data-bs-target="#kt_modal_event_home"
-                                       data-bs-toggle="modal">{% translate 'Add Event' %}</a>
+                                       data-bs-toggle="modal">{% translate 'Set Goal' %}</a>
                                     <!--end::Link-->
                                      <a class="btn btn-sm btn-light flex-shrink-0"
                                        href="{% url 'sport:AdminMatchTeamPlayerList' match.slug home_team.slug %}">{% translate 'Player Static' %}</a>
@@ -262,7 +261,7 @@
                                     <!--begin::Link-->
                                     <a class="btn btn-sm btn-primary flex-shrink-0 me-2"
                                        data-bs-target="#kt_modal_event_away"
-                                       data-bs-toggle="modal">{% translate 'Add Event' %}</a>
+                                       data-bs-toggle="modal">{% translate 'Set Goal' %}</a>
                                     <!--end::Link-->
                                     <!--begin::Link-->
                                     <a class="btn btn-sm btn-light flex-shrink-0"
@@ -494,6 +493,103 @@
                                                 <div class="separator separator-dashed my-3"></div>
                                                 <!--end::Separator-->
                                             {% endfor %}
+                                            {% elif match.sport.name == 'handball' %}
+                                            {% for item in match_goal %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.home_score }}-{{ item.away_score }}</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.set }}</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% empty %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
+                                                                Ltd.</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-success fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>2.6%</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% endfor %}
                                         {% endif %}
 
 
@@ -580,51 +676,7 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                            {% empty %}
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="symbol symbol-50px me-3">
-                                                                <img src="
 
-                                                                        {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg"
-                                                                     class="" alt=""/>
-                                                            </div>
-                                                            <div class="d-flex justify-content-start flex-column">
-                                                                <a href="#"
-                                                                   class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">The
-                                                                    Art</a>
-                                                                <span class="text-gray-500 fw-semibold d-block fs-7">Jenny Wilson</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">0.054 ETH</span>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">0.089 ETH</span>
-                                                    </td>
-                                                    <td class="pe-0">
-                                                        <div class="d-flex align-items-center justify-content-end">
-                                                            <div class="symbol symbol-30px me-3">
-                                                                <img src="
-
-                                                                        {% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-13.jpg"
-                                                                     class="" alt=""/>
-                                                            </div>
-                                                            <span class="text-gray-600 fw-bold d-block fs-6">0.089 ETH</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">1h 43m 52s</span>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <a href="#"
-                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
-                                                            <i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
                                             {% endfor %}
 
                                             </tbody>
@@ -647,7 +699,7 @@
                                     <!--begin::Title-->
                                     <h3 class="card-title align-items-start flex-column">
                                         <span class="card-label fw-bold text-gray-800">{% translate 'Match Event' %}</span>
-                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">8k social visitors</span>
+
                                     </h3>
                                     <!--end::Title-->
                                     <!--begin::Toolbar-->
@@ -706,54 +758,7 @@
                                             <!--begin::Separator-->
                                             <div class="separator separator-dashed my-3"></div>
                                             <!--end::Separator-->
-                                        {% empty %}
-                                            <!--begin::Item-->
-                                            <div class="d-flex flex-stack">
-                                                <!--begin::Section-->
-                                                <div class="d-flex align-items-center me-5">
-                                                    <!--begin::Flag-->
-                                                    <img src="
 
-                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
-                                                         class="me-4 w-30px" style="border-radius: 4px" alt=""/>
-                                                    <!--end::Flag-->
-                                                    <!--begin::Content-->
-                                                    <div class="me-5">
-                                                        <!--begin::Title-->
-                                                        <a href="#"
-                                                           class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
-                                                            Ltd.</a>
-                                                        <!--end::Title-->
-                                                        <!--begin::Desc-->
-                                                        <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
-                                                        <!--end::Desc-->
-                                                    </div>
-                                                    <!--end::Content-->
-                                                </div>
-                                                <!--end::Section-->
-                                                <!--begin::Wrapper-->
-                                                <div class="d-flex align-items-center">
-                                                    <!--begin::Number-->
-                                                    <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
-                                                    <!--end::Number-->
-                                                    <!--begin::Info-->
-                                                    <div class="m-0">
-                                                        <!--begin::Label-->
-                                                        <span class="badge badge-light-success fs-base">
-																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
-																		<span class="path1"></span>
-																		<span class="path2"></span>
-																	</i>2.6%</span>
-                                                        <!--end::Label-->
-                                                    </div>
-                                                    <!--end::Info-->
-                                                </div>
-                                                <!--end::Wrapper-->
-                                            </div>
-                                            <!--end::Item-->
-                                            <!--begin::Separator-->
-                                            <div class="separator separator-dashed my-3"></div>
-                                            <!--end::Separator-->
                                         {% endfor %}
 
                                     </div>
@@ -840,51 +845,7 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                            {% empty %}
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="symbol symbol-50px me-3">
-                                                                <img src="
 
-                                                                        {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg"
-                                                                     class="" alt=""/>
-                                                            </div>
-                                                            <div class="d-flex justify-content-start flex-column">
-                                                                <a href="#"
-                                                                   class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">The
-                                                                    Art</a>
-                                                                <span class="text-gray-500 fw-semibold d-block fs-7">Jenny Wilson</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">0.054 ETH</span>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">0.089 ETH</span>
-                                                    </td>
-                                                    <td class="pe-0">
-                                                        <div class="d-flex align-items-center justify-content-end">
-                                                            <div class="symbol symbol-30px me-3">
-                                                                <img src="
-
-                                                                        {% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-13.jpg"
-                                                                     class="" alt=""/>
-                                                            </div>
-                                                            <span class="text-gray-600 fw-bold d-block fs-6">0.089 ETH</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end pe-0">
-                                                        <span class="text-gray-600 fw-bold fs-6">1h 43m 52s</span>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <a href="#"
-                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
-                                                            <i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
                                             {% endfor %}
 
                                             </tbody>
@@ -940,8 +901,8 @@
                                 <h1 class="mb-3">{% translate 'Match Control' %}</h1>
                                 <!--end::Title-->
                                 <!--begin::Description-->
-                                <div class="text-muted fw-semibold fs-5">{% translate 'Control of Match Half' %}
-                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                <div class="text-muted fw-semibold fs-5">{% translate 'Control of Time' %}
+
                                 </div>
                                 <!--end::Description-->
                             </div>
@@ -953,13 +914,10 @@
                                     <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input id="match_start_time" type="datetime-local" class="form-control form-control-solid"
-                                           placeholder="{% translate 'Start Time' %}"  min="{{ match.start_time|date:'Y-m-d ,Hi' }}"
-                                           name="start_time"/>
-                                    <script>
-                                            document.getElementById('match_start_time').defaultValue =
-                                                "{{ match.start_time|date:'Y-m-d ,Hi' }}"
-                                        </script>
+                                    <input id="match_start_time" type="text" class="form-control form-control-solid" disabled
+                                           placeholder="{% translate 'Start Time' %}"  value="{{ match.start_time|date:'Y-m-d , H:i' }}"
+                                           />
+
                                     <!--end::Input-->
                                 </div>
                                 <!--begin::Input group-->

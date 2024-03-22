@@ -86,7 +86,7 @@ def AdminSportCategoryUpdate(request, slug):
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             status = request.POST.get('status')
-            print(request.POST)
+           
 
             if category == None or category == '' or category == 'None':
                 category = None
@@ -1074,7 +1074,7 @@ def AdminTeamsUpdate(request, slug):
             image_path = request.POST.get('image_path')
             status = 'Active'
 
-            print(request.POST)
+
 
             try:
                 check_teams = Teams.objects.get(name=name).exclude(slug=slug)
@@ -1111,7 +1111,7 @@ def AdminTeamsUpdate(request, slug):
             team_object.keyword = keyword
 
             team_object.image_path = image_path
-            print(status)
+
             team_object.status = status
             if image == None or image == '':
                 team_object.image = team.image
@@ -1221,7 +1221,7 @@ def AdminTeamPlayerAdd(request, slug):
             from_team = request.POST.getlist('[from_team]')
             to_team = request.POST.getlist('[to_team]')
 
-            print(request.POST)
+           
             for player, date, position, f_team, t_team in zip(team_player, start_date, team_position, from_team, to_team):
 
                 player_object = Players.objects.get(id=player)
@@ -1264,13 +1264,13 @@ def AdminMatchTeamPlayerList(request,match_slug, slug):
     players = Players.objects.filter(in_team='No')
     team_players = Players.objects.filter(team=team)
     match_players = MatchTeamPlayer.objects.filter(team=team)
-    print('match_players', match_players)
+
 
     if request.method == "POST":
         match_team_player_form = AdminMatchTeamPlayerForm(request.POST or None, request.FILES or None)
         if match_team_player_form:
             team_player = request.POST.getlist('[team_player]')
-            print('team_player', request.POST)
+
 
             for player in zip(team_player):
                 player_object = Players.objects.get(id=player)
@@ -1379,7 +1379,7 @@ def AdminMatchPlayerStaticAdd(request, match_slug, slug):
                 player_ts_object.score_ball += int(score_ball)
                 player_ts_object.save()
             except Exception as e:
-                print('player_ts_object', e)
+
                 player_ts_object = PlayerStatics(player=player, set_ball=set_ball, serve_ball=serve_ball, cut_ball=cut_ball,
                                               shot_ball=shot_ball, score_ball=score_ball)
                 player_ts_object.save()
@@ -1656,7 +1656,7 @@ def AdminPlayerStaticAdd(request, slug):
 @authenticated_staf
 @staff_only
 def AdminMatchList(request):
-    matches = Match.objects.all()
+    matches = Match.objects.all().order_by('-id')
 
     if request.method == "POST":
         matches_form = AdminMatchForm(request.POST or None, request.FILES or None)
@@ -1696,7 +1696,7 @@ def AdminMatchList(request):
 def AdminMatchBySeason(request, slug):
     season = Season.objects.get(slug=slug)
     matches = Match.objects.filter(season=season)
-    teams = Teams.objects.filter(sport=season.sport.id,)
+    teams = Teams.objects.all()
     # teams = Teams.objects.filter(sport=season.sport.id, country=season.league.country)
     season_table = SeasonTable.objects.filter(season=season)
     if season_table.count()>0:
@@ -1860,10 +1860,10 @@ def AdminMatchControl(request, slug):
 
     if request.method == 'POST':
         match_object = Match.objects.get(slug=slug)
-        if request.POST.get('start_time') == None or request.POST.get('start_time') == '':
-            match_object.start_time = match_object.start_time
-        else:
-            match_object.start_time = request.POST.get('start_time')
+        # if request.POST.get('start_time') == None or request.POST.get('start_time') == '':
+        #     match_object.start_time = match_object.start_time
+        # else:
+        #     match_object.start_time = request.POST.get('start_time')
         match_object.current_minute = request.POST.get('current_minute')
         match_object.current_half = request.POST.get('current_half')
         match_object.played = request.POST.get('played')

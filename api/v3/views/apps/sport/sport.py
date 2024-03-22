@@ -193,9 +193,11 @@ def SeasonTableBySportApiList(request,sport_name):
         return JsonResponse(data, safe=False)
 
 ###################### TEams Api ######################
-def SportTeamsApiList(request):
+def SportTeamsApiList(request,sport):
+
     try:
-        team_list = Teams.objects.all()
+        sport = Sport.objects.get(name=sport)
+        team_list = Teams.objects.filter(sport=sport.id)
         success = True
         message = f"Send From Django API mix "
         team_serializer = TeamsSerializer(team_list, many=True)
@@ -205,9 +207,10 @@ def SportTeamsApiList(request):
         data = {'success': success, 'data': sport_data, 'message': message,
                 }
         return JsonResponse(data, safe=False)
-    except:
+    except Exception as e:
+
         success = False
-        message = f"error in get data  News Details  "
+        message = f"error in get data   {e}  "
 
         sport_data = {'team': [],
 
@@ -277,10 +280,16 @@ def PlayersApiList(request):
 def PlayersApiDetails(request, playerid):
     try:
         players_list = Players.objects.filter(id=playerid)
+        # mpr = MatchPlayerReport.objects.filter(player=playerid)
+        # psr = PlayerStatics.objects.filter(player=playerid)
         success = True
         message = f"Send From Django API mix {playerid} "
         players_serializer = PlayersSerializer(players_list, many=True)
-        sport_data = {'player': players_serializer.data,
+        # mpr_serializer = MatchPlayerReportSerializer(mpr, many=True)
+        # psr_serializer = PlayerStaticsSerializer(psr, many=True)
+        sport_data = {'players': players_serializer.data,
+                        # 'match_report': mpr_serializer.data,
+                        # 'player_statics': psr_serializer.data,
 
                       }
 
@@ -291,9 +300,11 @@ def PlayersApiDetails(request, playerid):
     except Exception as e:
         print(e)
         success = False
-        message = f"error in get data  News Details  "
+        message = f"error in get data {e}  "
 
-        sport_data = {'player': [],
+        sport_data = {'players': [],
+                        # 'match_report': [],
+                        # 'player_statics': [],
 
                       }
 

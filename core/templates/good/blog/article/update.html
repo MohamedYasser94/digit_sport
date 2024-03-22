@@ -7,76 +7,7 @@
 {% block body %}
 
 
-    <!--begin::Main-->
-    <style>
 
-
-        .upload__box {
-            padding: 40px;
-        }
-
-        .upload__inputfile {
-
-            opacity: 0;
-            overflow: hidden;
-
-        }
-
-        .upload__btn {
-
-            font-weight: 400;
-
-
-        }
-
-        .upload__btn:hover {
-
-        }
-
-        .upload__btn-box {
-            margin-bottom: 10px;
-        }
-
-        .upload__img-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -10px;
-        }
-
-        .upload__img-box {
-            width: 200px;
-            padding: 0 10px;
-            margin-bottom: 12px;
-        }
-
-        .upload__img-close {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.5);
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            text-align: center;
-            line-height: 24px;
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .upload__img-close:after {
-            content: "✖";
-            font-size: 14px;
-            color: white;
-        }
-
-        .img-bg {
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: cover;
-            position: relative;
-            padding-bottom: 100%;
-        }
-    </style>
 
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <!--begin::Content wrapper-->
@@ -109,8 +40,8 @@
                                 <!--begin::Image input-->
                                 <div class="image-input image-input-empty image-input-outline mb-3"
                                      data-kt-image-input="true"
-                                        {% if article_cover.image %}
-                                     style="background-image: url({{ article_cover.image.url }})"
+                                        {% if article.image %}
+                                     style="background-image: url({{ article.image.url }})"
                                         {% else %}
                                      style="background-image: url(
                                              {% static '' %}{{ BACKEND_ASSETS }}/media/svg/files/blank-image.svg)"
@@ -153,188 +84,188 @@
                             <!--end::Card body-->
                         </div>
                         <!--end::Thumbnail settings-->
-                        <!--begin::Status-->
-                        <div class="card card-flush py-4">
-                            <!--begin::Card header-->
-                            <div class="card-header">
-                                <!--begin::Card title-->
-                                <div class="card-title">
-                                    <h2>{% translate 'Publish Type' %}</h2>
-                                </div>
-                                <!--end::Card title-->
-                                <!--begin::Card toolbar-->
-                                <div class="card-toolbar">
-                                    <div class="rounded-circle bg-success w-15px h-15px"
-                                         id="kt_ecommerce_add_product_status"></div>
-                                </div>
-                                <!--begin::Card toolbar-->
-                            </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
-                            <div class="card-body pt-0">
-                                <!--begin::Select2-->
-                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                        data-placeholder="Select an option"
-                                        id="kt_ecommerce_add_product_status_select"
-                                        name="pub_type"
-                                        >
-                                    <option value="{{ article.pub_type }}">{{ article.pub_type }}</option>
-                                    {% for value, text in article_form.pub_type.field.choices %}
-                                        <option value="{{ value }}">{{ text }}</option>
-                                    {% endfor %}
-                                </select>&nbsp;
-
-                                <!--end::Select2-->
-                                <!--begin::Description-->
-                                <div class="text-muted fs-7">{% translate 'Set the Article Active_Status.' %}</div>
-                                <!--end::Description-->
-                                <!--begin::Input group-->
-                                <div class=" mt-10 ">
-                                    <!--begin::Label-->
-                                    <label class="required form-label">{% translate 'Publishing Date' %}</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input class="form-control" type="date" id="pub_time"
-                                           name="pub_time" placeholder="Pick date &amp; time" required/>
-                                    <!--end::Input-->
-                                    <script>
-                                        document.getElementById('pub_time').defaultValue =
-
-
-                                            "{{ article.pub_time|date:'Y-m-d' }}"
-
-
-                                    </script>
-                                    <!--begin::Description-->
-                                    <div class="text-muted fs-7">{% translate 'Select publishing date and time.' %}</div>
-                                    <!--end::Description-->
-                                </div>
-                                <!--end::Input group-->
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Status-->
-                        <!--begin::Category & tags-->
-                        <div class="card card-flush py-4">
-                            <!--begin::Card header-->
-                            <div class="card-header">
-                                <!--begin::Card title-->
-                                <div class="card-title">
-                                    <h2>{% translate 'Article Category' %}</h2>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
-                            <div class="card-body pt-0">
-                                <!--begin::Input group-->
-                                <!--begin::Label-->
-                                <label class="form-label">{% translate 'Category' %}</label>
-                                <!--end::Label-->
-                                <!--begin::Select2-->
-                                <select class="form-select mb-2" data-control="select2"
-                                        data-placeholder="Select an option"
-                                        data-allow-clear="true" name="category" >
-                                    <option value="{{ article.category.id }}">{{ article.category.title }}</option>
-                                    {% for value, text in article_form.category.field.choices %}
-                                        <option value="{{ value }}">{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <!--end::Select2-->
-                                <!--begin::Description-->
-                                <div class="text-muted fs-7 mb-7">{% translate 'Add category.' %}</div>
-                                <!--end::Description-->
-                                <!--end::Input group-->
-                                <!--begin::Button-->
-                                <a href="{% url 'core:AdminBlogCategoriesList' %}"
-                                   class="btn btn-light-primary btn-sm mb-10">
-                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->
-                                    <span class="svg-icon svg-icon-2">
-												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                     viewBox="0 0 24 24" fill="none">
-													<rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1"
-                                                          transform="rotate(-90 11 18)" fill="black"/>
-													<rect x="6" y="11" width="12" height="2" rx="1" fill="black"/>
-												</svg>
-											</span>
-                                    <!--end::Svg Icon-->{% translate 'Create new category' %}</a>
-                                <!--end::Button-->
-                                <!--begin::Input group-->
-                                <!--begin::Label-->
-                                <label class="form-label d-block">{% translate 'Tags' %}</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <select class="form-select mb-2" data-control="select2"
-                                        data-placeholder="Select an option"
-                                        data-allow-clear="true" name="tags" multiple>
-                                    {% for tag in article_tag %}
-                                        <option value="{{ tag.id }}">{{ tag.title }}</option>
-                                    {% endfor %}
-                                    <option value="">{% translate 'Tags' %}</option>
-                                    {% for value, text in article_form.tags.field.choices %}
-                                        <option value="{{ value }}">{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <!--end::Input-->
-                                <!--begin::Description-->
-                                <div class="text-muted fs-7">{% translate 'Add tags.' %}</div>
-                                <!--end::Description-->
-                                <!--end::Input group-->
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Category & tags-->
-
-                        <!--begin::Template settings-->
-                        <div class="card card-flush py-4">
-                            <!--begin::Card header-->
-                            <div class="card-header">
-                                <!--begin::Card title-->
-                                <div class="card-title">
-                                    <h2>{% translate 'Article Setting' %}</h2>
-                                </div>
-                                <!--end::Card title-->
-                            </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
-                            <div class="card-body pt-0">
-                                <!--begin::Select store template-->
-                                <label for="kt_ecommerce_add_product_store_template"
-                                       class="form-label">{% translate 'Featured' %}</label>
-                                <!--end::Select store template-->
-                                <!--begin::Select2-->
-                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                        data-placeholder="Select an option"
-                                        id="kt_ecommerce_add_product_store_template"
-                                        name="is_featured">
-                                    <option value="{{ article.is_featured }}">{{ article.is_featured }}</option>
-                                    {% for value, text in article_form.is_featured.field.choices %}
-                                        <option value="{{ value }}">{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <!--end::Select2-->
-                            </div>
-                            <!--end::Card body-->
-                            <!--begin::Card body-->
-                            <div class="card-body pt-0">
-                                <!--begin::Select store template-->
-                                <label for="kt_ecommerce_add_product_store_template"
-                                       class="form-label">{% translate 'Article Comment' %}</label>
-                                <!--end::Select store template-->
-                                <!--begin::Select2-->
-                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                        data-placeholder="Select an option" id="kt_ecommerce_add_product_store"
-                                        name="comment_status">
-                                    <option value="{{ article.comment_status }}">{{ article.comment_status }}</option>
-                                    {% for value, text in article_form.comment_status.field.choices %}
-                                        <option value="{{ value }}">{{ text }}</option>
-                                    {% endfor %}
-                                </select>
-                                <!--end::Select2-->
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Template settings-->
+{#                        <!--begin::Status-->#}
+{#                        <div class="card card-flush py-4">#}
+{#                            <!--begin::Card header-->#}
+{#                            <div class="card-header">#}
+{#                                <!--begin::Card title-->#}
+{#                                <div class="card-title">#}
+{#                                    <h2>{% translate 'Publish Type' %}</h2>#}
+{#                                </div>#}
+{#                                <!--end::Card title-->#}
+{#                                <!--begin::Card toolbar-->#}
+{#                                <div class="card-toolbar">#}
+{#                                    <div class="rounded-circle bg-success w-15px h-15px"#}
+{#                                         id="kt_ecommerce_add_product_status"></div>#}
+{#                                </div>#}
+{#                                <!--begin::Card toolbar-->#}
+{#                            </div>#}
+{#                            <!--end::Card header-->#}
+{#                            <!--begin::Card body-->#}
+{#                            <div class="card-body pt-0">#}
+{#                                <!--begin::Select2-->#}
+{#                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"#}
+{#                                        data-placeholder="Select an option"#}
+{#                                        id="kt_ecommerce_add_product_status_select"#}
+{#                                        name="pub_type"#}
+{#                                        >#}
+{#                                    <option value="{{ article.pub_type }}">{{ article.pub_type }}</option>#}
+{#                                    {% for value, text in article_form.pub_type.field.choices %}#}
+{#                                        <option value="{{ value }}">{{ text }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>&nbsp;#}
+{##}
+{#                                <!--end::Select2-->#}
+{#                                <!--begin::Description-->#}
+{#                                <div class="text-muted fs-7">{% translate 'Set the Article Active_Status.' %}</div>#}
+{#                                <!--end::Description-->#}
+{#                                <!--begin::Input group-->#}
+{#                                <div class=" mt-10 ">#}
+{#                                    <!--begin::Label-->#}
+{#                                    <label class="required form-label">{% translate 'Publishing Date' %}</label>#}
+{#                                    <!--end::Label-->#}
+{#                                    <!--begin::Input-->#}
+{#                                    <input class="form-control" type="date" id="pub_time"#}
+{#                                           name="pub_time" placeholder="Pick date &amp; time" required/>#}
+{#                                    <!--end::Input-->#}
+{#                                    <script>#}
+{#                                        document.getElementById('pub_time').defaultValue =#}
+{##}
+{##}
+{#                                            "{{ article.pub_time|date:'Y-m-d' }}"#}
+{##}
+{##}
+{#                                    </script>#}
+{#                                    <!--begin::Description-->#}
+{#                                    <div class="text-muted fs-7">{% translate 'Select publishing date and time.' %}</div>#}
+{#                                    <!--end::Description-->#}
+{#                                </div>#}
+{#                                <!--end::Input group-->#}
+{#                            </div>#}
+{#                            <!--end::Card body-->#}
+{#                        </div>#}
+{#                        <!--end::Status-->#}
+{#                        <!--begin::Category & tags-->#}
+{#                        <div class="card card-flush py-4">#}
+{#                            <!--begin::Card header-->#}
+{#                            <div class="card-header">#}
+{#                                <!--begin::Card title-->#}
+{#                                <div class="card-title">#}
+{#                                    <h2>{% translate 'Article Category' %}</h2>#}
+{#                                </div>#}
+{#                                <!--end::Card title-->#}
+{#                            </div>#}
+{#                            <!--end::Card header-->#}
+{#                            <!--begin::Card body-->#}
+{#                            <div class="card-body pt-0">#}
+{#                                <!--begin::Input group-->#}
+{#                                <!--begin::Label-->#}
+{#                                <label class="form-label">{% translate 'Category' %}</label>#}
+{#                                <!--end::Label-->#}
+{#                                <!--begin::Select2-->#}
+{#                                <select class="form-select mb-2" data-control="select2"#}
+{#                                        data-placeholder="Select an option"#}
+{#                                        data-allow-clear="true" name="category" >#}
+{#                                    <option value="{{ article.category.id }}">{{ article.category.title }}</option>#}
+{#                                    {% for value, text in article_form.category.field.choices %}#}
+{#                                        <option value="{{ value }}">{{ text }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                                <!--end::Select2-->#}
+{#                                <!--begin::Description-->#}
+{#                                <div class="text-muted fs-7 mb-7">{% translate 'Add category.' %}</div>#}
+{#                                <!--end::Description-->#}
+{#                                <!--end::Input group-->#}
+{#                                <!--begin::Button-->#}
+{#                                <a href="{% url 'core:AdminBlogCategoriesList' %}"#}
+{#                                   class="btn btn-light-primary btn-sm mb-10">#}
+{#                                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr087.svg-->#}
+{#                                    <span class="svg-icon svg-icon-2">#}
+{#												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"#}
+{#                                                     viewBox="0 0 24 24" fill="none">#}
+{#													<rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1"#}
+{#                                                          transform="rotate(-90 11 18)" fill="black"/>#}
+{#													<rect x="6" y="11" width="12" height="2" rx="1" fill="black"/>#}
+{#												</svg>#}
+{#											</span>#}
+{#                                    <!--end::Svg Icon-->{% translate 'Create new category' %}</a>#}
+{#                                <!--end::Button-->#}
+{#                                <!--begin::Input group-->#}
+{#                                <!--begin::Label-->#}
+{#                                <label class="form-label d-block">{% translate 'Tags' %}</label>#}
+{#                                <!--end::Label-->#}
+{#                                <!--begin::Input-->#}
+{#                                <select class="form-select mb-2" data-control="select2"#}
+{#                                        data-placeholder="Select an option"#}
+{#                                        data-allow-clear="true" name="tags" multiple>#}
+{#                                    {% for tag in article_tag %}#}
+{#                                        <option value="{{ tag.id }}">{{ tag.title }}</option>#}
+{#                                    {% endfor %}#}
+{#                                    <option value="">{% translate 'Tags' %}</option>#}
+{#                                    {% for value, text in article_form.tags.field.choices %}#}
+{#                                        <option value="{{ value }}">{{ text }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                                <!--end::Input-->#}
+{#                                <!--begin::Description-->#}
+{#                                <div class="text-muted fs-7">{% translate 'Add tags.' %}</div>#}
+{#                                <!--end::Description-->#}
+{#                                <!--end::Input group-->#}
+{#                            </div>#}
+{#                            <!--end::Card body-->#}
+{#                        </div>#}
+{#                        <!--end::Category & tags-->#}
+{##}
+{#                        <!--begin::Template settings-->#}
+{#                        <div class="card card-flush py-4">#}
+{#                            <!--begin::Card header-->#}
+{#                            <div class="card-header">#}
+{#                                <!--begin::Card title-->#}
+{#                                <div class="card-title">#}
+{#                                    <h2>{% translate 'Article Setting' %}</h2>#}
+{#                                </div>#}
+{#                                <!--end::Card title-->#}
+{#                            </div>#}
+{#                            <!--end::Card header-->#}
+{#                            <!--begin::Card body-->#}
+{#                            <div class="card-body pt-0">#}
+{#                                <!--begin::Select store template-->#}
+{#                                <label for="kt_ecommerce_add_product_store_template"#}
+{#                                       class="form-label">{% translate 'Featured' %}</label>#}
+{#                                <!--end::Select store template-->#}
+{#                                <!--begin::Select2-->#}
+{#                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"#}
+{#                                        data-placeholder="Select an option"#}
+{#                                        id="kt_ecommerce_add_product_store_template"#}
+{#                                        name="is_featured">#}
+{#                                    <option value="{{ article.is_featured }}">{{ article.is_featured }}</option>#}
+{#                                    {% for value, text in article_form.is_featured.field.choices %}#}
+{#                                        <option value="{{ value }}">{{ text }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                                <!--end::Select2-->#}
+{#                            </div>#}
+{#                            <!--end::Card body-->#}
+{#                            <!--begin::Card body-->#}
+{#                            <div class="card-body pt-0">#}
+{#                                <!--begin::Select store template-->#}
+{#                                <label for="kt_ecommerce_add_product_store_template"#}
+{#                                       class="form-label">{% translate 'Article Comment' %}</label>#}
+{#                                <!--end::Select store template-->#}
+{#                                <!--begin::Select2-->#}
+{#                                <select class="form-select mb-2" data-control="select2" data-hide-search="true"#}
+{#                                        data-placeholder="Select an option" id="kt_ecommerce_add_product_store"#}
+{#                                        name="comment_status">#}
+{#                                    <option value="{{ article.comment_status }}">{{ article.comment_status }}</option>#}
+{#                                    {% for value, text in article_form.comment_status.field.choices %}#}
+{#                                        <option value="{{ value }}">{{ text }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                                <!--end::Select2-->#}
+{#                            </div>#}
+{#                            <!--end::Card body-->#}
+{#                        </div>#}
+{#                        <!--end::Template settings-->#}
                     </div>
                     <!--end::Aside column-->
                     <!--end::Aside column-->
@@ -348,12 +279,7 @@
                                    href="#kt_ecommerce_add_product_general">{% translate 'General' %}</a>
                             </li>
                             <!--end:::Tab item-->
-                            <!--begin:::Tab item-->
-                            <li class="nav-item">
-                                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab"
-                                   href="#kt_ecommerce_add_product_advanced">{% translate 'Advanced' %}</a>
-                            </li>
-                            <!--end:::Tab item-->
+
                         </ul>
                         <!--end:::Tabs-->
                         <!--begin::Tab content-->
@@ -445,7 +371,7 @@
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
                                                     <input type="url" name="image_path" class="form-control mb-2"
-                                                           value="{{ article.image_path }}" required/>
+                                                           value="{{ article.image_path }}" />
 
                                                     <!--end::Input-->
                                                     <!--begin::Description-->
@@ -470,43 +396,7 @@
                                                 </div>
                                                 <!--end::Input group-->
 
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="form-label">{% translate 'Country' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select class="form-select mb-2" data-control="select2"
-                                                            data-placeholder="Select an option"
-                                                            data-allow-clear="true" name="country">
-                                                        <option value="{{ article.country }}">{{ article.country }}</option>
-                                                        <option value="">{% translate 'Country' %}</option>
-                                                        {% for value, text in article_form.country.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <!--end::Input-->
 
-                                                </div>
-                                                <!--end::Input group-->
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="form-label">{% translate 'Sport' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select class="form-select mb-2" data-control="select2"
-                                                            data-placeholder="Select an option"
-                                                            data-allow-clear="true" name="sport">
-                                                        <option value="{{ article.sport.id }}">{{ article.sport }}</option>
-                                                        <option value="">{% translate 'Sport' %}</option>
-                                                        {% for value, text in article_form.sport.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <!--end::Input-->
-
-                                                </div>
                                                 <!--end::Input group-->
                                             </div>
                                             <!--end:Title-->
@@ -534,211 +424,211 @@
                                         <!--end::Card header-->
                                     </div>
                                     <!--end::Media-->
-                                    <!--begin::Media-->
-                                    <div class="card card-flush py-4">
-                                        <!--begin::Card header-->
-                                        <div class="card-header">
-                                            <div class="card-title">
-                                                <h2>{% translate 'Arabic Article' %}</h2>
-                                            </div>
-                                        </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-
-                                                <textarea id="kt_docs_tinymce_2" name="body_tr">
-                                                    {{ article_translate.body }}
-                                                 </textarea>
-
-                                        </div>
-                                        <!--end::Card header-->
-                                    </div>
-                                    <!--end::Media-->
-                                    <!--begin::Media-->
-                                    <div class="card card-flush py-4">
-                                        <!--begin::Card header-->
-                                        <div class="card-header">
-                                            <div class="card-title">
-                                                <h2>{% translate 'Media' %}</h2>
-                                            </div>
-                                        </div>
-                                        <!--end::Card header-->
-                                        <!--begin::Card body-->
-                                        <div class="card-body pt-0">
-                                            <!--begin::Title-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                {% for image in article_images %}
-                                                    <!--begin::Image input-->
-                                                    <div class="image-input image-input-outline"
-                                                         data-kt-image-input="true"
-                                                         style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/300-1.jpg)">
-                                                        <!--begin::Image preview wrapper-->
-                                                        <div class="image-input-wrapper w-125px h-125px"
-                                                             style="background-image: url({{ image.image.url }})"></div>
-                                                        <!--end::Image preview wrapper-->
-                                                        <!--begin::Edit button-->
-                                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                               data-kt-image-input-action="change"
-                                                               data-bs-toggle="tooltip"
-                                                               data-bs-dismiss="click"
-                                                               title="Change avatar">
-                                                            <i class="bi bi-pencil-fill fs-7"></i>
-                                                            <!--begin::Inputs-->
-                                                            <input type="file" name="images"
-                                                                   accept=".png, .jpg, .jpeg"/>
-                                                            <input type="hidden" name="avatar_remove"/>
-                                                            <!--end::Inputs-->
-                                                        </label>
-                                                        <!--end::Edit button-->
-                                                        <!--begin::Cancel button-->
-                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                              data-kt-image-input-action="cancel"
-                                                              @click="removeArticleImage('{{ image.slug }}')"
-                                                              data-bs-toggle="tooltip"
-                                                              data-bs-dismiss="click"
-                                                              title="Cancel avatar">
-         <i class="bi bi-x fs-2"></i>
-     </span>
-                                                        <!--end::Cancel button-->
-
-                                                        <!--begin::Remove button-->
-                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-
-
-                                                              data-bs-toggle="tooltip" @click="removeArticleImage('{{ image.slug }}')"
-                                                              data-bs-dismiss="click"
-                                                              title="Remove avatar">
-         <i class="bi bi-x fs-2"></i>
-     </span>
-                                                        <!--end::Remove button-->
-                                                    </div>
-                                                    <!--end::Image input-->
-                                                {% endfor %}
-
-
-                                            </div>
-                                            <!--end:Title-->
-                                            <!--begin::Input group-->
-                                            <div class="fv-row mb-2">
-                                                <!--begin::Dropzone-->
-                                                <div class="upload__box">
-                                                    <div class=" upload__btn-box">
-                                                        <div class="" id="kt_ecommerce_add_product_media">
-                                                            <!--begin::Message-->
-                                                            <div class=" needsclick">
-                                                                <!--begin::Icon-->
-                                                                <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
-                                                                <!--end::Icon-->
-                                                                <!--begin::Info-->
-                                                                <label class="btn btn-outline-primary ">
-                                                                    <i class=""><h3
-                                                                            class="fs-5 fw-bold text-gray-900 mb-1">{% translate 'Select Product Image here or click to upload' %}
-                                                                    </h3></i>
-                                                                    <input type="file" multiple=""
-                                                                           data-max_length="20"
-                                                                           name="images"
-                                                                           class="upload__inputfile"
-                                                                           accept=".png, .jpg, .jpeg">
-
-                                                                    <span class="fs-7 fw-semibold text-gray-400">{% translate 'Upload up to 10 files' %}</span>
-                                                                </label>
-                                                            </div>
-                                                            <div class="upload__img-wrap"></div>
-                                                        </div>
-
-                                                    </div>
-                                                    <!--end::Info-->
-
-                                                </div>
-                                                <!--end::Dropzone-->
-                                            </div>
-                                            <!--end::Input group-->
-                                            <!--begin::Title-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="form-label">{% translate 'Video Url' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="url" name="video_url"
-                                                           class="form-control mb-2"
-                                                           value="{{ article_video.video }}"/>
-                                                    <!--end::Input-->
-                                                    <!--begin::Description-->
-                                                    <div class="text-muted fs-7">{% translate 'A product Video is required an recommended to be unique.' %}</div>
-                                                    <!--end::Description-->
-                                                </div>
-                                                <!--end::Input group-->
-
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="form-label">{% translate 'Video Cover' %}</label>
-                                                    <!--end::Label-->
-
-                                                    <!--begin::Input-->
-                                                    <!--begin::Image input-->
-                                                    <div class="image-input image-input-outline"
-                                                         data-kt-image-input="true"
-                                                         style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/300-1.jpg)">
-                                                        <!--begin::Image preview wrapper-->
-                                                        {% if article_video.video_cover %}
-                                                            <div class="image-input-wrapper w-125px h-125px"
-                                                                 style="background-image: url({{ article_video.video_cover.url }})"></div>
-                                                        {% else %}
-                                                            <div class="image-input-wrapper w-125px h-125px"
-                                                                 style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/blank.png)"></div>
-                                                        {% endif %}
-                                                        <!--end::Image preview wrapper-->
-                                                        <!--begin::Edit button-->
-                                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                               data-kt-image-input-action="change"
-                                                               data-bs-toggle="tooltip"
-                                                               data-bs-dismiss="click"
-                                                               title="Change avatar">
-                                                            <i class="bi bi-pencil-fill fs-7"></i>
-                                                            <!--begin::Inputs-->
-                                                            <input type="file" name="video_cover"
-                                                                   accept=".png, .jpg, .jpeg"/>
-                                                            <input type="hidden" name="avatar_remove"/>
-                                                            <!--end::Inputs-->
-                                                        </label>
-                                                        <!--end::Edit button-->
-                                                        <!--begin::Cancel button-->
-                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                              data-kt-image-input-action="cancel"
-                                                              data-bs-toggle="tooltip"
-                                                              data-bs-dismiss="click"
-                                                              title="Cancel avatar">
-         <i class="bi bi-x fs-2"></i>
-     </span>
-                                                        <!--end::Cancel button-->
-
-                                                        <!--begin::Remove button-->
-                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                              data-kt-image-input-action="remove"
-                                                              data-bs-toggle="tooltip"
-                                                              data-bs-dismiss="click"
-                                                              title="Remove avatar">
-         <i class="bi bi-x fs-2"></i>
-     </span>
-                                                        <!--end::Remove button-->
-                                                    </div>
-                                                    <!--end::Image input-->
-                                                    <!--end::Input-->
-                                                    <!--begin::Description-->
-                                                    <div class="text-muted fs-7">{% translate 'A product Video Cover is required an recommended to be unique.' %}</div>
-                                                    <!--end::Description-->
-                                                </div>
-                                                <!--end::Input group-->
-                                            </div>
-                                            <!--end:Title-->
-
-                                        </div>
-                                        <!--end::Card header-->
-                                    </div>
-                                    <!--end::Media-->
+{#                                    <!--begin::Media-->#}
+{#                                    <div class="card card-flush py-4">#}
+{#                                        <!--begin::Card header-->#}
+{#                                        <div class="card-header">#}
+{#                                            <div class="card-title">#}
+{#                                                <h2>{% translate 'Arabic Article' %}</h2>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <!--end::Card header-->#}
+{#                                        <!--begin::Card body-->#}
+{#                                        <div class="card-body pt-0">#}
+{##}
+{#                                                <textarea id="kt_docs_tinymce_2" name="body_tr">#}
+{#                                                    {{ article_translate.body }}#}
+{#                                                 </textarea>#}
+{##}
+{#                                        </div>#}
+{#                                        <!--end::Card header-->#}
+{#                                    </div>#}
+{#                                    <!--end::Media-->#}
+{#                                    <!--begin::Media-->#}
+{#                                    <div class="card card-flush py-4">#}
+{#                                        <!--begin::Card header-->#}
+{#                                        <div class="card-header">#}
+{#                                            <div class="card-title">#}
+{#                                                <h2>{% translate 'Media' %}</h2>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <!--end::Card header-->#}
+{#                                        <!--begin::Card body-->#}
+{#                                        <div class="card-body pt-0">#}
+{#                                            <!--begin::Title-->#}
+{#                                            <div class="d-flex flex-wrap gap-5">#}
+{#                                                {% for image in article_images %}#}
+{#                                                    <!--begin::Image input-->#}
+{#                                                    <div class="image-input image-input-outline"#}
+{#                                                         data-kt-image-input="true"#}
+{#                                                         style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/300-1.jpg)">#}
+{#                                                        <!--begin::Image preview wrapper-->#}
+{#                                                        <div class="image-input-wrapper w-125px h-125px"#}
+{#                                                             style="background-image: url({{ image.image.url }})"></div>#}
+{#                                                        <!--end::Image preview wrapper-->#}
+{#                                                        <!--begin::Edit button-->#}
+{#                                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{#                                                               data-kt-image-input-action="change"#}
+{#                                                               data-bs-toggle="tooltip"#}
+{#                                                               data-bs-dismiss="click"#}
+{#                                                               title="Change avatar">#}
+{#                                                            <i class="bi bi-pencil-fill fs-7"></i>#}
+{#                                                            <!--begin::Inputs-->#}
+{#                                                            <input type="file" name="images"#}
+{#                                                                   accept=".png, .jpg, .jpeg"/>#}
+{#                                                            <input type="hidden" name="avatar_remove"/>#}
+{#                                                            <!--end::Inputs-->#}
+{#                                                        </label>#}
+{#                                                        <!--end::Edit button-->#}
+{#                                                        <!--begin::Cancel button-->#}
+{#                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{#                                                              data-kt-image-input-action="cancel"#}
+{#                                                              @click="removeArticleImage('{{ image.slug }}')"#}
+{#                                                              data-bs-toggle="tooltip"#}
+{#                                                              data-bs-dismiss="click"#}
+{#                                                              title="Cancel avatar">#}
+{#         <i class="bi bi-x fs-2"></i>#}
+{#     </span>#}
+{#                                                        <!--end::Cancel button-->#}
+{##}
+{#                                                        <!--begin::Remove button-->#}
+{#                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{##}
+{##}
+{#                                                              data-bs-toggle="tooltip" @click="removeArticleImage('{{ image.slug }}')"#}
+{#                                                              data-bs-dismiss="click"#}
+{#                                                              title="Remove avatar">#}
+{#         <i class="bi bi-x fs-2"></i>#}
+{#     </span>#}
+{#                                                        <!--end::Remove button-->#}
+{#                                                    </div>#}
+{#                                                    <!--end::Image input-->#}
+{#                                                {% endfor %}#}
+{##}
+{##}
+{#                                            </div>#}
+{#                                            <!--end:Title-->#}
+{#                                            <!--begin::Input group-->#}
+{#                                            <div class="fv-row mb-2">#}
+{#                                                <!--begin::Dropzone-->#}
+{#                                                <div class="upload__box">#}
+{#                                                    <div class=" upload__btn-box">#}
+{#                                                        <div class="" id="kt_ecommerce_add_product_media">#}
+{#                                                            <!--begin::Message-->#}
+{#                                                            <div class=" needsclick">#}
+{#                                                                <!--begin::Icon-->#}
+{#                                                                <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>#}
+{#                                                                <!--end::Icon-->#}
+{#                                                                <!--begin::Info-->#}
+{#                                                                <label class="btn btn-outline-primary ">#}
+{#                                                                    <i class=""><h3#}
+{#                                                                            class="fs-5 fw-bold text-gray-900 mb-1">{% translate 'Select Product Image here or click to upload' %}#}
+{#                                                                    </h3></i>#}
+{#                                                                    <input type="file" multiple=""#}
+{#                                                                           data-max_length="20"#}
+{#                                                                           name="images"#}
+{#                                                                           class="upload__inputfile"#}
+{#                                                                           accept=".png, .jpg, .jpeg">#}
+{##}
+{#                                                                    <span class="fs-7 fw-semibold text-gray-400">{% translate 'Upload up to 10 files' %}</span>#}
+{#                                                                </label>#}
+{#                                                            </div>#}
+{#                                                            <div class="upload__img-wrap"></div>#}
+{#                                                        </div>#}
+{##}
+{#                                                    </div>#}
+{#                                                    <!--end::Info-->#}
+{##}
+{#                                                </div>#}
+{#                                                <!--end::Dropzone-->#}
+{#                                            </div>#}
+{#                                            <!--end::Input group-->#}
+{#                                            <!--begin::Title-->#}
+{#                                            <div class="d-flex flex-wrap gap-5">#}
+{#                                                <!--begin::Input group-->#}
+{#                                                <div class="fv-row w-100 flex-md-root">#}
+{#                                                    <!--begin::Label-->#}
+{#                                                    <label class="form-label">{% translate 'Video Url' %}</label>#}
+{#                                                    <!--end::Label-->#}
+{#                                                    <!--begin::Input-->#}
+{#                                                    <input type="url" name="video_url"#}
+{#                                                           class="form-control mb-2"#}
+{#                                                           value="{{ article_video.video }}"/>#}
+{#                                                    <!--end::Input-->#}
+{#                                                    <!--begin::Description-->#}
+{#                                                    <div class="text-muted fs-7">{% translate 'A product Video is required an recommended to be unique.' %}</div>#}
+{#                                                    <!--end::Description-->#}
+{#                                                </div>#}
+{#                                                <!--end::Input group-->#}
+{##}
+{#                                                <!--begin::Input group-->#}
+{#                                                <div class="fv-row w-100 flex-md-root">#}
+{#                                                    <!--begin::Label-->#}
+{#                                                    <label class="form-label">{% translate 'Video Cover' %}</label>#}
+{#                                                    <!--end::Label-->#}
+{##}
+{#                                                    <!--begin::Input-->#}
+{#                                                    <!--begin::Image input-->#}
+{#                                                    <div class="image-input image-input-outline"#}
+{#                                                         data-kt-image-input="true"#}
+{#                                                         style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/300-1.jpg)">#}
+{#                                                        <!--begin::Image preview wrapper-->#}
+{#                                                        {% if article_video.video_cover %}#}
+{#                                                            <div class="image-input-wrapper w-125px h-125px"#}
+{#                                                                 style="background-image: url({{ article_video.video_cover.url }})"></div>#}
+{#                                                        {% else %}#}
+{#                                                            <div class="image-input-wrapper w-125px h-125px"#}
+{#                                                                 style="background-image: url({{ BACKEND_ASSETS }}/media/avatars/blank.png)"></div>#}
+{#                                                        {% endif %}#}
+{#                                                        <!--end::Image preview wrapper-->#}
+{#                                                        <!--begin::Edit button-->#}
+{#                                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{#                                                               data-kt-image-input-action="change"#}
+{#                                                               data-bs-toggle="tooltip"#}
+{#                                                               data-bs-dismiss="click"#}
+{#                                                               title="Change avatar">#}
+{#                                                            <i class="bi bi-pencil-fill fs-7"></i>#}
+{#                                                            <!--begin::Inputs-->#}
+{#                                                            <input type="file" name="video_cover"#}
+{#                                                                   accept=".png, .jpg, .jpeg"/>#}
+{#                                                            <input type="hidden" name="avatar_remove"/>#}
+{#                                                            <!--end::Inputs-->#}
+{#                                                        </label>#}
+{#                                                        <!--end::Edit button-->#}
+{#                                                        <!--begin::Cancel button-->#}
+{#                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{#                                                              data-kt-image-input-action="cancel"#}
+{#                                                              data-bs-toggle="tooltip"#}
+{#                                                              data-bs-dismiss="click"#}
+{#                                                              title="Cancel avatar">#}
+{#         <i class="bi bi-x fs-2"></i>#}
+{#     </span>#}
+{#                                                        <!--end::Cancel button-->#}
+{##}
+{#                                                        <!--begin::Remove button-->#}
+{#                                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"#}
+{#                                                              data-kt-image-input-action="remove"#}
+{#                                                              data-bs-toggle="tooltip"#}
+{#                                                              data-bs-dismiss="click"#}
+{#                                                              title="Remove avatar">#}
+{#         <i class="bi bi-x fs-2"></i>#}
+{#     </span>#}
+{#                                                        <!--end::Remove button-->#}
+{#                                                    </div>#}
+{#                                                    <!--end::Image input-->#}
+{#                                                    <!--end::Input-->#}
+{#                                                    <!--begin::Description-->#}
+{#                                                    <div class="text-muted fs-7">{% translate 'A product Video Cover is required an recommended to be unique.' %}</div>#}
+{#                                                    <!--end::Description-->#}
+{#                                                </div>#}
+{#                                                <!--end::Input group-->#}
+{#                                            </div>#}
+{#                                            <!--end:Title-->#}
+{##}
+{#                                        </div>#}
+{#                                        <!--end::Card header-->#}
+{#                                    </div>#}
+{#                                    <!--end::Media-->#}
 
                                 </div>
                             </div>

@@ -585,7 +585,7 @@ class Clubs(models.Model):
 
 
 class Teams(models.Model):
-    api_id = models.IntegerField(null=True, blank=True)
+    api_id = models.IntegerField(max_length=200, )
     sender_model = models.ForeignKey(ContentType,related_name='sport_team_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')

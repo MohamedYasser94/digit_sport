@@ -111,7 +111,7 @@ class BlogArticle(models.Model):
     country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_news', null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
-    image_path = models.CharField(max_length=255, null=True, blank=True)
+    image_path = models.CharField(max_length=350, null=True, blank=True)
     video_url = models.URLField(max_length=255, null=True, blank=True)
     views = models.PositiveIntegerField('Pageviews', default=0, blank=True, null=True, )
     author = models.CharField(max_length=255, null=True, blank=True)

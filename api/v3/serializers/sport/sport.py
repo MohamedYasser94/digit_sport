@@ -221,7 +221,9 @@ class PlayersSerializer(serializers.ModelSerializer):
     team = serializers.ReadOnlyField(source='team.name')
     sport = serializers.ReadOnlyField(source='sport.name')
     image = serializers.SerializerMethodField()
-    static = serializers.SerializerMethodField()
+    match_report = serializers.SerializerMethodField()
+
+    player_statics = serializers.SerializerMethodField()
     class Meta:
         model = Players
         fields = '__all__'
@@ -234,8 +236,20 @@ class PlayersSerializer(serializers.ModelSerializer):
             image = None
             return image
 
-    def get_static(self, obj):
-        return PlayerStaticsSerializer(PlayerStatics.objects.filter(player=obj.id, ), many=True).data
+    def get_match_report(self, obj):
+       try:
+              match_report = MatchPlayerReportSerializer(MatchPlayerReport.objects.filter(player=obj.id, ), many=True).data
+              return match_report
+       except:
+            match_report = None
+            return match_report
+    def get_player_statics(self, obj):
+         try:
+                  player_statics = PlayerStaticsSerializer(PlayerStatics.objects.filter(player=obj.id, ), many=True).data
+                  return player_statics
+         except:
+                player_statics = None
+                return player_statics
 
 
 class SquadsSerializer(serializers.ModelSerializer):

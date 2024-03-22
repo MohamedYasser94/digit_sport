@@ -42,7 +42,7 @@
                         <!--begin::Card toolbar-->
                         <div class="card-toolbar">
                             <!--begin::Add customer-->
-                            <a href="{% url 'core:AdminBlogArticleCreate'   %}" class="btn btn-primary"
+                            <a href="{% url 'core:AdminBlogArticleSCreate'   %}" class="btn btn-primary"
                                     >{% translate 'Add Article' %}
                             </a>
                             <!--end::Add customer-->
@@ -188,7 +188,7 @@
                                                     {% csrf_token %} </form>
 
 
-                                                <a class="menu-link px-3" href="" onclick="
+                                                <a class="menu-link px-3"  onclick="
                                                         if (confirm('Are You Sure To Delete {{ item.title }} ?')){document.getElementById('{{ item.id }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
                                                    title="Link Title">
                                                     {% translate 'Delete' %}

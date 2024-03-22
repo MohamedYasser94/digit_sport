@@ -1,4 +1,7 @@
 import logging
+from datetime import datetime
+from time import timezone
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -452,6 +455,125 @@ def AdminBlogArticleCreate(request):
     }
     return render(request, f'{BACKEND_TEMPLATES}/blog/article/add.html', context)
 
+@authenticated_staf
+@author_only
+def AdminBlogArticleSCreate(request):
+    blog_tags = CommonTags.objects.all()
+    if request.method == "POST":
+        article_form = AdminBlogArticleForm(request.POST or None, request.FILES or None)
+        translate_form = AdminCommonTranslateForm(request.POST or None, request.FILES or None)
+        category_form = AdminBlogCategoriesForm(request.POST or None, request.FILES or None)
+        tags_form = AdminBlogArticleTagsForm(request.POST or None, request.FILES or None)
+        seo_form = AdminCommonSeoForm(request.POST or None, request.FILES or None)
+        if article_form:
+            title = request.POST.get('title')
+            keyword = request.POST.get('keyword')
+            category = request.POST.get('category')
+            body = request.POST.get('body')
+            pub_time = request.POST.get('pub_time')
+            pub_type = request.POST.get('pub_type')
+            is_featured = request.POST.get('is_featured')
+            comment_status = request.POST.get('comment_status')
+            tags = request.POST.getlist('tags')
+            title_tr = request.POST.get('title_tr')
+            keyword_tr = request.POST.get('keyword_tr')
+            body_tr = request.POST.get('body_tr')
+            author= request.POST.get('author')
+            country = request.POST.get('country')
+            sport = request.POST.get('sport')
+            ########## Image #########
+            hero_image = request.FILES.get('hero_image')
+            images = request.FILES.getlist('images')
+            image_path = request.POST.get('image_path')
+            image_url = request.POST.getlist('image_url')
+            video_url = request.POST.get('video_url')
+            video_cover = request.FILES.get('video_cover')
+            ########## Seo #########
+            meta_title = title
+            meta_keywords = keyword
+            meta_description = keyword
+            seo_image = hero_image
+            ########## Category #########
+            if pub_time == '' or pub_time == None:
+                pub_time = datetime.now()
+            else:
+                pub_time = pub_time
+            if category == '' or category == None:
+                category_id = None
+            else:
+                category_id = BlogCategories.objects.get(id=category)
+
+            if sport == '' or sport == None:
+                sport = None
+            else:
+                sport = Sport.objects.get(id=sport)
+            if author == '' or author == None:
+                author = 'Blog'
+            else:
+                author = author
+
+
+
+            article_object = BlogArticle(title=title, keyword=title, category=category_id, body=body,
+                                         pub_time=pub_time, pub_type=pub_type, is_featured=is_featured,
+                                         sport=sport, country=country,image_path=image_path,image=hero_image,
+                                         author=author, comment_status=comment_status)
+            article_object.save()
+            AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
+            # AdminCommonSeo(request, article_object.title,  article_object.title,  article_object.title, None, hero_image, 'BlogArticle',
+            #                article_object.id)
+            # AdminCommonMediaHeroFiles(request, hero_image, 'BlogArticle', article_object.id)
+            # AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogArticle', article_object.id)
+            # j = 0
+            # for tag in tags:
+            #     tag_id = CommonTags.objects.get(id=tag)
+            #     article_object.tags.add(tag_id)
+            #     j = j + 1
+            # i = 0
+            # for image in images:
+            #     AdminCommonMediaImagesFiles(request, image, 'BlogArticle', article_object.id)
+            #     i = i + 1
+            # users = User.objects.filter(access_notification=True)
+            # for user in users:
+            #     AdminCommonNotifications(request, _(f'Article Add'), False, False, False,
+            #                              _(f'{article_object.title} Add To Blog'),
+            #                              'BlogArticle', article_object.slug,
+            #                              _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
+            #                              _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
+            #                              article_object.create_at, None, 'User', request.user.id,
+            #                              'User', user.id, 'BlogArticle', article_object.id,
+            #                              'User', request.user.id, )
+
+            messages.success(request, _("Article Add Successfully, check it out on the home page!"),
+                             extra_tags='Article')
+
+            return HttpResponseRedirect(reverse('core:AdminBlogArticleList'))
+
+    else:
+        article_form = AdminBlogArticleForm()
+        tags_form = AdminBlogArticleTagsForm()
+        context = {
+            'blog_tags': blog_tags,
+            'article_form': article_form,
+            'tags_form': tags_form,
+            'seo_form': AdminCommonSeoForm,
+            'current_page': _('Add'),
+            'prev_Page': _('Articles'),
+            'prev_Page_url': reverse_lazy('core:AdminBlogArticleList'),
+
+        }
+        return render(request, f'{BACKEND_TEMPLATES}/blog/article/sadd.html', context)
+    context = {
+        'blog_tags': blog_tags,
+        'article_form': article_form,
+        'tags_form': tags_form,
+        'seo_form': AdminCommonSeoForm,
+        'current_page': _('Add'),
+        'prev_Page': _('Articles'),
+        'prev_Page_url': reverse_lazy('core:AdminBlogArticleList'),
+
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/blog/article/sadd.html', context)
 
 @authenticated_staf
 @author_only
@@ -461,15 +583,15 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
     tags = CommonTags.objects.all()
     article_tag = CommonTags.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle'),
                                             owner_id=article.id)
-    article_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle')
-                                                 , owner_id=article.id, type='hero')
-    article_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
-                                                 owner_id=article.id, type='video')
-    article_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle')
-                                                     , owner_id=article.id, type='image')
-    article_translate = CommonTranslate.objects.get(
-        owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
-    article_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
+    # article_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle')
+    #                                              , owner_id=article.id, type='hero')
+    # article_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
+    #                                              owner_id=article.id, type='video')
+    # article_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle')
+    #                                                  , owner_id=article.id, type='image')
+    # article_translate = CommonTranslate.objects.get(
+    #     owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
+    # article_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
     if request.method == "POST":
         article_form = AdminBlogArticleForm(request.POST or None, request.FILES or None)
         tags_form = AdminBlogArticleTagsForm(request.POST or None, request.FILES or None)
@@ -504,6 +626,8 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             meta_description = keyword
             seo_image = hero_image
             ########## Category #########
+            if pub_time == '' or pub_time == None:
+                pub_time = datetime.now()
             if category == '' or category == None:
                 category_id = None
             else:
@@ -514,21 +638,30 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
                 sport = Sport.objects.get(id=sport)
             article_object = BlogArticle.objects.get(slug=slug)
             article_object.title = title
-            article_object.keyword = keyword
+            article_object.keyword = title
             article_object.category = category_id
             article_object.body = body
             article_object.pub_time = pub_time
             article_object.pub_type = pub_type
             article_object.is_featured = is_featured
             article_object.comment_status = comment_status
-            article_object.author = author
+            article_object.author = 'Blog'
             article_object.country = country
             article_object.sport = sport
-            if hero_image != None or hero_image != '':
+            if hero_image:
                 article_object.image = hero_image
 
-            article_object.image_path = image_path
+
+
             article_object.save()
+
+            try:
+                if image_path != None or image_path != '':
+                    image_path = 'https://aljawlakw.com' + str(article.image.url)
+                    article_object.image_path = image_path
+                    article_object.save()
+            except Exception as e:
+                pass
 
             AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
@@ -568,11 +701,11 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
         'tags': tags,
         'article': article,
         'article_tag': article_tag,
-        'article_cover': article_cover,
-        'article_video': article_video,
-        'article_images': article_images,
-        'article_translate': article_translate,
-        'article_seo': article_seo,
+        # 'article_cover': article_cover,
+        # 'article_video': article_video,
+        # 'article_images': article_images,
+        # 'article_translate': article_translate,
+        # 'article_seo': article_seo,
         'article_form': AdminBlogArticleForm(),
         'tags_form': AdminBlogArticleTagsForm(),
         'seo_form': AdminCommonSeoForm,
