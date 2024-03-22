@@ -46,6 +46,7 @@ urlpatterns = [path('i18n/', include('django.conf.urls.i18n')),
                path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
                path('', include(tf_urls)),
                path('api/', include('api.v3.urls', namespace='APIV3')),
+               path("__debug__/", include("debug_toolbar.urls")),
 
                ]
 

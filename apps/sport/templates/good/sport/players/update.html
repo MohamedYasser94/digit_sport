@@ -82,15 +82,10 @@
                                         <label class="form-label">{% translate 'Position' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="position" aria-label="{% translate 'Position' %}"
-                                                data-control="select2"
-
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ player.position }}">{{ player.position }}</option>
-                                            {% for value, text in transfer_form.position.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <input type="text" class="form-control form-control-solid"
+                                               value="{{ player.position }}"
+                                                           placeholder="{% translate 'Position' %}"
+                                                           name="position"/>
                                         <!--end::Input-->
                                     </div>
                                 </div>

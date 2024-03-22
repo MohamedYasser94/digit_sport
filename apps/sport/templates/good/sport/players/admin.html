@@ -76,7 +76,7 @@
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
                                     <th class="min-w-125px">{% translate 'Country' %}</th>
-                                    <th class="min-w-125px">{% translate 'Image' %}</th>
+{#                                    <th class="min-w-125px">{% translate 'Image' %}</th>#}
                                     <th class="min-w-125px">{% translate 'Nationality' %}</th>
                                     <th class="min-w-125px">{% translate 'In Team' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
@@ -133,29 +133,29 @@
                                             </a>
                                         </td>
                                         <!--end::Email=-->
-                                        <!--begin::Image=-->
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <!--begin::Thumbnail-->
-                                                <a class="symbol symbol-50px">
-                                                    {% if item.image_path %}
-                                                        <span class="symbol-label"
-                                                              style="background-image:url({{ item.image_path }});"></span>
-
-                                                    {% elif item.image %}
-                                                        <span class="symbol-label"
-                                                              style="background-image:url({{ item.image.url }});"></span>
-                                                    {% else %}
-                                                        <span class="symbol-label" style="background-image:url(
-                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>
-                                                    {% endif %}
-
-                                                </a>
-                                                <!--end::Thumbnail-->
-
-                                            </div>
-                                        </td>
-                                        <!--end::Image=-->
+{#                                        <!--begin::Image=-->#}
+{#                                        <td>#}
+{#                                            <div class="d-flex align-items-center">#}
+{#                                                <!--begin::Thumbnail-->#}
+{#                                                <a class="symbol symbol-50px">#}
+{#                                                    {% if item.image_path %}#}
+{#                                                        <span class="symbol-label"#}
+{#                                                              style="background-image:url({{ item.image_path }});"></span>#}
+{##}
+{#                                                    {% elif item.image %}#}
+{#                                                        <span class="symbol-label"#}
+{#                                                              style="background-image:url({{ item.image.url }});"></span>#}
+{#                                                    {% else %}#}
+{#                                                        <span class="symbol-label" style="background-image:url(#}
+{#                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>#}
+{#                                                    {% endif %}#}
+{##}
+{#                                                </a>#}
+{#                                                <!--end::Thumbnail-->#}
+{##}
+{#                                            </div>#}
+{#                                        </td>#}
+{#                                        <!--end::Image=-->#}
                                         <!--begin::Email=-->
                                         <td>
                                             <a
@@ -379,17 +379,9 @@
                                                     <label class="required fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
-                                                    <select name="position" aria-label="{% translate 'Position' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Position' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for value, text in players_form.position.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
+                                                     <input type="text" class="form-control form-control-solid"
+                                                           placeholder="{% translate 'Name' %}"
+                                                           name="position"/>
                                                     <!--end::Input-->
                                                 </div>
                                                 <!--end::Input group-->

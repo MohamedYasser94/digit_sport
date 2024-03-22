@@ -79,7 +79,7 @@ THIRD_PARTY_APPS = [
     'two_factor',
     'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
     'two_factor.plugins.email',  # <- if you want email capability.
-    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook',  'fcm_django',
+    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook',  'fcm_django', "debug_toolbar",
 
 
 ]
@@ -93,7 +93,7 @@ MIDDLEWARE = ['django.middleware.common.CommonMiddleware', 'django.middleware.se
     'django.middleware.locale.LocaleMiddleware', 'social_django.middleware.SocialAuthExceptionMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware', 'corsheaders.middleware.CorsMiddleware','django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware','allauth.account.middleware.AccountMiddleware',
+    'django_otp.middleware.OTPMiddleware','allauth.account.middleware.AccountMiddleware',  "debug_toolbar.middleware.DebugToolbarMiddleware",
 
 ]
 

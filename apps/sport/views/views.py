@@ -1511,6 +1511,7 @@ def AdminPlayersUpdate(request, slug):
             player_object.keyword = keyword
             player_object.team = t_team
             player_object.in_team = in_team
+            player_object.position = position
             player_object.save()
             date = datetime.now()
 
