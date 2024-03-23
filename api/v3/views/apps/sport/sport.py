@@ -64,6 +64,7 @@ def MatchesBySportAndDateApiList(request,sport_name,type, ):
     matches_list = []
     first_date = datetime.now()
     last_date = datetime.now()
+    order_by = 'start_time'
     try:
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
@@ -72,15 +73,15 @@ def MatchesBySportAndDateApiList(request,sport_name,type, ):
     if type == 'current':
         first_date = datetime.now() - timedelta(hours=2)
         last_date = datetime.now() + timedelta(days=90)
-        print('last', last_date)
+        order_by = 'start_time'
     elif type == 'last':
         first_date = datetime.now() - timedelta(days=90)
         last_date = datetime.now() - timedelta(hours=2)
-        print('last', last_date)
+        order_by = '-start_time'
     if sport_name == 'volleyball':
         round_list = []
         matches_list = Match.objects.filter(sport=sport.id, start_time__range=[first_date, last_date]).order_by(
-            '-start_time')
+            order_by)
     elif sport_name == 'handball':
         round_list = Round.objects.filter(sport=sport.id)
         matches_list = []
@@ -314,14 +315,15 @@ def PlayersApiDetails(request, playerid):
         return JsonResponse(data, safe=True)
 
 
-def PlayersBySportApiList(request,sport_name):
+def PlayersBySportApiList(request,sport_name,team_id):
     try:
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
         sport = Sport.objects.create(name=sport_name)
     try:
+        team = Teams.objects.get(id=team_id)
 
-        players_list = Players.objects.filter(sport=sport.id).order_by('name')
+        players_list = Players.objects.filter(sport=sport.id,team=team.id).order_by('name')
 
         success = True
         message = f"Send From Django API mix "
@@ -346,7 +348,7 @@ def SportNewsByCountryApiList(request,):
     sport_list = Sport.objects.all()
     if sport_list.count() > 0:
 
-        news_list = BlogArticle.objects.all()
+        news_list = BlogArticle.objects.all().order_by('-created_at')
         success = True
         message = f"Send From Django API mix "
         sport_serializer = SportSerializer(sport_list, many=True)

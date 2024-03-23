@@ -83,6 +83,7 @@
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
                                     <th class="min-w-125px">{% translate 'League' %}</th>
+                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
                                     <th class="min-w-125px">{% translate 'Home' %}</th>
                             <th class="min-w-125px">{% translate 'Away' %}</th>
                             <th class="min-w-125px">{% translate 'Start Time' %}</th>
@@ -130,6 +131,14 @@
                                     <a href="#"
                                        class="text-gray-600 text-hover-primary mb-1">
                                         {{ item.league }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                                    <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.league.sport.name }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->

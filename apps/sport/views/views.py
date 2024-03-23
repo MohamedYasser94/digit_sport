@@ -1475,6 +1475,8 @@ def AdminPlayersUpdate(request, slug):
         if players_form:
             name = request.POST.get('name')
             short_code = request.POST.get('short_code')
+            age = request.POST.get('age')
+            height = request.POST.get('height')
             t_team = request.POST.get('t_team')
             position = request.POST.get('position')
             country = request.POST.get('country')
@@ -1499,6 +1501,8 @@ def AdminPlayersUpdate(request, slug):
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
             player_object.short_code = short_code
+            player_object.age = age
+            player_object.height = height
             player_object.sport = sport
             player_object.country = country
             player_object.nationality =nationality
@@ -1801,10 +1805,16 @@ def AdminMatchUpdate(request, slug):
             away_team = request.POST.get('away_team')
             location = request.POST.get('location')
             start_time = request.POST.get('start_time')
+            is_live = request.POST.get('is_live')
 
             if home_team == away_team:
                 messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
+
+            if start_time == None or start_time == '':
+                start_time = match.start_time
+            else:
+                start_time = start_time
 
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
@@ -1814,14 +1824,13 @@ def AdminMatchUpdate(request, slug):
             match_object.away_team = away_team
             match_object.location = location
             match_object.start_time = start_time
+            match_object.is_live = is_live
             match_object.save()
 
             messages.success(request, _("Match Update Successfully"), extra_tags='Match')
-            return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+            return redirect(request.META['HTTP_REFERER'])
         else:
             messages.error(request, _("Match Not Update , Please Try Again"), extra_tags='Match')
-    else:
-        messages.error(request, _("Match Not Update , Please Try Again"), extra_tags='Match')
     context = {'match': match, 'matches_form': AdminMatchForm(instance=match), 'current_page': _('Update'),
                 'prev_Page': _('Match'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/update.html', context)
@@ -1850,9 +1859,9 @@ def AdminMatchDelete(request, slug):
 
         messages.success(request, _("Match Delete Successfully"), extra_tags='Match')
 
-        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+        return redirect(request.META['HTTP_REFERER'])
     else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+        return redirect(request.META['HTTP_REFERER'])
 
 
 @authenticated_staf
@@ -2045,11 +2054,11 @@ def AdminMatchGoalsAdd(request, slug):
             home_score = request.POST.get('home_score')
             away_score = request.POST.get('away_score')
 
-            if match.sport.name == 'volleyball':
-                match.home_score = home_score
-                match.away_score = away_score
-                match.score = str(home_score) + ' - ' + str(away_score)
-                match.save()
+
+            match.home_score = home_score
+            match.away_score = away_score
+            match.score = str(home_score) + ' - ' + str(away_score)
+            match.save()
             messages.success(request, _("Match Event Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails', kwargs={'slug': slug}))
         else:

@@ -63,6 +63,30 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Age' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="age"
+                                               placeholder="{% translate 'Age' %}"
+                                               value="{{ player.age }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Height' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="height"
+                                               placeholder="{% translate 'Height' %}"
+                                               value="{{ player.height }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Team' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
@@ -70,7 +94,7 @@
                                                 data-control="select2"
 
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ player.team.id }}">{{ player.team.title }}</option>
+                                            <option value="{{ player.team.id }}">{{ player.team.name }}</option>
                                             {% for item in teams %}
                                                 <option value="{{ item.id }}">{{ item.name }}</option>
                                             {% endfor %}

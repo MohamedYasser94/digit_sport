@@ -44,7 +44,7 @@
                                         <!--begin::Input-->
                                         <select name="home_team" aria-label="{% translate 'Home Team' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Home Team' %}"
-                                                   data-dropdown-parent="#kt_modal_add_customer"
+
                                                             data-allow-clear="true" required
 
                                                     class="form-select form-select-solid fw-bolder">
@@ -63,7 +63,7 @@
                                         <!--begin::Input-->
                                        <select name="away_team" aria-label="{% translate 'Away Team' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Away Team' %}"
-                                                   data-dropdown-parent="#kt_modal_add_customer"
+
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="{{ match.away_team.id }}" selected="">{{ match.away_team }}</option>
@@ -86,10 +86,10 @@
                                         <!--begin::Input-->
                                         <select name="venues" aria-label="{% translate 'Venues' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Venues' %}"
-                                                   data-dropdown-parent="#kt_modal_add_customer"
+
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
+                                                 <option value="{{ match.venues }}" selected="">{{ match.venues }}</option>
                                                 {% for value, text in matches_form.venues.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
@@ -120,10 +120,10 @@
                                         <!--begin::Input-->
                                         <select name="is_live" aria-label="{% translate 'Match Live' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Match Live' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
+
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
+                                                <option value="{{ match.is_live }}" selected="">{{ match.is_live }}</option>
                                                 {% for value, text in matches_form.is_live.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
@@ -133,11 +133,11 @@
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Start Time' %}</label>
+                                        <label class=" form-label">{% translate 'Start Time' %} {{ match.start_time }}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                           <input type="datetime-local"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Start Time' %}" required
+                                                    placeholder="{% translate 'Start Time' %}"
 
                                                    name="start_time"/>
 
@@ -161,8 +161,8 @@
                         <div class="card-body pt-0">
                             {% if form_show_errors %}
                             {% endif %}
-                            {% if category_form.errors %}
-                                {% for error_field, error_message in category_form.errors.items %}
+                            {% if matches_form.errors %}
+                                {% for error_field, error_message in matches_form.errors.items %}
 
                                     <div class="alert alert-danger">
                                         {{ error_field|striptags }}: {{ error_message|striptags }}
@@ -171,18 +171,9 @@
                                 {% endfor %}
 
                             {% endif %}
-                            {% if translate_form.errors %}
-                                {% for error_field, error_message in translate_form.errors.items %}
 
-                                    <div class="alert alert-danger">
-                                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-
-                            {% endif %}
                             {% for message in messages %}
-                                {% if message.extra_tags == 'Category' %}
+                                {% if message.extra_tags == 'Match' %}
 
                                     <div class="alert alert-danger">
                                         {{ message.extra_tags|striptags }}: {{ message|striptags }}
@@ -219,36 +210,13 @@
 
 
 
-    {% if uploaded_file_url %}
-        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
-    {% endif %}
+
 
 {% endblock %}
 {% block custom_js %}
 
 
-    <script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
-    <!--begin::Page Vendors Javascript(used by this page)-->
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
-    <!--end::Page Vendors Javascript-->
-    <!--begin::Page Custom Javascript(used by this page)-->
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/listing.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/add.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/export.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/player.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
-    <!--end::Page Custom Javascript-->
+
 
 {% endblock custom_js %}
 {% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}

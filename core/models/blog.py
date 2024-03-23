@@ -117,8 +117,8 @@ class BlogArticle(models.Model):
     author = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(max_length=255, unique=True)
-    create_at = models.DateTimeField(auto_now=True, null=False)
-    update_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def body_to_string(self):
         return self.body
