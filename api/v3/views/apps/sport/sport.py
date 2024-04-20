@@ -77,7 +77,7 @@ def MatchesBySportAndDateApiList(request,sport_name,type, ):
     elif type == 'last':
         first_date = datetime.now() - timedelta(days=90)
         last_date = datetime.now() - timedelta(hours=2)
-        order_by = '-start_time'
+        order_by = 'start_time'
     if sport_name == 'volleyball':
         round_list = []
         matches_list = Match.objects.filter(sport=sport.id, start_time__range=[first_date, last_date]).order_by(
@@ -177,7 +177,7 @@ def SeasonTableBySportApiList(request,sport_name):
         sport = Sport.objects.create(name=sport_name)
     try:
         sport = Sport.objects.get(name=sport_name)
-        table_list = SeasonTable.objects.filter(sport=sport).order_by('-points')
+        table_list = SeasonTable.objects.filter(sport=sport).order_by('position')
         success = True
         message = f"Send From Django API mix table "
         table_serializer = SeasonTableSerializer(table_list, many=True)

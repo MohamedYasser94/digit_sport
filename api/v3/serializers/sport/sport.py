@@ -397,6 +397,9 @@ class MatchPlayerSummarySerializer(serializers.ModelSerializer):
 
 
 class SeasonTableSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='team.id')
+    team_id = serializers.ReadOnlyField(source='team.id')
+    team_slug = serializers.ReadOnlyField(source='team.slug')
     team_name = serializers.ReadOnlyField(source='team.name')
     image_path = serializers.ReadOnlyField(source='team.image_path')
     sport_name = serializers.ReadOnlyField(source='sport.name')

@@ -37,20 +37,19 @@
 
             </div>
             <!--end:Menu item-->
-        
       
 
+
             {% if user_access == 'SuperAdmin' %}
-                  {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
-                 {% block media %}{% include 'good/media/partials/sidebar-partials.html' %}{% endblock media %}
-        {% block monks %}{% include 'good/monks/partials/sidebar-partials.html' %}{% endblock monks %}
+                {% block sport %}{% include 'good/sport/partials/sidebar-partials.html' %}{% endblock sport %}
+                {% block media %}{% include 'good/media/partials/sidebar-partials.html' %}{% endblock media %}
+                {% block monks %}{% include 'good/monks/partials/sidebar-partials.html' %}{% endblock monks %}
                 {% block blog %}{% include 'good/blog/partials/sidebar-partials.html' %}{% endblock blog %}
-                 {% block apps %}{% include 'good/utilities/partials/sidebar-partials.html' %}{% endblock apps %}
+                {% block apps %}{% include 'good/utilities/partials/sidebar-partials.html' %}{% endblock apps %}
                 {% block wallet %}{% include 'good/wallet/partials/sidebar-partials.html' %}{% endblock wallet %}
                 {% block account %}{% include 'good/account/partials/sidebar-partials.html' %}{% endblock account %}
                 {% block system %}{% include 'good/core/partials/sidebar-partials.html' %}{% endblock system %}
             {% endif %}
-
 
 
         </div>

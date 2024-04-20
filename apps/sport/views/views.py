@@ -2219,7 +2219,7 @@ def AdminSeasonTableCreate(request,slug):
     season = Season.objects.get(slug=slug)
     league = Leagues.objects.get(id=season.league.id)
     sport = Sport.objects.get(id=season.sport.id)
-    teams = Teams.objects.filter(sport=season.sport.id)
+    teams = Teams.objects.all()
     season_table = SeasonTable.objects.all()
 
     if request.method == "POST":

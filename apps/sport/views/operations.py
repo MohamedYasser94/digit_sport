@@ -1,18 +1,14 @@
-from datetime import timezone
-
 from django.contrib import messages
-
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-
+from apps.sport.forms.forms import AdminSportCategoryForm
 from apps.sport.forms.operations import *
-from apps.sport.models.models import Sport
-
+from apps.sport.models import *
+from apps.sport.models.models import *
 from core.models.core import CommonTranslate
-
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
 
