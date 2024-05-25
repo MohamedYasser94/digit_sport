@@ -335,7 +335,7 @@ class Round(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_rounds', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_rounds', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_rounds', null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True,unique=True)
     short_name = models.CharField(max_length=200, null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
@@ -348,6 +348,10 @@ class Round(models.Model):
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return self.name + ' ' + self.sport.name
 
     class Meta:
         # ordering = ('name',)

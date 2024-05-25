@@ -407,10 +407,17 @@
                                             <label class="required fs-6 fw-bold mb-2">{% translate 'Round' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                            <input type="text"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Round' %}" required
+                                           <select name="round" aria-label="{% translate 'Round' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.round.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
 
-                                                   name="round"/>
+                                            </select>
                                             <!--end::Input-->
                                         </div>
 

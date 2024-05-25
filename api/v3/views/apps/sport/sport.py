@@ -21,19 +21,48 @@ base_url = settings.SPORT_MONKS_URL
 
 
 #################### Volleyball ##################
-def MatchesBySportApiList(request,sport_name):
+def LeaguesBySportApiList(request, sport_name):
     try:
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
         sport = Sport.objects.create(name=sport_name)
+    try:
+        league_list = Leagues.objects.filter(sport=sport.id)
+        success = True
+        message = f"Send From Django API mix "
+        league_serializer = LeaguesByItemSerializer(league_list, many=True ,context={'request': request})
+        sport_data = {'leagues': league_serializer.data, }
 
-    matches_list = Match.objects.filter(sport=sport.id).order_by('-start_time')
-    match_league = Leagues.objects.filter(sport=sport.id)
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False,status=200)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'leagues': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False,status=404)
+
+
+
+def MatchesBySportApiList(request,sport_name,leagueId):
+    try:
+        sport = Sport.objects.get(name=sport_name)
+    except Exception as e:
+        sport = Sport.objects.create(name=sport_name)
+    if leagueId !='null' :
+        league = Leagues.objects.get(id=leagueId)
+    else:
+        league = Leagues.objects.filter(sport=sport.id).first()
+        match_league = Leagues.objects.filter(sport=sport.id)
+
+    matches_list = Match.objects.filter(sport=sport.id,league=league).order_by('-start_time')
+
     try:
         success = True
         message = f"Send From Django API mix "
-        league_serializer = LeaguesByItemSerializer(match_league, many=True)
-        match_serializer = MatchSerializer(matches_list, many=True)
+        league_serializer = LeaguesByItemSerializer(league, many=False,context={'request': request})
+        match_serializer = MatchSerializer(matches_list, many=True,context={'request': request})
 
         sport_data = {
             'leagues': league_serializer.data,
@@ -59,7 +88,7 @@ def MatchesBySportApiList(request,sport_name):
         return JsonResponse(data, safe=False)
 
 
-def MatchesBySportAndDateApiList(request,sport_name,type, ):
+def MatchesBySportAndDateApiList(request,sport_name,type,leagueId ):
     round_list = []
     matches_list = []
     first_date = datetime.now()
@@ -69,14 +98,19 @@ def MatchesBySportAndDateApiList(request,sport_name,type, ):
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
         sport = Sport.objects.create(name=sport_name)
-    match_league = Leagues.objects.filter(sport=sport.id)
+    if leagueId != 'null':
+        league = Leagues.objects.get(id=leagueId)
+        match_league = Leagues.objects.filter(id=leagueId)
+    else:
+
+        match_league = Leagues.objects.filter(sport=sport.id)
     if type == 'current':
-        first_date = datetime.now() - timedelta(hours=2)
+        first_date = datetime.now() - timedelta(hours=1)
         last_date = datetime.now() + timedelta(days=90)
         order_by = 'start_time'
     elif type == 'last':
         first_date = datetime.now() - timedelta(days=90)
-        last_date = datetime.now() - timedelta(hours=2)
+        last_date = datetime.now() - timedelta(hours=1)
         order_by = 'start_time'
     if sport_name == 'volleyball':
         round_list = []
@@ -88,9 +122,10 @@ def MatchesBySportAndDateApiList(request,sport_name,type, ):
     try:
         success = True
         message = f"Send From Django volleyball {type} "
-        match_serializer = MatchSerializer(matches_list, many=True)
-        league_serializer = LeaguesByItemSerializer(match_league, many=True)
-        round_serializer = RoundSerializer(round_list, many=True, context={'first_date': first_date, 'last_date': last_date})
+        match_serializer = MatchSerializer(matches_list, many=True,context={'request': request})
+        league_serializer = LeaguesByItemSerializer(match_league, many=True,context={'request': request})
+        round_serializer = RoundSerializer(round_list, many=True, context={'first_date': first_date, 'last_date': last_date,'leagueId':leagueId,
+                                                                           'request': request})
         sport_data = {
             'rounds': round_serializer.data,
             'leagues': league_serializer.data,
@@ -130,16 +165,16 @@ def MatchDetailsApi(request, match_id):
         table_list = SeasonTable.objects.filter(league=get_match.league.id)
 
 
-        league_serializer = LeaguesSerializer(get_league, many=True)
-        match_serializer = MatchDetailsSerializer(matches_list, many=True)
+        league_serializer = LeaguesSerializer(get_league, many=True, context={'request': request})
+        match_serializer = MatchDetailsSerializer(matches_list, many=True, context={'request': request})
         home_team_serializer = TeamsSerializer(home_team, many=True, context={'request': request})
         away_team_serializer = TeamsSerializer(away_team, many=True, context={'request': request})
-        home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True)
-        away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True)
-        summary_serializer = MatchSummarySerializer(summary_list, many=True)
-        statics_serializer = MatchStaticsSerializer(statics_list, many=True)
-        goals_serializer = MatchGoalsSerializer(goals_list, many=True)
-        table_serializer = SeasonTableSerializer(table_list, many=True)
+        home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True,context={'request': request})
+        away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True,context={'request': request})
+        summary_serializer = MatchSummarySerializer(summary_list, many=True, context={'request': request})
+        statics_serializer = MatchStaticsSerializer(statics_list, many=True, context={'request': request})
+        goals_serializer = MatchGoalsSerializer(goals_list, many=True, context={'request': request})
+        table_serializer = SeasonTableSerializer(table_list, many=True, context={'request': request})
 
         sport_data = {'league': league_serializer.data,
             'matches': match_serializer.data, 'home_team': home_team_serializer.data,
@@ -180,7 +215,7 @@ def SeasonTableBySportApiList(request,sport_name):
         table_list = SeasonTable.objects.filter(sport=sport).order_by('position')
         success = True
         message = f"Send From Django API mix table "
-        table_serializer = SeasonTableSerializer(table_list, many=True)
+        table_serializer = SeasonTableSerializer(table_list, many=True,context={'request': request})
         sport_data = {'sport': 'volleyball', 'table': table_serializer.data, }
 
         data = {'success': success, 'data': sport_data, 'message': message, }
@@ -201,7 +236,7 @@ def SportTeamsApiList(request,sport):
         team_list = Teams.objects.filter(sport=sport.id)
         success = True
         message = f"Send From Django API mix "
-        team_serializer = TeamsSerializer(team_list, many=True)
+        team_serializer = TeamsSerializer(team_list, many=True,context={'request': request})
         sport_data = {'team': team_serializer.data,
                       }
 
@@ -228,7 +263,7 @@ def SportTeamsApiDetails(request, team_id):
         team_list = Teams.objects.filter(id=team_id)
         success = True
         message = f"Send From Django API mix {team_id} "
-        team_serializer = TeamsSerializer(team_list, many=True)
+        team_serializer = TeamsSerializer(team_list, many=True,context={'request': request})
         sport_data = {'team': team_serializer.data,
                       }
 
@@ -259,7 +294,7 @@ def PlayersApiList(request):
         players_list = Players.objects.all()
         success = True
         message = f"Send From Django API mix "
-        players_serializer = PlayersSerializer(players_list, many=True)
+        players_serializer = PlayersSerializer(players_list, many=True,context={'request': request})
         sport_data = {'player': players_serializer.data, }
         data = {'success': success, 'data': sport_data, 'message': message,
 
@@ -285,7 +320,7 @@ def PlayersApiDetails(request, playerid):
         # psr = PlayerStatics.objects.filter(player=playerid)
         success = True
         message = f"Send From Django API mix {playerid} "
-        players_serializer = PlayersSerializer(players_list, many=True)
+        players_serializer = PlayersSerializer(players_list, many=True,context={'request': request})
         # mpr_serializer = MatchPlayerReportSerializer(mpr, many=True)
         # psr_serializer = PlayerStaticsSerializer(psr, many=True)
         sport_data = {'players': players_serializer.data,
@@ -327,7 +362,7 @@ def PlayersBySportApiList(request,sport_name,team_id):
 
         success = True
         message = f"Send From Django API mix "
-        players_serializer = PlayersSerializer(players_list, many=True)
+        players_serializer = PlayersSerializer(players_list, many=True,context={'request': request})
         sport_data = {'sport': sport_name, 'players': players_serializer.data, }
 
         data = {'success': success, 'data': sport_data, 'message': message, }
@@ -351,8 +386,8 @@ def SportNewsByCountryApiList(request,):
         news_list = BlogArticle.objects.all().order_by('-created_at')
         success = True
         message = f"Send From Django API mix "
-        sport_serializer = SportSerializer(sport_list, many=True)
-        news_serializer = AdminBlogArticleSerializer(news_list, many=True)
+        sport_serializer = SportSerializer(sport_list, many=True,context={'request': request})
+        news_serializer = AdminBlogArticleSerializer(news_list, many=True,context={'request': request})
         sport_data = { 'sport': sport_serializer.data, 'articles': news_serializer.data, }
 
     else:
@@ -372,7 +407,7 @@ def SportNewsApiDetails(request, article_id):
         news_list = BlogArticle.objects.filter(id=article_id)
         success = True
         message = f"Send From Django API News Details {article_id} "
-        news_serializer = AdminBlogArticleDetailsSerializer(news_list, many=True)
+        news_serializer = AdminBlogArticleDetailsSerializer(news_list, many=True,context={'request': request})
         sport_data = {'articles': news_serializer.data,
 
                       }
@@ -401,7 +436,7 @@ def SportVideosApiList(request, ):
         video_list = BlogVideo.objects.all()
         success = True
         message = f"Send From Django API  "
-        video_serializer = AdminBlogVideoSerializer(video_list, many=True)
+        video_serializer = AdminBlogVideoSerializer(video_list, many=True,context={'request': request})
         serializer = {'video': video_serializer.data, }
         data = {'success': success, 'data': serializer, 'message': message, }
         return JsonResponse(data, safe=False)
@@ -427,8 +462,8 @@ def SportVideosByCountryApiList(request, country, sport):
         video_list = BlogVideo.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"
-        sport_serializer = SportSerializer(sport_list, many=True)
-        video_serializer = AdminBlogVideoSerializer(video_list, many=True)
+        sport_serializer = SportSerializer(sport_list, many=True,context={'request': request})
+        video_serializer = AdminBlogVideoSerializer(video_list, many=True,context={'request': request})
         sport_data = {'country': country, 'sport': sport_serializer.data, 'video': video_serializer.data, }
 
     else:

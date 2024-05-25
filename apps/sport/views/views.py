@@ -687,12 +687,13 @@ def AdminStagesList(request):
 def AdminRoundList(request):
     rounds = Round.objects.all()
 
+
     if request.method == "POST":
         rounds_form = AdminRoundForm(request.POST or None, request.FILES or None)
 
         if rounds_form:
             name = request.POST.get('name')
-            league = request.POST.get('league')
+            sport = request.POST.get('sport')
             keyword = request.POST.get('keyword')
             starting_at = request.POST.get('starting_at')
             ending_at = request.POST.get('ending_at')
@@ -703,17 +704,18 @@ def AdminRoundList(request):
             else:
                 is_current = True
 
-            if league == None or league == '':
-                league = None
+            if sport == None or sport == '':
+                sport = None
             else:
-                league = Leagues.objects.get(id=league)
+                sport = Sport.objects.get(id=sport)
 
-            round_object = Round(name=name, league=league, keyword=keyword, starting_at=starting_at,
-                                        ending_at=ending_at, is_current=is_current,
-                                        status='Active')
-
-            round_object.save()
-            messages.success(request, _("Round Add Successfully"), extra_tags='Round')
+            try:
+                round_object = Round.objects.get(name=name, sport=sport)
+                messages.error(request, _("Round Already Exist"), extra_tags='Round')
+            except Round.DoesNotExist:
+                round_object = Round(name=name, sport=sport, is_current='Yes', )
+                round_object.save()
+                messages.success(request, _("Round Add Successfully"), extra_tags='Round')
 
             return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
         else:
@@ -1733,12 +1735,10 @@ def AdminMatchBySeason(request, slug):
             else:
                 venues = Venues.objects.get(id=venues)
 
-            try:
-                round_object = Round.objects.get(name=round,sport=season.sport,league=season.league,season=season,)
 
-            except:
-                round_object = Round(name=round, league=season.league,season=season,sport=season.sport )
-                round_object.save()
+            round_object = Round.objects.get(id=round)
+
+
 
             match_object = Match(name=name, sport=season.sport, season=season,league=season.league,
                 round=round_object,
@@ -1804,6 +1804,7 @@ def AdminMatchUpdate(request, slug):
             home_team = request.POST.get('home_team')
             away_team = request.POST.get('away_team')
             location = request.POST.get('location')
+            round = request.POST.get('round')
             start_time = request.POST.get('start_time')
             is_live = request.POST.get('is_live')
 
@@ -1818,11 +1819,13 @@ def AdminMatchUpdate(request, slug):
 
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
+            round = Round.objects.get(id=round)
 
             match_object = Match.objects.get(slug=slug)
             match_object.home_team = home_team
             match_object.away_team = away_team
             match_object.location = location
+            match_object.round = round
             match_object.start_time = start_time
             match_object.is_live = is_live
             match_object.save()

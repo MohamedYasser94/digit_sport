@@ -102,9 +102,17 @@
                                         <label class="required form-label">{% translate 'Round' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                           <input class="form-control" name="round"
-                                               placeholder="{% translate 'Round' %}"
-                                               value="{{ match.round.name }}"/>
+                                          <select name="round" aria-label="{% translate 'Round' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
+
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                 <option value="{{ match.round }}" selected="">{{ match.round }}</option>
+                                                {% for value, text in matches_form.round.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
 
 
                                         <!--end::Input-->
@@ -172,15 +180,18 @@
 
                             {% endif %}
 
-                            {% for message in messages %}
-                                {% if message.extra_tags == 'Match' %}
-
+                          {% for message in messages %}
+                            {% if message.extra_tags == 'Match' %}
+                                {% if message.tags == 'Match success' %}
+                                    <div class="alert alert-info">
+                                {% elif message.tags == 'Match danger' %}
                                     <div class="alert alert-danger">
-                                        {{ message.extra_tags|striptags }}: {{ message|striptags }}
-
-                                    </div>
                                 {% endif %}
-                            {% endfor %}
+                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                            </div>
+                            {% endif %}
+                        {% endfor %}
                         </div>
                     </div>
                     <!--end::Order details-->

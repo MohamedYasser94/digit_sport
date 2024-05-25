@@ -83,21 +83,15 @@ class LeaguesSerializer(serializers.ModelSerializer):
             return image_url
 class LeaguesByItemSerializer(serializers.ModelSerializer):
 
-    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image_url']
+        fields = ['id', 'name', 'image']
 
     def get_matches(self, obj):
         return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
 
-    def get_image_url(self, obj):
-        try:
-            image_url = 'https://aljawlakw.com' + str(obj.image.url)
-            return image_url
-        except:
-            image_url = None
-            return image_url
+
 
 
 
@@ -134,7 +128,10 @@ class RoundSerializer(serializers.ModelSerializer):
     def get_matches(self, obj,):
         first_date = self.context['first_date']
         last_date = self.context['last_date']
-        return MatchSerializer(Match.objects.filter(round=obj.id,start_time__range=[first_date,last_date] ).order_by('start_time'), many=True).data
+        league = self.context['leagueId']
+        request = self.context['request']
+        return MatchSerializer(Match.objects.filter(round=obj.id,start_time__range=[first_date,last_date],league=league,
+                                                    ).order_by('start_time'), many=True,context={'request': request}).data
 
 
 class VenuesSerializer(serializers.ModelSerializer):
@@ -168,21 +165,15 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
+
 
 
 
     class Meta:
         model = Teams
-        fields = "__all__"
+        fields = ['id', 'name', 'image','image_path', ]
 
-    def get_image_url(self, obj):
-       try:
-           image_url = 'https://aljawlakw.com' + str(obj.image.url)
-           return image_url
-       except:
-        image_url = None
-        return image_url
+
 
 
 
@@ -332,13 +323,19 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ['id','name','is_live','played','current_half',
+                  'current_minute','start_time','score','home_score','away_score','home_team',
+                  'away_team',
+                 ]
 
     def get_home_team(self, obj):
-        return TeamsSerializer(Teams.objects.filter(id=obj.home_team.id, ), many=True).data
+        request = self.context['request']
+        return TeamsSerializer(Teams.objects.filter(id=obj.home_team.id, ), many=True,context={'request': request}).data
 
     def get_away_team(self, obj):
-        return TeamsSerializer(Teams.objects.filter(id=obj.away_team.id, ), many=True).data
+        request = self.context['request']
+        return TeamsSerializer(Teams.objects.filter(id=obj.away_team.id, ), many=True,context={'request': request}).data
 
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
