@@ -187,6 +187,8 @@ class BlogArticle(models.Model):
         return BlogArticle.objects.filter(id__lt=self.id, status='p').first()
 
 
+
+
 class BlogVideo(models.Model):
     title = models.CharField(max_length=255, )
     keyword = models.CharField(max_length=255, null=True, blank=True, default='')

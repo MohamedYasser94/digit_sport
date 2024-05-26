@@ -17,6 +17,7 @@ from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm, AdminB
 from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, AdminCommonTranslateForm
 from core.models.blog import BlogArticle, BlogCategories, BlogServices, CommonTags, BlogVideo
 from core.models.core import CommonSeo, CommonTranslate, CommonMediaFiles
+from core.utils.notification import FcmNotifications
 from core.views.core import AdminCommonMediaHeroFiles, AdminCommonMediaImagesFiles, \
     AdminCommonMediaVideoFiles, AdminCommonTranslate, AdminCommonSeo
 from core.views.notifications import AdminCommonNotifications
@@ -399,30 +400,14 @@ def AdminBlogArticleCreate(request):
                                          sport=sport, country=country,image_path=image_path,image=hero_image,
                                          author=author, comment_status=comment_status)
             article_object.save()
-            AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
+
             AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
-            AdminCommonMediaHeroFiles(request, hero_image, 'BlogArticle', article_object.id)
-            AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogArticle', article_object.id)
-            j = 0
-            for tag in tags:
-                tag_id = CommonTags.objects.get(id=tag)
-                article_object.tags.add(tag_id)
-                j = j + 1
-            i = 0
-            for image in images:
-                AdminCommonMediaImagesFiles(request, image, 'BlogArticle', article_object.id)
-                i = i + 1
-            users = User.objects.filter(access_notification=True)
-            for user in users:
-                AdminCommonNotifications(request, _(f'Article Add'), False, False, False,
-                                         _(f'{article_object.title} Add To Blog'),
-                                         'BlogArticle', article_object.slug,
-                                         _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-                                         _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-                                         article_object.create_at, None, 'User', request.user.id,
-                                         'User', user.id, 'BlogArticle', article_object.id,
-                                         'User', request.user.id, )
+            image_url  = article_object.image.url
+            image = request.build_absolute_uri(image_url)
+            FcmNotifications(request, title, keyword, image)
+
+
 
             messages.success(request, _("Article Add Successfully, check it out on the home page!"),
                              extra_tags='Article')
@@ -520,29 +505,16 @@ def AdminBlogArticleSCreate(request):
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-            # AdminCommonSeo(request, article_object.title,  article_object.title,  article_object.title, None, hero_image, 'BlogArticle',
-            #                article_object.id)
-            # AdminCommonMediaHeroFiles(request, hero_image, 'BlogArticle', article_object.id)
-            # AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogArticle', article_object.id)
-            # j = 0
-            # for tag in tags:
-            #     tag_id = CommonTags.objects.get(id=tag)
-            #     article_object.tags.add(tag_id)
-            #     j = j + 1
-            # i = 0
-            # for image in images:
-            #     AdminCommonMediaImagesFiles(request, image, 'BlogArticle', article_object.id)
-            #     i = i + 1
-            # users = User.objects.filter(access_notification=True)
-            # for user in users:
-            #     AdminCommonNotifications(request, _(f'Article Add'), False, False, False,
-            #                              _(f'{article_object.title} Add To Blog'),
-            #                              'BlogArticle', article_object.slug,
-            #                              _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-            #                              _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-            #                              article_object.create_at, None, 'User', request.user.id,
-            #                              'User', user.id, 'BlogArticle', article_object.id,
-            #                              'User', request.user.id, )
+            try:
+                if image_path != None or image_path != '':
+                    image_path = 'https://aljawlakw.com' + str(article_object.image.url)
+                    article_object.image_path = image_path
+                    article_object.save()
+            except Exception as e:
+                pass
+            image_url = article_object.image.url
+            image = request.build_absolute_uri(image_url)
+            FcmNotifications(request, title, keyword, article_object.image_path)
 
             messages.success(request, _("Article Add Successfully, check it out on the home page!"),
                              extra_tags='Article')
@@ -583,19 +555,10 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
     tags = CommonTags.objects.all()
     article_tag = CommonTags.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle'),
                                             owner_id=article.id)
-    # article_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle')
-    #                                              , owner_id=article.id, type='hero')
-    # article_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
-    #                                              owner_id=article.id, type='video')
-    # article_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle')
-    #                                                  , owner_id=article.id, type='image')
-    # article_translate = CommonTranslate.objects.get(
-    #     owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
-    # article_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
+
     if request.method == "POST":
         article_form = AdminBlogArticleForm(request.POST or None, request.FILES or None)
-        tags_form = AdminBlogArticleTagsForm(request.POST or None, request.FILES or None)
-        seo_form = AdminCommonSeoForm(request.POST or None, request.FILES or None)
+
         if article_form:
 
             title = request.POST.get('title')
@@ -665,32 +628,9 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
 
             AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
-            AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-
-            AdminCommonMediaHeroFiles(request, hero_image, 'BlogArticle', article_object.id)
-            AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogArticle', article_object.id)
-            j = 0
-            for tag in tags:
-                tag_id = CommonTags.objects.get(id=tag)
-                article_object.tags.add(tag_id)
-                j = j + 1
-
-            if images != '' or images != None:
-
-                i = 0
-                for image in images:
-                    AdminCommonMediaImagesFiles(request, image, 'BlogArticle', article_object.id)
-                    i = i + 1
-            users = User.objects.filter(access_notification=True)
-            for user in users:
-                AdminCommonNotifications(request, _(f'Article Update'), False, False, False,
-                                         _(f'{article_object.title} Add To Blog'),
-                                         'BlogArticle', article_object.slug,
-                                         _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-                                         _(f'New Article {article_object.title} Add To Blog By User {request.user.get_full_name()}) '),
-                                         article_object.create_at, None, 'User', request.user.id,
-                                         'User', user.id, 'BlogArticle', article_object.id,
-                                         'User', request.user.id, )
+            image_url = article_object.image.url
+            image = request.build_absolute_uri(image_url)
+            FcmNotifications(request, title, keyword, article_object.image_path)
 
             messages.success(request, _("Article Update Successfully, check it out on the home page!"),
                              extra_tags='Article')

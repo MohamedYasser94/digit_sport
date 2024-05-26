@@ -16,14 +16,14 @@ from datetime import timedelta
 from pathlib import Path
 from typing import List
 
-import firebase_admin
-from firebase_admin import initialize_app, credentials
-from google.auth import load_credentials_from_file
 import environ
+import firebase_admin
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.contrib import messages
 from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
+from firebase_admin import initialize_app, credentials
+from google.auth import load_credentials_from_file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
@@ -34,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-env = environ.Env(# set casting, default value
+env = environ.Env(  # set casting, default value
     DEBUG=(bool, False))
 # # reading ..env file
 environ.Env.read_env()
@@ -43,22 +43,17 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1','192.168.1.35', 'aljawlakw.com','localhost']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost']
 
 # Application definition
 
 INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
-    'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'django.contrib.sites',
-    'django.contrib.sitemaps', 'django.contrib.humanize', ]
+                  'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
+                  'django.contrib.sites', 'django.contrib.sitemaps', 'django.contrib.humanize', ]
 
-OWN_APPS = [## internal apps
-    'core.apps.CoreConfig',
-    'home.apps.HomeConfig',
-    'user.apps.UserConfig',
-    'api.apps.ApiConfig',
-    'apps.catalog.apps.CatalogConfig',
-    'apps.sport.apps.SportConfig',
-    'apps.wallet.apps.WalletConfig',
+OWN_APPS = [  ## internal apps
+    'core.apps.CoreConfig', 'home.apps.HomeConfig', 'user.apps.UserConfig', 'api.apps.ApiConfig',
+    'apps.catalog.apps.CatalogConfig', 'apps.sport.apps.SportConfig', 'apps.wallet.apps.WalletConfig',
 
 ]
 
@@ -72,30 +67,29 @@ THIRD_PARTY_APPS = [
     # 'django_user_agents',
     # "debug_toolbar",
     # 'geoip2',
-    'sorl.thumbnail', 'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
+    'sorl.thumbnail', 'django_otp', 'django_otp.plugins.otp_static', 'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_email',  # <- if you want email capability.
-    'two_factor',
-    'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
+    'two_factor', 'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
     'two_factor.plugins.email',  # <- if you want email capability.
-    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook',  'fcm_django', "debug_toolbar",
-
+    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook', 'fcm_django',
 
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS + OWN_APPS
 
 MIDDLEWARE = ['django.middleware.common.CommonMiddleware', 'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware', 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware', 'social_django.middleware.SocialAuthExceptionMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware', 'corsheaders.middleware.CorsMiddleware','django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware','allauth.account.middleware.AccountMiddleware',  "debug_toolbar.middleware.DebugToolbarMiddleware",
+              'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware',
+              'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
+              'django.contrib.messages.middleware.MessageMiddleware',
+              'django.middleware.clickjacking.XFrameOptionsMiddleware', 'django.middleware.locale.LocaleMiddleware',
+              'social_django.middleware.SocialAuthExceptionMiddleware',
+              'django_user_agents.middleware.UserAgentMiddleware',
+              'django.contrib.auth.middleware.AuthenticationMiddleware', 'django_otp.middleware.OTPMiddleware',
+              'corsheaders.middleware.CorsMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
+              'django_otp.middleware.OTPMiddleware', 'allauth.account.middleware.AccountMiddleware',
 
-]
+
+              ]
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_COOKIE_AGE = 60 * 60
@@ -113,22 +107,25 @@ INTERNAL_IPS = [
 ]
 TEMPLATES = [
     {'BACKEND': 'django.template.backends.django.DjangoTemplates', 'DIRS': [os.path.join(BASE_DIR / 'templates', )],
-        'APP_DIRS': True, 'OPTIONS': {
+     'APP_DIRS': True, 'OPTIONS': {
         'context_processors': ['django.template.context_processors.debug', 'django.template.context_processors.request',
-            'django.contrib.auth.context_processors.auth', 'django.contrib.messages.context_processors.messages',
-            'home.context_processors.home_processors', 'home.context_processors.content_processors',
-            'core.context_processors.notifications', 'core.context_processors.admin_summary',
-            'core.context_processors.setting_processors', 'core.context_processors.language_processors',
-            'core.context_processors.template_processors', # 'core.context_processors.geoip_processors',
-            # 'core.context_processors.admin_chart',
-            'core.context_processors.user_processors', 'social_django.context_processors.backends',
-            'social_django.context_processors.login_redirect',
+                               'django.contrib.auth.context_processors.auth',
+                               'django.contrib.messages.context_processors.messages',
+                               'home.context_processors.home_processors', 'home.context_processors.content_processors',
+                               'core.context_processors.notifications', 'core.context_processors.admin_summary',
+                               'core.context_processors.setting_processors',
+                               'core.context_processors.language_processors',
+                               'core.context_processors.template_processors',
+                               # 'core.context_processors.geoip_processors',
+                               # 'core.context_processors.admin_chart',
+                               'core.context_processors.user_processors', 'social_django.context_processors.backends',
+                               'social_django.context_processors.login_redirect',
 
-        ], }, }, ]
+                               ], }, }, ]
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 MESSAGE_LEVEL = message_constants.DEBUG
 MESSAGE_TAGS = {messages.DEBUG: 'info', messages.INFO: 'info', messages.SUCCESS: 'success', messages.WARNING: 'warning',
-    messages.ERROR: 'danger', }
+                messages.ERROR: 'danger', }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -158,9 +155,9 @@ BASE_URL = "http://127.0.0.1:8000"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 ACCOUNT_ACTIVATION_DAYS = 7
 AUTH_PASSWORD_VALIDATORS = [{'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', }, ]
+                            {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+                            {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+                            {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', }, ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -177,7 +174,7 @@ LANGUAGE_SESSION_KEY = 'lang'
 
 LANGUAGES = (('ar', _('Arabic')), ('en', _('English')),
 
-)
+             )
 LANGUAGE_COOKIE_NAME = 'django_language'
 ALLOW_UNICODE_SLUGS = True
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
@@ -210,6 +207,14 @@ SESSION_COOKIE_SECURE = False
 
 GEOIP_PATH = os.path.join('geoip')
 
+########### FCM ########
+FCM_DJANGO_SETTINGS = {"DEFAULT_FIREBASE_APP": None, "FCM_SERVER_KEY": env('FCM_SERVER_KEY'),
+    "ONE_DEVICE_PER_USER": False, "DELETE_INACTIVE_DEVICES": False, "ALLOW_MULTIPLE_DEVICES": True, }
+GOOGLE_APPLICATION_CREDENTIALS = os.path.join(BASE_DIR, "credentials.json")
+FCM_SERVER_KEY = env('FCM_SERVER_KEY')
+cred = credentials.Certificate(GOOGLE_APPLICATION_CREDENTIALS)
+firebase_app = firebase_admin.initialize_app(cred)
+
 ############WhatsApp_TOKEN########
 WhatsApp_TOKEN = env('WhatsApp_TOKEN')
 WhatsApp_phone_number = env('WhatsApp_phone_number')
@@ -221,7 +226,6 @@ MyFatoorah_base_url = env('MyFatoorah_base_url')
 STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
-
 
 MyFatoorah_api_key = env('MyFatoorah_api_key')
 MyFatoorah_WEBHOOK_SECRET = env('MyFatoorah_WEBHOOK_SECRET')
@@ -262,48 +266,46 @@ CSRF_COOKIE_SECURE = False
 SWAGGER_SETTINGS = {'SECURITY_DEFINITIONS': {'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}}}
 # CORS WHITELIST
 CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.netlify.app", "http://127.0.0.1:8080",
-    "https://digithub.site", "http://localhost:56630", "https://himediakw.net", ]
+                         "https://digithub.site", "http://localhost:56630", "https://himediakw.net", ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+REST_FRAMEWORK = {'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler.custom_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
-    'DEFAULT_AUTHENTICATION_CLASSES':
-        [# 'rest_framework.authentication.SessionAuthentication',
+    'DEFAULT_AUTHENTICATION_CLASSES': [  # 'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication', ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', 'PAGE_SIZE':10
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', 'PAGE_SIZE': 10
 
 }
 
 # JWT Settings
 SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20), 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
-    'AUTH_HEADER_TYPES': ('Bearer',), 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION', 'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+              'AUTH_HEADER_TYPES': ('Bearer',), 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION', 'USER_ID_FIELD': 'id',
+              'USER_ID_CLAIM': 'user_id',
+              'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',), 'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+              'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',), 'TOKEN_TYPE_CLAIM': 'token_type',
+              'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
 
-    'JTI_CLAIM': 'jti',
+              'JTI_CLAIM': 'jti',
 
-}
+              }
 
 PASSWORD_RESET_TIMEOUT = 900  # 900 Sec = 15 Min
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://digithub.site",
-    "https://himediakw.net",
+                        "https://himediakw.net",
 
-    "http://localhost:56630", ]
-DJANGO_REST_JWT_REGISTRATION = {# Optional - in the form of `app_name.module_name.class_name`
-    'CREATE_USER_SERIALIZER': 'core.serializers.CreateUserSerializer', # Optional
-    'REGISTRATION_TOKEN_LIFETIME': int(os.getenv('REGISTRATION_TOKEN_LIFETIME', '3600')), # Optional
-    'REGISTRATION_DELETE_TOKEN_LIFETIME': int(os.getenv('REGISTRATION_DELETE_TOKEN_LIFETIME', '3600')), # Optional
-    'PASSWORD_CHANGE_TOKEN_LIFETIME': int(os.getenv('PASSWORD_CHANGE_TOKEN_LIFETIME', '3600')), # Optional
-    'EMAIL_CHANGE_TOKEN_LIFETIME': int(os.getenv('EMAIL_CHANGE_TOKEN_LIFETIME', '3600')), # Optional
-    'DELETE_EXPIRED_TOKENS_INTERVAL': int(os.getenv('DELETE_EXPIRED_TOKENS_INTERVAL', '60')), # Optional
+                        "http://localhost:56630", ]
+DJANGO_REST_JWT_REGISTRATION = {  # Optional - in the form of `app_name.module_name.class_name`
+    'CREATE_USER_SERIALIZER': 'core.serializers.CreateUserSerializer',  # Optional
+    'REGISTRATION_TOKEN_LIFETIME': int(os.getenv('REGISTRATION_TOKEN_LIFETIME', '3600')),  # Optional
+    'REGISTRATION_DELETE_TOKEN_LIFETIME': int(os.getenv('REGISTRATION_DELETE_TOKEN_LIFETIME', '3600')),  # Optional
+    'PASSWORD_CHANGE_TOKEN_LIFETIME': int(os.getenv('PASSWORD_CHANGE_TOKEN_LIFETIME', '3600')),  # Optional
+    'EMAIL_CHANGE_TOKEN_LIFETIME': int(os.getenv('EMAIL_CHANGE_TOKEN_LIFETIME', '3600')),  # Optional
+    'DELETE_EXPIRED_TOKENS_INTERVAL': int(os.getenv('DELETE_EXPIRED_TOKENS_INTERVAL', '60')),  # Optional
 }
 
 LOGIN_REDIRECT_URL = 'two_factor:profile'
@@ -327,14 +329,14 @@ SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'user_link']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email, picture.type(large), link, age_range'}
-SOCIAL_AUTH_FACEBOOK_AUTH_EXTRA_ARGUMENTS = {# 'auth_type': 'reauthenticate',
+SOCIAL_AUTH_FACEBOOK_AUTH_EXTRA_ARGUMENTS = {  # 'auth_type': 'reauthenticate',
 }
 
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('name', 'name'), ('email', 'email'), ('picture', 'picture'),
-    ('link', 'profile_url'), ]
+                                   ('link', 'profile_url'), ]
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {# 'access_type': 'offline',
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {  # 'access_type': 'offline',
     # 'approval_prompt': 'force',
 }
 
@@ -377,9 +379,9 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_ADAPTER = 'user.adapter.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'user.adapter.MySocialAccountAdapter'
 SOCIALACCOUNT_PROVIDERS = {'auth0': {'AUTH0_URL': 'https://your.auth0domain.auth0.com', },
-    'google': {'SCOPE': ['profile', 'email', ],
-        'APP': {'client_id': env('GP_CLIENT_ID'), 'secret': env('GP_CLIENT_SECRET'), 'key': ''}},
-    "apple": {"APP": {# Your service identifier.
+                           'google': {'SCOPE': ['profile', 'email', ],
+                                      'APP': {'client_id': env('GP_CLIENT_ID'), 'secret': env('GP_CLIENT_SECRET'),
+                                              'key': ''}}, "apple": {"APP": {  # Your service identifier.
         "client_id": "your.service.id",
 
         # The Key ID (visible in the "View Key Details" page).
@@ -397,8 +399,6 @@ s3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr
 c3ts3cr3t
 -----END PRIVATE KEY-----
 """}}}
-
-
 
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
@@ -454,11 +454,9 @@ import os
 #     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 
 
-
 SPORT_MONKS_KEY = env('SPORT_MONKS_KEY')
 SPORT_MONKS_URL = env('SPORT_MONKS_URL')
 SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
-
 
 # Optional ONLY IF you have initialized a firebase app already:
 # Visit https://firebase.google.com/docs/admin/setup/#python
@@ -470,18 +468,3 @@ SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
 # To learn more, visit the docs here:
 # https://cloud.google.com/docs/authentication/getting-started>
 # Firebase Configuration
-
-cred = credentials.Certificate(env('serviceAccountKey'))
-firebase_admin.initialize_app(cred)
-
-FCM_DJANGO_SETTINGS = {
-     # default: _('FCM Django')
-    "APP_VERBOSE_NAME":  _('FCM Django'),
-     # true if you want to have only one active device per registered user at a time
-     # default: False
-    "ONE_DEVICE_PER_USER": False,
-     # devices to which notifications cannot be sent,
-     # are deleted upon receiving error response from FCM
-     # default: False
-    "DELETE_INACTIVE_DEVICES": False,
-}

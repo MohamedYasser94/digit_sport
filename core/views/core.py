@@ -25,6 +25,7 @@ from core.forms.core import SystemSettingForm, AdminCommonSocialLinkForm, AdminC
 from core.models.core import SystemSetting, SiteSetting, CommonSeo, CommonSocialLink, HelpCategories, CommonTranslate, \
     HelpQuestions, CommonMediaFiles, CommonTags, CommonComment, CommonProfile, QrCode
 from core.models.localization import Country
+from core.utils.notification import FcmNotifications
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import superuser_only, staff_only, authenticated_staf, admin_only
 
@@ -37,6 +38,8 @@ UserModel = get_user_model()
 def AdminIndex(request):
     data = None
     system_app = SystemSetting.objects.get(title='Digithup')
+
+
 
     context = {
 

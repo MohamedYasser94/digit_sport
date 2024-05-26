@@ -82,12 +82,12 @@ def DeviceInfoFromApp(request):
 
         device_token = data.get('device_token')
         print('device_token',device_token)
-        manufacturer = data.get('manufacturer')
-        print('manufacturer',manufacturer)
+        device_type = data.get('device_type')
+        print('manufacturer',device_type)
         try:
             device_object = DeviceInfo(
                 device_token=device_token,
-                manufacturer=manufacturer,
+                device_type=device_type,
 
             )
             device_object.save()

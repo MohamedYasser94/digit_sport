@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+from fcm_django.models import FCMDevice
+from firebase_admin import messaging
 
 from core.models.core import SiteSetting, SystemSetting
 from core.models.notifications import Notification, ChatNotification
@@ -217,3 +219,31 @@ def create_notification_chat(request, target, from_user, object_id):
     notification = ChatNotification.objects.create(target=target, from_user=from_user, content_type=content,
                                                    object_id=object_id, redirect_url=redirect_url, verb=verb,
                                                    read=False)
+
+
+
+def FcmNotifications(request,message_title,message_body,image):
+    try:
+
+        # user = User.objects.get(slug=slug)
+        # print('user', user.id,slug)
+
+
+        device = FCMDevice.objects.all()
+        for item in device:
+            message = messaging.Message(
+                notification=messaging.Notification(
+                    title=message_title,
+                    body=message_body,
+                    image=image
+
+                ),
+                token=item.registration_id,
+            )
+            item.send_message(message)
+        # device.send_message(Message(notification=Notification(title=message_title, body=message_body)))
+        print('message sent')
+
+
+    except Exception as e:
+        print('FcmNotifications error', e)
