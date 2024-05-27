@@ -114,6 +114,7 @@ urlpatterns = [
     path('user/referrals/<slug:slug>', users.UserReferrals, name='UserReferrals'),
     path('dark/', users.UserDarkModeUpdate, name='UserDarkModeUpdate'),
     path('user/geo/', users.AdminUsersGeoInfoList, name='AdminUsersGeoInfoList'),
+    path('user/fcmtoken/', users.AdminUsersFcmTokenList, name='AdminUsersFcmTokenList'),
     path('user/newsletter/', users.AdminUsersNewsletterList, name='AdminUserNewsletter'),
     path('user/contact/', users.AdminClientContactList, name='AdminClientContactList'),
     path('user/contact/detail/<slug:slug>/', users.AdminClientContactDetail, name='AdminClientContactDetails'),

@@ -16,6 +16,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 
+from core.models.notifications import DeviceInfo
 from core.utils.notification import notify_user
 from digit_sport import settings
 from core.forms.users import AdminUserSignUpForm, UserUpdateForm, AdminGroupForm, UserProfileForm, \
@@ -691,6 +692,18 @@ def AdminUsersGeoInfoList(request):
         'current_page': _('Users Geo Info')
     }
     return render(request, f'{BACKEND_TEMPLATES}/account/user/geo_info.html', context)
+
+@authenticated_staf
+@superuser_only
+def AdminUsersFcmTokenList(request):
+    users = User.objects.all()
+    devices = DeviceInfo.objects.all()
+    context = {
+        'users': users,
+        'devices': devices,
+        'current_page': _('Users Fcm Token')
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/account/user/fcm.html', context)
 
 
 @authenticated_staf

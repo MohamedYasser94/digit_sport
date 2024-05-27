@@ -79,26 +79,27 @@ def DeviceInfoFromApp(request):
 
     if request.method == 'POST':
         data = json.loads(request.body)
-
         device_token = data.get('device_token')
-        print('device_token',device_token)
         device_type = data.get('device_type')
-        print('manufacturer',device_type)
         try:
-            device_object = DeviceInfo(
-                device_token=device_token,
-                device_type=device_type,
+            try:
+                fcm_object = FCMDevice.objects.get( registration_id=device_token )
+                return JsonResponse(data, status=status.HTTP_200_OK)
 
-            )
-            device_object.save()
-            fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type='android', )
-            fcm_object.save()
-            AdminFcmNotifications(request)
-            data = {
-                'status': 'success',
-                'message': 'Device Info saved successfully'
-            }
-            return JsonResponse(data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+
+                device_object = DeviceInfo(
+                    device_token=device_token,
+                    device_type=device_type,)
+                device_object.save()
+                fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type='android', )
+                fcm_object.save()
+                AdminFcmNotifications(request)
+                data = {
+                    'status': 'success',
+                    'message': 'Device Info saved successfully'
+                }
+                return JsonResponse(data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             print(e)
