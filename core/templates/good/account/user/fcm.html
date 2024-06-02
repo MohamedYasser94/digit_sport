@@ -41,11 +41,11 @@
                             <!--end::Card title-->
                             <!--begin::Card toolbar-->
                             <div class="card-toolbar">
-                                <!--begin::Add customer-->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#kt_modal_add_customer">{% translate 'Add User' %}
-                                </button>
-                                <!--end::Add customer-->
+{#                                <!--begin::Add customer-->#}
+{#                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"#}
+{#                                        data-bs-target="#kt_modal_add_customer">{% translate 'Add User' %}#}
+{#                                </button>#}
+{#                                <!--end::Add customer-->#}
                             </div>
                             <!--end::Card toolbar-->
                         </div>
@@ -67,13 +67,11 @@
                                         </div>
                                     </th>
                                     <th class="min-w-20px">{% translate '#' %}</th>
-                                    <th class="min-w-125px">{% translate 'Name' %}</th>
+                                    <th class="min-w-125px">{% translate 'Type' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
-                                    <th class="min-w-125px">{% translate 'Email' %}</th>
-                                    <th class="min-w-125px">{% translate 'Access Level' %}</th>
-                                    <th class="min-w-125px">{% translate 'Staff' %}</th>
-                                    <th class="min-w-125px">{% translate 'Online' %}</th>
-                                    <th class="min-w-125px">{% translate 'Groups' %}</th>
+                                    <th class="min-w-125px">{% translate 'Type' %}</th>
+                                    <th class="min-w-125px">{% translate 'FCM' %}</th>
+
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                                 </tr>
                                 <!--end::Table row-->
@@ -82,7 +80,7 @@
                                 <!--begin::Table body-->
                                 <tbody class="fw-semibold text-gray-600">
                                 <!--begin::Table row-->
-                                {% for item in devices %}
+                                {% for item in fcm %}
                                     <tr>
                                         <!--begin::Checkbox-->
                                         <td>
@@ -104,7 +102,7 @@
                                         <!--end::Name=-->
                                         <!--begin::Email=-->
                                         <td>
-                                            {{ item.device_id }}
+                                            {{ item.type }}
                                         </td>
                                         <!--end::Email=-->
                                         <!--begin::Email=-->
@@ -112,29 +110,15 @@
                                             {{ item.device_token }}
                                         </td>
                                         <!--end::Email=-->
+
                                         <!--begin::Email=-->
                                         <td>
-                                            {{ item.type }}
-                                        </td>
-                                        <!--end::Email=--> <!--begin::Email=-->
-                                        <td>
-                                            {{ item.device_info }}
-                                        </td>
-                                        <!--end::Email=-->
-                                        <!--begin::Email=-->
-                                        <td>
-                                            {{ user.is_online }}
+                                            {{ item.registration_id }}
                                         </td>
                                         <!--end::Email=-->
 
 
-                                        <!--begin::Payment method=-->
-                                        <td>
 
-                                            {{ user.groups }}
-
-                                        </td>
-                                        <!--end::Payment method=-->
 
                                         <!--begin::Action=-->
                                         <td class="text-end">
@@ -177,8 +161,7 @@
                                         </td>
                                         <!--end::Action=-->
                                     </tr>
-                                {% empty %}
-                                    {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+
                                 {% endfor %}
                                 <!--end::Table row-->
 

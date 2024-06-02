@@ -169,8 +169,6 @@ def AdminSportCategoryDelete(request, slug):
 @staff_only
 def AdminSportList(request):
     sports = Sport.objects.all()
-    AdminFcmNotifications(request)
-
     if request.method == "POST":
         sport_form = AdminSportForm(request.POST or None, request.FILES or None)
 

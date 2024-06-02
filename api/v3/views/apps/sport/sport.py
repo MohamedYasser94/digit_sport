@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import requests
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -21,27 +22,33 @@ base_url = settings.SPORT_MONKS_URL
 
 
 #################### Volleyball ##################
-def LeaguesBySportApiList(request, sport_name):
+def LeaguesBySportApiList(request,date, sport_name):
     try:
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
         sport = Sport.objects.create(name=sport_name)
+    league_list = []
+    matches = Match.objects.filter(start_time__date=date, )
+    for item in matches:
+        league_list.append(item.league.slug)
+    print('league_list',league_list)
+
     try:
-        league_list = Leagues.objects.filter(sport=sport.id)
+        league_list = Leagues.objects.filter(sport=sport.id,slug__in=league_list)
         success = True
-        message = f"Send From Django API mix "
-        league_serializer = LeaguesByItemSerializer(league_list, many=True ,context={'request': request})
-        sport_data = {'leagues': league_serializer.data, }
+        message = f"Send From Django LeaguesBySportApiList "
+        league_serializer = LeaguesByItemSerializer(league_list, many=True ,context={'request': request,'date':date})
+        sport_data = {'leagues': league_serializer.data,
+                      }
 
         data = {'success': success, 'data': sport_data, 'message': message, }
-
         return JsonResponse(data, safe=False,status=200)
     except Exception as e:
         success = False
         message = f"error in get data   {e}  "
         sport_data = {'leagues': [], }
         data = {'success': success, 'data': sport_data, 'message': message, }
-        return JsonResponse(data, safe=False,status=404)
+        return JsonResponse(message, safe=False,status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -60,7 +67,7 @@ def MatchesBySportApiList(request,sport_name,leagueId):
 
     try:
         success = True
-        message = f"Send From Django API mix "
+        message = f"Send From MatchesBySportApiList "
         league_serializer = LeaguesByItemSerializer(league, many=False,context={'request': request})
         match_serializer = MatchSerializer(matches_list, many=True,context={'request': request})
 
@@ -149,6 +156,46 @@ def MatchesBySportAndDateApiList(request,sport_name,type,leagueId ):
 
                 }
         return JsonResponse(data, safe=False)
+
+
+def MatchesByDateApiList(request,date,leagueid):
+    round_list = []
+    matches_list = []
+    first_date = datetime.now()
+    last_date = datetime.now()
+    order_by = 'start_time'
+    leagues = Leagues.objects.filter(id=leagueid)
+    league = Leagues.objects.get(id=leagueid)
+    match_league = Match.objects.filter(league=leagueid,start_time__date=date)
+
+    try:
+        success = True
+        message = f"Send From MatchesByDateApiList {date} "
+        match_serializer = MatchSerializer(match_league, many=True,context={'request': request})
+        league_serializer = LeaguesByItemSerializer(leagues, many=True,context={'request': request,'date':date})
+        sport_data = {
+            'leagues': league_serializer.data,
+            'matches': match_serializer.data,
+            'rounds': round_list,
+            }
+        data = {'success': success, 'data': sport_data, 'message': message,
+                }
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e} {date} "
+        sport_data = {
+            'leagues': [],
+            'matches': [],
+            'rounds': [],
+
+
+                      }
+
+        data = {'success': success, 'data': sport_data, 'message': message,
+
+                }
+        return JsonResponse(data, safe=False,status=status.HTTP_404_NOT_FOUND)
 
 def MatchDetailsApi(request, match_id):
     try:

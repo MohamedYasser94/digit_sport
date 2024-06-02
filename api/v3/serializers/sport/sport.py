@@ -82,14 +82,17 @@ class LeaguesSerializer(serializers.ModelSerializer):
             image_url = None
             return image_url
 class LeaguesByItemSerializer(serializers.ModelSerializer):
-
-
+    league_matches = serializers.SerializerMethodField()
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image']
+        fields = ['id', 'name', 'image','league_matches']
 
-    def get_matches(self, obj):
-        return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
+    def get_league_matches(self, obj):
+        date = self.context['date']
+        matches = Match.objects.filter(league=obj.id, start_time__date=date, ).count()
+        return matches
+
+
 
 
 

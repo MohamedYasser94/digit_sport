@@ -107,7 +107,7 @@
 
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
-                                                 <option value="{{ match.round }}" selected="">{{ match.round }}</option>
+                                                 <option value="{{ match.round.id }}" selected="">{{ match.round }}</option>
                                                 {% for value, text in matches_form.round.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}

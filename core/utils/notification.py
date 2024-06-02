@@ -224,26 +224,23 @@ def create_notification_chat(request, target, from_user, object_id):
 
 def FcmNotifications(request,message_title,message_body,image):
     try:
-
         # user = User.objects.get(slug=slug)
         # print('user', user.id,slug)
-
-
+        registration_tokens = []
         device = FCMDevice.objects.all()
         for item in device:
-            message = messaging.Message(
-                notification=messaging.Notification(
-                    title=message_title,
-                    body=message_body,
-                    image=image
-
-                ),
-                token=item.registration_id,
-            )
-            item.send_message(message)
-        # device.send_message(Message(notification=Notification(title=message_title, body=message_body)))
-        print('message sent')
-
+            registration_tokens.append(item.registration_id)
+        response = messaging.subscribe_to_topic( registration_tokens, 'news')
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=message_title,
+                body=message_body,
+                image=image
+            ),
+            token=registration_tokens,
+        )
+        FCMDevice.objects.send_message(message)
+        print('Successfully sent message:', response.success_count)
 
     except Exception as e:
         print('FcmNotifications error', e)

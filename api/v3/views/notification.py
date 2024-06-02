@@ -84,6 +84,11 @@ def DeviceInfoFromApp(request):
         try:
             try:
                 fcm_object = FCMDevice.objects.get( registration_id=device_token )
+                fcm_object.type = device_type
+                # device_object = DeviceInfo.objects.get( device_token=device_token )
+                # device_object.device_type = device_type
+                # device_object.save()
+
                 return JsonResponse(data, status=status.HTTP_200_OK)
 
             except Exception as e:
@@ -92,7 +97,7 @@ def DeviceInfoFromApp(request):
                     device_token=device_token,
                     device_type=device_type,)
                 device_object.save()
-                fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type='android', )
+                fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type=device_type, )
                 fcm_object.save()
                 AdminFcmNotifications(request)
                 data = {

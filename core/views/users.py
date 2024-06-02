@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
+from fcm_django.models import FCMDevice
 
 from core.models.notifications import DeviceInfo
 from core.utils.notification import notify_user
@@ -698,9 +699,13 @@ def AdminUsersGeoInfoList(request):
 def AdminUsersFcmTokenList(request):
     users = User.objects.all()
     devices = DeviceInfo.objects.all()
+    fcm = FCMDevice.objects.all()
+    # for item in fcm:
+    #     item.delete()
     context = {
         'users': users,
         'devices': devices,
+        'fcm': fcm,
         'current_page': _('Users Fcm Token')
     }
     return render(request, f'{BACKEND_TEMPLATES}/account/user/fcm.html', context)
