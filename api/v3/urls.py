@@ -33,16 +33,22 @@ urlpatterns = [path('v3/', include(router.urls)),
                ################# Sportrs #################
                path('v3/sport/leagues/<str:date>/<str:sport_name>/list/', sport.LeaguesBySportApiList,
                     name='LeaguesBySportApiList'),
+               path('v3/sport/matches/<str:date>/<int:leagueid>', sport.MatchesByDateApiList,
+                    name='MatchesByDateApiList'),
+
+               path('v3/sport/matches/details/<int:match_id>/', sport.MatchDetailsApi, name='MatchDetailsApi'),
+
+
+
                path('v3/sport/<str:sport_name>/matches/list/<int:leagueId>/', sport.MatchesBySportApiList,
                     name='MatchesBySportApiList'),
                path('v3/sport/<str:sport_name>/matches/<str:type>/<int:leagueId>/', sport.MatchesBySportAndDateApiList,
                     name='MatchesBySportAndDateApiList'),
-               path('v3/sport/matches/details/<int:match_id>/', sport.MatchDetailsApi, name='MatchDetailsApi'),
+
                path('v3/sport/<str:sport_name>/season/table/list/', sport.SeasonTableBySportApiList,
                     name='SeasonTableBySportApiList'),
 
-               path('v3/sport/matches/<str:date>/<int:leagueid>', sport.MatchesByDateApiList,
-                    name='MatchesByDateApiList'),
+
 
                ##################### Mix Sport Monks API ########################
                path('v3/sport/teams/<str:sport>/list/', sport.SportTeamsApiList, name='SportTeamsApiList'),

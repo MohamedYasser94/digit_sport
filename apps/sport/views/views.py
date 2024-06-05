@@ -1939,7 +1939,7 @@ def AdminMatchSummaryAdd(request, slug):
                 match.score = str(match_goal.home_score) + ' - ' + str(match_goal.away_score)
                 match.save()
 
-            elif match.sport.name == 'volleyball':
+            elif match.sport.name == 'volleyball' or match.sport.name == 'handball':
                 team = None
                 match_goal = None
                 event_team = Teams.objects.get(id=event_team)
@@ -2177,7 +2177,7 @@ def AdminMatchTeamEventAdd(request,slug,team_slug):
 @staff_only
 def AdminSeasonTableList(request,slug):
     season = Season.objects.get(slug=slug)
-    season_table = SeasonTable.objects.all()
+    season_table = SeasonTable.objects.filter(season=season,league=season.league)
 
     if request.method == "POST":
         season_table_form = AdminSeasonTableForm(request.POST or None, request.FILES or None)

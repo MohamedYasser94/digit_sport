@@ -209,24 +209,26 @@ def MatchDetailsApi(request, match_id):
         summary_list = MatchSummary.objects.filter(match=match_id)
         statics_list = MatchStatics.objects.filter(match=match_id)
         goals_list = MatchGoals.objects.filter(match=match_id)
-        table_list = SeasonTable.objects.filter(league=get_match.league.id)
+        table_list = SeasonTable.objects.filter(league=get_match.league.id, sport=get_match.sport.id,team__in=[get_match.home_team.id,get_match.away_team.id]).order_by('position')
 
 
-        league_serializer = LeaguesSerializer(get_league, many=True, context={'request': request})
+        # league_serializer = LeaguesSerializer(get_league, many=True, context={'request': request})
         match_serializer = MatchDetailsSerializer(matches_list, many=True, context={'request': request})
         home_team_serializer = TeamsSerializer(home_team, many=True, context={'request': request})
         away_team_serializer = TeamsSerializer(away_team, many=True, context={'request': request})
-        home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True,context={'request': request})
-        away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True,context={'request': request})
-        summary_serializer = MatchSummarySerializer(summary_list, many=True, context={'request': request})
+        # home_team_players_serializer = MatchTeamPlayerSerializer(home_team_players, many=True,context={'request': request})
+        # away_team_players_serializer = MatchTeamPlayerSerializer(away_team_players, many=True,context={'request': request})
+        # summary_serializer = MatchSummarySerializer(summary_list, many=True, context={'request': request})
         statics_serializer = MatchStaticsSerializer(statics_list, many=True, context={'request': request})
         goals_serializer = MatchGoalsSerializer(goals_list, many=True, context={'request': request})
         table_serializer = SeasonTableSerializer(table_list, many=True, context={'request': request})
 
-        sport_data = {'league': league_serializer.data,
+        sport_data = {
+            # 'league': league_serializer.data,
             'matches': match_serializer.data, 'home_team': home_team_serializer.data,
-                      'away_team': away_team_serializer.data, 'home_team_players': home_team_players_serializer.data,
-                      'away_team_players': away_team_players_serializer.data, 'summary': summary_serializer.data,
+                      'away_team': away_team_serializer.data,
+            # 'home_team_players': home_team_players_serializer.data,
+            #           'away_team_players': away_team_players_serializer.data, 'summary': summary_serializer.data,
                       'statics': statics_serializer.data, 'goals': goals_serializer.data,
                       'season_table': table_serializer.data,
 

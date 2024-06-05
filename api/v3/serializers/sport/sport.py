@@ -343,12 +343,22 @@ class MatchSerializer(serializers.ModelSerializer):
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues_name = serializers.ReadOnlyField(source='venues.name')
+    league_id = serializers.ReadOnlyField(source='league.id')
     league_name = serializers.ReadOnlyField(source='league.name')
+    league_image = serializers.SerializerMethodField()
     sport_name = serializers.ReadOnlyField(source='sport.name')
 
     class Meta:
         model = Match
         fields = "__all__"
+
+    def get_league_image(self, obj):
+        try:
+            league_image = 'https://aljawlakw.com' + str(obj.league.image.url)
+            return league_image
+        except:
+            league_image = None
+            return league_image
 
 
 class MatchTeamPlayerSerializer(serializers.ModelSerializer):
