@@ -45,7 +45,7 @@ urlpatterns = [path('v3/', include(router.urls)),
                path('v3/sport/<str:sport_name>/matches/<str:type>/<int:leagueId>/', sport.MatchesBySportAndDateApiList,
                     name='MatchesBySportAndDateApiList'),
 
-               path('v3/sport/<str:sport_name>/season/table/list/', sport.SeasonTableBySportApiList,
+               path('v3/sport/<str:sport_name>/<str:league_id>/season/table/list/', sport.SeasonTableBySportApiList,
                     name='SeasonTableBySportApiList'),
 
 

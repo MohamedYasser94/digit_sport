@@ -323,11 +323,15 @@ class BookmakersSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     home_team = serializers.SerializerMethodField()
     away_team = serializers.SerializerMethodField()
+    league_id = serializers.ReadOnlyField(source='league.id')
+    league_name = serializers.ReadOnlyField(source='league.name')
+    # league_image = serializers.SerializerMethodField()
+    sport_name = serializers.ReadOnlyField(source='sport.name')
 
     class Meta:
         model = Match
         # fields = "__all__"
-        fields = ['id','name','is_live','played','current_half',
+        fields = ['id','name','is_live','played','current_half', 'league_id', 'league_name',  'sport_name',
                   'current_minute','start_time','score','home_score','away_score','home_team',
                   'away_team',
                  ]
@@ -339,6 +343,14 @@ class MatchSerializer(serializers.ModelSerializer):
     def get_away_team(self, obj):
         request = self.context['request']
         return TeamsSerializer(Teams.objects.filter(id=obj.away_team.id, ), many=True,context={'request': request}).data
+
+    # def get_league_image(self, obj):
+    #     try:
+    #         league_image = 'https://aljawlakw.com' + str(obj.league.image.url)
+    #         return league_image
+    #     except:
+    #         league_image = None
+    #         return league_image
 
 
 class MatchDetailsSerializer(serializers.ModelSerializer):

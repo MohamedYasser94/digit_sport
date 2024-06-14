@@ -130,7 +130,7 @@ def MatchesBySportAndDateApiList(request,sport_name,type,leagueId ):
         success = True
         message = f"Send From Django volleyball {type} "
         match_serializer = MatchSerializer(matches_list, many=True,context={'request': request})
-        league_serializer = LeaguesByItemSerializer(match_league, many=True,context={'request': request})
+        league_serializer = LeaguesByItemSerializer(match_league, many=True,context={'request': request,'date':first_date})
         round_serializer = RoundSerializer(round_list, many=True, context={'first_date': first_date, 'last_date': last_date,'leagueId':leagueId,
                                                                            'request': request})
         sport_data = {
@@ -254,14 +254,14 @@ def MatchDetailsApi(request, match_id):
 
         }
     return JsonResponse(data, safe=False)
-def SeasonTableBySportApiList(request,sport_name):
+def SeasonTableBySportApiList(request,sport_name,league_id):
     try:
         sport = Sport.objects.get(name=sport_name)
     except Exception as e:
         sport = Sport.objects.create(name=sport_name)
     try:
         sport = Sport.objects.get(name=sport_name)
-        table_list = SeasonTable.objects.filter(sport=sport).order_by('position')
+        table_list = SeasonTable.objects.filter(sport=sport,league_id=league_id).order_by('position')
         success = True
         message = f"Send From Django API mix table "
         table_serializer = SeasonTableSerializer(table_list, many=True,context={'request': request})

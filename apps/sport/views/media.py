@@ -12,6 +12,8 @@ from apps.sport.forms.media import *
 from apps.sport.forms.monk import *
 from apps.sport.models.models import *
 from apps.sport.models.monks import *
+from core.models.notifications import Notification
+from core.utils.notification import FcmNotifications
 from digit_sport import settings
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
@@ -769,3 +771,21 @@ def AdminMonksFixturesGetData(request):
     else:
         data = {'type': 'Error', 'message': f'Data Not Add Successfully '}
         return JsonResponse(data=data, safe=False)
+
+
+
+def AdminNotificationAdd(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        keyword = request.POST.get('keyword')
+        image = request.POST.get('image')
+
+        FcmNotifications(request, title, keyword, image)
+
+        messages.success(request, _('Notification Send Successfully'), extra_tags='Notification')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminNotificationAdd'))
+
+    else:
+        context = { 'current_page': _('Notification')}
+
+        return render(request, f'{BACKEND_TEMPLATES}/media/notification/admin.html', context)

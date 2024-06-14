@@ -52,6 +52,7 @@ urlpatterns = [
     ########## Blog Article Admin #########
     path('blog/article/', blog.AdminBlogArticleList, name='AdminBlogArticleList'),
     path('blog/article/add/', blog.AdminBlogArticleCreate, name='AdminBlogArticleCreate'),
+
     path('blog/article/sadd/', blog.AdminBlogArticleSCreate, name='AdminBlogArticleSCreate'),
     path('blog/article/detail/<slug:slug>/', blog.AdminBlogArticleDetails, name='AdminBlogArticleDetails'),
     path('blog/article/update/<slug:slug>/', blog.AdminBlogArticleUpdate, name='AdminBlogArticleUpdate'),

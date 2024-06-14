@@ -132,5 +132,6 @@ urlpatterns = [
     # path('media/update/<slug:slug>/', views.AdminMediaUpdate, name='AdminMediaUpdate'),
     # path('media/archive/<slug:slug>/', views.AdminMediaArchive, name='AdminMediaArchive'),
     # path('media/delete/<slug:slug>/', views.AdminMediaDelete, name='AdminMediaDelete'),
+    path('notfy/add/', media.AdminNotificationAdd, name='AdminNotificationAdd'),
 
 ]
