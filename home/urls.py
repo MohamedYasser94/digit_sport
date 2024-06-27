@@ -21,7 +21,8 @@ urlpatterns = [
 
     path("team/", views.TheTeamFront, name="FrontTeamList"),
     path("team/<slug:slug>/", views.FrontTheTeamDetails, name="FrontTeamDetails"),
-    path("faq", views.FAQ, name="FrontFAQ"), path("privacypolicy", views.FAQ, name="FrontPrivacyPolicy"),
+    path("faq", views.FAQ, name="FrontFAQ"),
+    path("privacy-policy", views.FrontPrivacyPolicy, name="FrontPrivacyPolicy"),
     path("termsofservice", views.FAQ, name="FrontTermsOfService"),
     path("termsofservice", views.FAQ, name="FrontRequestAQuote"),
 
