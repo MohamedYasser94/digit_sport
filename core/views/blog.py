@@ -673,20 +673,22 @@ def AdminBlogArticleArchive(request, slug):
 @staff_only
 def AdminBlogArticleDelete(request, slug):
     article = BlogArticle.objects.get(slug=slug)
-    article_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle')
-                                                 , owner_id=article.id, type='hero')
-    article_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
-                                                 owner_id=article.id, type='video')
 
-    article_translate = CommonTranslate.objects.get(
-        owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
-    article_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
-    article_tag = CommonTags.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle'),
-                                            owner_id=article.id)
-    article_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle')
-                                                     , owner_id=article.id, type='image')
     if request.method == "POST":
         try:
+            article_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle')
+                                                         , owner_id=article.id, type='hero')
+            article_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
+                                                         owner_id=article.id, type='video')
+
+            article_translate = CommonTranslate.objects.get(
+                owner_model=ContentType.objects.get(model='BlogArticle'), owner_id=article.id)
+            article_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogArticle'),
+                                                owner_id=article.id)
+            article_tag = CommonTags.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle'),
+                                                    owner_id=article.id)
+            article_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogArticle')
+                                                             , owner_id=article.id, type='image')
             article_cover.delete()
             article_video.delete()
             article_translate.delete()

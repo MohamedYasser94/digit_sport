@@ -193,7 +193,7 @@
                                                 <!--end::Menu item-->
                                                 <div class="menu-item px-3">
                                                     <form id="{{ item.id }}" method="POST"
-                                                          action="">
+                                                          action="{% url 'sport:AdminRoundDelete' item.slug %}">
                                                         {% csrf_token %} </form>
 
 

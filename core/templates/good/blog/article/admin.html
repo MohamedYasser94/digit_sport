@@ -173,7 +173,7 @@
                                                     {% csrf_token %} </form>
 
 
-                                                <a class="menu-link px-3" href="" onclick="
+                                                <a class="menu-link px-3"  onclick="
                                                         if (confirm('Are You Sure To Archive {{ item.title }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
                                                    title="Link Title">
                                                     {% translate 'Archive' %}

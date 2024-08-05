@@ -42,6 +42,10 @@ urlpatterns = [
 
     ##########   Round  #########
     path('round/', views.AdminRoundList, name='AdminRoundList'),
+    # path('round/add/<slug:slug>/', views.AdminRoundCreate, name='AdminRoundCreate'),
+    # path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
+    # path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
+    path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
     path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
 
 

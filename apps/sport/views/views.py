@@ -727,6 +727,21 @@ def AdminRoundList(request):
         return render(request, f'{BACKEND_TEMPLATES}/sport/round/admin.html', context)
 
 
+@authenticated_staf
+@staff_only
+def AdminRoundDelete(request, slug):
+    round = Round.objects.get(slug=slug)
+
+    if request.method == "POST":
+        round.delete()
+
+        messages.success(request, _("Round Delete Successfully"), extra_tags='Round')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+
+
 
 
 ##########################  Clubs ################################

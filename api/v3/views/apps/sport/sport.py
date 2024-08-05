@@ -112,15 +112,15 @@ def MatchesBySportAndDateApiList(request,sport_name,type,leagueId ):
 
         match_league = Leagues.objects.filter(sport=sport.id)
     if type == 'current':
-        first_date = datetime.now() - timedelta(hours=1)
+        first_date = datetime.now() - timedelta(hours=3)
         last_date = datetime.now() + timedelta(days=90)
         order_by = 'start_time'
     elif type == 'last':
         first_date = datetime.now() - timedelta(days=90)
-        last_date = datetime.now() - timedelta(hours=1)
+        last_date = datetime.now() - timedelta(hours=3)
         order_by = 'start_time'
     if sport_name == 'volleyball':
-        round_list = []
+        round_list = Round.objects.filter(sport=sport.id)
         matches_list = Match.objects.filter(sport=sport.id, start_time__range=[first_date, last_date]).order_by(
             order_by)
     elif sport_name == 'handball':
@@ -128,7 +128,7 @@ def MatchesBySportAndDateApiList(request,sport_name,type,leagueId ):
         matches_list = []
     try:
         success = True
-        message = f"Send From Django volleyball {type} "
+        message = f"Send From Django {sport_name} {leagueId} {type} "
         match_serializer = MatchSerializer(matches_list, many=True,context={'request': request})
         league_serializer = LeaguesByItemSerializer(match_league, many=True,context={'request': request,'date':first_date})
         round_serializer = RoundSerializer(round_list, many=True, context={'first_date': first_date, 'last_date': last_date,'leagueId':leagueId,
