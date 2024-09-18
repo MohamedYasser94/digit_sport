@@ -31,14 +31,13 @@ urlpatterns = [path('v3/', include(router.urls)),
                path('v3/blog/article/<int:pk>/', blog.BlogArticleDetail.as_view(), name='AdminBlogArticleAPiList'),
 
                ################# Sportrs #################
-               path('v3/sport/leagues/<str:date>/<str:sport_name>/list/', sport.LeaguesBySportApiList,
-                    name='LeaguesBySportApiList'),
+               path('v3/sport/leagues/<str:date>/<str:sport_name>/list/', sport.LeaguesBySportAndDateApiList,
+                    name='LeaguesBySportAndDateApiList'),
                path('v3/sport/matches/<str:date>/<int:leagueid>', sport.MatchesByDateApiList,
                     name='MatchesByDateApiList'),
+               path('v3/sport/matches/<str:sport_name>', sport.MatchesBySportApiList, name='MatchesBySportApiList'),
 
                path('v3/sport/matches/details/<int:match_id>/', sport.MatchDetailsApi, name='MatchDetailsApi'),
-
-
 
                path('v3/sport/<str:sport_name>/matches/list/<int:leagueId>/', sport.MatchesBySportApiList,
                     name='MatchesBySportApiList'),
@@ -47,8 +46,6 @@ urlpatterns = [path('v3/', include(router.urls)),
 
                path('v3/sport/<str:sport_name>/<str:league_id>/season/table/list/', sport.SeasonTableBySportApiList,
                     name='SeasonTableBySportApiList'),
-
-
 
                ##################### Mix Sport Monks API ########################
                path('v3/sport/teams/<str:sport>/list/', sport.SportTeamsApiList, name='SportTeamsApiList'),

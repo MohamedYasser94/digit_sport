@@ -121,7 +121,7 @@ class Leagues(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_league_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    name = models.CharField(max_length=40, unique=True)
+    name = models.CharField(max_length=200, unique=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_league', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='category_league', null=True, blank=True)
     api_category = models.CharField(max_length=200,  default='league', null=True, blank=True)

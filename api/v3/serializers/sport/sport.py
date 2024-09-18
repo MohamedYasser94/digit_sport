@@ -90,6 +90,7 @@ class LeaguesByItemSerializer(serializers.ModelSerializer):
     def get_league_matches(self, obj):
         date = self.context['date']
         matches = Match.objects.filter(league=obj.id, start_time__date=date, ).count()
+
         return matches
 
 

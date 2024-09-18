@@ -429,7 +429,10 @@ def AdminLeaguesUpdate(request, slug):
             leagues_object.sub_category = sub_category
             leagues_object.country = country
             leagues_object.short_code = short_code
-            leagues_object.image = image
+            if image:
+                leagues_object.image = image
+            else:
+                leagues_object.image = leagues_object.image
             leagues_object.image_path = image_path
             leagues_object.save()
 

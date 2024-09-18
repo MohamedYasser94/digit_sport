@@ -43,7 +43,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000']
 
 # Application definition
 
@@ -87,7 +87,6 @@ MIDDLEWARE = ['django.middleware.common.CommonMiddleware', 'django.middleware.se
               'django.contrib.auth.middleware.AuthenticationMiddleware', 'django_otp.middleware.OTPMiddleware',
               'corsheaders.middleware.CorsMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
               'django_otp.middleware.OTPMiddleware', 'allauth.account.middleware.AccountMiddleware',
-
 
               ]
 
@@ -193,7 +192,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "upload")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 # GULP_CWD = os.path.join(BASE_DIR, 'static')
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 
 # CSRF_COOKIE_DOMAIN = ['http://lawyer.digithub.site']
 # CSRF_TRUSTED_ORIGINS = ['http://lawyer.digithub.site']
@@ -209,7 +208,7 @@ GEOIP_PATH = os.path.join('geoip')
 
 ########### FCM ########
 FCM_DJANGO_SETTINGS = {"DEFAULT_FIREBASE_APP": None, "FCM_SERVER_KEY": env('FCM_SERVER_KEY'),
-    "ONE_DEVICE_PER_USER": False, "DELETE_INACTIVE_DEVICES": False, "ALLOW_MULTIPLE_DEVICES": True, }
+                       "ONE_DEVICE_PER_USER": False, "DELETE_INACTIVE_DEVICES": False, "ALLOW_MULTIPLE_DEVICES": True, }
 GOOGLE_APPLICATION_CREDENTIALS = os.path.join(BASE_DIR, "credentials.json")
 FCM_SERVER_KEY = env('FCM_SERVER_KEY')
 cred = credentials.Certificate(GOOGLE_APPLICATION_CREDENTIALS)
@@ -271,13 +270,13 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
 REST_FRAMEWORK = {'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-    'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler.custom_exception_handler',
-    'NON_FIELD_ERRORS_KEY': 'error',
-    'DEFAULT_AUTHENTICATION_CLASSES': [  # 'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication', ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', 'PAGE_SIZE': 10
+                  'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler.custom_exception_handler',
+                  'NON_FIELD_ERRORS_KEY': 'error',
+                  'DEFAULT_AUTHENTICATION_CLASSES': [  # 'rest_framework.authentication.SessionAuthentication',
+                      'rest_framework.authentication.BasicAuthentication', ],
+                  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination', 'PAGE_SIZE': 10
 
-}
+                  }
 
 # JWT Settings
 SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20), 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
