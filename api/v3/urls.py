@@ -50,6 +50,11 @@ urlpatterns = [path('v3/', include(router.urls)),
                ##################### Mix Sport Monks API ########################
                path('v3/sport/teams/<str:sport>/list/', sport.SportTeamsApiList, name='SportTeamsApiList'),
                path('v3/sport/teams/details/<int:team_id>/', sport.SportTeamsApiDetails, name='SportTeamsApiDetails'),
+
+               path('v3/sport/teams/matches/<str:day_type>/<int:team_id>/list/', sport.TeamMatchesApiList, name='TeamMatchesApiList'),
+
+
+
                path('v3/sport/<str:sport_name>/<int:team_id>/players/list/', sport.PlayersBySportApiList,
                     name='PlayersBySportApiList'),
                path('v3/sport/players/details/<int:playerid>/', sport.PlayersApiDetails, name='PlayersApiDetails'),

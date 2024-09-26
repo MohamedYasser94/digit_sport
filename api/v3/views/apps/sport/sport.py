@@ -33,9 +33,8 @@ def LeaguesBySportAndDateApiList(request,date, sport_name):
         day_message = None
         if league_list.count() == 0:
             print('league_list no',league_list)
-
             print('league_list no 2', league_list)
-            new_date = datetime.now() + timedelta(days=90)
+            new_date = datetime.now() + timedelta(days=1)
             matches = Match.objects.filter(start_time__date__range=[date, new_date], sport=sport.id)
             match = Match.objects.filter(start_time__range=[date, new_date],
                                          sport=sport.id).first()
@@ -43,26 +42,26 @@ def LeaguesBySportAndDateApiList(request,date, sport_name):
             print('matches found newer', matches.count(), match)
             league_list = Leagues.objects.filter(sport=sport.id,id=match.league.id)
 
-            if match:
-                new_date = match.start_time
-                new_date = new_date.date()
-                print('matches found newer', matches.count(), date, new_date, '::::', match.start_time)
-                day_message = 'coming matches ' + str(new_date.date().day)
-
-            else:
-                print('matches not found newer', matches.count(), date, new_date)
-                # new_date = datetime.now() - timedelta(days=90)
-                # match = Match.objects.filter(start_time__date__range=[date, new_date], sport=sport.id).first()
-                # new_date = match.start_time
-                # new_date = new_date.date()
-                # day_message = 'No Match For Select Day Older Match in ' + str(new_date)
-                print('matches',matches.count(),date,new_date,)
+            # if match:
+            #     new_date = match.start_time
+            #     new_date = new_date.date()
+            #     print('matches found newer', matches.count(), date, new_date, '::::', match.start_time)
+            #     day_message = 'coming matches ' + str(new_date.date().day)
+            #
+            # else:
+            #     print('matches not found newer', matches.count(), date, new_date)
+            #     # new_date = datetime.now() - timedelta(days=90)
+            #     # match = Match.objects.filter(start_time__date__range=[date, new_date], sport=sport.id).first()
+            #     # new_date = match.start_time
+            #     # new_date = new_date.date()
+            #     # day_message = 'No Match For Select Day Older Match in ' + str(new_date)
+            #     print('matches',matches.count(),date,new_date,)
         else:
             new_date = date
-            day_message = None
+        #     day_message = None
 
         success = True
-        message = f"Send From Django LeaguesBySportApiList {date} {new_date} "
+        message = f"Send From Django LeaguesBySportApiList {date}  "
         league_serializer = LeaguesByItemSerializer(league_list, many=True ,context={'request': request,'date':new_date})
         sport_data = {'leagues': league_serializer.data,'day':new_date, 'day_message':day_message }
         data = {'success': success, 'message': message,'data': sport_data,  }
@@ -402,6 +401,40 @@ def SportTeamsApiDetails(request, team_id):
         return JsonResponse(data, safe=False)
 
 
+def TeamMatchesApiList(request,day_type,team_id):
+    try:
+        team = Teams.objects.get(id=team_id)
+        first_date = datetime.now()
+        last_date = datetime.now()
+        order_by = 'start_time'
+        if day_type == 'current':
+            first_date = datetime.now() - timedelta(hours=3)
+            last_date = datetime.now() + timedelta(days=90)
+            order_by = 'start_time'
+        elif day_type == 'past':
+            first_date = datetime.now() - timedelta(days=90)
+            last_date = datetime.now() - timedelta(hours=3)
+            order_by = 'start_time'
+
+        match_list = Match.objects.filter(home_team=team.id,start_time__range=[first_date, last_date] ).order_by(order_by)
+        match_list_away = Match.objects.filter(away_team=team.id, start_time__range=[first_date, last_date]).order_by(order_by)
+        match_list = match_list | match_list_away
+        success = True
+        message = f"Send From Django API mix {first_date} {last_date} "
+        match_serializer = MatchSerializer(match_list, many=True,context={'request': request})
+        sport_data = {'team': team.name, 'matches': match_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'team': team_id, 'matches': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False)
+
+
 ####################### Playrs Api #################
 
 
@@ -501,7 +534,7 @@ def SportNewsByCountryApiList(request,):
     sport_list = Sport.objects.all()
     if sport_list.count() > 0:
 
-        news_list = BlogArticle.objects.all().order_by('-created_at')
+        news_list = BlogArticle.objects.all().order_by('-created_at')[0:3]
         success = True
         message = f"Send From Django API mix "
         sport_serializer = SportSerializer(sport_list, many=True,context={'request': request})
