@@ -506,7 +506,10 @@ def AdminSeasonList(request):
             else:
                 league = Leagues.objects.get(id=league)
 
-            season_object = Season(name=name, league=league, keyword=keyword, starting_at=starting_at,
+            title = f'{name} - {league.name}'
+
+            season_object = Season(name=name,title=title, league=league, sport=league.sport,
+                                   keyword=keyword, starting_at=starting_at,
                                         ending_at=ending_at, is_current=is_current,
                                      status='Active')
 
@@ -543,8 +546,9 @@ def AdminSeasonByLeague(request, slug):
             standings_recalculated_at = request.POST.get('standings_recalculated_at')
             games_in_current_week = request.POST.get('games_in_current_week')
             status = 'Active'
+            title = f'{name} - {league.name}'
 
-            season_object = Season(name=name, league=league,sport=league.sport, keyword=keyword,is_current=is_current, starting_at=starting_at,
+            season_object = Season(name=name,title=title, league=league,sport=league.sport, keyword=keyword,is_current=is_current, starting_at=starting_at,
                                         ending_at=ending_at, standings_recalculated_at=standings_recalculated_at,
                                      games_in_current_week=games_in_current_week, status=status)
 
@@ -580,9 +584,10 @@ def AdminSeasonUpdate(request, slug):
                 league = None
             else:
                 league = Leagues.objects.get(id=league)
-
+            title = f'{name} - {league.name}'
             season_object = Season.objects.get(slug=slug)
             season_object.name = name
+            season_object.title = title
             season_object.league = league
             season_object.keyword = keyword
             season_object.starting_at = starting_at
@@ -680,7 +685,140 @@ def AdminStagesList(request):
         return render(request, f'{BACKEND_TEMPLATES}/sport/stages/admin.html', context)
 
 
+##########################  Group ################################
+@authenticated_staf
+@staff_only
+def AdminGroupList(request):
+    groups = Group.objects.all()
 
+    if request.method == "POST":
+        groups_form = AdminGroupForm(request.POST or None, request.FILES or None)
+
+        if groups_form:
+            name = request.POST.get('name')
+            league = request.POST.get('league')
+            season = request.POST.get('season')
+            starting_at = request.POST.get('starting_at')
+            ending_at = request.POST.get('ending_at')
+            is_current = request.POST.get('is_current')
+
+
+            if is_current == None or is_current == '' or is_current == 'None' or is_current == 'No':
+                is_current = False
+            else:
+                is_current = True
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+            if season == None or season == '':
+                season = None
+            else:
+                season = Season.objects.get(id=season)
+
+            group_object = Group(name=name,sport=league.sport, league=league, season=season, starting_at=starting_at,
+                                        ending_at=ending_at, is_current=is_current,
+                                        status='Active')
+
+            group_object.save()
+            messages.success(request, _("Group Add Successfully"), extra_tags='Group')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
+        else:
+
+                messages.error(request, _("Group Not Add , Please Try Again"), extra_tags='Group')
+
+    else:
+        context = {'groups': groups, 'groups_form': AdminGroupForm(), 'current_page': _('Groups')
+
+                   }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/group/admin.html', context)
+
+
+
+@authenticated_staf
+@staff_only
+def AdminGroupUpdate(request, slug):
+    group = Group.objects.get(slug=slug)
+
+    if request.method == "POST":
+        groups_form = AdminGroupForm(request.POST or None, request.FILES or None, instance=group)
+
+        if groups_form:
+            name = request.POST.get('name')
+            league = request.POST.get('league')
+            season = request.POST.get('season')
+            starting_at = request.POST.get('starting_at')
+            ending_at = request.POST.get('ending_at')
+            is_current = request.POST.get('is_current')
+            status = request.POST.get('status')
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+            if season == None or season == '':
+                season = None
+            else:
+                season = Season.objects.get(id=season)
+
+            group_object = Group.objects.get(slug=slug)
+            group_object.name = name
+            group_object.league = league
+            group_object.season = season
+
+            group_object.starting_at = starting_at
+            group_object.ending_at = ending_at
+            group_object.is_current = is_current
+
+            group_object.status = status
+            group_object.save()
+
+            messages.success(request, _("Group Update Successfully"), extra_tags='Group')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
+        else:
+
+            messages.error(request, _("Group Not Update , Please Try Again"), extra_tags='Group')
+
+    else:
+        context = {'group': group, 'groups_form': AdminGroupForm(instance=group), 'current_page': _('Update'),
+                   'prev_Page': _('Groups'), }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/group/update.html', context)
+    context = {'group': group, 'groups_form': AdminGroupForm(instance=group), 'current_page': _('Update'),
+               'prev_Page': _('Groups'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/group/update.html', context)
+
+
+@authenticated_staf
+@staff_only
+def AdminGroupArchive(request, slug):
+    group = Group.objects.get(slug=slug)
+    if request.method == 'POST':
+        group.status = 'Archive'
+        group.save()
+        messages.success(request, _("Group Archive Successfully"), extra_tags='Group')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
+
+
+@authenticated_staf
+@staff_only
+def AdminGroupDelete(request, slug):
+    group = Group.objects.get(slug=slug)
+
+    if request.method == "POST":
+        group.delete()
+
+        messages.success(request, _("Group Delete Successfully"), extra_tags='Group')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminGroupList'))
 
 ########################### Round ################################
 @authenticated_staf
@@ -688,33 +826,40 @@ def AdminStagesList(request):
 def AdminRoundList(request):
     rounds = Round.objects.all()
 
-
     if request.method == "POST":
         rounds_form = AdminRoundForm(request.POST or None, request.FILES or None)
 
         if rounds_form:
             name = request.POST.get('name')
-            sport = request.POST.get('sport')
-            keyword = request.POST.get('keyword')
+            league = request.POST.get('league')
+            group = request.POST.get('group')
+            season = request.POST.get('season')
             starting_at = request.POST.get('starting_at')
             ending_at = request.POST.get('ending_at')
-            is_current = request.POST.get('is_current')
 
-            if is_current == None or is_current == '' or is_current == 'None' or is_current == 'No':
-                is_current = False
-            else:
-                is_current = True
 
-            if sport == None or sport == '':
-                sport = None
+            if league == None or league == '':
+                league = None
             else:
-                sport = Sport.objects.get(id=sport)
+                league = Leagues.objects.get(id=league)
+
+            if group == None or group == '':
+                group = None
+            else:
+                group = Group.objects.get(id=group)
+
+            if season == None or season == '':
+                season = None
+            else:
+                season = Season.objects.get(id=season)
 
             try:
-                round_object = Round.objects.get(name=name, sport=sport)
+                round_object = Round.objects.get(name=name, sport=league.sport, league=league,group=group, season=season,
+                                                    starting_at=starting_at, ending_at=ending_at)
                 messages.error(request, _("Round Already Exist"), extra_tags='Round')
             except Round.DoesNotExist:
-                round_object = Round(name=name, sport=sport, is_current='Yes', )
+                round_object = Round(name=name, sport=league.sport, league=league,group=group, season=season, starting_at=starting_at,
+                                        ending_at=ending_at,  status='Active')
                 round_object.save()
                 messages.success(request, _("Round Add Successfully"), extra_tags='Round')
 
@@ -732,6 +877,75 @@ def AdminRoundList(request):
 
 @authenticated_staf
 @staff_only
+def AdminRoundUpdate(request, slug):
+    round = Round.objects.get(slug=slug)
+
+    if request.method == "POST":
+        rounds_form = AdminRoundForm(request.POST or None, request.FILES or None, instance=round)
+
+        if rounds_form:
+            name = request.POST.get('name')
+            league = request.POST.get('league')
+            season = request.POST.get('season')
+            starting_at = request.POST.get('starting_at')
+            ending_at = request.POST.get('ending_at')
+            is_current = request.POST.get('is_current')
+            status = request.POST.get('status')
+
+            if league == None or league == '':
+                league = None
+            else:
+                league = Leagues.objects.get(id=league)
+
+
+            if season == None or season == '':
+                season = None
+            else:
+                season = Season.objects.get(id=season)
+
+            round_object = Round.objects.get(slug=slug)
+            round_object.name = name
+            round_object.sport = league.sport
+            round_object.league = league
+            round_object.season = season
+            round_object.starting_at = starting_at
+            round_object.ending_at = ending_at
+            round_object.is_current = is_current
+            round_object.status = status
+            round_object.save()
+
+            messages.success(request, _("Round Update Successfully"), extra_tags='Round')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+        else:
+
+            messages.error(request, _("Round Not Update , Please Try Again"), extra_tags='Round')
+
+    else:
+        context = {'round': round, 'rounds_form': AdminRoundForm(instance=round), 'current_page': _('Update'),
+                   'prev_Page': _('Rounds'), }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/round/update.html', context)
+    context = {'round': round, 'rounds_form': AdminRoundForm(instance=round), 'current_page': _('Update'),
+               'prev_Page': _('Rounds'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/round/update.html', context)
+
+
+
+@authenticated_staf
+@staff_only
+def AdminRoundArchive(request, slug):
+    round = Round.objects.get(slug=slug)
+    if request.method == 'POST':
+        round.status = 'Archive'
+        round.save()
+        messages.success(request, _("Round Archive Successfully"), extra_tags='Round')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+
+
+@authenticated_staf
+@staff_only
 def AdminRoundDelete(request, slug):
     round = Round.objects.get(slug=slug)
 
@@ -743,7 +957,294 @@ def AdminRoundDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
     else:
         return HttpResponseRedirect(reverse_lazy('sport:AdminRoundList'))
+##########  League Sport Season Table  #########
 
+@authenticated_staf
+@staff_only
+def AdminSeasonLeagueTableList(request):
+    table = LeagueSeasonTable.objects.all()
+
+    if request.method == "POST":
+        table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None)
+
+        if table_form:
+
+            league = request.POST.get('league')
+            group = request.POST.get('group')
+
+            league = Leagues.objects.get(id=league)
+            group = Group.objects.get(id=group)
+
+
+            season_table_object = LeagueSeasonTable(
+                league=league,group=group, season=group.season, sport=league.sport,status='Active'
+)
+            season_table_object.save()
+            messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonLeagueTableList'))
+        else:
+
+            messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
+
+    else:
+        context = {'table': table, 'table_form': AdminSeasonLeagueTableForm(), 'current_page': _('Season Table')
+                   }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/league_table/admin.html', context)
+
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonLeagueTableUpdate(request, slug):
+    table = LeagueSeasonTable.objects.get(slug=slug)
+
+    if request.method == "POST":
+        season_table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None, instance=season_table)
+        if season_table_form:
+            season = request.POST.get('season')
+            league = request.POST.get('league')
+            group = request.POST.get('group')
+            order = request.POST.get('order')
+            status = request.POST.get('status')
+
+            season = Season.objects.get(id=season)
+            league = Leagues.objects.get(id=league)
+
+            season_table_object = LeagueSeasonTable.objects.get(slug=slug)
+            season_table_object.season = season
+            season_table_object.league = league
+            season_table_object.group = group
+            season_table_object.order = order
+            season_table_object.status = status
+            season_table_object.save()
+
+            messages.success(request, _("Season Table Update Successfully"), extra_tags='Season Table')
+
+            return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+        else:
+
+            messages.error(request, _("Season Table Not Update , Please Try Again"), extra_tags='Season Table')
+
+    else:
+        context = {'table': table, 'table_form': AdminSeasonLeagueTableForm(instance=table), 'current_page': _('Update'),
+                   'prev_Page': _('Season Table'), }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/league_table/update.html', context)
+    context = {'table': table, 'table_form': AdminSeasonLeagueTableForm(instance=table), 'current_page': _('Update'),
+               'prev_Page': _('Season Table'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/league_table/update.html', context)
+
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonLeagueTableArchive(request, slug):
+    season_table = LeagueSeasonTable.objects.get(slug=slug)
+    if request.method == 'POST':
+        season_table.status = 'Archive'
+        season_table.save()
+        messages.success(request, _("Season Table Archive Successfully"), extra_tags='Season Table')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonLeagueTableDelete(request, slug):
+    season_table = LeagueSeasonTable.objects.get(slug=slug)
+
+    if request.method == "POST":
+        season_table.delete()
+
+        messages.success(request, _("Season Table Delete Successfully"), extra_tags='Season Table')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+
+
+
+
+##################### Season Table ##############################
+
+@authenticated_staf
+@staff_only
+def AdminSeasonTeamTableList(request,slug):
+    table = LeagueSeasonTable.objects.get(slug=slug)
+    team_table = TeamSeasonTable.objects.filter(table=table,).order_by('position')
+
+    if request.method == "POST":
+        season_table_form = AdminSeasonTeamTableForm(request.POST or None, request.FILES or None)
+        if season_table_form:
+
+
+            team = request.POST.get('team')
+            played = request.POST.get('played')
+            win = request.POST.get('win')
+            draw = request.POST.get('draw')
+            lose = request.POST.get('lose')
+            goal_for = request.POST.get('goal_for')
+            goal_against = request.POST.get('goal_against')
+            goal_difference = request.POST.get('goal_difference')
+            points = request.POST.get('points')
+            status = request.POST.get('status')
+
+
+            team = Teams.objects.get(id=team)
+
+            season_table_object = TeamSeasonTable(table=table,
+                season=table.season,league=table.league,team=team,played=played,win=win,draw=draw,lose=lose,
+                goal_for=goal_for,goal_against=goal_against,goal_difference=goal_difference,points=points,
+                status=status
+            )
+            season_table_object.save()
+            messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
+        else:
+            messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
+    else:
+        context = {'table':table,'team_table': team_table, 'table_form': AdminSeasonTeamTableForm(), 'current_page': _('Season Table')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/team_table/admin.html', context)
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonTeamTableCreate(request,slug):
+    table = LeagueSeasonTable.objects.get(slug=slug)
+
+    teams = Teams.objects.all()
+    team_table = TeamSeasonTable.objects.all()
+
+    if request.method == "POST":
+        season_table_form = AdminSeasonTeamTableForm(request.POST or None, request.FILES or None)
+        if season_table_form:
+            team = request.POST.get('team')
+            points= request.POST.get('points')
+            position = request.POST.get('position')
+            order = request.POST.get('order')
+            played = request.POST.get('played')
+            win = request.POST.get('win')
+            lose = request.POST.get('lose')
+            remaining = request.POST.get('remaining')
+            goals_for = request.POST.get('goals_for')
+            goals_against = request.POST.get('goals_against')
+            goals_difference = request.POST.get('goals_difference')
+            goals_for_run = request.POST.get('goals_for_run')
+            goals_against_run = request.POST.get('goals_against_run')
+            goals_difference_run = request.POST.get('goals_difference_run')
+
+            team = Teams.objects.get(id=team)
+            try:
+                team_table_object = TeamSeasonTable.objects.get(table=table,team=team)
+                team_table_object.points = points
+                team_table_object.position = position
+                team_table_object.order = order
+                team_table_object.played = played
+                team_table_object.win = win
+                team_table_object.lose = lose
+                team_table_object.remaining = remaining
+                team_table_object.goals_for = goals_for
+                team_table_object.goals_against = goals_against
+                team_table_object.goals_difference = goals_difference
+                team_table_object.goals_for_run = goals_for_run
+                team_table_object.goals_against_run = goals_against_run
+                team_table_object.goals_difference_run = goals_difference_run
+                team_table_object.save()
+            except:
+                team_table_object = TeamSeasonTable(
+                    table=table,
+                    league=table.league,team=team,points=points,position=position,order=order,played=played,win=win,lose=lose,
+                    remaining=remaining,goals_for=goals_for,goals_against=goals_against,goals_difference=goals_difference,
+                    goals_for_run=goals_for_run,goals_against_run=goals_against_run,goals_difference_run=goals_difference_run,
+                )
+                team_table_object.save()
+            messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
+            return HttpResponseRedirect(
+                reverse_lazy('sport:AdminSeasonTeamTableCreate', kwargs={'slug': slug, }))
+        else:
+            messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
+    else:
+        context = {'table':table,'teams':teams,
+                   'team_table': team_table, 'season_table_form': AdminSeasonTeamTableForm(),
+                   'current_page': _('Season Table')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/team_table/add.html',context)
+
+
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonTableDetails(request, slug):
+    season_table = TeamSeasonTable.objects.get(slug=slug)
+    context = {'season_table': season_table, 'current_page': _('Season Table')}
+    return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/details.html', context)
+
+@authenticated_staf
+@staff_only
+def AdminSeasonTeamTableUpdate(request, slug):
+    tam_table = TeamSeasonTable.objects.get(slug=slug)
+    team = Teams.objects.get(id=tam_table.team.id)
+
+
+    if request.method == "POST":
+        table_form = AdminSeasonTeamTableForm(request.POST or None, request.FILES or None, instance=tam_table)
+        if table_form:
+
+            points = request.POST.get('points')
+            order = request.POST.get('order')
+            position = request.POST.get('position')
+            played = request.POST.get('played')
+            win = request.POST.get('win')
+            lose = request.POST.get('lose')
+            remaining = request.POST.get('remaining')
+            goals_for = request.POST.get('goals_for')
+            goals_against = request.POST.get('goals_against')
+            goals_difference = request.POST.get('goals_difference')
+            goals_for_run = request.POST.get('goals_for_run')
+            goals_against_run = request.POST.get('goals_against_run')
+            goals_difference_run = request.POST.get('goals_difference_run')
+
+
+            tam_table_object = TeamSeasonTable.objects.get(slug=slug)
+            tam_table_object.points = points
+            tam_table_object.order = order
+            tam_table_object.position = position
+            tam_table_object.played = played
+            tam_table_object.win = win
+            tam_table_object.lose = lose
+            tam_table_object.remaining = remaining
+            tam_table_object.goals_for = goals_for
+            tam_table_object.goals_against = goals_against
+            tam_table_object.goals_difference = goals_difference
+            tam_table_object.goals_for_run = goals_for_run
+            tam_table_object.goals_against_run = goals_against_run
+            tam_table_object.goals_difference_run = goals_difference_run
+            tam_table_object.save()
+
+            messages.success(request, _("Season Table Update Successfully"), extra_tags='Season Table')
+            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTeamTableList', kwargs={'slug': tam_table.table.slug, }))
+        else:
+            messages.error(request, _("Season Table Not Update , Please Try Again"), extra_tags='Season Table')
+
+    context = {'tam_table': tam_table, 'table_form': AdminSeasonTeamTableForm(instance=tam_table), 'current_page': _('Update'),
+                'prev_Page': _('Season Table'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/team_table/update.html', context)
+
+
+@authenticated_staf
+@staff_only
+def AdminSeasonTableDelete(request, slug):
+    season_table = TeamSeasonTable.objects.get(slug=slug)
+
+    if request.method == "POST":
+        season_table.delete()
+
+        messages.success(request, _("Season Table Delete Successfully"), extra_tags='Season Table')
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
 
 
 
@@ -759,18 +1260,15 @@ def AdminClubsList(request):
         if clubs_form:
             name = request.POST.get('name')
             keyword = request.POST.get('keyword')
-            league = request.POST.get('league')
             country = request.POST.get('country')
             founded = request.POST.get('founded')
+            country_image = request.FILES.get('country_image')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
 
-            if league == None or league == '':
-                league = None
-            else:
-                league = Leagues.objects.get(id=league)
 
-            clubs_object = Clubs(name=name, keyword=keyword, league=league, country=country,founded=founded, image=image,
+
+            clubs_object = Clubs(name=name, keyword=keyword, country=country,founded=founded,country_image=country_image, image=image,
                                     image_path=image_path, status='Active')
 
             clubs_object.save()
@@ -791,24 +1289,25 @@ def AdminClubsUpdate(request, slug):
     if request.method == "POST":
         name = request.POST.get('name')
         keyword = request.POST.get('keyword')
-        league = request.POST.get('league')
         country = request.POST.get('country')
         founded = request.POST.get('founded')
+        country_image = request.FILES.get('country_image')
         image = request.FILES.get('image')
         image_path = request.POST.get('image_path')
         status = request.POST.get('status')
 
-        if league == None or league == '':
-            league = None
-        else:
-            league = Leagues.objects.get(id=league)
+
 
         clubs_object = Clubs.objects.get(slug=slug)
         clubs_object.name = name
         clubs_object.keyword = keyword
-        clubs_object.league = league
+
         clubs_object.country = country
-        clubs_object.image = image
+        if country_image:
+            clubs_object.country_image = country_image
+        clubs_object.founded = founded
+        if image:
+            clubs_object.image = image
         clubs_object.image_path = image_path
         clubs_object.status = status
         clubs_object.save()
@@ -971,13 +1470,9 @@ def AdminTeamsList(request):
         if teams_form:
             name = request.POST.get('name')
             short_code = request.POST.get('short_code')
-            country = request.POST.get('country')
             club = request.POST.get('club')
             sport = request.POST.get('sport')
-            venue = request.POST.get('venue')
             gender = request.POST.get('gender')
-            keyword = request.POST.get('keyword')
-
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             status = 'Active'
@@ -991,11 +1486,6 @@ def AdminTeamsList(request):
 
 
 
-            if venue == None or venue == '':
-                venue = None
-            else:
-                venue = Venues.objects.get(id=venue)
-
             if club == None or club == '':
                 club = None
             else:
@@ -1007,10 +1497,8 @@ def AdminTeamsList(request):
                 sport = Sport.objects.get(id=sport)
 
 
-
-
-            teams_object = Teams(  name=name,country=country,club=club,sport=sport,venue=venue,
-                                   gender=gender,keyword=keyword,short_code=short_code,image=image,
+            teams_object = Teams(  name=name,club=club,sport=sport,
+                                   gender=gender,short_code=short_code,image=image,
                                       image_path=image_path,status='Active')
 
             teams_object.save()
@@ -1686,24 +2174,33 @@ def AdminMatchList(request):
         if matches_form:
             home_team = request.POST.get('home_team')
             away_team = request.POST.get('away_team')
+            round = request.POST.get('round')
             venues = request.POST.get('venues')
+            played = request.POST.get('played')
             start_time = request.POST.get('start_time')
+
+
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
-            is_live = request.POST.get('is_live')
+            round = Round.objects.get(id=round)
+
+            if home_team == away_team:
+                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+            if home_team.sport != round.sport or away_team.sport != round.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
 
             name = home_team.name + ' vs ' + away_team.name
-
             if venues == None or venues == '':
                 venues = None
             else:
-
                 venues = Venues.objects.get(id=venues)
 
             match_object = Match(name=name,
-                home_team=home_team,away_team=away_team,venues=venues,start_time=start_time,
-                is_live=is_live
-            )
+                home_team=home_team,away_team=away_team,round=round,group=round.group,league=round.league,season=round.season,sport=round.sport,
+
+                                 played=played,venues=venues,start_time=start_time,)
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
@@ -1721,7 +2218,7 @@ def AdminMatchBySeason(request, slug):
     matches = Match.objects.filter(season=season)
     teams = Teams.objects.all()
     # teams = Teams.objects.filter(sport=season.sport.id, country=season.league.country)
-    season_table = SeasonTable.objects.filter(season=season)
+    season_table = TeamSeasonTable.objects.filter(league=season.league, )
     if season_table.count()>0:
         table_exist = 'True'
     else:
@@ -1734,16 +2231,20 @@ def AdminMatchBySeason(request, slug):
             away_team = request.POST.get('away_team')
             round = request.POST.get('round')
             venues = request.POST.get('venues')
+            played = request.POST.get('played')
             start_time = request.POST.get('start_time')
+
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
-            is_live = request.POST.get('is_live')
-
-
+            round = Round.objects.get(id=round)
 
             if home_team == away_team:
                 messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchBySeason', kwargs={'slug': slug}))
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+            if home_team.sport != round.sport or away_team.sport != round.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"),
+                               extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
 
             name = home_team.name + ' vs ' + away_team.name
             if venues == None or venues == '':
@@ -1751,16 +2252,11 @@ def AdminMatchBySeason(request, slug):
             else:
                 venues = Venues.objects.get(id=venues)
 
+            match_object = Match(name=name,
+                                 home_team=home_team, away_team=away_team, round=round, group=round.group,
+                                 league=round.league, season=round.season, sport=round.sport,
 
-            round_object = Round.objects.get(id=round)
-
-
-
-            match_object = Match(name=name, sport=season.sport, season=season,league=season.league,
-                round=round_object,
-                home_team=home_team,away_team=away_team,venues=venues,start_time=start_time,
-                is_live=is_live
-            )
+                                 played=played, venues=venues, start_time=start_time, )
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchBySeason', kwargs={'slug': slug}))
@@ -2189,187 +2685,6 @@ def AdminMatchTeamEventAdd(request,slug,team_slug):
 
 
 
-##################### Season Table ##############################
-
-@authenticated_staf
-@staff_only
-def AdminSeasonTableList(request,slug):
-    season = Season.objects.get(slug=slug)
-    season_table = SeasonTable.objects.filter(season=season,league=season.league)
-
-    if request.method == "POST":
-        season_table_form = AdminSeasonTableForm(request.POST or None, request.FILES or None)
-        if season_table_form:
-            season = request.POST.get('season')
-            league = request.POST.get('league')
-            team = request.POST.get('team')
-            played = request.POST.get('played')
-            win = request.POST.get('win')
-            draw = request.POST.get('draw')
-            lose = request.POST.get('lose')
-            goal_for = request.POST.get('goal_for')
-            goal_against = request.POST.get('goal_against')
-            goal_difference = request.POST.get('goal_difference')
-            points = request.POST.get('points')
-            status = request.POST.get('status')
-
-            season = Season.objects.get(id=season)
-            league = Leagues.objects.get(id=league)
-            team = Teams.objects.get(id=team)
-
-            season_table_object = SeasonTable(
-                season=season,league=league,team=team,played=played,win=win,draw=draw,lose=lose,
-                goal_for=goal_for,goal_against=goal_against,goal_difference=goal_difference,points=points,
-                status=status
-            )
-            season_table_object.save()
-            messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
-            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
-        else:
-            messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
-    else:
-        context = {'season':season,'season_table': season_table, 'season_table_form': AdminSeasonTableForm(), 'current_page': _('Season Table')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/admin.html', context)
-
-
-@authenticated_staf
-@staff_only
-def AdminSeasonTableCreate(request,slug):
-    season = Season.objects.get(slug=slug)
-    league = Leagues.objects.get(id=season.league.id)
-    sport = Sport.objects.get(id=season.sport.id)
-    teams = Teams.objects.all()
-    season_table = SeasonTable.objects.all()
-
-    if request.method == "POST":
-        season_table_form = AdminSeasonTableForm(request.POST or None, request.FILES or None)
-        if season_table_form:
-            team = request.POST.get('team')
-            points= request.POST.get('points')
-            position = request.POST.get('position')
-            order = request.POST.get('order')
-            played = request.POST.get('played')
-            win = request.POST.get('win')
-            lose = request.POST.get('lose')
-            remaining = request.POST.get('remaining')
-            goals_for = request.POST.get('goals_for')
-            goals_against = request.POST.get('goals_against')
-            goals_difference = request.POST.get('goals_difference')
-            goals_for_run = request.POST.get('goals_for_run')
-            goals_against_run = request.POST.get('goals_against_run')
-            goals_difference_run = request.POST.get('goals_difference_run')
-
-            team = Teams.objects.get(id=team)
-            try:
-                season_table_object = SeasonTable.objects.get(season=season,league=league,team=team)
-                season_table_object.points = points
-                season_table_object.position = position
-                season_table_object.order = order
-                season_table_object.played = played
-                season_table_object.win = win
-                season_table_object.lose = lose
-                season_table_object.remaining = remaining
-                season_table_object.goals_for = goals_for
-                season_table_object.goals_against = goals_against
-                season_table_object.goals_difference = goals_difference
-                season_table_object.goals_for_run = goals_for_run
-                season_table_object.goals_against_run = goals_against_run
-                season_table_object.goals_difference_run = goals_difference_run
-                season_table_object.save()
-            except:
-                season_table_object = SeasonTable(
-                    season=season,league=league,sport=sport,team=team,points=points,position=position,order=order,played=played,win=win,lose=lose,
-                    remaining=remaining,goals_for=goals_for,goals_against=goals_against,goals_difference=goals_difference,
-                    goals_for_run=goals_for_run,goals_against_run=goals_against_run,goals_difference_run=goals_difference_run,
-                )
-                season_table_object.save()
-            messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
-            return HttpResponseRedirect(
-                reverse_lazy('sport:AdminSeasonTableList', kwargs={'slug': slug, }))
-        else:
-            messages.error(request, _("Season Table Not Add , Please Try Again"), extra_tags='Season Table')
-    else:
-        context = {'season':season,'teams':teams,
-                   'season_table': season_table, 'season_table_form': AdminSeasonTableForm(),
-                   'current_page': _('Season Table')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/add.html',context)
-
-
-
-
-@authenticated_staf
-@staff_only
-def AdminSeasonTableDetails(request, slug):
-    season_table = SeasonTable.objects.get(slug=slug)
-    context = {'season_table': season_table, 'current_page': _('Season Table')}
-    return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/details.html', context)
-
-@authenticated_staf
-@staff_only
-def AdminSeasonTableUpdate(request, slug):
-    season_table = SeasonTable.objects.get(slug=slug)
-    team = Teams.objects.get(id=season_table.team.id)
-    season = Season.objects.get(id=season_table.season.id)
-    league = Leagues.objects.get(id=season_table.league.id)
-
-    if request.method == "POST":
-        season_table_form = AdminSeasonTableForm(request.POST or None, request.FILES or None, instance=season_table)
-        if season_table_form:
-
-            points = request.POST.get('points')
-            order = request.POST.get('order')
-            position = request.POST.get('position')
-            played = request.POST.get('played')
-            win = request.POST.get('win')
-            lose = request.POST.get('lose')
-            remaining = request.POST.get('remaining')
-            goals_for = request.POST.get('goals_for')
-            goals_against = request.POST.get('goals_against')
-            goals_difference = request.POST.get('goals_difference')
-            goals_for_run = request.POST.get('goals_for_run')
-            goals_against_run = request.POST.get('goals_against_run')
-            goals_difference_run = request.POST.get('goals_difference_run')
-
-
-            season_table_object = SeasonTable.objects.get(slug=slug)
-            season_table_object.points = points
-            season_table_object.order = order
-            season_table_object.position = position
-            season_table_object.played = played
-            season_table_object.win = win
-            season_table_object.lose = lose
-            season_table_object.remaining = remaining
-            season_table_object.goals_for = goals_for
-            season_table_object.goals_against = goals_against
-            season_table_object.goals_difference = goals_difference
-            season_table_object.goals_for_run = goals_for_run
-            season_table_object.goals_against_run = goals_against_run
-            season_table_object.goals_difference_run = goals_difference_run
-            season_table_object.save()
-
-            messages.success(request, _("Season Table Update Successfully"), extra_tags='Season Table')
-            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList', kwargs={'slug': season.slug, }))
-        else:
-            messages.error(request, _("Season Table Not Update , Please Try Again"), extra_tags='Season Table')
-
-    context = {'season_table': season_table, 'season_table_form': AdminSeasonTableForm(instance=season_table), 'current_page': _('Update'),
-                'prev_Page': _('Season Table'), }
-    return render(request, f'{BACKEND_TEMPLATES}/sport/season_table/update.html', context)
-
-
-@authenticated_staf
-@staff_only
-def AdminSeasonTableDelete(request, slug):
-    season_table = SeasonTable.objects.get(slug=slug)
-
-    if request.method == "POST":
-        season_table.delete()
-
-        messages.success(request, _("Season Table Delete Successfully"), extra_tags='Season Table')
-
-        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
-    else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
 
 
 

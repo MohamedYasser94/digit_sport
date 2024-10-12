@@ -47,20 +47,17 @@
                                                value="{{ club.name }}"/>
                                         <!--end::Input-->
                                     </div>
-                                      <div class="flex-row-fluid">
+                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="form-label">{% translate 'League' %}</label>
+                                        <label class="required form-label">{% translate 'Founded' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="league" aria-label="{% translate 'League' %}"
-                                                data-control="select2"
-                                                data-placeholder="{% translate 'League' %}"
-                                                class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ club.league.id }}">{{ club.league }}</option>
-                                            {% for value, text in clubs_form.league.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
+                                         <input type="text"  class="form-control form-control-solid"
+                                                value="{{ club.founded }}"
+
+                                                   name="founded"/>
+
+
                                         <!--end::Input-->
                                     </div>
                                 </div>
@@ -86,13 +83,13 @@
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Founded' %}</label>
+                                        <label class="required form-label">{% translate 'Image' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                         <input type="text"  class="form-control form-control-solid"
-                                                value="{{ club.founded }}"
+                                         <input type="file"  class="form-control form-control-solid"
 
-                                                   name="founded"/>
+
+                                                   name="country_image"/>
 
 
                                         <!--end::Input-->

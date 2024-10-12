@@ -1,0 +1,271 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminGroupUpdate' group.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Category Data' %}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-5 gap-md-7">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Name' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="name"
+                                               placeholder="{% translate 'Name' %}"
+                                               value="{{ group.name }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'League' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <select name="league" aria-label="{% translate 'League' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'League' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true"
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ group.league.id }}">{{ group.league }}</option>
+                                                {% for value, text in groups_form.league.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Status' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Status' %}"
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ group.status }}">{{ group.status }}</option>
+
+                                            {% for value, text in groups_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+
+
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Season' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <select name="season" aria-label="{% translate 'Season' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Season' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true"
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ group.season.id }}">{{ group.season }}</option>
+                                                {% for value, text in groups_form.season.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        <!--end::Input-->
+                                    </div>
+                                  <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Is Current' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                       <select name="is_current" aria-label="{% translate 'Is Current' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Is Current' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true"
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ group.is_current }}">{{ group.is_current }}</option>
+                                                {% for value, text in groups_form.is_current.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Starting At' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input id="starting_at" type="date" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Starting At' %}" value="{{ group.starting_at }}"
+                                                   name="starting_at"/>
+                                        <script>
+                                            document.getElementById("starting_at").value = new Date().toISOString().split('T')[0];
+                                        </script>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Ending At' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <input id="ending_at" type="date" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Ending At' %}" value="{{ group.ending_at }}"
+                                                   name="ending_at"/>
+                                        <script>
+                                           document.getElementById("ending_at").value = new Date().toISOString().split('T')[0];
+                                        </script>
+                                        <!--end::Input-->
+                                    </div>
+
+
+
+                                </div>
+                                <!--end::Input group-->
+
+
+
+
+
+
+                            </div>
+                            <!--end::Billing address-->
+                        </div>
+                        <!--end::Card body-->
+                        <div class="card-body pt-0">
+                            {% if form_show_errors %}
+                            {% endif %}
+                            {% if category_form.errors %}
+                                {% for error_field, error_message in category_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% if translate_form.errors %}
+                                {% for error_field, error_message in translate_form.errors.items %}
+
+                                    <div class="alert alert-danger">
+                                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+
+                            {% endif %}
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'Category' %}
+
+                                    <div class="alert alert-danger">
+                                        {{ message.extra_tags|striptags }}: {{ message|striptags }}
+
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!--end::Order details-->
+                    <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+                <!--end::Main column-->
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+    {% if uploaded_file_url %}
+        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+    {% endif %}
+
+{% endblock %}
+{% block custom_js %}
+
+
+    <script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
+    <!--begin::Page Vendors Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
+    <!--end::Page Vendors Javascript-->
+    <!--begin::Page Custom Javascript(used by this page)-->
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/listing.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/add.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/export.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
+    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
+    <!--end::Page Custom Javascript-->
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

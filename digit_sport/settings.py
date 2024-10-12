@@ -43,7 +43,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com']
 
 # Application definition
 

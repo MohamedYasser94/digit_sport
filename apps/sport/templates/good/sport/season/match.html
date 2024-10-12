@@ -45,18 +45,12 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#kt_modal_add_customer">{% translate 'Add Match' %}
                                 </button>
-                                <!--end::Add customer-->
-                             <button  class="btn btn-primary m-10" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#kt_modal_add_team"
-                             >{% translate 'Add Team' %}</button>
+
                                 <!--begin::Add customer-->
-                                {% if table_exist == 'True' %}
-                                <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableList'  season.slug  %}"
-                                        >{% translate 'Update Season Table' %}
-                                    {% elif table_exist == 'False' %}
-                                    <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonTableList'  season.slug  %}"
+
+                                <a  class="btn btn-primary m-10" href="{% url 'sport:AdminSeasonLeagueTableList'   %}"
                                         >{% translate 'Season Table' %}
-                                    {% endif %}
+
                                 </a>
                                 <!--end::Add customer-->
                             </div>
@@ -381,6 +375,25 @@
 
                                     </div>
                                     <div class="d-flex flex-wrap gap-5">
+                                    <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Round' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="round" aria-label="{% translate 'Round' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.round.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
@@ -401,25 +414,7 @@
                                             <!--end::Input-->
                                         </div>
                                         <!--end::Input group-->
-                                      <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Round' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                           <select name="round" aria-label="{% translate 'Round' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
-                                                   data-dropdown-parent="#kt_modal_add_customer"
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.round.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
 
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
 
 
 
@@ -429,16 +424,16 @@
                                       <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Played' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <select name="is_live" aria-label="{% translate 'Match Live' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                           <select name="played" aria-label="{% translate 'Played' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Played' %}"
                                                     data-dropdown-parent="#kt_modal_add_customer"
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.is_live.field.choices %}
+                                                {% for value, text in matches_form.played.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 

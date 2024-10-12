@@ -431,7 +431,7 @@ class SeasonTableSerializer(serializers.ModelSerializer):
     sport_name = serializers.ReadOnlyField(source='sport.name')
     team_image = serializers.SerializerMethodField()
     class Meta:
-        model = SeasonTable
+        model = TeamSeasonTable
         fields = "__all__"
 
 

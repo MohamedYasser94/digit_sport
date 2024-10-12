@@ -72,18 +72,14 @@ class AdminDeviceInfoFromApp(viewsets.ViewSet):
 @csrf_exempt
 def DeviceInfoFromApp(request):
 
-    print('DeviceInfoFromApp',request.body)
-
-    print('DeviceInfoFromApp',request.method)
-
-
     if request.method == 'POST':
         data = json.loads(request.body)
         device_token = data.get('device_token')
         device_type = data.get('device_type')
+        device_info = data.get('device_info')
         try:
             try:
-                fcm_object = FCMDevice.objects.get( registration_id=device_token )
+                fcm_object = FCMDevice.objects.get(registration_id=device_token )
                 fcm_object.type = device_type
                 # device_object = DeviceInfo.objects.get( device_token=device_token )
                 # device_object.device_type = device_type
@@ -95,14 +91,18 @@ def DeviceInfoFromApp(request):
 
                 device_object = DeviceInfo(
                     device_token=device_token,
-                    device_type=device_type,)
+                    device_type=device_type,
+                    device_info=device_info
+                )
                 device_object.save()
                 fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type=device_type, )
                 fcm_object.save()
                 AdminFcmNotifications(request)
                 data = {
                     'status': 'success',
-                    'message': 'Device Info saved successfully'
+                    'message': 'Device Info saved successfully',
+                    'device_token': device_token,
+                    'device_code': device_object.device_code,
                 }
                 return JsonResponse(data, status=status.HTTP_201_CREATED)
 

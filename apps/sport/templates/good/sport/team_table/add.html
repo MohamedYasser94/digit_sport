@@ -12,7 +12,7 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Form-->
             <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'sport:AdminSeasonTableUpdate' season_table.slug %}"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminSeasonTeamTableCreate' table.slug %}"
                   method="post">
                 {% csrf_token %}
 
@@ -45,10 +45,10 @@
                                         <select name="team" aria-label="{% translate 'Team' %}"
                                                 data-control="select2"
                                                 data-placeholder="{% translate 'Team' %}"
-                                                data-allow-clear="true" disabled
+                                                data-allow-clear="true"
                                                 data-dropdown-parent="#kt_ecommerce_edit_order_form"
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ season_table.team.id }}">{{ season_table.team.name }}</option>  <!-- value="" -->
+
                                             {% for item in teams %}
                                                 <option value="{{ item.id }}">{{ item.name }}</option>
                                             {% endfor %}
@@ -61,12 +61,11 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="points" type="number" min="0"
-                                               value="{{ season_table.points }}"
                                                placeholder="{% translate 'Points' %}"/>
 
                                         <!--end::Input-->
                                     </div>
-                                  <div class="fv-row flex-row-fluid">
+                                   <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Position' %}</label>
                                         <!--end::Label-->
@@ -86,7 +85,6 @@
                                                 data-control="select2"
                                                 data-placeholder="{% translate 'Order' %}"
                                                 class="form-select form-select-solid form-select-lg">
-                                            <option value="{{ season_table.order }}">{{ season_table.order }}</option>  <!-- value="" -->
 
                                             {% for value, text in season_table_form.order.field.choices %}
                                                 <option value="{{ value }}">{{ text }}</option>
@@ -112,7 +110,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="played" type="number" min="0"
-                                                  value="{{ season_table.played }}"
                                                placeholder="{% translate 'Played' %}"/>
 
                                         <!--end::Input-->
@@ -123,7 +120,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="win" type="number" min="0"
-                                                    value="{{ season_table.win }}"
                                                placeholder="{% translate 'Win' %}"/>
 
                                         <!--end::Input-->
@@ -134,7 +130,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="lose" type="number" min="0"
-                                                    value="{{ season_table.lose }}"
                                                placeholder="{% translate 'Lose' %}"/>
 
                                         <!--end::Input-->
@@ -145,7 +140,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="remaining" type="number" min="0"
-                                                    value="{{ season_table.remaining }}"
                                                placeholder="{% translate 'Remaining' %}"/>
 
                                         <!--end::Input-->
@@ -171,7 +165,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_for" type="number" min="0"
-                                               value="{{ season_table.goals_for }}"
                                                placeholder="{% translate 'Goals For' %}"/>
 
                                         <!--end::Input-->
@@ -182,7 +175,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_against" type="number" min="0"
-                                                  value="{{ season_table.goals_against }}"
                                                placeholder="{% translate 'Goals Against' %}"/>
 
                                         <!--end::Input-->
@@ -193,7 +185,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_difference" type="number" min="0"
-                                                    value="{{ season_table.goals_difference }}"
                                                placeholder="{% translate 'Goals Difference' %}"/>
 
                                         <!--end::Input-->
@@ -219,7 +210,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_for_run" type="number" min="0"
-                                               value="{{ season_table.goals_for_run }}"
                                                placeholder="{% translate 'Goals For' %}"/>
 
                                         <!--end::Input-->
@@ -230,7 +220,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_against_run" type="number" min="0"
-                                                    value="{{ season_table.goals_against_run }}"
                                                placeholder="{% translate 'Goals Against' %}"/>
 
                                         <!--end::Input-->
@@ -241,7 +230,6 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="goals_difference_run" type="number" min="0"
-                                                    value="{{ season_table.goals_difference_run }}"
                                                placeholder="{% translate 'Goals Difference' %}"/>
 
                                         <!--end::Input-->

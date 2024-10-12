@@ -534,7 +534,7 @@ def SportNewsByCountryApiList(request,):
     sport_list = Sport.objects.all()
     if sport_list.count() > 0:
 
-        news_list = BlogArticle.objects.all().order_by('-created_at')[0:3]
+        news_list = BlogArticle.objects.all().order_by('-created_at')[0:20]
         success = True
         message = f"Send From Django API mix "
         sport_serializer = SportSerializer(sport_list, many=True,context={'request': request})

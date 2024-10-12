@@ -106,7 +106,7 @@
                                         <td>
                                             <a
                                                     class="text-gray-800 text-hover-primary mb-1">
-                                                {{ item.name }}
+                                                {{ item.name }}-{{ item.sport.name }}
                                             </a>
                                         </td>
                                         <!--end::Name=-->
@@ -239,8 +239,7 @@
                                         </td>
                                         <!--end::Action=-->
                                     </tr>
-                                {% empty %}
-                                    {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+
                                 {% endfor %}
                                 <!--end::Table row-->
 
@@ -252,34 +251,7 @@
                         <!--end::Card body-->
 
                     </div>
-                  <div v-show="CheckOutVisible" v-if="CheckStatus == 'Show'"
-                         class="notice d-flex bg-light-danger rounded border-danger border border-dashed p-6 m-20">
-                        <!--begin::Icon-->
-                        <!--begin::Svg Icon | path: icons/duotune/finance/fin001.svg-->
-                        <span class="svg-icon svg-icon-2tx svg-icon-primary me-4">
-													<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
-														<path d="M20 19.725V18.725C20 18.125 19.6 17.725 19 17.725H5C4.4 17.725 4 18.125 4 18.725V19.725H3C2.4 19.725 2 20.125 2 20.725V21.725H22V20.725C22 20.125 21.6 19.725 21 19.725H20Z"
-                                                              fill="currentColor"/>
-														<path opacity="0.3"
-                                                              d="M22 6.725V7.725C22 8.325 21.6 8.725 21 8.725H18C18.6 8.725 19 9.125 19 9.725C19 10.325 18.6 10.725 18 10.725V15.725C18.6 15.725 19 16.125 19 16.725V17.725H15V16.725C15 16.125 15.4 15.725 16 15.725V10.725C15.4 10.725 15 10.325 15 9.725C15 9.125 15.4 8.725 16 8.725H13C13.6 8.725 14 9.125 14 9.725C14 10.325 13.6 10.725 13 10.725V15.725C13.6 15.725 14 16.125 14 16.725V17.725H10V16.725C10 16.125 10.4 15.725 11 15.725V10.725C10.4 10.725 10 10.325 10 9.725C10 9.125 10.4 8.725 11 8.725H8C8.6 8.725 9 9.125 9 9.725C9 10.325 8.6 10.725 8 10.725V15.725C8.6 15.725 9 16.125 9 16.725V17.725H5V16.725C5 16.125 5.4 15.725 6 15.725V10.725C5.4 10.725 5 10.325 5 9.725C5 9.125 5.4 8.725 6 8.725H3C2.4 8.725 2 8.325 2 7.725V6.725L11 2.225C11.6 1.925 12.4 1.925 13.1 2.225L22 6.725ZM12 3.725C11.2 3.725 10.5 4.425 10.5 5.225C10.5 6.025 11.2 6.725 12 6.725C12.8 6.725 13.5 6.025 13.5 5.225C13.5 4.425 12.8 3.725 12 3.725Z"
-                                                              fill="currentColor"/>
-													</svg>
-												</span>
-                        <!--end::Svg Icon-->
-                        <!--end::Icon-->
-                        <!--begin::Wrapper-->
-                        <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap h-200px">
-                            <!--begin::Content-->
-                            <div class="mb-3 mb-md-0 fw-semibold">
-                                <h2 class="text-gray-900 fs-5hx fw-bold">Status [[GetStatus]] <br> [[GetMessage]]</h2>
 
-                            </div>
-                            <!--end::Content-->
-
-                        </div>
-                        <!--end::Wrapper-->
-                    </div>
 
                     <div class="card-body pt-15">
                         {% if form_show_errors %}
@@ -372,11 +344,11 @@
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
                                             <input type="text" class="form-control form-control-solid"
-                                                   placeholder="{% translate 'Name' %}"
+                                                   placeholder="{% translate 'Name' %}" required
                                                    name="name"/>
                                             <!--end::Input-->
                                         </div>
@@ -411,50 +383,15 @@
                                                 </div>
                                                 <!--end::Input group-->
 
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Keyword' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Translate Keyword' %}"
-                                                           name="keyword_tr"/>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                            </div>
-                                 <!--begin::Input group-->
-                                    <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
+                                                  <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
-                                            <!--end::Label-->
-                                            <!--begin::Input-->
-                                            <select name="country" aria-label="{% translate 'Country' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Country' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
-                                                            data-allow-clear="true"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                {% for value, text in teams_form.country.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
-
-                                            </select>
-                                            <!--end::Input-->
-                                        </div>
-                                        <!--end::Input group-->
-                                        <!--begin::Input group-->
-                                        <div class="fv-row w-100 flex-md-root">
-                                            <!--begin::Label-->
-                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Club' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Club' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
                                            <select name="club" aria-label="{% translate 'Club' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Club' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                    data-dropdown-parent="#kt_modal_add_customer" required
                                                             data-allow-clear="true"
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
@@ -466,10 +403,8 @@
                                             <!--end::Input-->
                                         </div>
                                         <!--end::Input group-->
+                                            </div>
 
-
-                                    </div>
-                                    <!--begin::Input group-->
                                     <div class="d-flex flex-wrap gap-5">
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
@@ -480,7 +415,7 @@
                                             <select name="sport" aria-label="{% translate 'Sport' %}"
                                                     data-control="select2" data-placeholder="{% translate 'Sport' %}"
                                                    data-dropdown-parent="#kt_modal_add_customer"
-                                                            data-allow-clear="true"
+                                                            data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
                                                 {% for value, text in teams_form.sport.field.choices %}
@@ -524,7 +459,7 @@
                                             <!--end::Label-->
                                             <!--begin::Input-->
                                             <input type="file" accept="image/*" class="form-control form-control-solid"
-
+required
                                                    name="image"/>
                                             <!--end::Input-->
                                         </div>

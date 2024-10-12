@@ -71,8 +71,8 @@
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
+                                     <th class="min-w-125px">{% translate 'League' %}</th>
                                     <th class="min-w-125px">{% translate 'Season' %}</th>
-                                    <th class="min-w-125px">{% translate 'Stage' %}</th>
                                     <th class="min-w-125px">{% translate 'Starting' %}</th>
                                     <th class="min-w-125px">{% translate 'Ending' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
@@ -121,20 +121,21 @@
                                     </a>
                                 </td>
                                 <!--end::Email=-->
+                                        <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.league }}
+                                    </a>
+                                </td>
                             <!--begin::Email=-->
                                 <td>
                                     <a href="#"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.season }}
+                                        {{ item.season.name }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
-                                       <td>
-                                    <a href="#"
-                                       class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.stage }}
-                                    </a>
-                                </td>
+
                                         <!--begin::Email=-->
                                         <td>
                                             <a
@@ -172,13 +173,13 @@
                                                  data-kt-menu="true">
                                                 <!--begin::Menu item-->
                                                 <div class="menu-item px-3">
-                                                    <a href=""
+                                                    <a href="{% url 'sport:AdminRoundUpdate' item.slug %}"
                                                        class="menu-link px-3">{% translate 'Edit' %}</a>
                                                 </div>
                                                 <!--end::Menu item-->
                                                 <div class="menu-item px-3">
                                                     <form id="{{ item.slug }}" method="POST"
-                                                          action="">
+                                                          action="{% url 'sport:AdminRoundArchive' item.slug %}">
                                                         {% csrf_token %} </form>
 
 
@@ -323,23 +324,98 @@
 
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'League' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                            <select name="sport" aria-label="{% translate 'Sport' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Sport' %}"
+                                            <select name="league" aria-label="{% translate 'League' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'League' %}"
                                                     data-dropdown-parent="#kt_modal_add_customer"
                                                             data-allow-clear="true"
 
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in rounds_form.sport.field.choices %}
+                                                {% for value, text in rounds_form.league.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 
                                             </select>
                                             <!--end::Input-->
                                         </div>
+
+
+                                    </div>
+                                    <!--begin::Input group-->
+                                         <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Season' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="season" aria-label="{% translate 'Season' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Season' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true"
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in rounds_form.season.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                     <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Group' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <select name="group" aria-label="{% translate 'Group' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Group' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true"
+
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in rounds_form.group.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+
+
+                                    </div>
+                                    <!--begin::Input group-->
+                                        <!--begin::Input group-->
+                                    <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Starting At' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="date" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Starting At' %}"
+                                                   name="starting_at"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+                                         <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class=" fs-6 fw-bold mb-2">{% translate 'Ending At' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="date" class="form-control form-control-solid"
+                                                   placeholder="{% translate 'Ending At' %}"
+                                                   name="ending_at"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
 
 
                                     </div>

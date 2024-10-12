@@ -27,12 +27,35 @@ urlpatterns = [
     path('season/update/<slug:slug>/', views.AdminSeasonUpdate, name='AdminSeasonUpdate'),
     path('season/archive/<slug:slug>/', views.AdminSeasonArchive, name='AdminSeasonArchive'),
     path('season/delete/<slug:slug>/', views.AdminSeasonDelete, name='AdminSeasonDelete'),
+    path('season/match/<slug:slug>/', views.AdminMatchBySeason, name='AdminMatchBySeason'),
     path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
 
-    ##########   Sport Season Table  #########
-    path('season/table/<slug:slug>/', views.AdminSeasonTableList, name='AdminSeasonTableList'),
-    path('season/table/add/<slug:slug>/', views.AdminSeasonTableCreate, name='AdminSeasonTableCreate'),
-    path('season/table/update/<slug:slug>/', views.AdminSeasonTableUpdate, name='AdminSeasonTableUpdate'),
+    ##########   Group #########
+    path('group/', views.AdminGroupList, name='AdminGroupList'),
+    # path('season/group/<slug:slug>/', views.AdminGroupBySeason, name='AdminGroupBySeason'),
+    path('group/update/<slug:slug>/', views.AdminGroupUpdate, name='AdminGroupUpdate'),
+    path('group/archive/<slug:slug>/', views.AdminGroupArchive, name='AdminGroupArchive'),
+    path('group/delete/<slug:slug>/', views.AdminGroupDelete, name='AdminGroupDelete'),
+
+
+    ##########   Round  #########
+    path('round/', views.AdminRoundList, name='AdminRoundList'),
+    # path('round/add/<slug:slug>/', views.AdminRoundCreate, name='AdminRoundCreate'),
+    path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
+    path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
+    path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
+    path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
+
+##########  League Sport Season Table  #########
+    path('season/league/table/', views.AdminSeasonLeagueTableList, name='AdminSeasonLeagueTableList'),
+    path('season/league/table/update/<slug:slug>/', views.AdminSeasonLeagueTableUpdate, name='AdminSeasonLeagueTableUpdate'),
+    path('season/table/archive/<slug:slug>/', views.AdminSeasonLeagueTableArchive, name='AdminSeasonLeagueTableArchive'),
+    path('season/league/table/delete/<slug:slug>/', views.AdminSeasonLeagueTableDelete, name='AdminSeasonLeagueTableDelete'),
+
+    ##########  Team Sport Season Table  #########
+    path('season/team/table/<slug:slug>/', views.AdminSeasonTeamTableList, name='AdminSeasonTeamTableList'),
+    path('season/team/table/add/<slug:slug>/', views.AdminSeasonTeamTableCreate, name='AdminSeasonTeamTableCreate'),
+    path('season/team/table/update/<slug:slug>/', views.AdminSeasonTeamTableUpdate, name='AdminSeasonTeamTableUpdate'),
     # path('season/table/archive/<slug:slug>/', views.AdminSeasonTableArchive, name='AdminSeasonTableArchive'),
     path('season/table/delete/<slug:slug>/', views.AdminSeasonTableDelete, name='AdminSeasonTableDelete'),
 
@@ -40,13 +63,7 @@ urlpatterns = [
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
     path('monk/stages/api/get/', monks.AdminMonksStagesGetData, name='AdminMonksStagesGetData'),
 
-    ##########   Round  #########
-    path('round/', views.AdminRoundList, name='AdminRoundList'),
-    # path('round/add/<slug:slug>/', views.AdminRoundCreate, name='AdminRoundCreate'),
-    # path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
-    # path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
-    path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
-    path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
+
 
 
     ##########   Clubs  #########
@@ -83,7 +100,7 @@ urlpatterns = [
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),
-    path('season/match/<slug:slug>/', views.AdminMatchBySeason, name='AdminMatchBySeason'),
+
     path('match/details/<slug:slug>/', views.AdminMatchDetails, name='AdminMatchDetails'),
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
     path('match/archive/<slug:slug>/', views.AdminMatchArchive, name='AdminMatchArchive'),

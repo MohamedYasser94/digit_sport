@@ -77,11 +77,35 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'sport:AdminGroupList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Group" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
                     <a class="menu-link" href="{% url 'sport:AdminRoundList' %}">
 														<span class="menu-bullet">
 															<span class="bullet bullet-dot"></span>
 														</span>
                         <span class="menu-title">{% translate "Rounds" %}</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+                 <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link" href="{% url 'sport:AdminSeasonLeagueTableList' %}">
+														<span class="menu-bullet">
+															<span class="bullet bullet-dot"></span>
+														</span>
+                        <span class="menu-title">{% translate "Table" %}</span>
                     </a>
                     <!--end:Menu link-->
                 </div>

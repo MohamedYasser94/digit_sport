@@ -70,10 +70,12 @@
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
                                     <th class="min-w-125px">{% translate 'League' %}</th>
+                                    <th class="min-w-125px">{% translate 'Group' %}</th>
+                                    <th class="min-w-125px">{% translate 'Round' %}</th>
                                     <th class="min-w-125px">{% translate 'Home' %}</th>
-                            <th class="min-w-125px">{% translate 'Away' %}</th>
-                            <th class="min-w-125px">{% translate 'Start Time' %}</th>
-                                    <th class="min-w-125px">{% translate 'Status' %}</th>
+                                    <th class="min-w-125px">{% translate 'Away' %}</th>
+                                    <th class="min-w-125px">{% translate 'Start Time' %}</th>
+                                    <th class="min-w-125px">{% translate 'Played' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                                 </tr>
                                 <!--end::Table row-->
@@ -116,7 +118,23 @@
                                 <td>
                                     <a href="#"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.league }}
+                                        {{ item.league.name }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                                     <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.group.name }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
+                                     <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.round.name }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
@@ -124,7 +142,7 @@
                                 <td>
                                      <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.home_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.home_team }}
+                                        {{ item.home_team.name }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
@@ -132,7 +150,7 @@
                                 <td>
                                      <a href="{% url 'sport:AdminMatchDetailsByTeam' item.slug item.away_team.slug %}"
                                        class="text-gray-600 text-hover-primary mb-1">
-                                        {{ item.away_team }}
+                                        {{ item.away_team.name }}
                                     </a>
                                 </td>
                                 <!--end::Email=-->
@@ -148,14 +166,14 @@
 
                                         <!--begin::Payment method=-->
                                         <td>
-                                            {% if item.status == 'Active' %}
+                                            {% if item.played == 'YEs' %}
                                                 <div class="badge badge-light-info">
-                                            {% elif item.status == 'Archive' %}
+                                            {% elif item.played == 'Archive' %}
                                                 <div class="badge badge-light-warning">
-                                            {% elif item.status == 'Inactive' %}
+                                            {% elif item.played == 'No' %}
                                                 <div class="badge badge-light-danger">
                                             {% endif %}
-                                            {{ item.status }}</div>
+                                            {{ item.played }}</div>
 
                                         </td>
                                         <!--end::Payment method=-->
@@ -217,8 +235,7 @@
                                         </td>
                                         <!--end::Action=-->
                                     </tr>
-                                {% empty %}
-                                    {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+
                                 {% endfor %}
                                 <!--end::Table row-->
 
@@ -334,6 +351,7 @@
                                             <!--end::Input-->
                                         </div>
                                         <!--end::Input group-->
+
                                         <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
@@ -358,19 +376,19 @@
 
                                     </div>
                                     <div class="d-flex flex-wrap gap-5">
-                                        <!--begin::Input group-->
+                                     <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Venues' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Round' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <select name="away_team" aria-label="{% translate 'Venues' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
-                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                            <select name="round" aria-label="{% translate 'Round' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
+                                                   data-dropdown-parent="#kt_modal_add_customer"
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.away_team.field.choices %}
+                                                {% for value, text in matches_form.round.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 
@@ -378,19 +396,45 @@
                                             <!--end::Input-->
                                         </div>
                                         <!--end::Input group-->
-                                    <!--begin::Input group-->
+                                        <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
-                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Live' %}</label>
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Venues' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <select name="is_live" aria-label="{% translate 'Match Live' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                           <select name="venues" aria-label="{% translate 'Venues' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
                                                     data-dropdown-parent="#kt_modal_add_customer"
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
                                                 <option value="" selected="">---------</option>
-                                                {% for value, text in matches_form.is_live.field.choices %}
+                                                {% for value, text in matches_form.venues.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+                                    </div>
+                                         <div class="d-flex flex-wrap gap-5">
+
+                                    <!--begin::Input group-->
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Match Played' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                           <select name="played" aria-label="{% translate 'Match Played' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Match Played' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+                                                {% for value, text in matches_form.played.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 

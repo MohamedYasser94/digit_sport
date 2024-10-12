@@ -172,6 +172,7 @@ class Season(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_season', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_season', null=True, blank=True)
     tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    title =models.CharField(max_length=100)
     name = models.CharField(max_length=40)
     keyword = models.TextField(null=True, blank=True)
     finished =models.BooleanField(default=False)
@@ -192,7 +193,7 @@ class Season(models.Model):
         verbose_name = 'season'  # verbose_name_plural = 'categories'
 
     def __str__(self):
-        return self.name
+        return self.title
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -280,6 +281,9 @@ class Group(models.Model):
         # ordering = ('name',)
         verbose_name = 'group'  # verbose_name_plural = 'categories'
 
+    def __str__(self):
+        return self.name + ' ' + self.league.name + '' +self.season.name
+
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
             code = f'Sport-{get_random_string(5).upper()}'
@@ -332,6 +336,7 @@ class Round(models.Model):
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_rounds', null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='sport_groups', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_rounds', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_rounds', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_rounds', null=True, blank=True)
@@ -344,6 +349,7 @@ class Round(models.Model):
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
     games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
                                              blank=True)
+    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -351,7 +357,7 @@ class Round(models.Model):
 
 
     def __str__(self):
-        return self.name + ' ' + self.sport.name
+        return self.name + ' ' + self.league.name + '' +self.group.name
 
     class Meta:
         # ordering = ('name',)
@@ -359,7 +365,7 @@ class Round(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
+            code = f'Round-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
         super(Round, self).save(*args, **kwargs)
@@ -562,6 +568,7 @@ class Clubs(models.Model):
     keyword = models.TextField(null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_club', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    country_image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
@@ -581,7 +588,7 @@ class Clubs(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
+            code = f'Clubs-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
         super(Clubs, self).save(*args, **kwargs)
@@ -589,7 +596,7 @@ class Clubs(models.Model):
 
 
 class Teams(models.Model):
-    api_id = models.IntegerField(max_length=200,null=True, blank=True,default=0 )
+    api_id = models.IntegerField(null=True, blank=True,default=0 )
     sender_model = models.ForeignKey(ContentType,related_name='sport_team_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -634,7 +641,7 @@ class Teams(models.Model):
         verbose_name = 'team'  # verbose_name_plural = 'categories'
 
     def __str__(self):
-        return self.name
+        return f"{self.name}-{self.sport}"
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
@@ -1320,6 +1327,7 @@ class Match(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_match', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_match', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_match', null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_match', null=True, blank=True)
     round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='round_match', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_match', null=True, blank=True)
     fixture = models.ForeignKey(Fixtures, on_delete=models.CASCADE, related_name='fixture_match', null=True, blank=True)
@@ -1536,12 +1544,36 @@ class MatchPlayerSummary(models.Model):
             self.slug = slugify(code)
         super(MatchPlayerSummary, self).save(*args, **kwargs)
 
-
-class SeasonTable(models.Model):
+class LeagueSeasonTable(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_table', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_table', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_table', null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_table', null=True, blank=True)
+    order = models.CharField(max_length=100, choices=Season_Order, default='NotOrder', null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    form = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
+    code = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.CharField(max_length=128, null=True, blank=True, unique=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        # ordering = ('name',)
+        verbose_name = 'season table'
+
+    def save(self, *args, **kwargs):
+        if not self.code and not self.slug:
+            code = f'LeagueSeasonTable-{get_random_string(5).upper()}'
+            self.code = code
+            self.slug = slugify(code)
+        super(LeagueSeasonTable, self).save(*args, **kwargs)
+
+
+class TeamSeasonTable(models.Model):
+    table = models.ForeignKey(LeagueSeasonTable,on_delete=models.CASCADE, related_name='league_table', null=True, blank=True)
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league', null=True, blank=True)
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_table', null=True, blank=True)
     order = models.CharField(max_length=100,choices=Season_Order, default='NotOrder' ,null=True, blank=True)
     position = models.IntegerField(null=True, blank=True,default=0)
@@ -1574,7 +1606,7 @@ class SeasonTable(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'SeasonTable-{get_random_string(5).upper()}'
+            code = f'TeamSeasonTable-{get_random_string(5).upper()}'
             self.code = code
             self.slug = slugify(code)
-        super(SeasonTable, self).save(*args, **kwargs)
+        super(TeamSeasonTable, self).save(*args, **kwargs)

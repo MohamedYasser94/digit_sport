@@ -136,6 +136,7 @@ class DeviceInfo(models.Model):
     utsname_version = models.CharField(max_length=250, null=True, blank=True)
     utsname_machine = models.CharField(max_length=250, null=True, blank=True)
     status = models.BooleanField(default=False)
+    device_code = models.CharField(max_length=250, null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -145,8 +146,10 @@ class DeviceInfo(models.Model):
         return self.device_id
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
+        if not self.code and not self.slug and not self.device_code:
+            device_code = f'{get_random_string(5).upper()}'
             code = f'DeviceInfo-{get_random_string(5).upper()}'
+            self.device_code = device_code
             self.code = code
             self.slug = slugify(code)
         super(DeviceInfo, self).save(*args, **kwargs)
