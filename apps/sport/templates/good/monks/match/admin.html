@@ -217,8 +217,7 @@
                                         </td>
                                         <!--end::Action=-->
                                     </tr>
-                                {% empty %}
-                                    {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}
+
                                 {% endfor %}
                                 <!--end::Table row-->
 
@@ -374,7 +373,7 @@
                                             <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <input type="date"  class="form-control form-control-solid"
+                                           <input type="datetime-local"  class="form-control form-control-solid"
                                                     placeholder="{% translate 'Start Time' %}"
 
                                                    name="start_time"/>

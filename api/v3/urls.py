@@ -1,6 +1,5 @@
 from django.urls import path, include
 
-from api.v3.views import blog
 from api.v3.views import notification
 from api.v3.views.apps.sport import sport, media
 
@@ -19,40 +18,42 @@ urlpatterns = [path('v3/', include(router.urls)),
 
                path('v3/devices/fcm/token/post/', notification.DeviceInfoFromApp, name='DeviceInfoFromApp'),
 
-               ##################### Blog API ########################
-               path('v3/blog/category/', blog.AdminBlogCategoriesSerializerList, name='AdminBlogCategoriesAPiList'),
-               path('v3/blog/category/<int:pk>/', blog.BlogCategoriesDetail.as_view(),
-                    name='AdminBlogCategoriesAPiList'),
-               path('v3/blog/tag/', blog.BlogTagsList.as_view(), name='AdminBlogTagsAPiList'),
-               path('v3/blog/tag/<int:pk>/', blog.BlogTagsDetail.as_view(), name='AdminBlogTagsAPiList'),
-               path('v3/blog/service/', blog.BlogServicesList.as_view(), name='AdminBlogServicesAPiList'),
-               path('v3/blog/service/<int:pk>/', blog.BlogServicesDetail.as_view(), name='AdminBlogServicesAPiList'),
-               path('v3/blog/article/', blog.AdminBlogArticleSerializerList, name='AdminBlogArticleAPiList'),
-               path('v3/blog/article/<int:pk>/', blog.BlogArticleDetail.as_view(), name='AdminBlogArticleAPiList'),
-
                ################# Sportrs #################
-               path('v3/sport/leagues/<str:date>/<str:sport_name>/list/', sport.LeaguesBySportAndDateApiList,
+               path('v3/<str:sport_name>/leagues/<str:date>/list/', sport.LeaguesBySportAndDateApiList,
                     name='LeaguesBySportAndDateApiList'),
-               path('v3/sport/matches/<str:date>/<int:leagueid>/', sport.MatchesByDateApiList,
-                    name='MatchesByDateApiList'),
-               path('v3/sport/matches/<str:sport_name>/', sport.MatchesBySportApiList, name='MatchesBySportApiList'),
+               path('v3/leagues/<int:leagueid>/matches/date/<str:date>/', sport.LeaguesBySportAndDateMatchesApiList,
+                    name='LeaguesBySportAndDateMatchesApiList'),
+               path('v3/leagues/details/<int:leagueid>/', sport.LeaguesDetailsApi, name='LeaguesDetailsApi'),
+
+               path('v3/leagues/<int:leagueId>/matches/type/<str:type>/', sport.LeagueMatchesByTypeApiList,
+                    name='LeagueMatchesByTypeApiList'),
+
+path('v3/leagues/<int:leagueId>/teams/list/', sport.LeagueTeamsApiList, name='LeagueTeamsApiList'),
+
+
+               path('v3/matches/details/<int:match_id>/', sport.MatchDetailsApi, name='MatchDetailsApi'),
+
+               path('v3/teams/<int:team_id>/matches/<str:day_type>/list/', sport.TeamMatchesApiList,
+                    name='TeamMatchesApiList'),
+
+               path('v3/season/<str:league_id>/table/list/', sport.SeasonTableByLeagueApiList,
+                    name='SeasonTableByLeagueApiList'),
+
+            path('v3/sport/teams/details/<int:team_id>/', sport.SportTeamsApiDetails, name='SportTeamsApiDetails'),
+
+               ########################### Old API ###########################
+
+               # path('v3/sport/matches/<str:sport_name>/', sport.MatchesBySportApiList, name='MatchesBySportApiList'),
 
                path('v3/sport/match/details/<int:match_id>/', sport.MatchDetailsApi, name='MatchDetailsApi'),
 
-               path('v3/sport/<str:sport_name>/matches/list/<int:leagueId>/', sport.MatchesBySportApiList,
-                    name='MatchesBySportApiList'),
-               path('v3/sport/<str:sport_name>/matches/<str:type>/<int:leagueId>/', sport.MatchesBySportAndDateApiList,
-                    name='MatchesBySportAndDateApiList'),
+               # path('v3/sport/<str:sport_name>/matches/list/<int:leagueId>/', sport.MatchesBySportApiList,
+               #      name='MatchesBySportApiList'),
 
-               path('v3/sport/<str:sport_name>/<str:league_id>/season/table/list/', sport.SeasonTableBySportApiList,
-                    name='SeasonTableBySportApiList'),
+
 
                ##################### Mix Sport Monks API ########################
                path('v3/sport/teams/<str:sport>/list/', sport.SportTeamsApiList, name='SportTeamsApiList'),
-               path('v3/sport/teams/details/<int:team_id>/', sport.SportTeamsApiDetails, name='SportTeamsApiDetails'),
-
-               path('v3/sport/teams/matches/<str:day_type>/<int:team_id>/list/', sport.TeamMatchesApiList, name='TeamMatchesApiList'),
-
 
 
                path('v3/sport/<str:sport_name>/<int:team_id>/players/list/', sport.PlayersBySportApiList,

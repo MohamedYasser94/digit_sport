@@ -1059,9 +1059,9 @@ def AdminSeasonLeagueTableDelete(request, slug):
 
         messages.success(request, _("Season Table Delete Successfully"), extra_tags='Season Table')
 
-        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+        return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+        return redirect(request.META.get('HTTP_REFERER'))
 
 
 
@@ -1113,7 +1113,7 @@ def AdminSeasonTeamTableList(request,slug):
 def AdminSeasonTeamTableCreate(request,slug):
     table = LeagueSeasonTable.objects.get(slug=slug)
 
-    teams = Teams.objects.all()
+    teams = Teams.objects.filter(sport=table.sport)
     team_table = TeamSeasonTable.objects.all()
 
     if request.method == "POST":
@@ -1125,6 +1125,7 @@ def AdminSeasonTeamTableCreate(request,slug):
             order = request.POST.get('order')
             played = request.POST.get('played')
             win = request.POST.get('win')
+            draw = request.POST.get('draw')
             lose = request.POST.get('lose')
             remaining = request.POST.get('remaining')
             goals_for = request.POST.get('goals_for')
@@ -1142,6 +1143,7 @@ def AdminSeasonTeamTableCreate(request,slug):
                 team_table_object.order = order
                 team_table_object.played = played
                 team_table_object.win = win
+                team_table_object.draw = draw
                 team_table_object.lose = lose
                 team_table_object.remaining = remaining
                 team_table_object.goals_for = goals_for
@@ -1154,7 +1156,8 @@ def AdminSeasonTeamTableCreate(request,slug):
             except:
                 team_table_object = TeamSeasonTable(
                     table=table,
-                    league=table.league,team=team,points=points,position=position,order=order,played=played,win=win,lose=lose,
+                    league=table.league,team=team,points=points,position=position,order=order,played=played,win=win,draw=draw,
+                    lose=lose,
                     remaining=remaining,goals_for=goals_for,goals_against=goals_against,goals_difference=goals_difference,
                     goals_for_run=goals_for_run,goals_against_run=goals_against_run,goals_difference_run=goals_difference_run,
                 )
@@ -1196,6 +1199,7 @@ def AdminSeasonTeamTableUpdate(request, slug):
             position = request.POST.get('position')
             played = request.POST.get('played')
             win = request.POST.get('win')
+            draw = request.POST.get('draw')
             lose = request.POST.get('lose')
             remaining = request.POST.get('remaining')
             goals_for = request.POST.get('goals_for')
@@ -1212,6 +1216,7 @@ def AdminSeasonTeamTableUpdate(request, slug):
             tam_table_object.position = position
             tam_table_object.played = played
             tam_table_object.win = win
+            tam_table_object.draw = draw
             tam_table_object.lose = lose
             tam_table_object.remaining = remaining
             tam_table_object.goals_for = goals_for
@@ -1237,14 +1242,15 @@ def AdminSeasonTeamTableUpdate(request, slug):
 def AdminSeasonTableDelete(request, slug):
     season_table = TeamSeasonTable.objects.get(slug=slug)
 
+
     if request.method == "POST":
         season_table.delete()
 
         messages.success(request, _("Season Table Delete Successfully"), extra_tags='Season Table')
 
-        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
+        return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonTableList'))
+        return redirect(request.META.get('HTTP_REFERER'))
 
 
 
@@ -1478,7 +1484,7 @@ def AdminTeamsList(request):
             status = 'Active'
 
             try:
-                check_teams = Teams.objects.get(name=name)
+                check_teams = Teams.objects.get(name=name,sport=sport)
                 messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
             except:
@@ -1540,7 +1546,7 @@ def AdminTeamsCreate(request,slug):
                 club = None
 
             try:
-                check_teams = Teams.objects.get(name=name)
+                check_teams = Teams.objects.get(name=name,sport=sport)
                 messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
             except:
@@ -1578,12 +1584,13 @@ def AdminTeamsUpdate(request, slug):
 
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
+            country_image = request.FILES.get('country_image')
             status = 'Active'
 
 
 
             try:
-                check_teams = Teams.objects.get(name=name).exclude(slug=slug)
+                check_teams = Teams.objects.get(name=name,sport=sport).exclude(slug=slug)
                 messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
             except:
@@ -1623,6 +1630,10 @@ def AdminTeamsUpdate(request, slug):
                 team_object.image = team.image
             else:
                 team_object.image = image
+            if country_image == None or country_image == '':
+                team_object.country_image = team.country_image
+            else:
+                team_object.country_image = country_image
             team_object.save()
 
             messages.success(request, _("Teams Update Successfully"), extra_tags='Teams')

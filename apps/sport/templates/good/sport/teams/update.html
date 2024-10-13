@@ -196,11 +196,12 @@
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <label class="required form-label">{% translate 'Country Image' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_path" value="{{ team.image_path }}"
-                                               placeholder="{% translate 'Image Url' %}"/>
+                                        <input class="form-control" type="file" accept="image/*" name="country_image"
+
+                                              />
 
 
                                         <!--end::Input-->

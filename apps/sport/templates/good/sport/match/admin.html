@@ -69,6 +69,7 @@
                                     <th class="min-w-20px">{% translate '#' %}</th>
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
+                                    <th class="min-w-125px">{% translate 'Sport' %}</th>
                                     <th class="min-w-125px">{% translate 'League' %}</th>
                                     <th class="min-w-125px">{% translate 'Group' %}</th>
                                     <th class="min-w-125px">{% translate 'Round' %}</th>
@@ -114,6 +115,14 @@
                                             </a>
                                         </td>
                                         <!--end::Email=-->
+                                     <!--begin::Email=-->
+                                <td>
+                                    <a href="#"
+                                       class="text-gray-600 text-hover-primary mb-1">
+                                        {{ item.league.sport.name }}
+                                    </a>
+                                </td>
+                                <!--end::Email=-->
                                     <!--begin::Email=-->
                                 <td>
                                     <a href="#"
@@ -448,7 +457,7 @@
                                             <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
                                             <!--end::Label-->
                                             <!--begin::Input-->
-                                           <input type="date"  class="form-control form-control-solid"
+                                           <input type="datetime-local"  class="form-control form-control-solid"
                                                     placeholder="{% translate 'Start Time' %}"
 
                                                    name="start_time"/>
