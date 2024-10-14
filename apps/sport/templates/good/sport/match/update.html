@@ -145,15 +145,11 @@
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class=" form-label">{% translate 'Start Time' %}{% localtime on %}
-                                            {{ match.start_time }}{% endlocaltime %}
-                                            {% timezone "Europe/Paris" %}
-                                                Paris time: {{  match.start_time  }}
-                                            {% endtimezone %}
-                                        {{  match.start_time|utc }}
+                                            {{ match.start_time }}{% endlocaltime %}||
 
-                                            {% timezone None %}
-                                                Server time: {{  match.start_time  }}
-                                            {% endtimezone %}
+                                        {% translate 'UTC Time' %}{{  match.start_time|utc }}
+
+
 
                                         </label>
                                         <!--end::Label-->
