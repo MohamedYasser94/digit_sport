@@ -2328,17 +2328,17 @@ def AdminMatchUpdate(request, slug):
             away_team = request.POST.get('away_team')
             location = request.POST.get('location')
             round = request.POST.get('round')
-            start_time = request.POST.get('start_time')
+            played = request.POST.get('played')
             is_live = request.POST.get('is_live')
 
             if home_team == away_team:
                 messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
 
-            if start_time == None or start_time == '':
-                start_time = match.start_time
+            if played == None or played == '':
+                played = match.played
             else:
-                start_time = start_time
+                played = played
 
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
@@ -2349,7 +2349,7 @@ def AdminMatchUpdate(request, slug):
             match_object.away_team = away_team
             match_object.location = location
             match_object.round = round
-            match_object.start_time = start_time
+            match_object.played = played
             match_object.is_live = is_live
             match_object.save()
 

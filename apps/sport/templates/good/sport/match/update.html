@@ -123,16 +123,16 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Match Live' %}</label>
+                                        <label class="required form-label">{% translate 'Match Played' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <select name="is_live" aria-label="{% translate 'Match Live' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Match Live' %}"
+                                        <select name="played" aria-label="{% translate 'Match Played' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Match Played' %}"
 
                                                             data-allow-clear="true" required
                                                     class="form-select form-select-solid fw-bolder">
-                                                <option value="{{ match.is_live }}" selected="">{{ match.is_live }}</option>
-                                                {% for value, text in matches_form.is_live.field.choices %}
+                                                <option value="{{ match.played }}" selected="">{{ match.played }}</option>
+                                                {% for value, text in matches_form.played.field.choices %}
                                                     <option value="{{ value }}">{{ text }}</option>
                                                 {% endfor %}
 
