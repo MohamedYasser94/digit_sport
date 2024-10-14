@@ -168,14 +168,14 @@
                                         <td>
                                             <a
                                                     class="text-gray-600 text-hover-primary mb-1">
-                                               {{ item.start_time|date:"d-m-Y"}}
+                                               {{ item.start_time}}
                                             </a>
                                         </td>
                                         <!--end::Email=-->
 
                                         <!--begin::Payment method=-->
                                         <td>
-                                            {% if item.played == 'YEs' %}
+                                            {% if item.played == 'Yes' %}
                                                 <div class="badge badge-light-info">
                                             {% elif item.played == 'Archive' %}
                                                 <div class="badge badge-light-warning">

@@ -1,4 +1,5 @@
 {% extends BACKEND_BASE %}
+{% load tz %}
 {% load static %}
 {% load i18n %}
 
@@ -43,41 +44,43 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <select name="home_team" aria-label="{% translate 'Home Team' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Home Team' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Home Team' %}"
 
-                                                            data-allow-clear="true" required
+                                                data-allow-clear="true" required
 
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="{{ match.home_team.id }}" selected="">{{ match.home_team.name }}</option>
-                                                {% for item in teams %}
-                                                    <option value="{{ item.id }}">{{ item.name }}</option>
-                                                {% endfor %}
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="{{ match.home_team.id }}"
+                                                    selected="">{{ match.home_team.name }}</option>
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
 
-                                            </select>
+                                        </select>
                                         <!--end::Input-->
                                     </div>
-                                      <div class="flex-row-fluid">
+                                    <div class="flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="form-label">{% translate 'Away Team' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                       <select name="away_team" aria-label="{% translate 'Away Team' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Away Team' %}"
+                                        <select name="away_team" aria-label="{% translate 'Away Team' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Away Team' %}"
 
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="{{ match.away_team.id }}" selected="">{{ match.away_team }}</option>
-                                                {% for item in teams %}
-                                                    <option value="{{ item.id }}">{{ item.name }}</option>
-                                                {% endfor %}
+                                                data-allow-clear="true" required
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="{{ match.away_team.id }}"
+                                                    selected="">{{ match.away_team }}</option>
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
 
-                                            </select>
+                                        </select>
                                         <!--end::Input-->
                                     </div>
                                 </div>
                                 <!--end::Input group-->
 
-                             <!--begin::Input group-->
+                                <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
@@ -85,41 +88,41 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <select name="venues" aria-label="{% translate 'Venues' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Venues' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Venues' %}"
 
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                 <option value="{{ match.venues }}" selected="">{{ match.venues }}</option>
-                                                {% for value, text in matches_form.venues.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
+                                                data-allow-clear="true" required
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="{{ match.venues }}" selected="">{{ match.venues }}</option>
+                                            {% for value, text in matches_form.venues.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
 
-                                            </select>
+                                        </select>
                                         <!--end::Input-->
                                     </div>
-                                        <div class="fv-row flex-row-fluid">
+                                    <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Round' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                          <select name="round" aria-label="{% translate 'Round' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Round' %}"
+                                        <select name="round" aria-label="{% translate 'Round' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Round' %}"
 
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                 <option value="{{ match.round.id }}" selected="">{{ match.round }}</option>
-                                                {% for value, text in matches_form.round.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
+                                                data-allow-clear="true" required
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="{{ match.round.id }}" selected="">{{ match.round }}</option>
+                                            {% for value, text in matches_form.round.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
 
-                                            </select>
+                                        </select>
 
 
                                         <!--end::Input-->
                                     </div>
                                 </div>
                                 <!--end::Input group--> <!--begin::Input group-->
-                              <!--begin::Input group-->
+                                <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
@@ -127,39 +130,44 @@
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <select name="played" aria-label="{% translate 'Match Played' %}"
-                                                    data-control="select2" data-placeholder="{% translate 'Match Played' %}"
+                                                data-control="select2" data-placeholder="{% translate 'Match Played' %}"
 
-                                                            data-allow-clear="true" required
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="{{ match.played }}" selected="">{{ match.played }}</option>
-                                                {% for value, text in matches_form.played.field.choices %}
-                                                    <option value="{{ value }}">{{ text }}</option>
-                                                {% endfor %}
+                                                data-allow-clear="true" required
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="{{ match.played }}" selected="">{{ match.played }}</option>
+                                            {% for value, text in matches_form.played.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
 
-                                            </select>
+                                        </select>
                                         <!--end::Input-->
                                     </div>
-                                        <div class="fv-row flex-row-fluid">
+                                    <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class=" form-label">{% translate 'Start Time' %} {{ match.start_time }}</label>
+                                        <label class=" form-label">{% translate 'Start Time' %}{% localtime on %}
+                                            {{ match.start_time }}{% endlocaltime %}
+                                            {% timezone "Europe/Paris" %}
+                                                Paris time: {{  match.start_time  }}
+                                            {% endtimezone %}
+                                        {{  match.start_time|utc }}
+
+                                            {% timezone None %}
+                                                Server time: {{  match.start_time  }}
+                                            {% endtimezone %}
+
+                                        </label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                          <input type="datetime-local"  class="form-control form-control-solid"
-                                                    placeholder="{% translate 'Start Time' %}"
+                                        <input type="datetime-local" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Start Time' %}"
 
-                                                   name="start_time"/>
+                                               name="start_time"/>
 
 
                                         <!--end::Input-->
                                     </div>
                                 </div>
                                 <!--end::Input group--> <!--begin::Input group-->
-
-
-
-
-
-
 
 
                             </div>
@@ -180,36 +188,36 @@
 
                             {% endif %}
 
-                          {% for message in messages %}
-                            {% if message.extra_tags == 'Match' %}
-                                {% if message.tags == 'Match success' %}
-                                    <div class="alert alert-info">
-                                {% elif message.tags == 'Match danger' %}
-                                    <div class="alert alert-danger">
-                                {% endif %}
-                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'Match' %}
+                                    {% if message.tags == 'Match success' %}
+                                        <div class="alert alert-info">
+                                    {% elif message.tags == 'Match danger' %}
+                                        <div class="alert alert-danger">
+                                    {% endif %}
+                                {{ message.extra_tags|striptags }}: {{ message|striptags }}
 
+                                </div>
+                                {% endif %}
+                            {% endfor %}
                             </div>
-                            {% endif %}
-                        {% endfor %}
+                        </div>
+                        <!--end::Order details-->
+                        <div class="d-flex justify-content-end">
+                            <!--begin::Button-->
+                            <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                               class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                            <!--end::Button-->
+                            <!--begin::Button-->
+                            <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                                <span class="indicator-label">{% translate 'Save' %}</span>
+                                <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                            <!--end::Button-->
                         </div>
                     </div>
-                    <!--end::Order details-->
-                    <div class="d-flex justify-content-end">
-                        <!--begin::Button-->
-                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
-                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                            <span class="indicator-label">{% translate 'Save' %}</span>
-                            <span class="indicator-progress">{% translate 'Please wait...' %}
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
-                    </div>
-                </div>
-                <!--end::Main column-->
+                    <!--end::Main column-->
             </form>
             <!--end::Form-->
         </div>

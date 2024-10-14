@@ -43,7 +43,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
 
 # Application definition
 
@@ -162,8 +162,8 @@ AUTH_PASSWORD_VALIDATORS = [{'NAME': 'django.contrib.auth.password_validation.Us
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 
-TIME_ZONE = 'Egypt'
-USE_TZ = False
+TIME_ZONE = 'Asia/Kuwait'
+USE_TZ = True
 
 LANGUAGE_CODE = 'en'
 USE_I18N = True

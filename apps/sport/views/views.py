@@ -2329,20 +2329,25 @@ def AdminMatchUpdate(request, slug):
             location = request.POST.get('location')
             round = request.POST.get('round')
             played = request.POST.get('played')
-            is_live = request.POST.get('is_live')
-
-            if home_team == away_team:
-                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
-
-            if played == None or played == '':
-                played = match.played
-            else:
-                played = played
+            start_time = request.POST.get('start_time')
 
             home_team = Teams.objects.get(id=home_team)
             away_team = Teams.objects.get(id=away_team)
             round = Round.objects.get(id=round)
+
+            if home_team == away_team:
+                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
+            if home_team.sport != round.sport or away_team.sport != round.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
+
+            if start_time == None or start_time == '':
+                start_time = match.start_time
+            else:
+                start_time = start_time
+
+
 
             match_object = Match.objects.get(slug=slug)
             match_object.home_team = home_team
@@ -2350,7 +2355,7 @@ def AdminMatchUpdate(request, slug):
             match_object.location = location
             match_object.round = round
             match_object.played = played
-            match_object.is_live = is_live
+            match_object.start_time = start_time
             match_object.save()
 
             messages.success(request, _("Match Update Successfully"), extra_tags='Match')
