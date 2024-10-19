@@ -340,11 +340,11 @@ class Round(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_rounds', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_rounds', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_rounds', null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True,unique=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
     short_name = models.CharField(max_length=200, null=True, blank=True)
     finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
     is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    starting_at = models.DateTimeField(null=True, blank=True)
+    starting_at = models.DateField(null=True, blank=True)
     ending_at = models.DateTimeField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
     games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
@@ -357,10 +357,10 @@ class Round(models.Model):
 
 
     def __str__(self):
-        return self.name + ' ' + self.league.name + '' +self.group.name
+        return f'(R-{self.name})' +  f'(G-{self.group.name})'  + f'(D-{self.starting_at.day})' +self.league.name
 
     class Meta:
-        # ordering = ('name',)
+        ordering = ('starting_at',)
         verbose_name = 'round'  # verbose_name_plural = 'categories'
 
     def save(self, *args, **kwargs):
