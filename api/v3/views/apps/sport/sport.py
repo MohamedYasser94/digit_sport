@@ -95,7 +95,7 @@ def LeagueMatchesByTypeApiList(request, leagueId, type):
 
     if type == 'current':
         first_date = datetime.now()
-        last_date = datetime.now() + timedelta(days=90)
+        last_date = datetime.now() + timedelta(days=365)
         order_by = 'start_time'
         matches_list = Match.objects.filter(league=leagueId, start_time__range=[first_date, last_date]).order_by(
             order_by)
@@ -103,8 +103,8 @@ def LeagueMatchesByTypeApiList(request, leagueId, type):
                                           ).order_by(
             'starting_at')
     elif type == 'past':
-        first_date = datetime.now() - timedelta(days=90)
-        last_date = datetime.now() - timedelta(days=1)
+        first_date = datetime.now() - timedelta(days=365)
+        last_date = datetime.now()
         order_by = 'start_time'
         matches_list = Match.objects.filter(league=leagueId, start_time__range=[first_date, last_date]).order_by(
             order_by)

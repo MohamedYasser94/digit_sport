@@ -4,7 +4,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.contrib.sitemaps import ping_google
+
 from django.core.cache import cache
 from django.db import models
 from django.urls import reverse, reverse_lazy
@@ -138,8 +138,8 @@ class BlogArticle(models.Model):
             self.code =code
             self.slug = code
         super(BlogArticle, self).save(*args, **kwargs)
-        with contextlib.suppress(Exception):
-            ping_google()
+
+
 
 
 
@@ -229,8 +229,7 @@ class BlogVideo(models.Model):
             self.code =code
             self.slug = code
         super(BlogVideo, self).save(*args, **kwargs)
-        with contextlib.suppress(Exception):
-            ping_google()
+
 
     def get_absolute_url(self):
         return reverse('home:FrontVideoWithTimeDetails', kwargs={

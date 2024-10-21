@@ -25,7 +25,7 @@ class AdminBlogServicesSerializer(serializers.ModelSerializer)    :
 class AdminBlogArticleSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogArticle
-        fields =[ 'id','title','image_path','image','keyword','body','author','created_at',]
+        fields =[ 'id','title','image','keyword','body','author','created_at',]
 
 class AdminBlogArticleDetailsSerializer(serializers.ModelSerializer)    :
     body = serializers.SerializerMethodField()

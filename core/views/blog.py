@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from time import timezone
+from urllib.request import request_host
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -507,7 +508,10 @@ def AdminBlogArticleSCreate(request):
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
             try:
                 if image_path != None or image_path != '':
-                    image_path = 'https://aljawlakw.com' + str(article_object.image.url)
+                    request_host(request)
+
+                    image_path =  request_host(request) + str(article_object.image.url)
+                    print(' image_path ,', image_path)
                     article_object.image_path = image_path
                     article_object.save()
             except Exception as e:
@@ -611,21 +615,11 @@ def AdminBlogArticleUpdate(request, slug):  # sourcery skip: aug-assign, convert
             article_object.author = 'Blog'
             article_object.country = country
             article_object.sport = sport
+
             if hero_image:
                 article_object.image = hero_image
-
-
-
+            article_object.image_path = request._current_scheme_host + str(article_object.image.url)
             article_object.save()
-
-            try:
-                if image_path != None or image_path != '':
-                    image_path = 'https://aljawlakw.com' + str(article.image.url)
-                    article_object.image_path = image_path
-                    article_object.save()
-            except Exception as e:
-                pass
-
             AdminCommonSeo(request, meta_title, meta_description, meta_keywords, None, seo_image, 'BlogArticle',
                            article_object.id)
             image_url = article_object.image.url
