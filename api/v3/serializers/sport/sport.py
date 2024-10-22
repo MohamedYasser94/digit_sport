@@ -15,14 +15,14 @@ class AdminSportCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SportSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Sport
-        fields = ['id', 'name','image_path','country', ]
-
-    def get_match(self, obj):
-        return MatchSerializer(Match.objects.filter(sport=obj.id, ), many=True).data
+# class SportSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Sport
+#         fields = ['id', 'name','image_path','country', ]
+#
+#     def get_match(self, obj):
+#         return MatchSerializer(Match.objects.filter(sport=obj.id, ), many=True).data
 
 class MatchBySportSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,24 +63,24 @@ class VideosBySportSerializer(serializers.ModelSerializer):
         model = Sport
         fields = ['id', 'name', 'image_path', 'image', 'videos']
 
-class LeaguesSerializer(serializers.ModelSerializer):
-    matches = serializers.SerializerMethodField()
-    sport = serializers.ReadOnlyField(source='sport.name')
-    image_url = serializers.SerializerMethodField()
-    class Meta:
-        model = Leagues
-        fields = "__all__"
-
-    def get_matches(self, obj):
-        return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
-
-    def get_image_url(self, obj):
-        try:
-            image_url = 'https://api.jawlasp.com' + str(obj.image.url)
-            return image_url
-        except:
-            image_url = None
-            return image_url
+# class LeaguesSerializer(serializers.ModelSerializer):
+#     matches = serializers.SerializerMethodField()
+#     sport = serializers.ReadOnlyField(source='sport.name')
+#     image_url = serializers.SerializerMethodField()
+#     class Meta:
+#         model = Leagues
+#         fields = "__all__"
+#
+#     def get_matches(self, obj):
+#         return MatchSerializer(Match.objects.filter(league=obj.id, ), many=True).data
+#
+#     def get_image_url(self, obj):
+#         try:
+#             image_url = 'https://api.jawlasp.com' + str(obj.image.url)
+#             return image_url
+#         except:
+#             image_url = None
+#             return image_url
 class LeaguesWithMatchesSerializer(serializers.ModelSerializer):
     league_matches = serializers.SerializerMethodField()
     class Meta:
@@ -445,7 +445,7 @@ class MatchPlayerSummarySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SeasonTableSerializer(serializers.ModelSerializer):
+class TeamSeasonTableSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='team.id')
     team_id = serializers.ReadOnlyField(source='team.id')
     team_slug = serializers.ReadOnlyField(source='team.slug')

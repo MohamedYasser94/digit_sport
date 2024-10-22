@@ -171,10 +171,13 @@ def MatchDetailsApi(request, match_id):
     try:
         match = Match.objects.get(id=match_id)
         goals = MatchGoals.objects.filter(match=match_id)
+        standing = TeamSeasonTable.objects.filter(league_id=match.league.id).order_by('position')
         match_serializer = MatchDetailsSerializer(match, many=False, context={'request': request})
         goals_serializer = MatchGoalsSerializer(goals, many=True, context={'request': request})
+        standing_serializer = TeamSeasonTableSerializer(standing, many=True, context={'request': request})
         sport_data = {
             'matches': match_serializer.data, 'goals': goals_serializer.data,
+            'table': standing_serializer.data,
         }
         success = True
         message = f"Send From Django API mix {match_id} "
@@ -242,7 +245,7 @@ def SeasonTableByLeagueApiList(request, league_id):
         table_list = TeamSeasonTable.objects.filter(league_id=league_id).order_by('position')
         success = True
         message = f"Send From Django API mix table "
-        table_serializer = SeasonTableSerializer(table_list, many=True, context={'request': request})
+        table_serializer = TeamSeasonTableSerializer(table_list, many=True, context={'request': request})
         sport_data = {'sport': 'volleyball', 'table': table_serializer.data, }
 
         data = {'success': success, 'data': sport_data, 'message': message, }
