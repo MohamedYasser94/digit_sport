@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -1340,8 +1342,8 @@ class Match(models.Model):
     home_score = models.IntegerField(null=True, blank=True, default=0)
     away_score = models.IntegerField(null=True, blank=True, default=0)
     score = models.CharField(max_length=100, null=True, blank=True,default='0-0')
-    start_time = models.DateTimeField(null=True, blank=True,)
-    current_minute = models.CharField(max_length=100, null=True, blank=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    current_minute = models.CharField(max_length=100, null=True, blank=True,default='0')
     current_half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
     played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
     is_live = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
