@@ -3,9 +3,10 @@ from django.views.decorators.csrf import csrf_exempt
 from fcm_django.models import FCMDevice
 
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import permission_classes
+
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.status import *
 
 from api.v3.serializers.notification import *
 from core.models.notifications import *
@@ -70,7 +71,7 @@ class AdminDeviceInfoFromApp(viewsets.ViewSet):
 
 # @permission_classes([permissions.AllowAny])
 @csrf_exempt
-def DeviceInfoFromApp(request):
+def DeviceFcmAdd(request):
 
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -111,6 +112,31 @@ def DeviceInfoFromApp(request):
             return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+def DeviceFcmChangeUserStatus(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        device_token = data.get('device_token')
+        notify_status = data.get('notify_status')
+        print('DeviceFcmChangeUserStatus',  notify_status) # True or False
+        try:
+            device_object = DeviceInfo.objects.filter(device_token=device_token)
+            for device in device_object:
+                device.user_active = notify_status
+                device.save()
+
+            if notify_status == False:
+                return HttpResponse(status=HTTP_202_ACCEPTED)
+            else:
+                return HttpResponse(status=HTTP_201_CREATED)
+        except Exception as e:
+
+            return HttpResponse(status=HTTP_404_NOT_FOUND)
+
+
+    return HttpResponse(status=HTTP_400_BAD_REQUEST)
 
 
 

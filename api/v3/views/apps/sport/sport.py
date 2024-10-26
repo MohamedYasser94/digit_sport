@@ -406,25 +406,19 @@ def PlayersBySportApiList(request, sport_name, team_id):
 ################## News ##################
 
 def SportNewsByCountryApiList(request, ):
-    sport_list = Sport.objects.all()
-    if sport_list.count() > 0:
-
+    try:
         news_list = BlogArticle.objects.all().order_by('-created_at')[0:20]
         success = True
         message = f"Send From Django API mix "
-        sport_serializer = SportSerializer(sport_list, many=True, context={'request': request})
         news_serializer = AdminBlogArticleSerializer(news_list, many=True, context={'request': request})
-        sport_data = {'sport': sport_serializer.data, 'articles': news_serializer.data, }
-
-    else:
+        sport_data = { 'articles': news_serializer.data, }
+    except Exception as e:
         success = False
-        message = f"error in get data no data no data with this country "
+        message = f"error in get data no data no data with this country"
 
         sport_data = {'articles': [], }
 
-    data = {'success': success, 'data': sport_data, 'message': message,
-
-            }
+    data = {'success': success, 'data': sport_data, 'message': message, }
     return JsonResponse(data, safe=False)
 
 
@@ -488,9 +482,9 @@ def SportVideosByCountryApiList(request, country, sport):
         video_list = BlogVideo.objects.filter(sport=get_sport.id, country=country)
         success = True
         message = f"Send From Django API mix {country}"
-        sport_serializer = SportSerializer(sport_list, many=True, context={'request': request})
+
         video_serializer = AdminBlogVideoSerializer(video_list, many=True, context={'request': request})
-        sport_data = {'country': country, 'sport': sport_serializer.data, 'video': video_serializer.data, }
+        sport_data = {'country': country,  'video': video_serializer.data, }
 
     else:
         success = False

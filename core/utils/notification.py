@@ -11,7 +11,7 @@ from fcm_django.models import FCMDevice
 from firebase_admin import messaging
 
 from core.models.core import SiteSetting, SystemSetting
-from core.models.notifications import Notification, ChatNotification
+from core.models.notifications import Notification, ChatNotification, DeviceInfo
 from core.models.people import Clients
 from core.models.shop import Order
 from core.models.social import FriendList
@@ -227,18 +227,23 @@ def FcmNotifications(request,message_title,message_body,image):
         # user = User.objects.get(slug=slug)
         # print('user', user.id,slug)
         registration_tokens = []
-        device = FCMDevice.objects.all()
-        for item in device:
-            registration_tokens.append(item.registration_id)
-        response = messaging.subscribe_to_topic( registration_tokens, 'news')
-        message = messaging.Message(
-            notification=messaging.Notification(
-                title=message_title,
-                body=message_body,
-                image=image
-            ),
-            token=registration_tokens,
-        )
+        message = ''
+        response = ''
+        device_object = DeviceInfo.objects.filter(user_active=True)
+        for item in device_object:
+
+            device = FCMDevice.objects.get(registration_id=item.device_token)
+
+            registration_tokens.append(device.registration_id)
+            response = messaging.subscribe_to_topic( registration_tokens, 'notify')
+            message = messaging.Message(
+                notification=messaging.Notification(
+                    title=message_title,
+                    body=message_body,
+                    image=image
+                ),
+                token=registration_tokens,
+            )
         FCMDevice.objects.send_message(message)
         print('Successfully sent message:', response.success_count)
 

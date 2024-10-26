@@ -136,6 +136,7 @@ class DeviceInfo(models.Model):
     utsname_version = models.CharField(max_length=250, null=True, blank=True)
     utsname_machine = models.CharField(max_length=250, null=True, blank=True)
     status = models.BooleanField(default=False)
+    user_active = models.BooleanField(default=True)
     device_code = models.CharField(max_length=250, null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
