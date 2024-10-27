@@ -623,7 +623,7 @@ class Teams(models.Model):
     image_path = models.URLField(blank=True, null=True,default='url')
     country_image = models.ImageField(blank=True, null=True, upload_to=get_file_path, default='country_image')
     url = models.URLField(blank=True, null=True)
-    founded = models.CharField(max_length=100, null=True, blank=True)
+    founded = models.CharField(max_length=100, null=True, blank=True,default='founded')
     club_color_1 = models.CharField(max_length=100, null=True, blank=True)
     club_color_2 = models.CharField(max_length=100, null=True, blank=True)
     club_color_3 = models.CharField(max_length=100, null=True, blank=True)

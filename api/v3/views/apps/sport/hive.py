@@ -29,6 +29,9 @@ def HiveLeaguesApiList(request, ):
 def HiveTeamApiList(request, ):
     try:
         team_list = Teams.objects.all()
+        for item in team_list:
+            item.founded = '1970'
+            item.save()
         team_serializer = HiveTeamsSerializer(team_list, many=True, context={'request': request})
         success = True
         message = f"HiveTeamApiList  "
