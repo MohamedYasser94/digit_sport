@@ -68,15 +68,14 @@ class HiveTeamSeasonTableSerializer(serializers.ModelSerializer):
     team_id = serializers.ReadOnlyField(source='team.id')
     team_slug = serializers.ReadOnlyField(source='team.slug')
     team_name = serializers.ReadOnlyField(source='team.name')
-    image_path = serializers.ReadOnlyField(source='team.image_path')
     sport_name = serializers.ReadOnlyField(source='sport.name')
-    team_image = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
     class Meta:
         model = TeamSeasonTable
         fields = "__all__"
 
 
-    def get_team_image(self, obj):
+    def get_image(self, obj):
        try:
            team_image = 'https://api.jawlasp.com' + str(obj.team.image.url)
            return team_image
