@@ -43,7 +43,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ['id',  'league_id', 'league_name', 'league_image','venues_name','played', 'current_half', 'current_minute',
+        fields = ['id',  'league_id', 'league_name', 'league_image','round','venues_name','played', 'current_half', 'current_minute',
                   'start_time',  'score', 'home_score', 'away_score','home_team','home_team_object', 'away_team','away_team_object', 'sport_name']
 
     def get_league_image(self, obj):
@@ -82,3 +82,10 @@ class HiveTeamSeasonTableSerializer(serializers.ModelSerializer):
        except:
         team_image = None
         return team_image
+
+
+class HiveRoundSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Round
+        fields = ['id', 'name', 'starting_at', 'league'  ]

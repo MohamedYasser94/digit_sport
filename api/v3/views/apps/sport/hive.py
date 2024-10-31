@@ -81,3 +81,22 @@ def HiveTableApiList(request, ):
         message = f"error in get data   {e}  "
         data = {'success': success, 'message': message, 'data': [], }
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
+
+
+
+def HiveRoundsApiList(request, ):
+    try:
+        rounds  = Round.objects.all()
+        rounds_serializer = HiveRoundSerializer(rounds, many=True, context={'request': request})
+        success = True
+        message = f"HiveRoundsApiList  "
+        sport_data = {'rounds': rounds_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
+
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveRoundsApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        data = {'success': success, 'message': message, 'data': [], }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)

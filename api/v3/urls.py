@@ -48,6 +48,7 @@ urlpatterns = [path('v3/', include(router.urls)),
                path('v3/hive/teams/list/', hive.HiveTeamApiList, name='HiveTeamApiList'),
                 path('v3/hive/matches/list/', hive.HiveMatchesApiList, name='HiveMatchesApiList'),
                path('v3/hive/table/list/', hive.HiveTableApiList, name='HiveTableApiList'),
+               path('v3/hive/rounds/list/', hive.HiveRoundsApiList, name='HiveRoundsApiList'),
 
 
 
