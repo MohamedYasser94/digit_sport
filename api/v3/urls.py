@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from api.v3.views import notification
-from api.v3.views.apps.sport import sport, media, hive
+from api.v3.views.apps.sport import sport, media, hive, monks
 
 app_name = 'api'
 # DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
@@ -50,15 +50,13 @@ urlpatterns = [path('v3/', include(router.urls)),
                path('v3/hive/table/list/', hive.HiveTableApiList, name='HiveTableApiList'),
                path('v3/hive/rounds/list/', hive.HiveRoundsApiList, name='HiveRoundsApiList'),
 
+               #####################  Monks App API ########################
+                path('v3/hive/monks/leagues/list/', monks.HiveMonksLeaguesApiList, name='HiveMonksLeaguesApiList'),
+                path('v3/hive/monks/leagues/<str:date>/<str:locale>/list/', monks.HiveMonksLeaguesByDateApiList, name='HiveMonksLeaguesByDateApiList'),
+                path('v3/hive/monks/leagues/fixtures/<int:league_id>/<str:date>/<str:locale>/list/', monks.HiveMonksLeaguesFixturesByDateApiList, name='HiveMonksLeaguesFixturesByDateApiList'),
 
-
-
-
-
-
-               ##################### Mix Sport Monks API ########################
-
-
+                path('v3/hive/monks/fixtures/<str:date>/<str:locale>/list/', monks.HiveMonksFixturesByDateApiList, name='HiveMonksFixturesByDateApiList'),
+                path('v3/hive/monks/fixtures/details/<int:fixture_id>/<str:locale>/', monks.HiveMonksFixturesDetailsApi, name='HiveMonksFixturesDetailsApi'),
 
                ##################### News  API ########################
                path('v3/media/youtube/channel/', media.YoutubeChannelApiList, name='YoutubeChannelApiList'),
