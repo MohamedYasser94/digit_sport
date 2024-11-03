@@ -169,9 +169,10 @@ class ClubsSerializer(serializers.ModelSerializer):
 
 
 class TeamsSerializer(serializers.ModelSerializer):
+    sport_name = serializers.ReadOnlyField(source='sport.name')
     class Meta:
         model = Teams
-        fields =['id','name','image','founded','country','country_image',]
+        fields =['id','name','image','founded','country','country_image','sport_name','sport']
 
 
 
