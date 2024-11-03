@@ -47,7 +47,9 @@ urlpatterns = [path('v3/', include(router.urls)),
                path('v3/hive/leagues/list/', hive.HiveLeaguesApiList, name='HiveLeaguesApiList'),
                path('v3/hive/teams/list/', hive.HiveTeamApiList, name='HiveTeamApiList'),
                 path('v3/hive/matches/list/', hive.HiveMatchesApiList, name='HiveMatchesApiList'),
+               path('v3/hive/standing/list/', hive.HiveStandingApiList, name='HiveStandingApiList'),
                path('v3/hive/table/list/', hive.HiveTableApiList, name='HiveTableApiList'),
+
                path('v3/hive/rounds/list/', hive.HiveRoundsApiList, name='HiveRoundsApiList'),
 
                #####################  Monks App API ########################

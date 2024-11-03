@@ -62,6 +62,13 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
         request = self.context['request']
         return TeamForMatchSerializer(Teams.objects.get(id=obj.away_team.id, ), many=False,context={'request': request}).data
 
+class HiveLeagueSeasonTableSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeagueSeasonTable
+        fields = "__all__"
+
+
 
 class HiveTeamSeasonTableSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='team.id')

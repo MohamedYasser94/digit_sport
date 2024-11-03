@@ -65,7 +65,7 @@ def HiveMatchesApiList(request, ):
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
 
-def HiveTableApiList(request, ):
+def HiveStandingApiList(request, ):
     try:
         table  = TeamSeasonTable.objects.all()
         table_serializer = HiveTeamSeasonTableSerializer(table, many=True, context={'request': request})
@@ -82,7 +82,22 @@ def HiveTableApiList(request, ):
         data = {'success': success, 'message': message, 'data': [], }
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
+def HiveTableApiList(request, ):
+    try:
+        table  = LeagueSeasonTable.objects.all()
+        table_serializer = HiveLeagueSeasonTableSerializer(table, many=True, context={'request': request})
+        success = True
+        message = f"HiveTableApiList  "
+        sport_data = {'table': table_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
 
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveTableApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        data = {'success': success, 'message': message, 'data': [], }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
 def HiveRoundsApiList(request, ):
     try:
