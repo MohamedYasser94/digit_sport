@@ -1000,7 +1000,7 @@ def AdminSeasonLeagueTableUpdate(request, slug):
     table = LeagueSeasonTable.objects.get(slug=slug)
 
     if request.method == "POST":
-        season_table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None, instance=season_table)
+        season_table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None, )
         if season_table_form:
             season = request.POST.get('season')
             league = request.POST.get('league')
@@ -1622,6 +1622,9 @@ def AdminTeamsUpdate(request, slug):
             team_object.venue = venue
             team_object.gender = gender
             team_object.keyword = keyword
+            team_object.founded = team_object.club.founded
+            team_object.country = team_object.club.country
+            team_object.country_image = team_object.club.country_image
 
             team_object.image_path = image_path
 
@@ -1630,10 +1633,6 @@ def AdminTeamsUpdate(request, slug):
                 team_object.image = team.image
             else:
                 team_object.image = image
-            if country_image == None or country_image == '':
-                team_object.country_image = team.country_image
-            else:
-                team_object.country_image = country_image
             team_object.save()
 
             messages.success(request, _("Teams Update Successfully"), extra_tags='Teams')

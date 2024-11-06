@@ -15,7 +15,7 @@ class HiveLeaguesSerializer(serializers.ModelSerializer):
     # league_matches = serializers.SerializerMethodField()
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image', 'country','sport','sport_name', 'create_at',  ]
+        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at',  ]
 
     # def get_league_matches(self, obj):
     #     request = self.context['request']
@@ -26,7 +26,7 @@ class HiveTeamsSerializer(serializers.ModelSerializer):
     sport_name = serializers.ReadOnlyField(source='sport.name')
     class Meta:
         model = Teams
-        fields = ['id','league_id', 'name', 'image', 'country',
+        fields = ['id','league_id', 'name','short_code', 'image', 'country',
                   'country_image', 'sport_name','founded',
                   'create_at',  ]
 
@@ -36,6 +36,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
     venues_name = serializers.ReadOnlyField(source='venues.name')
     league_id = serializers.ReadOnlyField(source='league.id')
     league_name = serializers.ReadOnlyField(source='league.name')
+    league_short_code = serializers.ReadOnlyField(source='league.short_code')
     league_image = serializers.SerializerMethodField()
     sport_name = serializers.ReadOnlyField(source='sport.name')
     home_team_object = serializers.SerializerMethodField()
@@ -43,7 +44,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ['id',  'league_id', 'league_name', 'league_image','round','venues_name','played', 'current_half', 'current_minute',
+        fields = ['id',  'league_id', 'league_name','league_short_code', 'league_image','round','venues_name','played', 'current_half', 'current_minute',
                   'start_time',  'score', 'home_score', 'away_score','home_team','home_team_object', 'away_team','away_team_object', 'sport_name']
 
     def get_league_image(self, obj):
