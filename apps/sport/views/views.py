@@ -481,7 +481,10 @@ def AdminLeaguesDelete(request, slug):
 def AdminMatchByLeague(request, slug):
     league = Leagues.objects.get(slug=slug)
     matches = Match.objects.filter(league=league).order_by('-start_time')
-    context = {'league': league, 'matches': matches, 'current_page': _('Matches')}
+    matches_form = AdminMatchForm()
+    context = {'league': league, 'matches': matches,
+                'matches_form': matches_form,
+               'current_page': _('Matches')}
     return render(request, f'{BACKEND_TEMPLATES}/sport/leagues/matches.html', context)
 
 ##########################  Season ################################
