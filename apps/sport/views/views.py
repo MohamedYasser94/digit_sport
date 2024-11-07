@@ -476,6 +476,13 @@ def AdminLeaguesDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminLeaguesList'))
 
 
+@authenticated_staf
+@staff_only
+def AdminMatchByLeague(request, slug):
+    league = Leagues.objects.get(slug=slug)
+    matches = Match.objects.filter(league=league).order_by('-start_time')
+    context = {'league': league, 'matches': matches, 'current_page': _('Matches')}
+    return render(request, f'{BACKEND_TEMPLATES}/sport/leagues/matches.html', context)
 
 ##########################  Season ################################
 @authenticated_staf
