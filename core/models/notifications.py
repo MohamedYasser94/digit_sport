@@ -138,6 +138,7 @@ class DeviceInfo(models.Model):
     status = models.BooleanField(default=False)
     user_active = models.BooleanField(default=True)
     device_code = models.CharField(max_length=250, null=True, blank=True)
+    need_update = models.BooleanField(default=False)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,5 +1,6 @@
 from datetime import timezone, datetime
 
+from OpenSSL.rand import status
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
@@ -406,6 +407,7 @@ def AdminLeaguesUpdate(request, slug):
             image_path = request.POST.get('image_path')
             type = request.POST.get('type')
             keyword = request.POST.get('keyword')
+            status= request.POST.get('status')
 
             if sport == None or sport == '':
                 sport = None
@@ -434,6 +436,7 @@ def AdminLeaguesUpdate(request, slug):
             else:
                 leagues_object.image = leagues_object.image
             leagues_object.image_path = image_path
+            leagues_object.status = status
             leagues_object.save()
 
             messages.success(request, _("Leagues Update Successfully"), extra_tags='Leagues')

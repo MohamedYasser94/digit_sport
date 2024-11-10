@@ -15,7 +15,7 @@ class HiveLeaguesSerializer(serializers.ModelSerializer):
     # league_matches = serializers.SerializerMethodField()
     class Meta:
         model = Leagues
-        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at',  ]
+        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at', 'status' ]
 
     # def get_league_matches(self, obj):
     #     request = self.context['request']
@@ -28,7 +28,7 @@ class HiveTeamsSerializer(serializers.ModelSerializer):
         model = Teams
         fields = ['id','league_id', 'name','short_code', 'image', 'country',
                   'country_image', 'sport_name','founded',
-                  'create_at',  ]
+                  'create_at',  'status']
 
 
 
@@ -97,3 +97,10 @@ class HiveRoundSerializer(serializers.ModelSerializer):
     class Meta:
         model = Round
         fields = ['id', 'name', 'starting_at', 'league'  ]
+
+
+class HiveGoalsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MatchGoals
+        fields = "__all__"

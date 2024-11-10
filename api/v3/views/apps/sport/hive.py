@@ -1,12 +1,29 @@
-from django.http import JsonResponse
+import json
+
+from django.http import JsonResponse, HttpResponse
 from rest_framework.status import *
 from api.v3.serializers.sport.hive import *
 from api.v3.serializers.sport.sport import TeamSeasonTableSerializer
 from apps.sport.models.models import *
+from core.models.notifications import DeviceInfo
 
 
+def UpdateHiveData(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        device_token = data.get('device_token')
+        try:
+            device_object = DeviceInfo.objects.get(device_token=device_token)
+            if device_object.need_update == True:
+                device_object.need_update = False
+                device_object.save()
+                return HttpResponse(status=HTTP_202_ACCEPTED)
+            else:
+                return HttpResponse(status=HTTP_200_OK)
+        except Exception as e:
+            return HttpResponse(status=HTTP_404_NOT_FOUND)
 
-
+    return HttpResponse(status=HTTP_400_BAD_REQUEST)
 #################### Hive Api ##################
 def HiveLeaguesApiList(request, ):
     league_list = Leagues.objects.all()
@@ -111,6 +128,25 @@ def HiveRoundsApiList(request, ):
         return JsonResponse(data, safe=False, status=HTTP_200_OK)
     except Exception as e:
         print('error HiveRoundsApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        data = {'success': success, 'message': message, 'data': [], }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
+
+
+
+def HiveGoalsApiList(request, ):
+    try:
+        goals  = MatchGoals.objects.all()
+        goals_serializer = HiveGoalsSerializer(goals, many=True, context={'request': request})
+        success = True
+        message = f"HiveGoalsApiList  "
+        sport_data = {'goals': goals_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
+
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveGoalsApiList', e)
         success = False
         message = f"error in get data   {e}  "
         data = {'success': success, 'message': message, 'data': [], }

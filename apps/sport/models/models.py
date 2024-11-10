@@ -359,7 +359,9 @@ class Round(models.Model):
 
 
     def __str__(self):
-        return f'(R-{self.name})' +  f'(G-{self.group.name})'  + f'(D-{self.starting_at.day})' +self.league.name
+        # return f'(R-{self.name})' +  f'(D-{self.starting_at.day})' + self.league.name
+
+        return f'(R-{self.name})' + f'(G-{self.group.name})' + f'(D-{self.starting_at.day})' + self.league.name
 
     class Meta:
         ordering = ('starting_at',)
