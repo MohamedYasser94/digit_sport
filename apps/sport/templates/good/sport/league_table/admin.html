@@ -69,6 +69,7 @@
                                     <th class="min-w-20px">{% translate '#' %}</th>
                                     <th class="min-w-125px">{% translate 'Group' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
+                                    <th class="min-w-125px">{% translate 'Sort' %}</th>
                                     <th class="min-w-125px">{% translate 'League' %}</th>
                                     <th class="min-w-125px">{% translate 'Season' %}</th>
                                     <th class="min-w-125px">{% translate 'Status' %}</th>
@@ -91,7 +92,7 @@
                                         <!--end::Checkbox-->
                                         <!--begin::counter=-->
                                         <td>
-                                            {{ forloop.counter }}
+                                             {{ item.id }}
                                         </td>
                                         <!--end::counter=-->
                                         <!--begin::Name=-->
@@ -108,6 +109,14 @@
                                             <a href="{% url 'sport:AdminSeasonTeamTableList' item.slug %}"
                                                     class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.code }}
+                                            </a>
+                                        </td>
+                                        <!--end::Email=-->
+                                     <!--begin::Email=-->
+                                        <td>
+                                            <a
+                                                    class="text-gray-600 text-hover-primary mb-1">
+                                                {{ item.sort }}
                                             </a>
                                         </td>
                                         <!--end::Email=-->
@@ -307,6 +316,7 @@
 
 
                                     </div>
+                                    <!--end::Input group-->
                                     <!--begin::Input group-->
                                          <div class="d-flex flex-wrap gap-5">
                                         <!--begin::Input group-->
@@ -336,6 +346,28 @@
 
 
                                     </div>
+                                    <!--end::Input group-->
+                                        <!--begin::Input group-->
+                                         <div class="d-flex flex-wrap gap-5">
+                                        <!--begin::Input group-->
+                                       <div class="fv-row w-100 flex-md-root">
+                                            <!--begin::Label-->
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Sort' %}</label>
+                                            <!--end::Label-->
+                                            <!--begin::Input-->
+                                            <input type="number" name="sort" required
+                                                   class="form-control form-control-solid fw-bolder"
+                                                   placeholder="{% translate 'Sort' %}"/>
+                                            <!--end::Input-->
+                                        </div>
+                                        <!--end::Input group-->
+
+
+
+
+
+                                    </div>
+                                    <!--end::Input group-->
 
 
 

@@ -72,6 +72,7 @@
                                     <th class="min-w-125px">{% translate 'Founded' %}</th>
                                      <th class="min-w-125px">{% translate 'Country' %}</th>
                                     <th class="min-w-125px">{% translate 'Image' %}</th>
+                                    <th class="min-w-125px">{% translate 'Country Image' %}</th>
                                     <th class="min-w-125px">{% translate 'Short Code' %}</th>
                                     <th class="min-w-125px">{% translate 'Status' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
@@ -143,6 +144,24 @@
                                                     {% else %}
                                                         <span class="symbol-label" style="background-image:url(
                                                                 {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>
+                                                    {% endif %}
+
+                                                </a>
+                                                <!--end::Thumbnail-->
+
+                                            </div>
+                                        </td>
+                                        <!--end::Image=-->
+                                    <!--begin::Image=-->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Thumbnail-->
+                                                <a class="symbol symbol-50px">
+                                                    {% if item.country_image %}
+                                                        <span class="symbol-label"
+                                                              style="background-image:url({{ item.country_image.url }});"></span>
+
+
                                                     {% endif %}
 
                                                 </a>

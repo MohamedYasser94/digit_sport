@@ -446,6 +446,15 @@ class MatchPlayerSummarySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class LeagueSeasonTableSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeagueSeasonTable
+        fields = "__all__"
+
+
+
+
 class TeamSeasonTableSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='team.id')
     team_id = serializers.ReadOnlyField(source='team.id')

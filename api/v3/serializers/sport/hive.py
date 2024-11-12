@@ -12,14 +12,12 @@ from digit_sport.settings import env
 
 class HiveLeaguesSerializer(serializers.ModelSerializer):
     sport_name = serializers.ReadOnlyField(source='sport.name')
-    # league_matches = serializers.SerializerMethodField()
+
     class Meta:
         model = Leagues
         fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at', 'status' ]
 
-    # def get_league_matches(self, obj):
-    #     request = self.context['request']
-    #     return HiveMatchDetailsSerializer(Match.objects.filter(league=obj.id), many=True,context={'request': request}).data
+
 
 class HiveTeamsSerializer(serializers.ModelSerializer):
     league_id = serializers.ReadOnlyField(source='league.id')
@@ -27,7 +25,7 @@ class HiveTeamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
         fields = ['id','league_id', 'name','short_code', 'image', 'country',
-                  'country_image', 'sport_name','founded',
+                  'country_image', 'sport_name','sport','founded',
                   'create_at',  'status']
 
 
@@ -72,7 +70,6 @@ class HiveLeagueSeasonTableSerializer(serializers.ModelSerializer):
 
 
 class HiveTeamSeasonTableSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='team.id')
     team_id = serializers.ReadOnlyField(source='team.id')
     team_slug = serializers.ReadOnlyField(source='team.slug')
     team_name = serializers.ReadOnlyField(source='team.name')

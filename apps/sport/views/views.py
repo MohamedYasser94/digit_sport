@@ -981,17 +981,14 @@ def AdminSeasonLeagueTableList(request):
         table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None)
 
         if table_form:
-
             league = request.POST.get('league')
             group = request.POST.get('group')
+            sort = request.POST.get('sort')
 
             league = Leagues.objects.get(id=league)
             group = Group.objects.get(id=group)
-
-
             season_table_object = LeagueSeasonTable(
-                league=league,group=group, season=group.season, sport=league.sport,status='Active'
-)
+                league=league,group=group, season=group.season, sport=league.sport,sort=sort, status='Active')
             season_table_object.save()
             messages.success(request, _("Season Table Add Successfully"), extra_tags='Season Table')
 
@@ -1015,26 +1012,26 @@ def AdminSeasonLeagueTableUpdate(request, slug):
     if request.method == "POST":
         season_table_form = AdminSeasonLeagueTableForm(request.POST or None, request.FILES or None, )
         if season_table_form:
-            season = request.POST.get('season')
+
             league = request.POST.get('league')
             group = request.POST.get('group')
             order = request.POST.get('order')
+            sort = request.POST.get('sort')
             status = request.POST.get('status')
 
-            season = Season.objects.get(id=season)
+            group = Group.objects.get(id=group)
             league = Leagues.objects.get(id=league)
-
             season_table_object = LeagueSeasonTable.objects.get(slug=slug)
-            season_table_object.season = season
             season_table_object.league = league
             season_table_object.group = group
             season_table_object.order = order
+            season_table_object.sort = sort
             season_table_object.status = status
             season_table_object.save()
 
             messages.success(request, _("Season Table Update Successfully"), extra_tags='Season Table')
 
-            return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+            return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonLeagueTableList'))
         else:
 
             messages.error(request, _("Season Table Not Update , Please Try Again"), extra_tags='Season Table')
@@ -1057,9 +1054,9 @@ def AdminSeasonLeagueTableArchive(request, slug):
         season_table.status = 'Archive'
         season_table.save()
         messages.success(request, _("Season Table Archive Successfully"), extra_tags='Season Table')
-        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonLeagueTableList'))
     else:
-        return HttpResponseRedirect(reverse_lazy('sport:AdminLeagueSportSeasonTableList'))
+        return HttpResponseRedirect(reverse_lazy('sport:AdminSeasonLeagueTableList'))
 
 
 @authenticated_staf

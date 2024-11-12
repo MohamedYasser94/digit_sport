@@ -498,3 +498,27 @@ def SportVideosByCountryApiList(request, country, sport):
 
             }
     return JsonResponse(data, safe=False)
+
+
+
+def SportTablesApiList(request, group):
+    try:
+        table_list =LeagueSeasonTable.objects.get(id=group)
+        teams_table = TeamSeasonTable.objects.filter(table = table_list.id)
+
+        success = True
+        message = f"Send From Django API mix table "
+        table_serializer = LeagueSeasonTableSerializer(table_list, many=False, context={'request': request})
+        team_serializer = TeamSeasonTableSerializer(teams_table, many=True, context={'request': request})
+        sport_data = {'sport': 'volleyball', 'table': table_serializer.data,
+                        'teams': team_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        success = False
+        message = f"error in get data table  {e}  "
+        sport_data = {'sport': 'volleyball', 'table': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False)

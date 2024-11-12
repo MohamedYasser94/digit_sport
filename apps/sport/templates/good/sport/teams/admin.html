@@ -75,10 +75,12 @@
                                     <th class="min-w-20px">{% translate '#' %}</th>
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
+                                    <th class="min-w-125px">{% translate 'Founded' %}</th>
                                     <th class="min-w-125px">{% translate 'Players' %}</th>
                                     <th class="min-w-125px">{% translate 'Club' %}</th>
                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
                                     <th class="min-w-125px">{% translate 'Image' %}</th>
+                                    <th class="min-w-125px">{% translate 'Country Image' %}</th>
                                     <th class="min-w-125px">{% translate 'Status' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                                 </tr>
@@ -115,6 +117,14 @@
                                             <a
                                                     class="text-gray-600 text-hover-primary mb-1">
                                                 {{ item.code }}
+                                            </a>
+                                        </td>
+                                        <!--end::Email=-->
+                                    <!--begin::Email=-->
+                                        <td>
+                                            <a
+                                                    class="text-gray-600 text-hover-primary mb-1">
+                                                {{ item.founded }}
                                             </a>
                                         </td>
                                         <!--end::Email=-->
@@ -157,6 +167,24 @@
                                                     {% else %}
                                                         <span class="symbol-label" style="background-image:url(
                                                                 {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>
+                                                    {% endif %}
+
+                                                </a>
+                                                <!--end::Thumbnail-->
+
+                                            </div>
+                                        </td>
+                                        <!--end::Email=-->
+                                    <!--begin::Email=-->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <!--begin::Thumbnail-->
+                                                <a class="symbol symbol-50px">
+                                                    {% if item.country_image %}
+                                                        <span class="symbol-label"
+                                                              style="background-image:url({{ item.country_image.url }});"></span>
+
+
                                                     {% endif %}
 
                                                 </a>

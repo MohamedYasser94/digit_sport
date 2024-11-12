@@ -46,9 +46,6 @@ def HiveLeaguesApiList(request, ):
 def HiveTeamApiList(request, ):
     try:
         team_list = Teams.objects.all()
-        for item in team_list:
-            item.founded = '1970'
-            item.save()
         team_serializer = HiveTeamsSerializer(team_list, many=True, context={'request': request})
         success = True
         message = f"HiveTeamApiList  "
@@ -82,22 +79,7 @@ def HiveMatchesApiList(request, ):
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
 
-def HiveStandingApiList(request, ):
-    try:
-        table  = TeamSeasonTable.objects.all()
-        table_serializer = HiveTeamSeasonTableSerializer(table, many=True, context={'request': request})
-        success = True
-        message = f"HiveTableApiList  "
-        sport_data = {'table': table_serializer.data}
-        data = {'success': success, 'message': message, 'data': sport_data, }
 
-        return JsonResponse(data, safe=False, status=HTTP_200_OK)
-    except Exception as e:
-        print('error HiveTableApiList', e)
-        success = False
-        message = f"error in get data   {e}  "
-        data = {'success': success, 'message': message, 'data': [], }
-        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
 def HiveTableApiList(request, ):
     try:
@@ -116,6 +98,22 @@ def HiveTableApiList(request, ):
         data = {'success': success, 'message': message, 'data': [], }
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
+def HiveStandingApiList(request, ):
+    try:
+        table  = TeamSeasonTable.objects.all()
+        table_serializer = HiveTeamSeasonTableSerializer(table, many=True, context={'request': request})
+        success = True
+        message = f"HiveTableApiList  "
+        sport_data = {'table': table_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
+
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveTableApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        data = {'success': success, 'message': message, 'data': [], }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 def HiveRoundsApiList(request, ):
     try:
         rounds  = Round.objects.all()

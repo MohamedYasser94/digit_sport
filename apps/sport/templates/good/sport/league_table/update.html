@@ -73,6 +73,40 @@
                                         <!--end::Input-->
                                     </div>
 
+
+                        </div>
+                            <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+
+
+                                  <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Sort' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" name="sort" value="{{ table.sort }}"
+                                               class="form-control form-control-solid fw-bolder" required/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                        <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status ' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="status" aria-label="{% translate 'Status' %}"
+                                                    data-control="select2" data-placeholder="{% translate 'Status' %}"
+                                                            data-allow-clear="true" required
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="{{ table.status }}">{{ table.status }}</option>
+                                                {% for value, text in table_form.status.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+
+                                            </select>
+                                        <!--end::Input-->
+                                    </div>
+
                         </div>
                         <!--end::Card body-->
                         <div class="card-body pt-0">
