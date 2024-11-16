@@ -15,7 +15,7 @@ class HiveLeaguesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Leagues
-        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at', 'status' ]
+        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at', 'status','slug' ]
 
 
 
@@ -26,7 +26,7 @@ class HiveTeamsSerializer(serializers.ModelSerializer):
         model = Teams
         fields = ['id','league_id', 'name','short_code', 'image', 'country',
                   'country_image', 'sport_name','sport','founded',
-                  'create_at',  'status']
+                  'create_at',  'status','slug']
 
 
 
@@ -39,11 +39,18 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
     sport_name = serializers.ReadOnlyField(source='sport.name')
     home_team_object = serializers.SerializerMethodField()
     away_team_object = serializers.SerializerMethodField()
+    home_team_name = serializers.ReadOnlyField(source='home_team.name')
+    away_team_name = serializers.ReadOnlyField(source='away_team.name')
+    home_team_slug = serializers.ReadOnlyField(source='home_team.slug')
+    away_team_slug = serializers.ReadOnlyField(source='away_team.slug')
+    home_team_image = serializers.SerializerMethodField()
+    away_team_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
         fields = ['id',  'league_id', 'league_name','league_short_code', 'league_image','round','venues_name','played', 'current_half', 'current_minute',
-                  'start_time',  'score', 'home_score', 'away_score','home_team','home_team_object', 'away_team','away_team_object', 'sport_name']
+                  'start_time',  'score', 'home_score', 'away_score','home_team','home_team_object', 'away_team','away_team_object', 'sport_name',
+                    'home_team_name', 'away_team_name', 'home_team_slug', 'away_team_slug', 'home_team_image', 'away_team_image']
 
     def get_league_image(self, obj):
         try:
@@ -60,6 +67,22 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
     def get_away_team_object(self, obj):
         request = self.context['request']
         return TeamForMatchSerializer(Teams.objects.get(id=obj.away_team.id, ), many=False,context={'request': request}).data
+
+    def get_home_team_image(self, obj):
+        try:
+            home_team_image = 'https://api.jawlasp.com' + str(obj.home_team.image.url)
+            return home_team_image
+        except:
+            home_team_image = None
+            return home_team_image
+
+    def get_away_team_image(self, obj):
+        try:
+            away_team_image = 'https://api.jawlasp.com' + str(obj.away_team.image.url)
+            return away_team_image
+        except:
+            away_team_image = None
+            return away_team_image
 
 class HiveLeagueSeasonTableSerializer(serializers.ModelSerializer):
 

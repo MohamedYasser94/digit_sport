@@ -61,7 +61,7 @@ THIRD_PARTY_APPS = [
 
     'mptt', 'import_export', 'rest_framework_swagger',  # drf-yasg
     'rest_framework', 'rest_framework.authtoken', 'rest_framework_simplejwt.token_blacklist', 'drf_yasg', 'channels',
-    # 'corsheaders',
+    'corsheaders',
 
     # 'dj_rest_auth',
     # 'django_user_agents',
@@ -92,7 +92,7 @@ MIDDLEWARE = ['django.middleware.common.CommonMiddleware', 'django.middleware.se
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_COOKIE_AGE = 60 * 60
-
+CORS_ORIGIN_ALLOW_ALL = True
 SRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 
@@ -264,8 +264,8 @@ CSRF_COOKIE_SECURE = False
 ############## SWAGGER_SETTINGS   ############
 SWAGGER_SETTINGS = {'SECURITY_DEFINITIONS': {'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}}}
 # CORS WHITELIST
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.netlify.app", "http://127.0.0.1:8080",
-                         "https://digithub.site", "http://localhost:56630", "https://himediakw.net", ]
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.netlify.app", "jawlasp.com",
+                         "https://jawlasp.com", "http://localhost:56630", "https://himediakw.net", ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
@@ -294,7 +294,7 @@ SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20), 'REFRESH_TOKEN_LIF
 
 PASSWORD_RESET_TIMEOUT = 900  # 900 Sec = 15 Min
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://digithub.site",
+CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com",
                         "https://himediakw.net",
 
                         "http://localhost:56630", ]

@@ -1635,12 +1635,10 @@ def AdminTeamsUpdate(request, slug):
             team_object.founded = team_object.club.founded
             team_object.country = team_object.club.country
             team_object.country_image = team_object.club.country_image
-
             team_object.image_path = image_path
-
             team_object.status = status
             if image == None or image == '':
-                team_object.image = team.image
+                team_object.image = team_object.club.image
             else:
                 team_object.image = image
             team_object.save()
