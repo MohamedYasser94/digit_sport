@@ -84,6 +84,7 @@ urlpatterns = [
     path('team/update/<slug:slug>/', views.AdminTeamsUpdate, name='AdminTeamsUpdate'),
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
+    path('monk/teams/list/', monks.AdminMonksTeamsList, name='AdminMonksTeamsList'),
     path('monk/teams/api/get/', monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
     path('team/playr/list/<slug:slug>/', views.AdminTeamPlayerList, name='AdminTeamPlayerList'),
     path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd, name='AdminTeamPlayerAdd'),

@@ -44,7 +44,7 @@ def HiveMonksLeaguesApiList(request, ):
 
 
 def HiveMonksLeaguesByDateApiList(request, date,locale):
-    url = f'{base_url}football/leagues/date/{date}?api_token={api_key}&locale={locale}&include=today;currentSeason'
+    url = f'{base_url}football/leagues/date/{date}?api_token={api_key}&locale={locale}&include=today;currentSeason;country'
     try:
         success = True
         message = f"HiveLeaguesApiList  "

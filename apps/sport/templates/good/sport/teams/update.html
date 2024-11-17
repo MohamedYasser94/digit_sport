@@ -49,6 +49,21 @@
                                     </div>
                                       <div class="flex-row-fluid">
                                         <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Name Arabic' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="name_tr"
+                                               placeholder="{% translate 'Name Arabic' %}"
+                                               value="{{ team.name_tr }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                            <div class="d-flex flex-wrap gap-5">
+                                                <!--begin::Input group-->
+                                                   <div class="flex-row-fluid">
+                                        <!--begin::Label-->
                                         <label class="form-label">{% translate 'Short Code' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
@@ -57,32 +72,17 @@
                                                value="{{ team.short_code }}"/>
                                         <!--end::Input-->
                                     </div>
-                                </div>
-                                <!--end::Input group-->
-                             <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Name' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Keyword' %}" value="{{ team.name_en }}"
-                                                           name="title_tr"/>
-                                                    <!--end::Input-->
-
-                                                </div>
                                                 <!--end::Input group-->
 
                                                 <!--begin::Input group-->
                                                 <div class="fv-row w-100 flex-md-root">
                                                     <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Translate Keyword' %}</label>
+                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Founded' %}</label>
                                                     <!--end::Label-->
                                                     <!--begin::Input-->
                                                     <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Translate Keyword' %}" value="{{ team.keyword_en }}"
-                                                           name="keyword_tr"/>
+                                                           placeholder="{% translate 'Translate Keyword' %}" value="{{ team.founded }}"
+                                                           name="founded"/>
                                                     <!--end::Input-->
                                                 </div>
                                                 <!--end::Input group-->

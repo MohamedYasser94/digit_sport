@@ -1,5 +1,7 @@
 import requests
 from django.contrib import messages
+from django.contrib.admin.templatetags.admin_list import pagination
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -160,10 +162,11 @@ def AdminMonksLeaguesGetData(request):
         data = ''
         if teams_form:
             page = request.POST.get('pages')
-            sport = request.POST.get('sport')
+
 
             try:
-                sport_id = Sport.objects.get(name=sport)
+                sport_id = Sport.objects.get_or_create(name='football')
+                sport_id = Sport.objects.get(name='football')
             except:
                 sport_id = None
             i = 1
@@ -172,7 +175,7 @@ def AdminMonksLeaguesGetData(request):
                 i = i + 1
 
                 response = requests.get(
-                    base_url + f'{sport}/leagues?page={i}&api_token={api_key}',
+                    base_url + f'football/leagues?page={i}&api_token={api_key}&include=today;currentSeason;country',
                     headers={
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -186,6 +189,16 @@ def AdminMonksLeaguesGetData(request):
                     data_to_db = data['data']
 
                     for data in data_to_db:
+                        try:
+                            country = data['country']['name']
+                            country_image = data['country']['image_path']
+                        except:
+                            country = None
+                            country_image = None
+                        try:
+                            currentseason = data['currentseason']['id']
+                        except:
+                            currentseason = None
 
                         try:
 
@@ -194,7 +207,7 @@ def AdminMonksLeaguesGetData(request):
                             check_leagues.name = data['name']
                             check_leagues.short_code = data['short_code']
                             check_leagues.api_country = data['country_id']
-                            check_leagues.sport = sport_id
+                            check_leagues.sport = sport_id.id
                             check_leagues.image_path = data['image_path']
                             check_leagues.api_active = data['active']
                             check_leagues.type = data['type']
@@ -202,18 +215,21 @@ def AdminMonksLeaguesGetData(request):
                             check_leagues.api_category = data['category']
                             check_leagues.last_played_at = data['last_played_at']
                             check_leagues.has_jerseys = data['has_jerseys']
+                            check_leagues.country = country
+                            check_leagues.country_image = country_image
+                            check_leagues.currentseason = currentseason
+                            check_leagues.keyword = data
                             check_leagues.save()
-                        except:
-                            leagues_object = Leagues(api_id=data['id'], name=data['name'],
+                        except Exception as e:
+                            print('error',e)
+                            leagues_object = Leagues(api_id=data['id'], name=data['name'],sport_id=sport_id.id,
                                                     short_code=data['short_code'],api_country=data['country_id'],
                                                     sport=sport_id,image_path=data['image_path'],
                                                     type=data['type'],api_active=data['active'],
                                                     sub_type=data['sub_type'],api_category=data['category'],
                                                     last_played_at=data['last_played_at'],has_jerseys=data['has_jerseys'],
-
-
-
-                                                     )
+                                                    country=country,country_image=country_image,
+                                                    currentseason=currentseason, keyword=data)
                             leagues_object.save()
                     data = {'type': 'Success', 'message': 'Data Add Successfully'}
                 else:
@@ -611,7 +627,35 @@ def AdminMonksVenuesGetData(request):
         return JsonResponse(data=data, safe=False)
 
 
+def AdminMonksTeamsList(request):
+    sport = Sport.objects.get(name='football')
+    teams = Teams.objects.filter(sport=sport)
 
+    # Create a Paginator instance, specifying the number of objects per page
+    paginator = Paginator(teams, 10)  # 10 objects per page
+
+    # Get the current page number from the GET query string
+    page_number = request.GET.get('page')
+
+    # Try to get the page object
+    try:
+        page_obj = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        # If page number is not an integer, deliver the first page
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # If page number is out of range, deliver the last page of results
+        page_obj = paginator.page(paginator.num_pages)
+
+
+
+    else:
+        context = {
+            'page_obj': page_obj,
+           'teams_form': AdminTeamsForm(), 'current_page': _('Teams')
+
+                   }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/teams/monks.html', context)
 @csrf_exempt
 def AdminMonksTeamsGetData(request):
     if not request.user.is_authenticated:
@@ -649,6 +693,16 @@ def AdminMonksTeamsGetData(request):
                     data_to_db = data['data']
 
                     for data in data_to_db:
+                        try:
+                            country = data['country']['name']
+                            country_image = data['country']['image_path']
+                        except:
+                            country = None
+                            country_image = None
+                        try:
+                            currentseason = data['currentseason']['id']
+                        except:
+                            currentseason = None
 
                         try:
                             check_teams = Teams.objects.get(name=data['name'])
@@ -664,13 +718,17 @@ def AdminMonksTeamsGetData(request):
                             check_teams.type = data['type']
                             check_teams.placeholder = data['placeholder']
                             check_teams.last_played_at = data['last_played_at']
+                            check_teams.country = country
+                            check_teams.country_image = country_image
+                            check_teams.keyword = data
                             check_teams.save()
                         except:
                             teams_object = Teams(api_id=data['id'], name=data['name'],
                                                  short_code=data['short_code'],api_country=data['country_id'], api_venue=data['venue_id'],
                                                 sport=sport_id,gender=data['gender'],image_path=data['image_path'],
                                                     founded=data['founded'],type=data['type'],placeholder=data['placeholder'],
-                                                    last_played_at=data['last_played_at'],
+                                                    last_played_at=data['last_played_at'],country=country,country_image=country_image,
+                                                 keyword=data
                                                  )
                             teams_object.save()
                     data = {'type': 'Success', 'message': 'Data Add Successfully'}

@@ -398,37 +398,24 @@ def AdminLeaguesUpdate(request, slug):
         leagues_form = AdminLeaguesForm(request.POST or None, request.FILES or None, instance=league)
         if leagues_form:
             name = request.POST.get('name')
+            name_tr = request.POST.get('name_tr')
             sport = request.POST.get('sport')
-            category = request.POST.get('category')
-            sub_category = request.POST.get('sub_category')
             country = request.POST.get('country')
             short_code = request.POST.get('short_code')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
-            type = request.POST.get('type')
-            keyword = request.POST.get('keyword')
+            country_image = request.POST.get('country_image')
+            currentseason = request.POST.get('currentseason')
             status= request.POST.get('status')
 
             if sport == None or sport == '':
                 sport = None
             else:
                 sport = Sport.objects.get(id=sport)
-
-            if category == None or category == '':
-                category = None
-            else:
-                category = SportCategory.objects.get(id=category)
-
-            if sub_category == None or sub_category == '':
-                sub_category = None
-            else:
-                sub_category = SportCategory.objects.get(id=sub_category)
-
             leagues_object = Leagues.objects.get(slug=slug)
             leagues_object.name = name
+            leagues_object.name_tr = name_tr
             leagues_object.sport = sport
-            leagues_object.category = category
-            leagues_object.sub_category = sub_category
             leagues_object.country = country
             leagues_object.short_code = short_code
             if image:
@@ -436,6 +423,8 @@ def AdminLeaguesUpdate(request, slug):
             else:
                 leagues_object.image = leagues_object.image
             leagues_object.image_path = image_path
+            leagues_object.country_image = country_image
+            leagues_object.currentseason = currentseason
             leagues_object.status = status
             leagues_object.save()
 
@@ -1477,8 +1466,8 @@ def AdminVenuesDelete(request, slug):
 @authenticated_staf
 @staff_only
 def AdminTeamsList(request):
-    sport_list = [ 'basketball', 'volleyball']
-    teams = Teams.objects.all()
+    sport_list = [ 'basketball', 'volleyball','handball']
+    teams = Teams.objects.filter(sport__slug__in=sport_list)
 
     if request.method == "POST":
         teams_form = AdminTeamsForm(request.POST or None, request.FILES or None)
@@ -1584,6 +1573,7 @@ def AdminTeamsUpdate(request, slug):
         teams_form = AdminTeamsForm(request.POST or None, request.FILES or None, instance=team)
         if teams_form:
             name = request.POST.get('name')
+            name_tr = request.POST.get('name_tr')
             short_code = request.POST.get('short_code')
             country = request.POST.get('country')
             club = request.POST.get('club')
