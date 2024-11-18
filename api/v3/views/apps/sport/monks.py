@@ -42,6 +42,23 @@ def HiveMonksLeaguesApiList(request, ):
         data = {'success': success, 'message': message, 'data': sport_data, }
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
+def HiveDBMonksLeaguesApiList(request, ):
+    sport = Sport.objects.get(name='football')
+    league_list = Leagues.objects.filter(sport=sport)
+    try:
+        success = True
+        message = f"HiveLeaguesApiList  "
+        league_serializer = HiveLeaguesSerializer(league_list, many=True,context={'request': request,})
+        sport_data = {'leagues': league_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveLeaguesApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'leagues': [], }
+        data = {'success': success, 'message': message, 'data': sport_data, }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 
 def HiveMonksLeaguesByDateApiList(request, date,locale):
     url = f'{base_url}football/leagues/date/{date}?api_token={api_key}&locale={locale}&include=today;currentSeason;country'
@@ -150,6 +167,26 @@ def HiveMonksFixturesDetailsApi(request, fixture_id,locale):
         success = False
         message = f"error in get data   {e}  "
         sport_data = {'leagues': [], }
+        data = {'success': success, 'message': message, 'data': sport_data, }
+        return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
+
+
+
+def HiveDBMonksTeamsApiList(request, ):
+    sport = Sport.objects.get(name='football')
+    team_list = Teams.objects.filter(sport=sport)
+    try:
+        success = True
+        message = f"HiveLeaguesApiList  "
+        team_serializer = HiveTeamsSerializer(team_list, many=True,context={'request': request,})
+        sport_data = {'teams': team_serializer.data}
+        data = {'success': success, 'message': message, 'data': sport_data, }
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
+    except Exception as e:
+        print('error HiveLeaguesApiList', e)
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'teams': [], }
         data = {'success': success, 'message': message, 'data': sport_data, }
         return JsonResponse(data, safe=False, status=HTTP_204_NO_CONTENT)
 

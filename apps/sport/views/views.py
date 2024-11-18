@@ -468,6 +468,19 @@ def AdminLeaguesDelete(request, slug):
         return HttpResponseRedirect(reverse_lazy('sport:AdminLeaguesList'))
 
 
+
+@authenticated_staf
+@staff_only
+def AdminLeaguesTeams(request, slug):
+    league = Leagues.objects.get(slug=slug)
+    teams = Teams.objects.filter(league=league)
+    teams_form = AdminTeamsForm()
+    context = {'league': league, 'teams': teams,
+                'teams_form': teams_form,
+               'current_page': _('Teams')}
+    return render(request, f'{BACKEND_TEMPLATES}/sport/leagues/teams.html', context)
+
+
 @authenticated_staf
 @staff_only
 def AdminMatchByLeague(request, slug):
@@ -1466,8 +1479,8 @@ def AdminVenuesDelete(request, slug):
 @authenticated_staf
 @staff_only
 def AdminTeamsList(request):
-    sport_list = [ 'basketball', 'volleyball','handball']
-    teams = Teams.objects.filter(sport__slug__in=sport_list)
+    sport = Sport.objects.get(name='football')
+    teams = Teams.objects.all().exclude(sport=sport)
 
     if request.method == "POST":
         teams_form = AdminTeamsForm(request.POST or None, request.FILES or None)
@@ -1615,6 +1628,7 @@ def AdminTeamsUpdate(request, slug):
 
             team_object = Teams.objects.get(slug=slug)
             team_object.name = name
+            team_object.name_tr = name_tr
             team_object.short_code = short_code
             team_object.country = country
             team_object.club = club
@@ -1622,15 +1636,18 @@ def AdminTeamsUpdate(request, slug):
             team_object.venue = venue
             team_object.gender = gender
             team_object.keyword = keyword
-            team_object.founded = team_object.club.founded
-            team_object.country = team_object.club.country
-            team_object.country_image = team_object.club.country_image
+            try:
+                team_object.founded = team_object.club.founded
+                team_object.country = team_object.club.country
+                team_object.country_image = team_object.club.country_image
+                if image == None or image == '':
+                    team_object.image = team_object.club.image
+                else:
+                    team_object.image = image
+            except:
+                pass
             team_object.image_path = image_path
             team_object.status = status
-            if image == None or image == '':
-                team_object.image = team_object.club.image
-            else:
-                team_object.image = image
             team_object.save()
 
             messages.success(request, _("Teams Update Successfully"), extra_tags='Teams')

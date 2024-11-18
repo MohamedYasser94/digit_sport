@@ -57,11 +57,13 @@ urlpatterns = [path('v3/', include(router.urls)),
 
                #####################  Monks App API ########################
                 path('v3/hive/monks/leagues/list/', monks.HiveMonksLeaguesApiList, name='HiveMonksLeaguesApiList'),
+                path('v3/hive/db/monks/leagues/list/', monks.HiveDBMonksLeaguesApiList, name='HiveDBMonksLeaguesApiList'),
                 path('v3/hive/monks/leagues/<str:date>/<str:locale>/list/', monks.HiveMonksLeaguesByDateApiList, name='HiveMonksLeaguesByDateApiList'),
                 path('v3/hive/monks/leagues/fixtures/<int:league_id>/<str:date>/<str:locale>/list/', monks.HiveMonksLeaguesFixturesByDateApiList, name='HiveMonksLeaguesFixturesByDateApiList'),
 
                 path('v3/hive/monks/fixtures/<str:date>/<str:locale>/list/', monks.HiveMonksFixturesByDateApiList, name='HiveMonksFixturesByDateApiList'),
                 path('v3/hive/monks/fixtures/details/<int:fixture_id>/<str:locale>/', monks.HiveMonksFixturesDetailsApi, name='HiveMonksFixturesDetailsApi'),
+                path('v3/hive/db/monks/teams/list/', monks.HiveDBMonksTeamsApiList, name='HiveDBMonksTeamsApiList'),
 
                ##################### News  API ########################
                path('v3/media/youtube/channel/', media.YoutubeChannelApiList, name='YoutubeChannelApiList'),

@@ -19,6 +19,7 @@ urlpatterns = [
     path('leagues/update/<slug:slug>/', views.AdminLeaguesUpdate, name='AdminLeaguesUpdate'),
     path('leagues/archive/<slug:slug>/', views.AdminLeaguesArchive, name='AdminLeaguesArchive'),
     path('leagues/delete/<slug:slug>/', views.AdminLeaguesDelete, name='AdminLeaguesDelete'),
+    path('leagues/teams/<slug:slug>/', views.AdminLeaguesTeams, name='AdminLeaguesTeams'),
     path('leagues/match/<slug:slug>/', views.AdminMatchByLeague, name='AdminMatchByLeague'),
     path('monk/leagues/api/get/', monks.AdminMonksLeaguesGetData, name='AdminMonksLeaguesGetData'),
 

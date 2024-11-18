@@ -26,7 +26,8 @@ def UpdateHiveData(request):
     return HttpResponse(status=HTTP_400_BAD_REQUEST)
 #################### Hive Api ##################
 def HiveLeaguesApiList(request, ):
-    league_list = Leagues.objects.all()
+    sport = Sport.objects.all().exclude(name='football')
+    league_list = Leagues.objects.filter(sport__in=sport)
     try:
         success = True
         message = f"HiveLeaguesApiList  "

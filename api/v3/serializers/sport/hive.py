@@ -15,7 +15,7 @@ class HiveLeaguesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Leagues
-        fields = ['id', 'name','short_code', 'image', 'country','sport','sport_name', 'create_at', 'status','slug' ]
+        fields = ['id', 'api_id','name','name_tr','short_code', 'image','image_path', 'country','country_image','sport','sport_name','currentseason', 'create_at', 'status','api_active','slug' ]
 
 
 
@@ -24,7 +24,7 @@ class HiveTeamsSerializer(serializers.ModelSerializer):
     sport_name = serializers.ReadOnlyField(source='sport.name')
     class Meta:
         model = Teams
-        fields = ['id','league_id', 'name','short_code', 'image', 'country',
+        fields = ['id', 'api_id','league_id', 'name','name_tr','short_code', 'image', 'image_path', 'country',
                   'country_image', 'sport_name','sport','founded',
                   'create_at',  'status','slug']
 

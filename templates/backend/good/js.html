@@ -1,25 +1,17 @@
 {% load static %}
 {% load i18n %}
 
-
 <!--begin::Javascript-->
 <script>var hostUrl = "{% static '' %}{{ BACKEND_ASSETS }}/";</script>
-<!--begin::Global Javascript Bundle(used by all pages)-->
+<!--begin::Global Javascript Bundle(mandatory for all pages)-->
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/global/plugins.bundle.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/scripts.bundle.js"></script>
 <!--end::Global Javascript Bundle-->
-<!--begin::Vendors Javascript(used by this page)-->
+<!--begin::Vendors Javascript(used for this page only)-->
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
-{#<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/vis-timeline/vis-timeline.bundle.js"></script>#}
+<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/vis-timeline/vis-timeline.bundle.js"></script>
 <!--end::Vendors Javascript-->
-<!--begin::Custom Javascript(used by this page)-->
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/categories.js"></script>
-
-{#<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/listing.js"></script>#}
-{#		<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/add.js"></script>#}
-{#		<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/customers/listing/export.js"></script>#}
-{#<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/reports/views/views.js"></script>#}
-{#<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/categories.js"></script>#}
+<!--begin::Custom Javascript(used for this page only)-->
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
@@ -32,20 +24,8 @@
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-app.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-campaign.js"></script>
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/base/toasts.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/general/datatables/buttons/export.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
-<!--end::Vendors Javascript-->
-<!--begin::Custom Javascript(used by this page)-->
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/account/referrals/referral-program.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/documentation.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/search.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/forms/formrepeater/basic.js"></script>
-<script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/documentation/forms/formrepeater/advanced.js"></script>
-
 <!--end::Custom Javascript-->
 <!--end::Javascript-->
 

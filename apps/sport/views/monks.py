@@ -205,6 +205,7 @@ def AdminMonksLeaguesGetData(request):
                             check_leagues = Leagues.objects.get(name=data['name'])
                             check_leagues.api_id = data['id']
                             check_leagues.name = data['name']
+                            check_leagues.name_tr = data['name']
                             check_leagues.short_code = data['short_code']
                             check_leagues.api_country = data['country_id']
                             check_leagues.sport = sport_id.id
@@ -222,7 +223,8 @@ def AdminMonksLeaguesGetData(request):
                             check_leagues.save()
                         except Exception as e:
                             print('error',e)
-                            leagues_object = Leagues(api_id=data['id'], name=data['name'],sport_id=sport_id.id,
+                            leagues_object = Leagues(api_id=data['id'], name=data['name'],name_tr=data['name'],
+                                                     sport_id=sport_id.id,
                                                     short_code=data['short_code'],api_country=data['country_id'],
                                                     sport=sport_id,image_path=data['image_path'],
                                                     type=data['type'],api_active=data['active'],
@@ -629,13 +631,14 @@ def AdminMonksVenuesGetData(request):
 
 def AdminMonksTeamsList(request):
     sport = Sport.objects.get(name='football')
-    teams = Teams.objects.filter(sport=sport)
+    teams = Teams.objects.filter(sport=sport).order_by('name')
 
     # Create a Paginator instance, specifying the number of objects per page
     paginator = Paginator(teams, 10)  # 10 objects per page
 
     # Get the current page number from the GET query string
     page_number = request.GET.get('page')
+
 
     # Try to get the page object
     try:
@@ -647,10 +650,9 @@ def AdminMonksTeamsList(request):
         # If page number is out of range, deliver the last page of results
         page_obj = paginator.page(paginator.num_pages)
 
-
-
     else:
         context = {
+            'paginator': paginator,
             'page_obj': page_obj,
            'teams_form': AdminTeamsForm(), 'current_page': _('Teams')
 
@@ -679,7 +681,7 @@ def AdminMonksTeamsGetData(request):
                 i = i + 1
 
                 response = requests.get(
-                    base_url + f'{sport}/teams?page={i}&api_token={api_key}',
+                    base_url + f'{sport}/teams?page={i}&api_token={api_key}&include=country',
                     headers={
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -708,6 +710,8 @@ def AdminMonksTeamsGetData(request):
                             check_teams = Teams.objects.get(name=data['name'])
                             check_teams.api_id = data['id']
                             check_teams.name = data['name']
+                            check_teams.name_tr = data['name']
+
                             check_teams.short_code = data['short_code']
                             check_teams.api_country = data['country_id']
                             check_teams.api_venue = data['venue_id']
@@ -723,7 +727,7 @@ def AdminMonksTeamsGetData(request):
                             check_teams.keyword = data
                             check_teams.save()
                         except:
-                            teams_object = Teams(api_id=data['id'], name=data['name'],
+                            teams_object = Teams(api_id=data['id'], name=data['name'],name_tr=data['name'],
                                                  short_code=data['short_code'],api_country=data['country_id'], api_venue=data['venue_id'],
                                                 sport=sport_id,gender=data['gender'],image_path=data['image_path'],
                                                     founded=data['founded'],type=data['type'],placeholder=data['placeholder'],

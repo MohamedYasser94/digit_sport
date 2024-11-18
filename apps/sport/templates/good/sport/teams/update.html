@@ -199,10 +199,15 @@
                                         <label class="required form-label">{% translate 'Country Image' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="file" accept="image/*" name="country_image"
-
-                                              />
-
+                                        <input class="form-control" type="file" accept="image/*" name="country_image"/>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Image Path' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" type="text"  name="image_path" value="{{ team.image_path }}"/>
 
                                         <!--end::Input-->
                                     </div>

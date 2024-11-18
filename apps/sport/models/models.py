@@ -113,7 +113,7 @@ class Sport(models.Model):
 
 
 class Leagues(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True,unique=True)
+    api_id = models.IntegerField(null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_league_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -136,7 +136,7 @@ class Leagues(models.Model):
     short_code = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
-    country_image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
+    country_image = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=200,  default='league', null=True, blank=True)
     sub_type = models.CharField(max_length=200,  default='domestic', null=True, blank=True)
     currentseason = models.CharField(max_length=200,  default='2021', null=True, blank=True)
