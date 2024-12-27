@@ -8,6 +8,18 @@ from apps.sport.models.models import *
 from core.models.notifications import DeviceInfo
 
 
+from corsheaders.signals import check_request_enabled
+
+
+def cors_allow_api_to_everyone(sender, request, **kwargs):
+    return request.path.startswith("/api/")
+
+check_request_enabled.connect(cors_allow_api_to_everyone)
+
+def cors_allow_api_image_to_everyone(sender, request, **kwargs):
+    return request.path.startswith("/upload/") or request.path.startswith("/other/")
+check_request_enabled.connect(cors_allow_api_image_to_everyone)
+
 def UpdateHiveData(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -46,7 +58,8 @@ def HiveLeaguesApiList(request, ):
 
 def HiveTeamApiList(request, ):
     try:
-        team_list = Teams.objects.all()
+        sport = Sport.objects.get(name='football')
+        team_list = Teams.objects.all().exclude(sport=sport)
         team_serializer = HiveTeamsSerializer(team_list, many=True, context={'request': request})
         success = True
         message = f"HiveTeamApiList  "

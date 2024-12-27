@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from django.urls import path, include
+from django.urls import path, include, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -70,3 +70,5 @@ handle403 = 'home.views.views.permission_denied_view'
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if 'rosetta' in settings.INSTALLED_APPS:
+    urlpatterns += [re_path(r'^rosetta/', include('rosetta.urls'))]

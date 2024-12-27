@@ -1,1 +1,125 @@
-"use strict";var KTAppEcommerceProducts=function(){var t,e,n=()=>{t.querySelectorAll('[data-kt-ecommerce-product-filter="delete_row"]').forEach((t=>{t.addEventListener("click",(function(t){t.preventDefault();const n=t.target.closest("tr"),r=n.querySelector('[data-kt-ecommerce-product-filter="product_name"]').innerText;Swal.fire({text:"Are you sure you want to delete "+r+"?",icon:"warning",showCancelButton:!0,buttonsStyling:!1,confirmButtonText:"Yes, delete!",cancelButtonText:"No, cancel",customClass:{confirmButton:"btn fw-bold btn-danger",cancelButton:"btn fw-bold btn-active-light-primary"}}).then((function(t){t.value?Swal.fire({text:"You have deleted "+r+"!.",icon:"success",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn fw-bold btn-primary"}}).then((function(){e.row($(n)).remove().draw()})):"cancel"===t.dismiss&&Swal.fire({text:r+" was not deleted.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn fw-bold btn-primary"}})}))}))}))};return{init:function(){(t=document.querySelector("#kt_ecommerce_products_table"))&&((e=$(t).DataTable({info:!1,order:[],pageLength:10,columnDefs:[{render:DataTable.render.number(",",".",2),targets:4},{orderable:!1,targets:0},{orderable:!1,targets:7}]})).on("draw",(function(){n()})),document.querySelector('[data-kt-ecommerce-product-filter="search"]').addEventListener("keyup",(function(t){e.search(t.target.value).draw()})),(()=>{const t=document.querySelector('[data-kt-ecommerce-product-filter="status"]');$(t).on("change",(t=>{let n=t.target.value;"all"===n&&(n=""),e.column(6).search(n).draw()}))})(),n())}}}();KTUtil.onDOMContentLoaded((function(){KTAppEcommerceProducts.init()}));
+"use strict";
+
+// Class definition
+var KTAppEcommerceProducts = function () {
+    // Shared variables
+    var table;
+    var tableEl;
+    var dt;
+
+    // Private functions
+    var initDatatable = function () {
+        // Init dt --- more info on dts: https://dts.net/manual/
+        dt = new DataTable(table, {
+            "info": false,
+            'order': [],
+            'pageLength': 10,
+            'columnDefs': [
+                { render: DataTable.render.number(',', '.', 2), targets: 4},
+                { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
+                { orderable: false, targets: 7 }, // Disable ordering on column 7 (actions)
+            ]
+        });
+
+        // Re-init functions on dt re-draws
+        dt.on('draw', function () {
+            handleDeleteRows();
+        });
+    }
+
+    // Search Datatable --- official docs reference: https://dts.net/reference/api/search()
+    var handleSearchDatatable = () => {
+        const filterSearch = document.querySelector('[data-kt-ecommerce-product-filter="search"]');
+        filterSearch.addEventListener('keyup', function (e) {
+            dt.search(e.target.value).draw();
+        });
+    }
+
+    // Handle status filter dropdown
+    var handleStatusFilter = () => {
+        const filterStatus = document.querySelector('[data-kt-ecommerce-product-filter="status"]');
+        $(filterStatus).on('change', e => {
+            let value = e.target.value;
+            if(value === 'all'){
+                value = '';
+            }
+            dt.column(6).search(value).draw();
+        });
+    }
+
+    // Delete cateogry
+    var handleDeleteRows = () => {
+        // Select all delete buttons
+        const deleteButtons = tableEl.querySelectorAll('[data-kt-ecommerce-product-filter="delete_row"]');
+
+        deleteButtons.forEach(d => {
+            // Delete button on click
+            d.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Select parent row
+                const parent = e.target.closest('tr');
+
+                // Get category name
+                const productName = parent.querySelector('[data-kt-ecommerce-product-filter="product_name"]').innerText;
+
+                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+                Swal.fire({
+                    text: "Are you sure you want to delete " + productName + "?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    buttonsStyling: false,
+                    confirmButtonText: "Yes, delete!",
+                    cancelButtonText: "No, cancel",
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-danger",
+                        cancelButton: "btn fw-bold btn-active-light-primary"
+                    }
+                }).then(function (result) {
+                    if (result.value) {
+                        Swal.fire({
+                            text: "You have deleted " + productName + "!.",
+                            icon: "success",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
+                        }).then(function () {
+                            // Remove current row
+                            dt.row($(parent)).remove().draw();
+                        });
+                    } else if (result.dismiss === 'cancel') {
+                        Swal.fire({
+                            text: productName + " was not deleted.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
+                        });
+                    }
+                });
+            })
+        });
+    }
+
+    // Public methods
+    return {
+        init: function () {
+            table = '#kt_ecommerce_products_table';
+            tableEl = document.querySelector(table);
+
+            initDatatable();
+            handleSearchDatatable();
+            handleStatusFilter();
+            handleDeleteRows();
+        }
+    };
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+    KTAppEcommerceProducts.init();
+});

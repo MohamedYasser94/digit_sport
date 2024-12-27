@@ -1576,6 +1576,17 @@ def AdminTeamsCreate(request,slug):
                   }
     return render(request, f'{BACKEND_TEMPLATES}/sport/teams/admin.html', context)
 
+@authenticated_staf
+@staff_only
+def AdminTeamSearch(request):
+    if request.method == "POST":
+        search = request.POST.get('search')
+        teams = Teams.objects.filter(name__icontains=search)
+
+        context = {'page_obj': teams, 'current_page': _('Teams')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/teams/monks.html', context)
+    else:
+        return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
 
 @authenticated_staf
 @staff_only
@@ -1594,21 +1605,17 @@ def AdminTeamsUpdate(request, slug):
             venue = request.POST.get('venue')
             gender = request.POST.get('gender')
             keyword = request.POST.get('keyword')
-
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             country_image = request.FILES.get('country_image')
             status = 'Active'
 
-
-
             try:
                 check_teams = Teams.objects.get(name=name,sport=sport).exclude(slug=slug)
                 messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+                # return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
             except:
                 pass
-
 
 
             if venue == None or venue == '':
@@ -1651,7 +1658,8 @@ def AdminTeamsUpdate(request, slug):
             team_object.save()
 
             messages.success(request, _("Teams Update Successfully"), extra_tags='Teams')
-            return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+            # return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+            return redirect(request.META.get('HTTP_REFERER'))
         else:
                 messages.error(request, _("Teams Not Update , Please Try Again"), extra_tags='Teams')
     context = {'team': team, 'teams_form': AdminTeamsForm(instance=team), 'current_page': _('Update'),

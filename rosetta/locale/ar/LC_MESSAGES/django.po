@@ -1,0 +1,329 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Rosetta\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 06:41+0200\n"
+"PO-Revision-Date: 2021-04-17 15:03+0300\n"
+"Last-Translator: Bashar Al-Abdulhadi <poedit@bashar.com>\n"
+"Language-Team: Arabic <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.6.7\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#: .\rosetta\templates\rosetta\admin_index.html:14
+#, fuzzy
+#| msgid "Translated only"
+msgid "Translations"
+msgstr "المترجم فقط"
+
+#: .\rosetta\templates\rosetta\admin_index.html:15
+msgid "Change"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\file-list.html:5
+#: .\rosetta\templates\rosetta\file-list.html:8
+msgid "Language selection"
+msgstr "اختيار اللغة"
+
+#: .\rosetta\templates\rosetta\file-list.html:8
+#: .\rosetta\templates\rosetta\oldform.html:18
+msgid "Home"
+msgstr "الرئيسية"
+
+#: .\rosetta\templates\rosetta\file-list.html:9
+msgid ""
+"Couldn't load the specified language file. This usually happens when using "
+"the Encrypted Cookies Session Storage backend on Django 1.4 or higher.<br/"
+">Setting ROSETTA_STORAGE_CLASS = 'rosetta.storage.CacheRosettaStorage' in "
+"your settings file should fix this."
+msgstr ""
+"تعذر تحميل ملف اللغة المحدد. يحدث هذا عادةً عند استخدام الواجهة الخلفية "
+"لتخزين جلسة ملفات تعريف الارتباط المشفرة على Django 1.4 أو أعلى. <br/> يجب "
+"تعيين ROSETTA_STORAGE_CLASS = 'rosetta.storage.CacheRosettaStorage' في ملف "
+"الإعدادات إلى إصلاح ذلك."
+
+#: .\rosetta\templates\rosetta\file-list.html:15
+msgid "Filter"
+msgstr "تصفية"
+
+#: .\rosetta\templates\rosetta\file-list.html:16
+msgid "Project"
+msgstr "مشروع"
+
+#: .\rosetta\templates\rosetta\file-list.html:17
+msgid "Third party"
+msgstr "طرف آخر"
+
+#: .\rosetta\templates\rosetta\file-list.html:19
+#: .\rosetta\templates\rosetta\oldform.html:41
+msgid "All"
+msgstr "الكل"
+
+#: .\rosetta\templates\rosetta\file-list.html:32
+msgid "Application"
+msgstr "التطبيق"
+
+#: .\rosetta\templates\rosetta\file-list.html:33
+msgid "Progress"
+msgstr "التقدّم"
+
+#: .\rosetta\templates\rosetta\file-list.html:34
+msgid "Messages"
+msgstr "الرسائل"
+
+#: .\rosetta\templates\rosetta\file-list.html:35
+msgid "Translated"
+msgstr "تم ترجمته"
+
+#: .\rosetta\templates\rosetta\file-list.html:36
+#: .\rosetta\templates\rosetta\oldform.html:75
+msgid "Fuzzy entries call for revision by the translator."
+msgstr ""
+
+#: .\rosetta\templates\rosetta\file-list.html:36
+#: .\rosetta\templates\rosetta\form.html:74
+#: .\rosetta\templates\rosetta\oldform.html:75
+msgid "Fuzzy"
+msgstr "غامض"
+
+#: .\rosetta\templates\rosetta\file-list.html:37
+msgid "Obsolete"
+msgstr "قديم"
+
+#: .\rosetta\templates\rosetta\file-list.html:38
+msgid "File"
+msgstr "ملف"
+
+#: .\rosetta\templates\rosetta\file-list.html:61
+msgid "Nothing to translate!"
+msgstr "لا يوجد شيء للترجمة!"
+
+#: .\rosetta\templates\rosetta\file-list.html:62
+msgid ""
+"You haven't specified any languages in your settings file, or haven't yet "
+"generated a batch of translation catalogs."
+msgstr ""
+"لم تحدد أي لغات في ملف الإعدادات الخاص بك ، أو لم تقم بعد بإنشاء مجموعة من "
+"كتالوجات الترجمة."
+
+# python-format
+#: .\rosetta\templates\rosetta\file-list.html:63
+#, python-format
+msgid ""
+"Please refer to <a href=\"%(i18n_doc_link)s\">Django's I18N documentation</"
+"a> for a guide on how to set up internationalization for your project."
+msgstr ""
+"يرجى الرجوع إلى <a href=\"%(i18n_doc_link)s\"> وثائق I18N الخاصة بجانغو </a> "
+"للحصول على دليل حول كيفية إعداد التدويل لمشروعك."
+
+#: .\rosetta\templates\rosetta\form.html:35
+#: .\rosetta\templates\rosetta\oldform.html:49
+msgid "Search"
+msgstr "بحث"
+
+#: .\rosetta\templates\rosetta\form.html:44
+msgid "Add User"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:71
+#: .\rosetta\templates\rosetta\oldform.html:72
+msgid "Original"
+msgstr "الأساسي"
+
+#: .\rosetta\templates\rosetta\form.html:72
+#: .\rosetta\templates\rosetta\form.html:73
+msgid "Arabic"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:75
+#: .\rosetta\templates\rosetta\form.html:324
+#: .\rosetta\templates\rosetta\form.html:328
+#: .\rosetta\templates\rosetta\form.html:330
+msgid "Access Level"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:134
+#: .\rosetta\templates\rosetta\oldform.html:145
+msgid "Save and translate next block"
+msgstr "حفظ وترجمة المجموعة التالية"
+
+#: .\rosetta\templates\rosetta\form.html:175
+#, fuzzy, python-format
+#| msgid "%(hits)s/%(message_number)s message"
+#| msgid_plural "%(hits)s/%(message_number)s messages"
+msgid ""
+"\n"
+"                                            %(hits)s/%(message_number)s "
+"message"
+msgid_plural ""
+"%(hits)s/\n"
+"                                            %(message_number)s messages"
+msgstr[0] "%(hits)s/%(message_number)s رسالة"
+msgstr[1] "%(hits)s/%(message_number)s رسائل"
+
+#: .\rosetta\templates\rosetta\form.html:230
+msgid "User"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:265
+#: .\rosetta\templates\rosetta\form.html:269
+msgid "First Name"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:279
+#: .\rosetta\templates\rosetta\form.html:283
+msgid "Last Name"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:294
+#: .\rosetta\templates\rosetta\form.html:298
+msgid "Email"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:308
+#: .\rosetta\templates\rosetta\form.html:312
+msgid "Phone"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:343
+#: .\rosetta\templates\rosetta\form.html:347
+#: .\rosetta\templates\rosetta\form.html:349
+msgid "Role Staff"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:366
+#: .\rosetta\templates\rosetta\form.html:370
+#: .\rosetta\templates\rosetta\form.html:372
+msgid "Role Admin"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:386
+#: .\rosetta\templates\rosetta\form.html:390
+#: .\rosetta\templates\rosetta\form.html:392
+msgid "Role Author"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:417
+msgid "Discard"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:421
+msgid "Submit"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\form.html:422
+msgid "Please wait..."
+msgstr ""
+
+#: .\rosetta\templates\rosetta\oldform.html:8
+msgid "Pick another file"
+msgstr "أختر ملف آخر"
+
+#: .\rosetta\templates\rosetta\oldform.html:9
+msgid "Download this catalog"
+msgstr "تحميل هذا الكتالوج"
+
+#: .\rosetta\templates\rosetta\oldform.html:21
+#, python-format
+msgid "Progress: %(percent_translated)s%%"
+msgstr "التقدّم: %(percent_translated)s%%"
+
+#: .\rosetta\templates\rosetta\oldform.html:23
+msgid "File is read-only: download the file when done editing!"
+msgstr "الملف للقراءة فقط: قم بتنزيل الملف عند الانتهاء من التحرير!"
+
+#: .\rosetta\templates\rosetta\oldform.html:34
+#, python-format
+msgid "Translate into %(rosetta_i18n_lang_name)s"
+msgstr "الترجمة لـ %(rosetta_i18n_lang_name)s"
+
+#: .\rosetta\templates\rosetta\oldform.html:37
+msgid "Display:"
+msgstr "عرض:"
+
+#: .\rosetta\templates\rosetta\oldform.html:38
+msgid "Untranslated only"
+msgstr "غير مترجم فقط"
+
+#: .\rosetta\templates\rosetta\oldform.html:39
+msgid "Translated only"
+msgstr "المترجم فقط"
+
+#: .\rosetta\templates\rosetta\oldform.html:40
+msgid "Fuzzy only"
+msgstr "الغامض فقط"
+
+#: .\rosetta\templates\rosetta\oldform.html:51
+msgid "Go"
+msgstr "أذهب"
+
+#: .\rosetta\templates\rosetta\oldform.html:58
+msgid "Reference language"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\oldform.html:76
+msgid "Occurrences(s)"
+msgstr "المرات"
+
+#: .\rosetta\templates\rosetta\oldform.html:92
+#: .\rosetta\templates\rosetta\oldform.html:107
+msgid "Unmatched variables"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\oldform.html:94
+#: .\rosetta\templates\rosetta\oldform.html:109
+msgid "suggest"
+msgstr "اقترح"
+
+#: .\rosetta\templates\rosetta\oldform.html:121
+msgid "Show less"
+msgstr ""
+
+#: .\rosetta\templates\rosetta\oldform.html:121
+#, python-format
+msgid "%(more_count)s more"
+msgid_plural "%(more_count)s more"
+msgstr[0] "%(more_count)s أكثر"
+msgstr[1] "%(more_count)s أكثر"
+
+#: .\rosetta\templates\rosetta\oldform.html:125
+msgid "Context hint"
+msgstr "تلميح السياق"
+
+#: .\rosetta\templates\rosetta\oldform.html:149
+msgid "Skip to page:"
+msgstr "انتقل إلى الصفحة:"
+
+#: .\rosetta\templates\rosetta\oldform.html:162
+msgid "Displaying:"
+msgstr "عرض:"
+
+#: .\rosetta\templates\rosetta\oldform.html:166
+#, python-format
+msgid "%(hits)s/%(message_number)s message"
+msgid_plural "%(hits)s/%(message_number)s messages"
+msgstr[0] "%(hits)s/%(message_number)s رسالة"
+msgstr[1] "%(hits)s/%(message_number)s رسائل"
+
+#: .\rosetta\views.py:353
+msgid ""
+"Some items in your last translation block couldn't be saved: this usually "
+"happens when the catalog file changes on disk after you last loaded it."
+msgstr ""
+"تعذر حفظ بعض العناصر الموجودة في كتلة الترجمة الأخيرة: يحدث هذا عادةً عندما "
+"يتغير ملف الكتالوج على القرص بعد آخر تحميل له."
+
+#~ msgid "English"
+#~ msgstr "Anglais"
+
+#~ msgid "Both"
+#~ msgstr "Les deux"

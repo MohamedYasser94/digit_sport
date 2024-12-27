@@ -58,12 +58,14 @@
 														</th>
 														<th class="min-w-20px">{% translate '#' %}</th>
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
+                                  <th class="min-w-125px">{% translate 'Name Arabic' %}</th>
                                     <th class="min-w-125px">{% translate 'Code' %}</th>
                                     <th class="min-w-125px">{% translate 'Founded' %}</th>
                                     <th class="min-w-125px">{% translate 'Players' %}</th>
                                     <th class="min-w-125px">{% translate 'Club' %}</th>
                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
                                     <th class="min-w-125px">{% translate 'Image' %}</th>
+                                                         <th class="min-w-125px">{% translate 'Country' %}</th>
                                     <th class="min-w-125px">{% translate 'Country Image' %}</th>
                                     <th class="min-w-125px">{% translate 'Status' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
@@ -71,7 +73,7 @@
 												</thead>
 												<tbody class="fw-semibold text-gray-600">
                                                      {% for item in teams %}
-                                    <tr>
+                                <tr>
                                         <!--begin::Checkbox-->
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -88,7 +90,15 @@
                                         <td>
                                             <a
                                                     class="text-gray-800 text-hover-primary mb-1">
-                                                {{ item.name }}-{{ item.sport.name }}
+                                                {{ item.name }}
+                                            </a>
+                                        </td>
+                                        <!--end::Name=-->
+                                     <!--begin::Name=-->
+                                        <td>
+                                            <a
+                                                    class="text-gray-800 text-hover-primary mb-1">
+                                                {{ item.name_tr }}
                                             </a>
                                         </td>
                                         <!--end::Name=-->
@@ -157,15 +167,23 @@
                                         <!--end::Email=-->
                                     <!--begin::Email=-->
                                         <td>
+                                            <a href="#"
+                                               class="text-gray-600 text-hover-primary mb-1">
+                                                {{ item.country }}
+                                            </a>
+                                        </td>
+                                        <!--end::Email=-->
+                                    <!--begin::Email=-->
+                                        <td>
                                             <div class="d-flex align-items-center">
                                                 <!--begin::Thumbnail-->
                                                 <a class="symbol symbol-50px">
-                                                    {% if item.country_image %}
+
                                                         <span class="symbol-label"
-                                                              style="background-image:url({{ item.country_image.url }});"></span>
+                                                              style="background-image:url({{ item.country_image }});"></span>
 
 
-                                                    {% endif %}
+
 
                                                 </a>
                                                 <!--end::Thumbnail-->

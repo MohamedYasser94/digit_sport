@@ -631,10 +631,10 @@ def AdminMonksVenuesGetData(request):
 
 def AdminMonksTeamsList(request):
     sport = Sport.objects.get(name='football')
-    teams = Teams.objects.filter(sport=sport).order_by('name')
+    teams = Teams.objects.filter(sport=sport).order_by('country')
 
     # Create a Paginator instance, specifying the number of objects per page
-    paginator = Paginator(teams, 10)  # 10 objects per page
+    paginator = Paginator(teams, 100)  # 10 objects per page
 
     # Get the current page number from the GET query string
     page_number = request.GET.get('page')
@@ -707,17 +707,14 @@ def AdminMonksTeamsGetData(request):
                             currentseason = None
 
                         try:
-                            check_teams = Teams.objects.get(name=data['name'])
+                            check_teams = Teams.objects.get(api_id=data['id'])
                             check_teams.api_id = data['id']
                             check_teams.name = data['name']
-                            check_teams.name_tr = data['name']
-
                             check_teams.short_code = data['short_code']
                             check_teams.api_country = data['country_id']
                             check_teams.api_venue = data['venue_id']
                             check_teams.sport = sport_id
                             check_teams.gender = data['gender']
-                            check_teams.image_path = data['image_path']
                             check_teams.founded = data['founded']
                             check_teams.type = data['type']
                             check_teams.placeholder = data['placeholder']
@@ -725,7 +722,7 @@ def AdminMonksTeamsGetData(request):
                             check_teams.country = country
                             check_teams.country_image = country_image
                             check_teams.keyword = data
-                            check_teams.save()
+                            # check_teams.save()
                         except:
                             teams_object = Teams(api_id=data['id'], name=data['name'],name_tr=data['name'],
                                                  short_code=data['short_code'],api_country=data['country_id'], api_venue=data['venue_id'],

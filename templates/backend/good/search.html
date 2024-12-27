@@ -26,8 +26,9 @@
                         </div>
                         <!--end::Tablet and mobile search toggle-->
                         <!--begin::Form(use d-none d-lg-block classes for responsive search)-->
-                        <form data-kt-search-element="form"
+                        <form data-kt-search-element="form" action="{% url 'sport:AdminTeamSearch' %}" method="post"
                               class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0" autocomplete="off">
+                            {% csrf_token %}
                             <!--begin::Hidden input(Added to disable form autocomplete)-->
                             <input type="hidden"/>
                             <!--end::Hidden input-->

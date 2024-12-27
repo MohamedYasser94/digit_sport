@@ -18,6 +18,7 @@ from typing import List
 
 import environ
 import firebase_admin
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.contrib import messages
 from django.contrib.messages import constants as message_constants
@@ -71,30 +72,60 @@ THIRD_PARTY_APPS = [
     'django_otp.plugins.otp_email',  # <- if you want email capability.
     'two_factor', 'two_factor.plugins.phonenumber',  # <- if you want phone number capability.
     'two_factor.plugins.email',  # <- if you want email capability.
-    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook', 'fcm_django',
+    'allauth', 'allauth.account', 'allauth.socialaccount', 'allauth.socialaccount.providers.facebook', 'fcm_django', 'rosetta',
 
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS + OWN_APPS
 
-MIDDLEWARE = ['django.middleware.common.CommonMiddleware', 'django.middleware.security.SecurityMiddleware',
-              'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware',
-              'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+              'django.middleware.security.SecurityMiddleware',
+              'django.contrib.sessions.middleware.SessionMiddleware',
+              'django.middleware.common.CommonMiddleware',
+              'django.middleware.csrf.CsrfViewMiddleware',
+              'django.contrib.auth.middleware.AuthenticationMiddleware',
               'django.contrib.messages.middleware.MessageMiddleware',
-              'django.middleware.clickjacking.XFrameOptionsMiddleware', 'django.middleware.locale.LocaleMiddleware',
+              'django.middleware.clickjacking.XFrameOptionsMiddleware',
+              'django.middleware.locale.LocaleMiddleware',
               'social_django.middleware.SocialAuthExceptionMiddleware',
               'django_user_agents.middleware.UserAgentMiddleware',
-              'django.contrib.auth.middleware.AuthenticationMiddleware', 'django_otp.middleware.OTPMiddleware',
-              'corsheaders.middleware.CorsMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',
-              'django_otp.middleware.OTPMiddleware', 'allauth.account.middleware.AccountMiddleware',
+              'django.contrib.auth.middleware.AuthenticationMiddleware',
+              'django_otp.middleware.OTPMiddleware',
+
+              'django.contrib.auth.middleware.AuthenticationMiddleware',
+              'django_otp.middleware.OTPMiddleware',
+              'allauth.account.middleware.AccountMiddleware',
 
               ]
+ORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com","https://www.jawlasp.com",
+                        "https://api.jawlasp.com",  "https://www.api.jawlasp.com",
+                         ]
+ACCESS_CONTROL_ALLOW_ORIGIN = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com","https://www.jawlasp.com",
+                        "https://api.jawlasp.com",  "https://www.api.jawlasp.com",
+                         ]
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+CORS_ALLOW_HEADERS = [ "accept", "accept-encoding", "authorization", "content-type", "dnt", "origin", "user-agent", "x-csrftoken", "x-requested-with", ]
+
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SESSION_COOKIE_AGE = 60 * 60
-CORS_ORIGIN_ALLOW_ALL = True
-SRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
+# SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+
 
 ROOT_URLCONF = 'digit_sport.urls'
 DJANGO_NOTIFICATIONS_CONFIG = {'USE_JSONFIELD': True}
@@ -171,9 +202,7 @@ gettext = lambda s: s
 MODELTRANSLATION_LANGUAGES = ('ar', 'en',)
 LANGUAGE_SESSION_KEY = 'lang'
 
-LANGUAGES = (('ar', _('Arabic')), ('en', _('English')),
-
-             )
+LANGUAGES = (('ar', _('Arabic')), ('en', _('English')),)
 LANGUAGE_COOKIE_NAME = 'django_language'
 ALLOW_UNICODE_SLUGS = True
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
@@ -193,11 +222,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "upload")
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 # GULP_CWD = os.path.join(BASE_DIR, 'static')
 CORS_ORIGIN_ALLOW_ALL = True
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 
 # CSRF_COOKIE_DOMAIN = ['http://lawyer.digithub.site']
 # CSRF_TRUSTED_ORIGINS = ['http://lawyer.digithub.site']
 # CSRF_COOKIE_SECURE = False
 # CSRF_COOKIE_HTTPONLY = False
+# SRF_COOKIE_SECURE = True
+
 
 ############  Cart ########
 CART_SESSION_ID = 'cart'
@@ -270,7 +303,7 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
 REST_FRAMEWORK = {'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-                  'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler.custom_exception_handler',
+                  'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
                   'NON_FIELD_ERRORS_KEY': 'error',
                   'DEFAULT_AUTHENTICATION_CLASSES': [  # 'rest_framework.authentication.SessionAuthentication',
                       'rest_framework.authentication.BasicAuthentication', ],
@@ -294,10 +327,6 @@ SIMPLE_JWT = {'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20), 'REFRESH_TOKEN_LIF
 
 PASSWORD_RESET_TIMEOUT = 900  # 900 Sec = 15 Min
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com",
-                        "https://himediakw.net",
-
-                        "http://localhost:56630", ]
 DJANGO_REST_JWT_REGISTRATION = {  # Optional - in the form of `app_name.module_name.class_name`
     'CREATE_USER_SERIALIZER': 'core.serializers.CreateUserSerializer',  # Optional
     'REGISTRATION_TOKEN_LIFETIME': int(os.getenv('REGISTRATION_TOKEN_LIFETIME', '3600')),  # Optional
