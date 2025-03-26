@@ -543,3 +543,23 @@ def SportTeamsPlayersApiDetails(request,team_id):
         sport_data = {'team':team_id, 'players': [], }
         data = {'success': success, 'data': sport_data, 'message': message, }
         return JsonResponse(data, safe=False,status=200)
+
+
+
+def SportPlayersApiDetails(request,player_id):
+    try:
+        players_list = Players.objects.filter(id=player_id)
+        success = True
+        message = f"Send From Django API mix {player_id} "
+        players_serializer = PlayersSerializer(players_list, many=True, context={'request': request})
+        sport_data = {'players': players_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False,status=200)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'players': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False,status=200)
