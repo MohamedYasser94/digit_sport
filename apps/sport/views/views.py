@@ -1984,8 +1984,11 @@ def AdminPlayersList(request):
                 name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
                 gender=gender,keyword=keyword,image=image,image_path=image_path)
             player_object.save()
-            team.player_count += 1
-            team.save()
+            try:
+               team.player_count += 1
+               team.save()
+            except:
+               pass
             # match_team_player_object = MatchTeamPlayer( team=team, player=player_object)
             # match_team_player_object.save()
             messages.success(request, _("Players Add Successfully"), extra_tags='Players')

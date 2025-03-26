@@ -522,3 +522,24 @@ def SportTablesApiList(request, group):
         sport_data = {'sport': 'volleyball', 'table': [], }
         data = {'success': success, 'data': sport_data, 'message': message, }
         return JsonResponse(data, safe=False)
+
+
+def SportTeamsPlayersApiDetails(request,team_id):
+    try:
+        team = Teams.objects.get(id=team_id)
+        # players_list = Players.objects.filter(team=team.id)
+        players_list = Players.objects.all()
+        success = True
+        message = f"Send From Django API mix {team_id} "
+        players_serializer = PlayersSerializer(players_list, many=True, context={'request': request})
+        sport_data = {'team': team.name, 'players': players_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False,status=200)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'team':team_id, 'players': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False,status=200)
