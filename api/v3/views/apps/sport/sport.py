@@ -528,14 +528,16 @@ def SportTeamsPlayersApiDetails(request,team_id,league_id):
     try:
         team = Teams.objects.get(id=team_id)
         league = Leagues.objects.get(id=league_id)
-        # players_list = Players.objects.filter(team=team.id)
+
+
+
         players_list = Players.objects.filter(team=team.id, league=league.id).order_by('name')
         success = True
-        message = f"Send From Django API mix {team_id} "
+        message = f"Send From Django API mix {team_id}// {league_id} "
         players_serializer = PlayersSerializer(players_list, many=True, context={'request': request})
         sport_data = {'team': team.name, 'players': players_serializer.data, }
 
-        data = {'success': success, 'data': sport_data, 'message': message, }
+        data = {'success': success,'message': message, 'data': sport_data,  }
 
         return JsonResponse(data, safe=False,status=200)
     except Exception as e:

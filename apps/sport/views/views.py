@@ -1995,9 +1995,13 @@ def AdminPlayersList(request):
                 gender=gender,keyword=keyword,image=image,image_path=image_path)
             player_object.save()
             for league in leagues:
-                print('league', league ,leagues)
-                league_object = Leagues.objects.get(id=league)
-                player_object.league.add(league_object)
+                print('league', league, leagues)
+                try:
+                    league_object = Leagues.objects.get(id=league)
+                    player_object.league.add(league_object)
+                    player_object.save()
+                except:
+                    pass
             try:
                team.player_count += 1
                team.save()
