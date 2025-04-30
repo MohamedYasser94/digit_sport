@@ -805,6 +805,7 @@ class  Players(models.Model):
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
     team = models.ForeignKey(Teams , on_delete=models.CASCADE, null=True, blank=True)
+    league = models.ManyToManyField(Leagues, related_name='league_player', blank=True)
     common_name = models.CharField(max_length=100, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
@@ -815,6 +816,7 @@ class  Players(models.Model):
     keyword = models.TextField(null=True,blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_player', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    country_image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     api_country = models.CharField(max_length=100, null=True, blank=True)
     api_nationality = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
@@ -848,6 +850,17 @@ class  Players(models.Model):
     class Meta:
         # ordering = ('name',)
         verbose_name = 'player'  # verbose_name_plural = 'categories'
+
+    def get_image(self):
+        try:
+            return self.image.url
+        except:
+            return None
+    def get_country_image(self):
+        try:
+            return self.country_image.url
+        except:
+            return None
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:

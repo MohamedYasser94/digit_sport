@@ -1708,24 +1708,26 @@ def AdminTeamPlayerList(request, slug):
             age = request.POST.get('age')
             height = request.POST.get('height')
             country = request.POST.get('country')
+            country_image = request.FILES.get('country_image')
             # team = request.POST.get('team')
-            sport = request.POST.get('sport')
-            gender = request.POST.get('gender')
+            # sport = request.POST.get('sport')
+            # gender = request.POST.get('gender')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             keyword = request.POST.get('keyword')
 
-            if sport == None or sport == '':
-                sport = None
-            else:
-                sport = Sport.objects.get(id=sport)
+
+
 
 
             team = Teams.objects.get(id=team.id)
+            sport = Sport.objects.get(id=team.sport.id)
+            gender = team.gender
             in_team = 'Yes'
 
             player_object = Players(
-                name=name, position=position, age=age, height=height, country=country, team=team, sport=sport,
+                name=name, position=position, age=age, height=height, country=country,country_image=country_image,
+                team=team, sport=sport,
                 in_team=in_team,
                 gender=gender, keyword=keyword, image=image, image_path=image_path)
             player_object.save()
@@ -1959,9 +1961,12 @@ def AdminPlayersList(request):
             name = request.POST.get('name')
             position = request.POST.get('position')
             age = request.POST.get('age')
+            birthdate = request.POST.get('birthdate')
+            status = request.POST.get('status')
             height = request.POST.get('height')
             country = request.POST.get('country')
             team = request.POST.get('team')
+            leagues = request.POST.getlist('leagues')
             sport = request.POST.get('sport')
             gender = request.POST.get('gender')
             image = request.FILES.get('image')
@@ -1980,10 +1985,19 @@ def AdminPlayersList(request):
                 team = Teams.objects.get(id=team)
                 in_team = 'Yes'
 
+            # if league == None or league == '':
+            #     league = None
+            # else:
+            #     league = Leagues.objects.get(id=league)
+
             player_object = Players(
                 name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
                 gender=gender,keyword=keyword,image=image,image_path=image_path)
             player_object.save()
+            for league in leagues:
+                print('league', league ,leagues)
+                league_object = Leagues.objects.get(id=league)
+                player_object.league.add(league_object)
             try:
                team.player_count += 1
                team.save()
@@ -2018,15 +2032,20 @@ def AdminPlayersUpdate(request, slug):
             name = request.POST.get('name')
             short_code = request.POST.get('short_code')
             age = request.POST.get('age')
+            birthdate = request.POST.get('birthdate')
+            status = request.POST.get('status')
             height = request.POST.get('height')
             t_team = request.POST.get('t_team')
             position = request.POST.get('position')
             country = request.POST.get('country')
+            team = request.POST.get('team')
+            leagues = request.POST.getlist('leagues')
             sport = request.POST.get('sport')
             gender = request.POST.get('gender')
             nationality = request.POST.get('nationality')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
+            country_image = request.FILES.get('country_image')
             keyword = request.POST.get('keyword')
 
             if sport == None or sport == '':
@@ -2040,18 +2059,33 @@ def AdminPlayersUpdate(request, slug):
                 t_team = Teams.objects.get(id=t_team)
                 in_team = 'Yes'
 
+            if team == None or team == '':
+                team = None
+            else:
+                team = Teams.objects.get(id=team)
+
+
+
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
             player_object.short_code = short_code
+            player_object.birthdate = birthdate
+            player_object.status = status
             player_object.age = age
             player_object.height = height
             player_object.sport = sport
             player_object.country = country
+            player_object.team = team
+
             player_object.nationality =nationality
             if image == None or image == '':
                 player_object.image = player.image
             else:
                 player_object.image = image
+            if country_image == None or country_image == '':
+                player_object.country_image = player.country_image
+            else:
+                player_object.country_image = country_image
             player_object.image_path = image_path
             player_object.gender = gender
             player_object.keyword = keyword
@@ -2060,12 +2094,31 @@ def AdminPlayersUpdate(request, slug):
             player_object.position = position
             player_object.save()
             date = datetime.now()
+            try:
+                for league_object in player_object.league.all():
+                    player_object.league.remove(league_object)
+                    player_object.save()
+            except:
+                pass
+            for league in leagues:
+                print('league', league ,leagues)
+                #remove old league
 
-            transfer_object = Transfers(player=player_object, date=date, position=position,
-                                         to_team=t_team)
-            transfer_object.save()
-            t_team.player_count += 1
-            t_team.save()
+                try:
+                   league_object = Leagues.objects.get(id=league)
+                   player_object.league.add(league_object)
+                   player_object.save()
+                except:
+                   pass
+
+            try:
+                transfer_object = Transfers(player=player_object, date=date, position=position,
+                                            to_team=t_team)
+                transfer_object.save()
+                t_team.player_count += 1
+                t_team.save()
+            except:
+                pass
 
 
             messages.success(request, _("Players Update Successfully"), extra_tags='Players')

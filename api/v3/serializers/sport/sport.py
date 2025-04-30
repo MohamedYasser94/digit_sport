@@ -210,9 +210,8 @@ class SchedulesSerializer(serializers.ModelSerializer):
 
 
 class PlayersSerializer(serializers.ModelSerializer):
-    team = serializers.ReadOnlyField(source='team.name')
+    team = serializers.SerializerMethodField()
     sport = serializers.ReadOnlyField(source='sport.name')
-    image = serializers.SerializerMethodField()
     match_report = serializers.SerializerMethodField()
 
     player_statics = serializers.SerializerMethodField()
@@ -220,13 +219,15 @@ class PlayersSerializer(serializers.ModelSerializer):
         model = Players
         fields = '__all__'
 
-    def get_image(self, obj):
+    def get_team(self, obj):
         try:
-            image = 'https://api.jawlasp.com' + str(obj.image.url)
-            return image
-        except:
-            image = None
-            return image
+            team = TeamsSerializer(Teams.objects.get(id=obj.team.id, ), many=False , context={'request': self.context['request']}).data
+            return team
+        except Teams.DoesNotExist:
+            team = None
+            return team
+
+
 
     def get_match_report(self, obj):
        try:

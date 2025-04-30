@@ -87,6 +87,61 @@
                                 <div class="d-flex flex-column flex-md-row gap-5">
                                     <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Birth Date' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="birthdate" type="date"
+                                               placeholder="{% translate 'Birth Date' %}"
+                                               value="{{ player.birthdate|date:'Y-m-d' }}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'Status' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                       <select name="status" aria-label="{% translate 'Status' %}"
+                                                data-control="select2"
+
+                                                class="form-select form-select-solid form-select-lg">
+                                            <option value="{{ player.status }}">{{ player.status }}</option>
+                                            {% for value, text in players_form.status.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="form-label">{% translate 'League' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                       <select name="leagues" aria-label="{% translate 'League' %}"
+                                                data-control="select2" multiple
+
+                                                class="form-select form-select-solid form-select-lg">
+
+                                            {% for item in player.league.all %}
+                                                <option selected value="{{ item.id }}">{{ item.name }}</option>
+                                            {% endfor %}
+
+                                            {% for value, text in players_form.league.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                             <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-5">
+                                    <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Team' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
@@ -195,15 +250,18 @@
                                         <input class="form-control" type="file" accept="image/*" name="image"
 
                                               />
+                                        <img src="{{ player.get_image }}" style="height: 40px; width: 40px;"/>
                                         <!--end::Input-->
                                     </div>
                                         <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Image Url' %}</label>
+                                        <label class="required form-label">{% translate 'Country Image' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input class="form-control" type="url"  name="image_url" value="{{ player.image_url }}"
-                                               placeholder="{% translate 'Image Url' %}"/>
+                                         <input class="form-control" type="file" accept="image/*" name="country_image"
+
+                                              />
+                                            <img src="{{ player.get_country_image }}" style="height: 40px; width: 40px;"/>
 
 
                                         <!--end::Input-->

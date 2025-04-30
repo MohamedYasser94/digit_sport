@@ -524,11 +524,12 @@ def SportTablesApiList(request, group):
         return JsonResponse(data, safe=False)
 
 
-def SportTeamsPlayersApiDetails(request,team_id):
+def SportTeamsPlayersApiDetails(request,team_id,league_id):
     try:
         team = Teams.objects.get(id=team_id)
+        league = Leagues.objects.get(id=league_id)
         # players_list = Players.objects.filter(team=team.id)
-        players_list = Players.objects.all()
+        players_list = Players.objects.filter(team=team.id, league=league.id).order_by('name')
         success = True
         message = f"Send From Django API mix {team_id} "
         players_serializer = PlayersSerializer(players_list, many=True, context={'request': request})
