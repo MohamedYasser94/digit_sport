@@ -5,7 +5,7 @@ import xlwt
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
+
 
 from helper.decorators import authenticated_staf, staff_only
 

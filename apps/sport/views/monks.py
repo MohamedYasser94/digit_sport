@@ -2,6 +2,7 @@ import requests
 from django.contrib import messages
 from django.contrib.admin.templatetags.admin_list import pagination
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -722,16 +723,32 @@ def AdminMonksTeamsGetData(request):
                             check_teams.country = country
                             check_teams.country_image = country_image
                             check_teams.keyword = data
-                            # check_teams.save()
+                            check_teams.save()
                         except:
-                            teams_object = Teams(api_id=data['id'], name=data['name'],name_tr=data['name'],
-                                                 short_code=data['short_code'],api_country=data['country_id'], api_venue=data['venue_id'],
-                                                sport=sport_id,gender=data['gender'],image_path=data['image_path'],
-                                                    founded=data['founded'],type=data['type'],placeholder=data['placeholder'],
-                                                    last_played_at=data['last_played_at'],country=country,country_image=country_image,
-                                                 keyword=data
-                                                 )
-                            teams_object.save()
+                            try:
+                                teams_object = Teams(api_id=data['id'], name=data['name'], name_tr=data['name'],
+                                                     short_code=data['short_code'], api_country=data['country_id'],
+                                                     api_venue=data['venue_id'],
+                                                     sport=sport_id, gender=data['gender'],
+                                                     image_path=data['image_path'],
+                                                     founded=data['founded'], type=data['type'],
+                                                     placeholder=data['placeholder'],
+                                                     last_played_at=data['last_played_at'], country=country,
+                                                     country_image=country_image,
+                                                     keyword=data
+                                                     )
+                                teams_object.save()
+                            except IntegrityError:
+                                # If the team already exists, update the existing record
+                                teams_object.code = None
+                                teams_object.slug = None
+                                teams_object.save()
+
+
+
+
+
+
                     data = {'type': 'Success', 'message': 'Data Add Successfully'}
                 else:
                     data = {'type': 'Error', 'message': f'Data Not Add Successfully Response Code {response.status_code} '}

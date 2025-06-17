@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import datetime
 import os
 from datetime import timedelta
+from logging import FileHandler
 from pathlib import Path
 from typing import List
 
@@ -44,7 +45,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.35', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.36', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
 
 # Application definition
 
@@ -496,3 +497,13 @@ SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
 # To learn more, visit the docs here:
 # https://cloud.google.com/docs/authentication/getting-started>
 # Firebase Configuration
+
+############## Logging Configuration ##############
+LOGGING = {'version': 1, 'disable_existing_loggers': False, 'formatters': {
+    'standard': {'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+        'datefmt': '%d/%b/%Y %H:%M:%S'}, },
+    'handlers': {'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'standard', },
+        'file': {'level': 'DEBUG', 'class': 'logging.FileHandler', 'filename': 'debug.log',
+            'formatter': 'standard', }, },
+    'loggers': {'': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True, },
+        'django': {'handlers': ['console'], 'level': 'INFO', 'propagate': True, }, }, }

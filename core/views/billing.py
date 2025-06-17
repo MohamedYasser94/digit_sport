@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
-from weasyprint import HTML
+
 import tempfile
 from core.models.billing import Billing, Invoice, Purchase, PurchaseItem
 from core.models.core import CommonMediaFiles, CommonProfile
