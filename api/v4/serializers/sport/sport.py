@@ -111,7 +111,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Match.objects.select_related(
         'league', 'home_team', 'away_team'
-    ).order_by('match_time')
+    ).order_by('start_time')
     serializer_class = MatchSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
 

@@ -45,7 +45,7 @@ urlpatterns = [path('i18n/', include('django.conf.urls.i18n')),
                path('dj-rest-auth/', include('dj_rest_auth.urls')),
                path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
                path('', include(tf_urls)),
-               path('api/', include('api.v3.urls', namespace='APIV3')),
+               path('api/', include('api.v4.urls', namespace='APIV3')),
 
 
                ]
