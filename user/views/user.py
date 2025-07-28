@@ -35,7 +35,7 @@ from django.views.generic import FormView, TemplateView
 
 from core.forms.users import  PasswordResetForm, SetPasswordForm
 from core.models.core import SystemSetting
-from core.models.subscriptions import Subscription, Membership, Coupon
+
 from helper.commonHelper import FRONTEND_TEMPLATES, FRONTEND_TEMPLATES, BACKEND_TEMPLATES
 from helper.decorators import unauthenticated_user
 from user.forms.forms import UserSignUpForm, ResendActivationEmailForm, UserLoginForm
@@ -111,47 +111,6 @@ def CustomerRegister(request):
     return render(request, f'{BACKEND_TEMPLATES}/login/CustomerRegister.html', context)
 
 
-def user_membership(request, user):
-    system_setting = SystemSetting.objects.get(title='Digithup')
-    print('membership', 1)
-    print('membership user', user)
-
-    try:
-        Group.objects.get_or_create(name='Membership')
-        membership = Membership.objects.get(membership_type='Free')
-        membership_user = User.objects.get(id=user)
-        start_date = datetime.now()
-        end_date = datetime.now() + timedelta(days=membership.duration)
-        status = 'Active'
-        subscription_object = Subscription(sender_model=ContentType.objects.get(model='User'),
-                                           sender_id=request.user.id,
-                                           owner_model=ContentType.objects.get(model='User'), owner_id=user,
-                                           membership=membership, start_date=start_date, end_date=end_date,
-                                           expires=end_date, status=status)
-        subscription_object.save()
-
-        group = Group.objects.get(name='Membership')
-        group.user_set.add(membership_user.id)
-        current_site = get_current_site(request)
-        mail_subject = 'Activate your account.'
-        message = get_template(f'{FRONTEND_TEMPLATES}/login/UserActiveEmailMessage.html').render(
-            {'user': membership_user, 'domain': current_site.domain,
-             'uid': urlsafe_base64_encode(force_bytes(membership_user)),
-             'token': default_token_generator.make_token(membership_user)})
-
-        to_email = membership_user.email
-        email = EmailMessage(mail_subject, message, to=[to_email])
-        email.content_subtype = 'html'
-        if system_setting.registration == 'NeedActive':
-            email.send()
-    except Exception as e:
-
-        print('membership ', e)
-        user = User.objects.get(id=user)
-        user.delete()
-        if e:
-            messages.error(request, _('Something Wrong Please Try Again'), extra_tags='Member ship')
-            return render(request, f'{FRONTEND_TEMPLATES}/login/CustomerRegister.html')
 
 
 @csrf_protect
@@ -239,17 +198,7 @@ def UserLogout(request):
     return redirect('home:HomeIndex')
 
 
-def user_subscribe(request, user):
-    if user.is_authenticated:
-        if subscription := Subscription.objects.get(user_membership__user=request.user.id):
-            expires = subscription.expires_in
-            utc = pytz.UTC
-            print('expires', expires)
-            if expires < datetime.now(utc):
-                subscription.active = False
-                subscription.save()
-                user.subscribe = False
-                user.save()
+
 
 
 def resend_activation_email(request):

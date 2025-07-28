@@ -1,21 +1,7 @@
-from datetime import datetime
-
-import requests
 from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from api.v3.serializers.sport.media import AdminYoutubeChannelSerializer
-from api.v3.serializers.sport.monk import *
-from api.v3.serializers.sport.sport import *
 from apps.sport.models import YoutubeChannel
-from apps.sport.models.models import *
-from apps.sport.models.monks import *
-from apps.sport.views.monks import AdminMonksFixturesGetData
-from core.models.blog import BlogArticle, BlogVideo
-from core.utils.pagination import PageNumberPagination
-from core.views.notifications import AdminFcmNotifications
 from digit_sport import settings
 
 api_key = settings.SPORT_MONKS_TOKEN

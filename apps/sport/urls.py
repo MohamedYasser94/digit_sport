@@ -30,7 +30,7 @@ urlpatterns = [
     path('season/archive/<slug:slug>/', views.AdminSeasonArchive, name='AdminSeasonArchive'),
     path('season/delete/<slug:slug>/', views.AdminSeasonDelete, name='AdminSeasonDelete'),
     path('season/match/<slug:slug>/', views.AdminMatchBySeason, name='AdminMatchBySeason'),
-    path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
+    # path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
 
     ##########   Group #########
     path('group/', views.AdminGroupList, name='AdminGroupList'),
@@ -46,7 +46,7 @@ urlpatterns = [
     path('round/update/<slug:slug>/', views.AdminRoundUpdate, name='AdminRoundUpdate'),
     path('round/archive/<slug:slug>/', views.AdminRoundArchive, name='AdminRoundArchive'),
     path('round/delete/<slug:slug>/', views.AdminRoundDelete, name='AdminRoundDelete'),
-    path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
+    # path('monk/round/api/get/', monks.AdminMonksRoundGetData, name='AdminMonksRoundGetData'),
 
 ##########  League Sport Season Table  #########
     path('season/league/table/', views.AdminSeasonLeagueTableList, name='AdminSeasonLeagueTableList'),
@@ -63,7 +63,7 @@ urlpatterns = [
 
     ##########   Stages  #########
     path('stages/', views.AdminStagesList, name='AdminStagesList'),
-    path('monk/stages/api/get/', monks.AdminMonksStagesGetData, name='AdminMonksStagesGetData'),
+    # path('monk/stages/api/get/', monks.AdminMonksStagesGetData, name='AdminMonksStagesGetData'),
 
 
     ##########   Clubs  #########
@@ -77,7 +77,7 @@ urlpatterns = [
     path('venues/update/<slug:slug>/', views.AdminVenuesUpdate, name='AdminVenuesUpdate'),
     path('venues/archive/<slug:slug>/', views.AdminVenuesArchive, name='AdminVenuesArchive'),
     path('venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
-    path('monk/venues/api/get/', monks.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
+    # path('monk/venues/api/get/', monks.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
 
     ##########   Team  #########
     path('team/', views.AdminTeamsList, name='AdminTeamsList'),
@@ -86,7 +86,7 @@ urlpatterns = [
     path('team/update/<slug:slug>/', views.AdminTeamsUpdate, name='AdminTeamsUpdate'),
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
-    path('monk/teams/list/', monks.AdminMonksTeamsList, name='AdminMonksTeamsList'),
+    # path('monk/teams/list/', monks.AdminMonksTeamsList, name='AdminMonksTeamsList'),
     path('monk/teams/api/get/', monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
     path('team/playr/list/<slug:slug>/', views.AdminTeamPlayerList, name='AdminTeamPlayerList'),
     path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd, name='AdminTeamPlayerAdd'),
@@ -113,7 +113,9 @@ urlpatterns = [
     path('match/summary/add/<slug:slug>/', views.AdminMatchSummaryAdd, name='AdminMatchSummaryAdd'),
     path('match/static/add/<slug:slug>/', views.AdminMatchStaticAdd, name='AdminMatchStaticAdd'),
 
+
     path('match/goals/add/<slug:slug>/', views.AdminMatchGoalsAdd, name='AdminMatchGoalsAdd'),
+    path('monk/match/api/get/', monks.AdminMonksFixturesGetData, name='AdminMonksFixturesGetData'),
 
 
     ##########   Match By Team #########

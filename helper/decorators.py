@@ -79,7 +79,7 @@ def admin_only(view_func):
 
 def staff_only(function):
     def _inner(request, *args, **kwargs):
-        return function(request, *args, **kwargs) if request.user.is_staff else redirect('core:AdminError404')
+        return function(request, *args, **kwargs) if request.user.is_authenticated and request.user.is_staff == 'Active' else redirect('core:AdminError404')
 
     return _inner
 

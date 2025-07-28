@@ -3,8 +3,7 @@ from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 
-from core.forms.contact import ContactForm, NewsletterSubscriberForm, ContactSendPhoneForm
-from core.models.services import Contact, NewsletterSubscriber
+
 from core.utils.notification import notify_admin, create_notification_admin
 from core.views.notifications import AdminCommonNotifications
 from helper.commonHelper import BACKEND_TEMPLATES

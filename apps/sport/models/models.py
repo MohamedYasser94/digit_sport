@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -464,6 +464,7 @@ class SportState(models.Model):
 
 
 class Fixtures(models.Model):
+    api_id = models.CharField(max_length=200, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_fixture_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -482,8 +483,8 @@ class Fixtures(models.Model):
     round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
     state = models.ForeignKey(SportState, on_delete=models.CASCADE, related_name='state_fixture', null=True, blank=True)
     venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
-    name = models.CharField(max_length=100, unique=True)
-    short_name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, )
+    short_name = models.CharField(max_length=100,)
     starting_at = models.DateTimeField(null=True, blank=True)
     result_info = models.CharField(max_length=100, null=True, blank=True)
     leg = models.CharField(max_length=100, null=True, blank=True)
@@ -497,6 +498,9 @@ class Fixtures(models.Model):
     minute = models.IntegerField(null=True, blank=True)
     extra_minute = models.IntegerField(null=True, blank=True)
     extra_time = models.IntegerField(null=True, blank=True)
+    statistics = models.JSONField(null=True, blank=True)
+    events = models.JSONField(null=True, blank=True)
+    lineups = models.JSONField(null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
@@ -509,10 +513,26 @@ class Fixtures(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
+            #CODE GENERATION  RANDOM NUMBER WITH DATE ADD WHILE TO SURE  NO DUBLICATE
+            code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
             self.code = code
             self.slug = slugify(code)
+            while Fixtures.objects.filter(code=self.code).exists():
+                code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
+                self.code = code
+                self.slug = slugify(code)
         super(Fixtures, self).save(*args, **kwargs)
+
+
+class FixtureParticipant(models.Model):
+    """ Stores the teams (participants) for a given fixture """
+    fixture = models.ForeignKey(Fixtures, related_name='participants', on_delete=models.CASCADE)
+    team = models.ForeignKey('Teams', on_delete=models.CASCADE)
+    api_id = models.IntegerField(unique=True, null=True, blank=True)
+    meta_location = models.CharField(max_length=50)  # 'home' or 'away'
+
+    def __str__(self):
+        return f"{self.team.name} in Fixture {self.fixture.api_id}"
 
 
 class LiveScores(models.Model):
@@ -654,10 +674,20 @@ class Teams(models.Model):
         return f"{self.name}-{self.sport}"
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Teams-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
+        # This new method creates a unique slug from the league name and api_id
+        if not self.slug and self.name and self.api_id:
+            self.slug = slugify(f"{self.name}-{self.api_id}")
+
+        # Fallback for manually created entries without an api_id
+        elif not self.slug and self.name:
+            base_slug = slugify(self.name)
+            slug_candidate = base_slug
+            counter = 1
+            while Teams.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+
         super(Teams, self).save(*args, **kwargs)
 
 
@@ -863,10 +893,20 @@ class  Players(models.Model):
             return None
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Player-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
+        # This new method creates a unique slug from the league name and api_id
+        if not self.slug and self.name and self.api_id:
+            self.slug = slugify(f"{self.name}-{self.api_id}")
+
+        # Fallback for manually created entries without an api_id
+        elif not self.slug and self.name:
+            base_slug = slugify(self.name)
+            slug_candidate = base_slug
+            counter = 1
+            while Players.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+
         super(Players, self).save(*args, **kwargs)
 
 

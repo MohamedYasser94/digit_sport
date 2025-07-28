@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
-from time import timezone
-from urllib.request import request_host
+
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -19,6 +18,7 @@ from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, Admin
 from core.models.blog import BlogArticle, BlogCategories, BlogServices, CommonTags, BlogVideo
 from core.models.core import CommonSeo, CommonTranslate, CommonMediaFiles
 from core.utils.notification import FcmNotifications
+
 from core.views.core import AdminCommonMediaHeroFiles, AdminCommonMediaImagesFiles, \
     AdminCommonMediaVideoFiles, AdminCommonTranslate, AdminCommonSeo
 from core.views.notifications import AdminCommonNotifications
@@ -506,16 +506,16 @@ def AdminBlogArticleSCreate(request):
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-            try:
-                if image_path != None or image_path != '':
-                    request_host(request)
-
-                    image_path =  request_host(request) + str(article_object.image.url)
-                    print(' image_path ,', image_path)
-                    article_object.image_path = image_path
-                    article_object.save()
-            except Exception as e:
-                pass
+            # try:
+            #     if image_path != None or image_path != '':
+            #         request_host(request)
+            #
+            #         image_path =  request_host(request) + str(article_object.image.url)
+            #         print(' image_path ,', image_path)
+            #         article_object.image_path = image_path
+            #         article_object.save()
+            # except Exception as e:
+            #     pass
             image_url = article_object.image.url
             image = request.build_absolute_uri(image_url)
             FcmNotifications(request, title, keyword, article_object.image_path)

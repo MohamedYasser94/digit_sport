@@ -1,0 +1,143 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+
+{% block body %}
+
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div id="kt_content_container" class="container-fluid">
+            <!--begin::Form-->
+            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+                  enctype="multipart/form-data" action="{% url 'sport:AdminMatchPlayerStaticAdd' match.slug player.slug %}"
+                  method="post">
+                {% csrf_token %}
+
+                <!--begin::Main column-->
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+
+                    <!--begin::Order details-->
+                    <div class="card card-flush py-4">
+                        <!--begin::Card header-->
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{{ player.name }}</h2>
+                            </div>
+                        </div>
+                        <!--end::Card header-->
+                        <!--begin::Card body-->
+                        <div class="card-body pt-0">
+                            <!--begin::Billing address-->
+                            <div class="d-flex flex-column gap-10 gap-md-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                <!--end::Title-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+
+                                   <div class="fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Set' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="set_ball" type="number" min="0"
+                                               value="{{ player_statics.set_ball }}"
+                                               placeholder="{% translate 'Set' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Serve' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <input class="form-control" name="serve_ball" type="number" min="0"
+                                               value="{{ player_statics.serve_ball }}" required
+                                               placeholder="{% translate 'Serve' %}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                            <!--begin::Input group-->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+
+                                   <div class=" fv-row flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Cut' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input class="form-control" name="cut_ball" type="number" min="0"
+                                               value="{{ player_statics.cut_ball }}" required
+                                               placeholder="{% translate 'Cut' %}"/>
+
+                                        <!--end::Input-->
+                                    </div>
+                                      <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Shot' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <input class="form-control" name="shot_ball" type="number" min="0"
+                                               value="{{ player_statics.shot_ball }}" required
+                                               placeholder="{% translate 'Shot' %}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                     <div class="flex-row-fluid">
+                                        <!--begin::Label-->
+                                        <label class="required form-label">{% translate 'Score' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                         <input class="form-control" name="score_ball" type="number" min="0"
+                                               value="{{ player_statics.score_ball }}" required
+                                               placeholder="{% translate 'Score' %}"/>
+                                        <!--end::Input-->
+                                    </div>
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--end::Billing address-->
+
+                <!--end::Main column-->
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                    <!--end::Order details-->
+                     <div class="d-flex justify-content-end">
+                        <!--begin::Button-->
+                        <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
+                           class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </div>
+            </form>
+            <!--end::Form-->
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Content-->
+
+
+
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

@@ -26,7 +26,8 @@ from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
 from firebase_admin import initialize_app, credentials
 from google.auth import load_credentials_from_file
-
+import pymysql
+pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +46,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.36', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.1.241', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
 
 # Application definition
 
@@ -55,7 +56,7 @@ INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib
 
 OWN_APPS = [  ## internal apps
     'core.apps.CoreConfig', 'home.apps.HomeConfig', 'user.apps.UserConfig', 'api.apps.ApiConfig',
-    'apps.catalog.apps.CatalogConfig', 'apps.sport.apps.SportConfig', 'apps.wallet.apps.WalletConfig',
+    'apps.sport.apps.SportConfig',
 
 ]
 
@@ -142,8 +143,9 @@ TEMPLATES = [
         'context_processors': ['django.template.context_processors.debug', 'django.template.context_processors.request',
                                'django.contrib.auth.context_processors.auth',
                                'django.contrib.messages.context_processors.messages',
-                               'home.context_processors.home_processors', 'home.context_processors.content_processors',
-                               'core.context_processors.notifications', 'core.context_processors.admin_summary',
+
+                               'core.context_processors.notifications',
+                               'core.context_processors.admin_summary',
                                'core.context_processors.setting_processors',
                                'core.context_processors.language_processors',
                                'core.context_processors.template_processors',
@@ -233,50 +235,15 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # SRF_COOKIE_SECURE = True
 
 
-############  Cart ########
-CART_SESSION_ID = 'cart'
+
 
 SESSION_COOKIE_SECURE = False
 
-GEOIP_PATH = os.path.join('geoip')
 
-########### FCM ########
-FCM_DJANGO_SETTINGS = {"DEFAULT_FIREBASE_APP": None, "FCM_SERVER_KEY": env('FCM_SERVER_KEY'),
-                       "ONE_DEVICE_PER_USER": False, "DELETE_INACTIVE_DEVICES": False, "ALLOW_MULTIPLE_DEVICES": True, }
-GOOGLE_APPLICATION_CREDENTIALS = os.path.join(BASE_DIR, "credentials.json")
-FCM_SERVER_KEY = env('FCM_SERVER_KEY')
-cred = credentials.Certificate(GOOGLE_APPLICATION_CREDENTIALS)
-firebase_app = firebase_admin.initialize_app(cred)
 
-############WhatsApp_TOKEN########
-WhatsApp_TOKEN = env('WhatsApp_TOKEN')
-WhatsApp_phone_number = env('WhatsApp_phone_number')
 
-MyFatoorah_base_url = env('MyFatoorah_base_url')
 
-############Payment STRIPE########
 
-STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
-STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
-STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
-
-MyFatoorah_api_key = env('MyFatoorah_api_key')
-MyFatoorah_WEBHOOK_SECRET = env('MyFatoorah_WEBHOOK_SECRET')
-
-FIREBASE_ADMIN_CREDENTIAL = os.path.join(BASE_DIR, "ydoob-32609-firebase-adminsdk-7l7op-d5b2a61f5e.json")
-GOOGLE_MAP_API_KEY = "AIzaSyCdu_gApW8OlP6qbHIVPZ3I-UJvvjQFNDY"
-
-PAYPAL_MODE = "sandbox"
-PAYPAL_CLIENT_ID = "YOUR_PAYPAL_CLIENT_ID"
-PAYPAL_CLIENT_SECRET = "YOUR_PAYPAL_CLIENT_SECRET"
-
-STRIPE_LIVE_SECRET_KEY = env("STRIPE_PUBLIC_KEY")
-STRIPE_TEST_SECRET_KEY = env("STRIPE_SECRET_KEY")
-STRIPE_LIVE_MODE = False  # Change to True in production
-DJSTRIPE_WEBHOOK_SECRET = "whsec_xxx"  # Get it from the section in the Stripe dashboard where you added the webhook endpoint
-DJSTRIPE_USE_NATIVE_JSONFIELD = True  # We recommend site to True for new installations
-DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
-PAYMOB_API_KEY = env('PAYMOB_API_KEY')
 ############## Gmail Staff ###############
 # email stuff
 # Previous settings ...
@@ -348,155 +315,13 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_JSONFIELD_CUSTOM = 'django.contrib.postgres.fields.JSONField'
 AUTH_USER_MODEL = 'user.User'
-SOCIAL_AUTH_USER_MODEL = 'user.User'
-LOGOUT_URL = '/logout'
-LOGOUT_REDIRECT_URL = ''
-SOCIAL_AUTH_LOGIN_ERROR_URL = '/settings/'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/settings/'
-SOCIAL_AUTH_RAISE_EXCEPTIONS = False
-# SOCIALACCOUNT_AUTO_SIGNUP = False
-
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'user_link']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email, picture.type(large), link, age_range'}
-SOCIAL_AUTH_FACEBOOK_AUTH_EXTRA_ARGUMENTS = {  # 'auth_type': 'reauthenticate',
-}
-
-SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('name', 'name'), ('email', 'email'), ('picture', 'picture'),
-                                   ('link', 'profile_url'), ]
-FACEBOOK_EXTENDED_PERMISSIONS = ['email']
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {  # 'access_type': 'offline',
-    # 'approval_prompt': 'force',
-}
-
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['first_name', 'email']
-SOCIAL_AUTH_ADMIN_SEARCH_FIELDS = ['username', 'first_name', 'email']
-
-SOCIAL_AUTH_FACEBOOK_KEY = env('SOCIAL_AUTH_FACEBOOK_KEY')
-SOCIAL_AUTH_FACEBOOK_SECRET = env('SOCIAL_AUTH_FACEBOOK_SECRET')
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-
-FB_APP_ID = env('FB_APP_ID')  # App ID
-FB_APP_SECRET = env('FB_APP_SECRET')  # App Secret
-GP_CLIENT_ID = env('GP_CLIENT_ID')
-GP_CLIENT_SECRET = env('GP_CLIENT_SECRET')
-########### allauth-django
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
-# Sets the number of days within which an account should be activated.
-
-ACCOUNT_EMAIL_REQUIRED = True
-# set whether an email verification is necessary or not
-
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# Used to prevent brute force attacks.
-
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-# User gets blocked from logging back in until a timeout.
-
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400  # 1 day in seconds
-# value set is in seconds from the last unsuccessful login attempt
-
-ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
-
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-ACCOUNT_ADAPTER = 'user.adapter.MyAccountAdapter'
-SOCIALACCOUNT_ADAPTER = 'user.adapter.MySocialAccountAdapter'
-SOCIALACCOUNT_PROVIDERS = {'auth0': {'AUTH0_URL': 'https://your.auth0domain.auth0.com', },
-                           'google': {'SCOPE': ['profile', 'email', ],
-                                      'APP': {'client_id': env('GP_CLIENT_ID'), 'secret': env('GP_CLIENT_SECRET'),
-                                              'key': ''}}, "apple": {"APP": {  # Your service identifier.
-        "client_id": "your.service.id",
-
-        # The Key ID (visible in the "View Key Details" page).
-        "secret": "KEYID",
-
-        # Member ID/App ID Prefix -- you can find it below your name
-        # at the top right corner of the page, or it’s your App ID
-        # Prefix in your App ID.
-        "key": "MEMAPPIDPREFIX",
-
-        # The certificate you downloaded when generating the key.
-        "certificate_key": """-----BEGIN PRIVATE KEY-----
-s3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr
-3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3
-c3ts3cr3t
------END PRIVATE KEY-----
-"""}}}
-
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
-REDIS_DB = 0
-
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-#
-# }
-DJANGO_ALLOW_ASYNC_UNSAFE = 1
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'level': 'DEBUG',
-#             'handlers': ['console'],
-#         }
-#     },
-#     #Uncomment this to view django_private_chat2's logs
-#
-#     'root': {
-#         'handlers': ['console'],
-#         'level': 'INFO',
-#     },
-# }
-
-CHAT_WS_SERVER_HOST = '127.0.0.1:8000/chat/'
-CHAT_WS_SERVER_PORT = 8000
-CHAT_WS_SERVER_PROTOCOL = 'ws'
-
-import os
-
-# if os.name == 'nt':
-#     import platform
-#
-#     OSGEO4W = r"C:\OSGeo4W"
-#     assert os.path.isdir(OSGEO4W), f"Directory does not exist: {OSGEO4W}"
-#     os.environ['OSGEO4W_ROOT'] = OSGEO4W
-#     os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
-#     os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
-#     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
 
 
 SPORT_MONKS_KEY = env('SPORT_MONKS_KEY')
 SPORT_MONKS_URL = env('SPORT_MONKS_URL')
 SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
 
-# Optional ONLY IF you have initialized a firebase app already:
-# Visit https://firebase.google.com/docs/admin/setup/#python
-# for more options for the following:
-# Store an environment variable called GOOGLE_APPLICATION_CREDENTIALS
-# which is a path that point to a json file with your credentials.
-# Additional arguments are available: credentials, options, name
-# FIREBASE_APP = initialize_app()
-# To learn more, visit the docs here:
-# https://cloud.google.com/docs/authentication/getting-started>
-# Firebase Configuration
+
 
 ############## Logging Configuration ##############
 LOGGING = {'version': 1, 'disable_existing_loggers': False, 'formatters': {

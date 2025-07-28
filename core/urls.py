@@ -1,12 +1,10 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from api.v3.views import chat as api_chat
-from core.templatetags.social_share import post_to_facebook
-from core.utils import utils
-from core.utils.export import export_model
-from core.views import activity, billing, blog, chat, people, core,emails, front, localization, notifications, payment, \
-    social, users, utilities
+
+
+from core.views import blog,  core,emails,  localization, notifications, \
+     users, utilities
 
 app_name = 'core'
 
@@ -20,16 +18,7 @@ urlpatterns = [
     path('notifications/<slug:slug>/', notifications.AdminNotificationsDetails, name='AdminNotificationsDetails'),
     path('403/', core.AdminError403, name='AdminError403'),
     path('404/', core.AdminError404, name='AdminError404'),
-    path('log/<str:model>', activity.AdminActivityLog, name="AdminActivityLog"),
-    path('fb/whatsapp/webhooks/', activity.AdminFaceBookWhatsappWebHooks.as_view(),
-         name="AdminFaceBookWhatsappWebHooks"),
-# path("firebase-messaging-sw.js",
-#         TemplateView.as_view(
-#             template_name="firebase-messaging-sw.js",
-#             content_type="application/javascript",
-#         ),
-#         name="firebase-messaging-sw.js"
-#     ),
+
 
 
 
@@ -59,7 +48,7 @@ urlpatterns = [
     path('blog/article/archive/<slug:slug>/', blog.AdminBlogArticleArchive, name='AdminBlogArticleArchive'),
     path('blog/article/delete/<slug:slug>/', blog.AdminBlogArticleDelete, name='AdminBlogArticleDelete'),
     path('blog/article/images/delete/<slug:slug>/', blog.AdminApiBlogArticleImageDelete, name='AdminApiBlogArticleImageDelete'),
-    path('blog/post_to_facebook_url/', post_to_facebook, name='post_to_facebook_url'),
+
 
 
 ########## Blog Video Admin #########
@@ -83,22 +72,7 @@ urlpatterns = [
     path('inbox/all/<slug:slug>/', emails.AdminEmailList, name='AdminInbox'),
     path('inbox/<slug:slug>/compose/', emails.AdminUserComposeEmail, name='AdminUserComposeEmail'),
     path('inbox/details/<slug:slug>/', emails.AdminDetailsEmail, name='AdminEmailDetails'),
-    # path('inbox/<slug:slug>/reply/', emils.AdminReplyEmail, name='AdminReplyEmail'),
-    # path('inbox/<slug:slug>/forward/', emils.AdminForwardEmail, name='AdminForwardEmail'),
-    # path('inbox/<slug:slug>/delete/', emils.AdminDeleteEmail, name='AdminDeleteEmail'),
-    # path('inbox/<slug:slug>/archive/', emils.AdminArchiveEmail, name='AdminArchiveEmail'),
-    # path('inbox/<slug:slug>/spam/', emils.AdminSpamEmail, name='AdminSpamEmail'),
-    # path('inbox/<slug:slug>/trash/', emils.AdminTrashEmail, name='AdminTrashEmail'),
-    # path('inbox/<slug:slug>/restore/', emils.AdminRestoreEmail, name='AdminRestoreEmail'),
-    # path('inbox/<slug:slug>/mark_as_read/', emils.AdminMarkAsReadEmail, name='AdminMarkAsReadEmail'),
-    # path('inbox/<slug:slug>/mark_as_unread/', emils.AdminMarkAsUnReadEmail, name='AdminMarkAsUnReadEmail'),
-    # path('inbox/<slug:slug>/mark_as_important/', emils.AdminMarkAsImportantEmail, name='AdminMarkAsImportantEmail'),
-    # path('inbox/<slug:slug>/mark_as_not_important/', emils.AdminMarkAsNotImportantEmail,
-    #         name='AdminMarkAsNotImportantEmail'),
-    # path('inbox/<slug:slug>/mark_as_starred/', emils.AdminMarkAsStarredEmail, name='AdminMarkAsStarredEmail'),
-    # path('inbox/<slug:slug>/mark_as_unstarred/', emils.AdminMarkAsUnStarredEmail, name='AdminMarkAsUnStarredEmail'),
-    # path('inbox/<slug:slug>/mark_as_spam/', emils.AdminMarkAsSpamEmail, name='AdminMarkAsSpamEmail'),
-    # path('inbox/<slug:slug>/mark_as_not_spam/', emils.AdminMarkAsNotSpamEmail, name='AdminMarkAsNotSpamEmail'),
+
 
 
     ########## Users Admin #########
@@ -107,7 +81,7 @@ urlpatterns = [
     path('user/update/<slug:slug>', users.AdminUserUpdate, name='AdminUserUpdate'),
     path('user/delete/<slug:slug>/', users.AdminUserDelete, name='AdminUserDelete'),
     path('user/setting/<slug:slug>/', users.AdminUserAccountSettings, name='AdminUserAccountSettings'),
-    path('user/profile/<slug:slug>/', users.UserPublicProfile, name='UserPublicProfile'),
+
     path('user/password/<slug:slug>/', users.AdminUserChangePassword, name='AdminUserChangePassword'),
     path('user/deactivate/<slug:slug>/', users.AdminUserDeactivate, name='AdminDeactivateUser'),
     path('user/statements/<slug:slug>', users.UserStatements, name='UserStatements'),
@@ -116,65 +90,13 @@ urlpatterns = [
     path('dark/', users.UserDarkModeUpdate, name='UserDarkModeUpdate'),
     path('user/geo/', users.AdminUsersGeoInfoList, name='AdminUsersGeoInfoList'),
     path('user/fcmtoken/', users.AdminUsersFcmTokenList, name='AdminUsersFcmTokenList'),
-    path('user/newsletter/', users.AdminUsersNewsletterList, name='AdminUserNewsletter'),
-    path('user/contact/', users.AdminClientContactList, name='AdminClientContactList'),
-    path('user/contact/detail/<slug:slug>/', users.AdminClientContactDetail, name='AdminClientContactDetails'),
+
     path('groups/', users.AdminUserGroupList, name='AdminUserGroupList'),
     path('groups/create/', users.AdminUserGroupCreate, name='AdminUserGroupCreate'),
     path('groups/edit/<int:pk>', users.AdminUserGroupEdit, name='AdminUserGroupUpdate'),
     path('groups/delete/<int:id>', users.AdminUserGroupDelete, name='AdminUserGroupDelete'),
 
-    #################### Social ###################
-    path('follower/<slug:slug>', social.AdminUserFollower, name='UserFollower'),
-    path('follower/remove/<slug:slug>', social.remove_friend, name='UserRemoveFollower'),
-    path('follower/send/<slug:slug>', social.send_friend_request, name='UserSendFollow'),
-    path('follower/cancel/<slug:slug>', social.cancel_friend_request, name='UserCancelFollower-request-cancel'),
-    path('follower/request/<slug:slug>', social.friend_requests, name='UserRequestsFollower'),
-    path('follower/accept/<slug:slug>', social.accept_friend_request, name='UserAcceptFollower'),
-    path('follower/decline/<slug:slug>', social.decline_friend_request, name='UserDeclineFollower'),
 
-    ########## Clients Admin #########
-    path('people/', people.AdminClientList, name='AdminClientList'),
-    path('people/deatail/<slug:slug>/', people.AdminClientDetail, name='AdminClientDetails'),
-    path('people/update/<slug:slug>/', people.AdminClientUpdate, name='AdminClientUpdate'),
-    path('people/delete/<slug:slug>/', people.AdminClientDelete, name='AdminClientDelete'),
-
-    path('contact/', people.AdminContactList, name='AdminContactList'),
-    ########## Driver Admin #########
-    path('driver/', people.AdminDriverList, name='AdminDriverList'),
-    path('driver/add/', people.AdminDriverList, name='AdminDriverCreate'),
-    path('driver/deatail/<slug:slug>/', people.AdminDriverDetails, name='AdminDriverDetails'),
-    path('driver/update/<slug:slug>/', people.AdminDriverUpdate, name='AdminDriverUpdate'),
-    path('driver/delete/<slug:slug>/', people.AdminDriverDelete, name='AdminDriverDelete'),
-    ########## Employee Admin #########
-    path('admin/employee/', people.AdminEmployeeList, name='AdminEmployeeList'),
-    path('admin/employee/deatail/<slug:slug>/', people.AdminEmployeeDetails, name='AdminEmployeeDetails'),
-    path('admin/employee/update/<slug:slug>/', people.AdminEmployeeUpdate, name='AdminEmployeeUpdate'),
-    path('admin/employee/archive/<slug:slug>/', people.AdminDriverArchive, name='AdminDriverArchive'),
-    ########## Employee Admin #########
-    path('admin/employee/salary/add/<slug:slug>/', people.AdminEmployeeSalaryCreate, name='AdminEmployeeSalaryCreate'),
-    path('admin/employee/salary/update/<slug:slug>/', people.AdminEmployeeSalaryUpdate,
-         name='AdminEmployeeSalaryUpdate'),
-
-
-########## Team Admin #########
-    path('branch/', people.AdminBranchList, name='AdminBranchList'),
-    path('branch/deatail/<slug:slug>/', people.AdminTeamDetails, name='AdminBranchDetails'),
-    path('branch/update/<slug:slug>/', people.AdminTeamUpdate, name='AdminBranchUpdate'),
-    path('branch/delete/<slug:slug>/', people.AdminTeamArchive, name='AdminBranchDelete'),
-
-    ########## Team Admin #########
-    path('team/', people.AdminTeamList, name='AdminTeamList'),
-    path('team/add/', people.AdminTeamCreate, name='AdminTeamCreate'),
-    path('team/deatail/<slug:slug>/', people.AdminTeamDetails, name='AdminTeamDetails'),
-    path('team/update/<slug:slug>/', people.AdminTeamUpdate, name='AdminTeamUpdate'),
-    path('team/delete/<slug:slug>/', people.AdminTeamArchive, name='AdminTeamArchive'),
-
-    #############################Admin Invoice Urls############################################
-    ########## invoice Admin #########
-    path('invoice/', billing.AdminInvoiceList, name='AdminInvoiceList'),
-    path('invoice/detail/<slug:slug>/', billing.AdminInvoiceDetails, name='AdminInvoiceDetails'),
-    path('invoice/pdf/<slug:slug>/', billing.AdminInvoicePDF, name='AdminInvoicePDF'),
 
     ########## Site Setting Admin #########
     path('site/', core.AdminSiteSettingList, name='AdminSiteSettingList'),
@@ -189,25 +111,7 @@ urlpatterns = [
     path('setting/update<slug:slug>/', core.AdminSystemSettingUpdate, name='AdminSystemSettingUpdate'),
     path('setting/delete/<slug:slug>/', core.AdminSystemSettingDelete, name='AdminSystemSettingDelete'),
 
-    ########## Slider   #########
-    path('testimonials/', front.AdminTestimonialsList, name='AdminTestimonialsList'),
-    path('testimonials/<slug:slug>/', front.AdminTestimonialsDetail, name='AdminTestimonialsDetails'),
-    path('testimonials/edit/<slug:slug>/', front.AdminTestimonialsUpdate, name='AdminTestimonialsUpdate'),
-    path('testimonials/delete/<slug:slug>/', front.AdminTestimonialsArchive, name='AdminTestimonialsArchive'),
 
-    ########## Slider   #########
-    path('slider', front.SliderView.as_view(), name='AdminSliderList'),
-    path('slider/add/', front.SliderCreate.as_view(), name='AdminSliderCreate'),
-    path('slider/<int:pk>/', front.SliderDetailView.as_view(), name='AdminSliderDetails'),
-    path('slider/edit/<int:pk>/', front.SliderEdit.as_view(), name='AdminSliderUpdate'),
-    path('slider/delete/<int:pk>/', front.SliderDelete.as_view(), name='AdminSliderDelete'),
-
-    ########## Banners   #########
-    path('banner', front.BannersView.as_view(), name='AdminBannerList'),
-    path('banner/add/', front.BannerCreate, name='AdminBannerCreate'),
-    path('banner/<int:pk>/', front.BannerDetailView.as_view(), name='AdminBannerDetails'),
-    path('banner/edit/<int:pk>/', front.BannerEdit.as_view(), name='AdminBannerUpdate'),
-    path('banner/delete/<int:pk>/', front.BannerDelete.as_view(), name='AdminBannerDelete'),
     ########## localization   #########
     path('lang', localization.AdminLanguageList, name='AdminLanguageList'),
     path('lang/add/', localization.AdminLanguageCreate.as_view(), name='AdminLanguageCreate'),
@@ -246,56 +150,8 @@ urlpatterns = [
     path('qr/update/<slug:slug>/', utilities.AdminQrCodeUpdate, name='AdminQrCodeUpdate'),
     path('qr/delete/<slug:slug>/', utilities.AdminQrCodeDelete, name='AdminQrCodeDelete'),
 
-    ########## Coupon Admin #########
-    path('coupon/', utilities.AdminCouponList, name='AdminCouponList'),
-    path('coupon/detail/<slug:slug>/', utilities.AdminCouponDetails, name='AdminCouponDetails'),
-    path('coupon/update/<slug:slug>/', utilities.AdminCouponUpdate, name='AdminCouponUpdate'),
-    path('coupon/delete/<slug:slug>/', utilities.AdminCouponDelete, name='AdminCouponDelete'),
-
-    ########## Membership Admin #########
-    path('membership/', utilities.AdminMembershipList, name='AdminMembershipList'),
-    path('membership/detail/<slug:slug>/', utilities.AdminMembershipDetails, name='AdminMembershipDetails'),
-    path('membership/update/<slug:slug>/', utilities.AdminMembershipUpdate, name='AdminMembershipUpdate'),
-    path('membership/archive/<slug:slug>/', utilities.AdminMembershipArchive, name='AdminMembershipArchive'),
-    path('membership/delete/<slug:slug>/', utilities.AdminMembershipArchive, name='AdminMembershipDelete'),
-
-    ########## Subscription Admin #########
-    path('subscription/', utilities.AdminSubscriptionList, name='AdminSubscriptionList'),
-    path('subscription/detail/<slug:slug>/', utilities.AdminSubscriptionDetails, name='AdminSubscriptionDetails'),
-    path('subscription/update/<slug:slug>/', utilities.AdminSubscriptionUpdate, name='AdminSubscriptionUpdate'),
-    path('subscription/archive/<slug:slug>/', utilities.AdminSubscriptionArchive, name='AdminSubscriptionArchive'),
-
-    ########## Subscription Payment Admin #########
-    path('subscriptionpayment/', utilities.AdminSubscriptionPaymentList, name='AdminSubscriptionPaymentList'),
-
-    path('subscriptionpayment/detail/<slug:slug>/', utilities.AdminSubscriptionDetails,
-         name='AdminSubscriptionPaymentDetails'),
-    path('subscriptionpayment/update/<slug:slug>/', utilities.AdminSubscriptionUpdate,
-         name='AdminSubscriptionPaymentUpdate'),
-    path('subscriptionpayment/archive/<slug:slug>/', utilities.AdminSubscriptionArchive,
-         name='AdminSubscriptionPaymentArchive'),
-
-    ############# PayMent ##################
-    path('payment/gateway/', payment.AdminPaymentGatewayList, name='AdminPaymentGatewayList'),
 
 
-    ###############Utility Admin ###############
-    path('export_model', export_model, name='AdminExportModel'),
-
-    ########## Chat Admin #########
-    path('room/', chat.rooms, name='rooms'),
-    path('room/<uuid:pk>/', chat.room, name='room'),
-    path('room/create/', chat.create_room, name='create_room'),
-    path('room/edit/<uuid:pk>/', chat.edit_room, name='edit_room'),
-    path('room/delete/<uuid:pk>/', chat.delete_room, name='delete_room'),
-
-    ################ Chat ######################
-    path('messenger/', chat.AdminChatMessenger, name='AdminChatMessenger'),
-    path('messenger/friend/', chat.AdminChatDrawer, name='AdminChatDrawer'),
-
-    path('<user_id>/', chat.account_view, name="UserView"),
-    path('messenger/chat/', api_chat.private_chat_room_view, name='AdminApiPrivateChatRoom'),
-    path('messenger/chat/private/', api_chat.create_or_return_private_chat, name='AdminApiPrivateChat'),
 
     ##########  Help  Admin #########
     path('help/documentation/', core.AdminHelpDocumentationList, name='AdminHelpDocumentationList'),

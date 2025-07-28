@@ -1,0 +1,2737 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+{% block body %}
+
+    <!--begin::Main-->
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content flex-column-fluid">
+                <!--begin::Content container-->
+                <div id="kt_app_content_container" class="app-container container-fluid">
+                    <!--begin::Row-->
+                    <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+                        <!--begin::Col-->
+                        <div class="col-xxl-6">
+                            <!--begin::Card widget 15-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Body-->
+                                <div class="card-body py-9">
+                                    <!--begin::Row-->
+                                    <div class="row gx-9 h-100">
+                                        <!--begin::Col-->
+                                        <div class="col-sm-6 mb-10 mb-sm-0">
+                                            <!--begin::Overlay-->
+                                            <a class="d-block overlay h-100" data-fslightbox="lightbox-hot-sales" href="
+                                                    {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-42.jpg">
+                                                <!--begin::Image-->
+                                                <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-200px h-100"
+                                                        {% if match.league.image_path %}
+                                                     style="background-image:url('{{ match.league.image_path }}')"
+                                                        {% else %}
+                                                     style="background-image:url('{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-42.jpg')"
+
+                                                        {% endif %}
+                                                ></div>
+                                                <!--end::Image-->
+                                                <!--begin::Action-->
+                                                <div class="overlay-layer card-rounded bg-dark bg-opacity-25">
+                                                    <i class="ki-duotone ki-eye fs-3x text-white">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </div>
+                                                <!--end::Action-->
+                                            </a>
+                                            <!--end::Overlay-->
+                                        </div>
+                                        <!--end::Col-->
+                                        <!--begin::Col-->
+                                        <div class="col-sm-6">
+                                            <!--begin::Wrapper-->
+                                            <div class="d-flex flex-column h-100">
+                                                <!--begin::Header-->
+                                                <div class="mb-7">
+                                                    <!--begin::Title-->
+                                                    <div class="mb-6">
+                                                        <span class="text-gray-500 fs-7 fw-bold me-2 d-block lh-1 pb-1">{% translate 'Match' %}:{{ match.founded }}</span>
+                                                        <a href=""
+                                                           class="text-gray-800 text-hover-primary fs-1 fw-bold">{{ match.name }}</a>
+                                                    </div>
+                                                    <!--end::Title-->
+                                                    <!--begin::Items-->
+                                                    <div class="d-flex align-items-center flex-wrap d-grid gap-2">
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex align-items-center me-5 me-xl-13">
+                                                            <!--begin::Symbol-->
+                                                            <div class="symbol symbol-30px symbol-circle me-3">
+                                                                <img src="
+
+                                                                        {% static '' %}{{ BACKEND_ASSETS }}/media/avatars/300-3.jpg"
+                                                                     class="" alt=""/>
+                                                            </div>
+                                                            <!--end::Symbol-->
+                                                            <!--begin::Info-->
+                                                            <div class="m-0">
+                                                                <span class="fw-semibold text-gray-500 d-block fs-8">{% translate 'League' %}</span>
+                                                                <a href=""
+                                                                   class="fw-bold text-gray-800 text-hover-primary fs-7">{{ match.league }}</a>
+                                                            </div>
+                                                            <!--end::Info-->
+                                                        </div>
+                                                        <!--end::Item-->
+                                                        <!--begin::Item-->
+                                                        <div class="d-flex align-items-center">
+                                                            {% if match.is_live == 'Live' %}
+                                                            <!--begin::Symbol-->
+                                                            <div class="symbol symbol-30px symbol-circle me-3">
+																				<span class="symbol-label bg-warning">
+																					<i class="ki-duotone ki-abstract-41 fs-5 text-white">
+																						<span class="path1"></span>
+																						<span class="path2"></span>
+																					</i>
+																				</span>
+                                                            </div>
+                                                            <!--end::Symbol-->
+                                                            <!--begin::Info-->
+                                                            <div class="m-0">
+                                                                <span class="fw-semibold text-gray-500 d-block fs-8">{% translate 'Live' %}</span>
+                                                                <a href="#"
+                                                                   class="fw-bold text-gray-800 text-hover-primary fs-7">{{ match.country }}</a>
+                                                            </div>
+                                                            <!--end::Info-->
+                                                            {% endif %}
+                                                        </div>
+                                                        <!--end::Item-->
+                                                    </div>
+                                                    <!--end::Items-->
+                                                </div>
+                                                <!--end::Header-->
+                                                <!--begin::Body-->
+
+                                                <div class="d-flex flex-column border border-1 border-gray-300 text-center pt-5 pb-7 mb-8 card-rounded"
+                                                     data-bs-target="#kt_modal_match_control"
+                                                     data-bs-toggle="modal"
+                                                >
+                                                    <span class="fw-semibold text-gray-600 fs-7 pb-1">{% translate 'Goals' %}</span>
+                                                    <span class="fw-bold text-gray-800 fs-2hx lh-1 pb-1">{{ match.score }}</span>
+                                                    <span class="fw-bold text-gray-600 fs-4 pb-5">{{ match.current_time }}</span>
+                                                    <span class="fw-semibold text-gray-600 fs-7 pb-1">{% translate 'Ending in' %}</span>
+                                                    <span class="fw-bold text-gray-800 fs-3">{{ end_time }}</span>
+                                                </div>
+                                                <!--end::Body-->
+                                                <!--begin::Footer-->
+                                                <div class="d-flex flex-stack mt-auto bd-highlight">
+                                                    <!--begin::Actions-->
+                                                    <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#kt_modal_static">{% translate 'Match Summary' %}</a>
+                                                    <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#kt_modal_goals">{% translate 'Match Goals' %}</a>
+
+                                                    <!--end::Actions-->
+                                                </div>
+                                                <!--end::Footer-->
+                                            </div>
+                                            <!--end::Wrapper-->
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <!--end::Row-->
+                                </div>
+                                <!--end::Body-->
+                            </div>
+                            <!--end::Card widget 15-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-sm-6 col-xxl-3">
+                            <!--begin::Card widget 14-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Body-->
+                                <div class="card-body text-center pb-5">
+                                    <!--begin::Overlay-->
+                                    <a class="d-block overlay" data-fslightbox="lightbox-hot-sales"
+                                       href="{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-39.jpg">
+                                        <!--begin::Image-->
+                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mb-7"
+                                                {% if home_team.image_path %}
+                                             style="height: 266px;background-image:url('{{ home_team.image_path }}')"
+                                                {% else %}
+                                             style="height: 266px;background-image:url(' {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-39.jpg')"
+
+                                                {% endif %}
+                                        ></div>
+
+                                        <!--end::Image-->
+                                        <!--begin::Action-->
+                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25">
+                                            <i class="ki-duotone ki-eye fs-3x text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                        </div>
+                                        <!--end::Action-->
+                                    </a>
+                                    <!--end::Overlay-->
+                                    <!--begin::Info-->
+                                    <div class="d-flex align-items-end flex-stack mb-1">
+                                        <!--begin::Title-->
+                                        <div class="text-start">
+                                            <span class="fw-bold text-gray-800 cursor-pointer text-hover-primary fs-4 d-block">{{ home_team.name }}</span>
+                                            <span class="text-gray-500 mt-1 fw-bold fs-6">{% translate 'Last Action:' %}</span>
+                                        </div>
+                                        <!--end::Title-->
+                                        <!--begin::Total-->
+                                        <span class="text-gray-600 text-end fw-bold fs-6">{{ home_team.sport }}</span>
+                                        <!--end::Total-->
+                                    </div>
+                                    <!--end::Info-->
+                                </div>
+                                <!--end::Body-->
+                                <!--begin::Footer-->
+                                <div class="card-footer d-flex flex-stack pt-0">
+                                    <!--begin::Link-->
+                                    <a class="btn btn-sm btn-primary flex-shrink-0 me-2"
+                                       data-bs-target="#kt_modal_event_home"
+                                       data-bs-toggle="modal">{% translate 'Set Goal' %}</a>
+                                    <!--end::Link-->
+                                     <a class="btn btn-sm btn-light flex-shrink-0"
+                                       href="{% url 'sport:AdminMatchTeamPlayerList' match.slug home_team.slug %}">{% translate 'Player Static' %}</a>
+
+                                </div>
+                                <!--end::Footer-->
+                            </div>
+                            <!--end::Card widget 14-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-sm-6 col-xxl-3">
+                            <!--begin::Card widget 14-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Body-->
+                                <div class="card-body text-center pb-5">
+                                    <!--begin::Overlay-->
+                                    <a class="d-block overlay" data-fslightbox="lightbox-hot-sales"
+                                       href="{% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-47.jpg">
+                                        <!--begin::Image-->
+                                        <div class="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded mb-7"
+                                                {% if away_team.image_path %}
+                                             style="height: 266px;background-image:url('{{ away_team.image_path }}')"
+                                                {% else %}
+                                             style="height: 266px;background-image:url(' {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-47.jpg')"
+
+
+                                                {% endif %}
+                                        ></div>
+                                        <!--end::Image-->
+                                        <!--begin::Action-->
+                                        <div class="overlay-layer card-rounded bg-dark bg-opacity-25">
+                                            <i class="ki-duotone ki-eye fs-3x text-white">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                        </div>
+                                        <!--end::Action-->
+                                    </a>
+                                    <!--end::Overlay-->
+                                    <!--begin::Info-->
+                                    <div class="d-flex align-items-end flex-stack mb-1">
+                                        <!--begin::Title-->
+                                        <div class="text-start">
+                                            <span class="fw-bold text-gray-800 cursor-pointer text-hover-primary fs-4 d-block">{{ away_team.name }}</span>
+                                            <span class="text-gray-500 mt-1 fw-bold fs-6">{% translate 'Last Action' %}</span>
+                                        </div>
+                                        <!--end::Title-->
+                                        <!--begin::Total-->
+                                        <span class="text-gray-600 text-end fw-bold fs-6">{{  away_team.sport }}</span>
+                                        <!--end::Total-->
+                                    </div>
+                                    <!--end::Info-->
+                                </div>
+                                <!--end::Body-->
+                                <!--begin::Footer-->
+                                <div class="card-footer d-flex flex-stack pt-0">
+                                    <!--begin::Link-->
+                                    <a class="btn btn-sm btn-primary flex-shrink-0 me-2"
+                                       data-bs-target="#kt_modal_event_away"
+                                       data-bs-toggle="modal">{% translate 'Set Goal' %}</a>
+                                    <!--end::Link-->
+                                    <!--begin::Link-->
+                                    <a class="btn btn-sm btn-light flex-shrink-0"
+                                       href="{% url 'sport:AdminMatchTeamPlayerList' match.slug away_team.slug %}">{% translate 'Player Static' %}</a>
+                                    <!--end::Link-->
+                                </div>
+                                <!--end::Footer-->
+                            </div>
+                            <!--end::Card widget 14-->
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                    {#                    {% include 'good/sport/match/rate.html' %}#}
+                    <!--begin::Row-->
+                    <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+                        <!--begin::Col-->
+                        <div class="col-xl-4">
+                            <!--begin::List widget 23-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Header-->
+                                <div class="card-header pt-7">
+                                    <!--begin::Title-->
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bold text-gray-800">{% translate 'Match Goal' %}</span>
+                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">{{ match.sport.name }}</span>
+                                    </h3>
+                                    <!--end::Title-->
+                                    <!--begin::Toolbar-->
+                                    <div class="card-toolbar"></div>
+                                    <!--end::Toolbar-->
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Body-->
+                                <div class="card-body pt-5">
+                                    <!--begin::Items-->
+                                    <div class="">
+                                        {% if match.sport.name == 'football' %}
+                                            {% for item in match_goal %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.player.name }}</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.half }}</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% empty %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
+                                                                Ltd.</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-success fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>2.6%</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% endfor %}
+                                        {% elif match.sport.name == 'volleyball' %}
+                                            {% for item in match_goal %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.home_score }}-{{ item.away_score }}</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.set }}</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% empty %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
+                                                                Ltd.</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-success fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>2.6%</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% endfor %}
+                                            {% elif match.sport.name == 'handball' %}
+                                            {% for item in match_goal %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.home_score }}-{{ item.away_score }}</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.set }}</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% empty %}
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack">
+                                                    <!--begin::Section-->
+                                                    <div class="d-flex align-items-center me-5">
+                                                        <!--begin::Flag-->
+                                                        <img src="
+
+                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                             class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                        <!--end::Flag-->
+                                                        <!--begin::Content-->
+                                                        <div class="me-5">
+                                                            <!--begin::Title-->
+                                                            <a href="#"
+                                                               class="text-gray-800 fw-bold text-hover-primary fs-6">Abstergo
+                                                                Ltd.</a>
+                                                            <!--end::Title-->
+                                                            <!--begin::Desc-->
+                                                            <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">Community</span>
+                                                            <!--end::Desc-->
+                                                        </div>
+                                                        <!--end::Content-->
+                                                    </div>
+                                                    <!--end::Section-->
+                                                    <!--begin::Wrapper-->
+                                                    <div class="d-flex align-items-center">
+                                                        <!--begin::Number-->
+                                                        <span class="text-gray-800 fw-bold fs-4 me-3">579</span>
+                                                        <!--end::Number-->
+                                                        <!--begin::Info-->
+                                                        <div class="m-0">
+                                                            <!--begin::Label-->
+                                                            <span class="badge badge-light-success fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>2.6%</span>
+                                                            <!--end::Label-->
+                                                        </div>
+                                                        <!--end::Info-->
+                                                    </div>
+                                                    <!--end::Wrapper-->
+                                                </div>
+                                                <!--end::Item-->
+                                                <!--begin::Separator-->
+                                                <div class="separator separator-dashed my-3"></div>
+                                                <!--end::Separator-->
+                                            {% endfor %}
+                                        {% endif %}
+
+
+                                    </div>
+                                    <!--end::Items-->
+                                </div>
+                                <!--end: Card Body-->
+                            </div>
+                            <!--end::List widget 23-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-xl-8">
+                            <!--begin::Table widget 12-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Header-->
+                                <div class="card-header pt-7">
+                                    <!--begin::Title-->
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bold text-gray-800">{% translate 'Home Team' %}</span>
+                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">Updated {{ last_summary.create_at|timesince }} minutes ago</span>
+                                    </h3>
+                                    <!--end::Title-->
+
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Body-->
+                                <div class="card-body">
+                                    <!--begin::Table container-->
+                                    <div class="table-responsive">
+                                        <!--begin::Table-->
+                                        <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+                                            <!--begin::Table head-->
+                                            <thead>
+                                            <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+                                                <th class="p-0 pb-3 min-w-100px text-start">{% translate 'Image' %}</th>
+                                                <th class="p-0 pb-3 min-w-100px text-end">{% translate 'Name' %}</th>
+                                                <th class="p-0 pb-3 min-w-100px text-end">{% translate 'Code' %}</th>
+                                                <th class="p-0 pb-3 min-w-125px text-end">{% translate 'Position' %}</th>
+                                                <th class="p-0 pb-3 w-80px text-end">{% translate 'Code' %}</th>
+                                            </tr>
+                                            </thead>
+                                            <!--end::Table head-->
+                                            <!--begin::Table body-->
+                                            <tbody>
+                                            {% for item in home_players %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="symbol symbol-50px me-3">
+                                                                {% if item.player.image_path %}
+                                                                    <img src="{{ item.player.image_path }}" class=""
+                                                                         alt=""/>
+                                                                {% else %}
+                                                                    <img src="
+
+                                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg"
+                                                                         class="" alt=""/>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="d-flex justify-content-start flex-column">
+                                                                <a href="#"
+                                                                   class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">{{ item.player.common_name }}
+                                                                </a>
+                                                                <span class="text-gray-500 fw-semibold d-block fs-7">{{ item.player.name }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.name }}</span>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.code }}</span>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.position }}</span>
+                                                    </td>
+
+
+                                                    <td class="text-end">
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                                            <i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>{{ item.player.country }}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+
+                                            {% endfor %}
+
+                                            </tbody>
+                                            <!--end::Table body-->
+                                        </table>
+                                    </div>
+                                    <!--end::Table-->
+                                </div>
+                                <!--end: Card Body-->
+                            </div>
+                            <!--end::Table widget 12-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-xl-4">
+                            <!--begin::List widget 23-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Header-->
+                                <div class="card-header pt-7">
+                                    <!--begin::Title-->
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bold text-gray-800">{% translate 'Match Event' %}</span>
+
+                                    </h3>
+                                    <!--end::Title-->
+                                    <!--begin::Toolbar-->
+                                    <div class="card-toolbar"></div>
+                                    <!--end::Toolbar-->
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Body-->
+                                <div class="card-body pt-5">
+                                    <!--begin::Items-->
+                                    <div class="">
+                                        {% for item in match_statics %}
+                                            <!--begin::Item-->
+                                            <div class="d-flex flex-stack">
+                                                <!--begin::Section-->
+                                                <div class="d-flex align-items-center me-5">
+                                                    <!--begin::Flag-->
+                                                    <img src="
+
+                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/svg/brand-logos/atica.svg"
+                                                         class="me-4 w-30px" style="border-radius: 4px" alt=""/>
+                                                    <!--end::Flag-->
+                                                    <!--begin::Content-->
+                                                    <div class="me-5">
+                                                        <!--begin::Title-->
+                                                        <a href="#"
+                                                           class="text-gray-800 fw-bold text-hover-primary fs-6">{{ item.type }}</a>
+                                                        <!--end::Title-->
+                                                        <!--begin::Desc-->
+                                                        <span class="text-gray-500 fw-semibold fs-7 d-block text-start ps-0">{{ item.player.name }}</span>
+                                                        <!--end::Desc-->
+                                                    </div>
+                                                    <!--end::Content-->
+                                                </div>
+                                                <!--end::Section-->
+                                                <!--begin::Wrapper-->
+                                                <div class="d-flex align-items-center">
+                                                    <!--begin::Number-->
+                                                    <span class="text-gray-800 fw-bold fs-4 me-3">{{ item.time }}</span>
+                                                    <!--end::Number-->
+                                                    <!--begin::Info-->
+                                                    <div class="m-0">
+                                                        <!--begin::Label-->
+                                                        <span class="badge badge-light-info fs-base">
+																	<i class="ki-duotone ki-arrow-up fs-5 text-success ms-n1">
+																		<span class="path1"></span>
+																		<span class="path2"></span>
+																	</i>{{ item.half }}</span>
+                                                        <!--end::Label-->
+                                                    </div>
+                                                    <!--end::Info-->
+                                                </div>
+                                                <!--end::Wrapper-->
+                                            </div>
+                                            <!--end::Item-->
+                                            <!--begin::Separator-->
+                                            <div class="separator separator-dashed my-3"></div>
+                                            <!--end::Separator-->
+
+                                        {% endfor %}
+
+                                    </div>
+                                    <!--end::Items-->
+                                </div>
+                                <!--end: Card Body-->
+                            </div>
+                            <!--end::List widget 23-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-xl-8">
+                            <!--begin::Table widget 12-->
+                            <div class="card card-flush h-xl-100">
+                                <!--begin::Header-->
+                                <div class="card-header pt-7">
+                                    <!--begin::Title-->
+                                    <h3 class="card-title align-items-start flex-column">
+                                        <span class="card-label fw-bold text-gray-800">{% translate 'Away Team' %}</span>
+                                        <span class="text-gray-500 mt-1 fw-semibold fs-6">Updated {{ last_summary.create_at|timesince }} minutes ago</span>
+                                    </h3>
+                                    <!--end::Title-->
+
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Body-->
+                                <div class="card-body">
+                                    <!--begin::Table container-->
+                                    <div class="table-responsive">
+                                        <!--begin::Table-->
+                                        <table class="table table-row-dashed align-middle gs-0 gy-3 my-0">
+                                            <!--begin::Table head-->
+                                            <thead>
+                                            <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+                                                <th class="p-0 pb-3 min-w-175px text-start">{% translate 'Image' %}</th>
+                                                <th class="p-0 pb-3 min-w-100px text-end">{% translate 'Name' %}</th>
+                                                <th class="p-0 pb-3 min-w-100px text-end">{% translate 'Code' %}</th>
+                                                <th class="p-0 pb-3 min-w-125px text-end">{% translate 'Position' %}</th>
+
+                                                <th class="p-0 pb-3 w-80px text-end">{% translate 'Code' %}</th>
+                                            </tr>
+                                            </thead>
+                                            <!--end::Table head-->
+                                            <!--begin::Table body-->
+                                            <tbody>
+                                            {% for item in away_players %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="symbol symbol-50px me-3">
+                                                                {% if item.player.image_path %}
+                                                                    <img src="{{ item.player.image_path }}" class=""
+                                                                         alt=""/>
+                                                                {% else %}
+                                                                    <img src="
+
+                                                                            {% static '' %}{{ BACKEND_ASSETS }}/media/stock/600x600/img-49.jpg"
+                                                                         class="" alt=""/>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="d-flex justify-content-start flex-column">
+                                                                <a href="#"
+                                                                   class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">{{ item.player.common_name }}
+                                                                </a>
+                                                                <span class="text-gray-500 fw-semibold d-block fs-7">{{ item.player.name }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.name }}</span>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.code }}</span>
+                                                    </td>
+                                                    <td class="text-end pe-0">
+                                                        <span class="text-gray-600 fw-bold fs-6">{{ item.player.position }}</span>
+                                                    </td>
+
+
+                                                    <td class="text-end">
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                                            <i class="ki-duotone ki-black-right fs-2 text-gray-500"></i>{{ item.player.country }}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+
+                                            {% endfor %}
+
+                                            </tbody>
+                                            <!--end::Table body-->
+                                        </table>
+                                    </div>
+                                    <!--end::Table-->
+                                </div>
+                                <!--end: Card Body-->
+                            </div>
+                            <!--end::Table widget 12-->
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+
+                </div>
+                <!--end::Content container-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Content wrapper-->
+        <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_match_control" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+                    <!--begin::Modal body-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_match_control_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchControl'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Match Control' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">{% translate 'Control of Time' %}
+
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-50 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Start Time' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input id="match_start_time" type="text" class="form-control form-control-solid" disabled
+                                           placeholder="{% translate 'Start Time' %}"  value="{{ match.start_time|date:'Y-m-d , H:i' }}"
+                                           />
+
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-50 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Current Minute' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Current Minute' %}" value="{{ match.current_minute }}"
+                                               name="current_minute"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Current Half' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="current_half" aria-label="{% translate 'Current Half' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Static Type' %}"
+                                            data-dropdown-parent="#kt_modal_match_control"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="{{ match.current_half }}" selected="">{{ match.current_half }}</option>
+                                        {% for value, text in match_form.current_half.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+                            <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Played' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="played" aria-label="{% translate 'Played' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Static Type' %}"
+                                            data-dropdown-parent="#kt_modal_match_control"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="{{ match.played }}" selected="">{{ match.played }}</option>
+                                        {% for value, text in match_form.played.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+                            <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Live' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="is_live" aria-label="{% translate 'Live' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Static Type' %}"
+                                            data-dropdown-parent="#kt_modal_match_control"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="{{ match.is_live }}" selected="">{{ match.is_live }}</option>
+                                        {% for value, text in match_form.is_live.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+
+                            </div>
+                            <!--begin::Input group-->
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--end::Modal body-->
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+        <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_static" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_static_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchStaticAdd'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Match Static' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">If you need more info, please check
+                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Home Percentage' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="text" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Home Percentage' %}"
+                                           name="home_percent"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Away Percentage' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="text" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Away Percentage' %}"
+                                               name="away_percent"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-100 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Static Type' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <select name="static_type" aria-label="{% translate 'Static Type' %}"
+                                            data-control="select2"
+                                            data-placeholder="{% translate 'Static Type' %}"
+                                            data-dropdown-parent="#kt_modal_static"
+                                            data-allow-clear="true"
+                                            class="form-select form-select-solid fw-bolder">
+                                        <option value="" selected="">---------</option>
+                                        {% for value, text in static_form.type.field.choices %}
+                                            <option value="{{ value }}">{{ text }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <!--end::Input-->
+                                </div>
+
+                            </div>
+                            <!--begin::Input group-->
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
+                    <!--end::Modal body-->
+
+
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+     <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_goals" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_goals_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchGoalsAdd'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Match Goals' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">If you need more info, please check
+                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <!--begin::Input group-->
+                            <div class="d-flex flex-wrap gap-5">
+                                <div class="fv-row w-75 flex-md-root">
+                                    <!--begin::Label-->
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Home Score' %}</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" class="form-control form-control-solid"
+                                           placeholder="{% translate 'Home Score' %}"
+                                           name="home_score"/>
+                                    <!--end::Input-->
+                                </div>
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Away Score' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Away Score' %}"
+                                               name="away_score"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Input group-->
+                            </div>
+                            <!--begin::Input group-->
+
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
+                    <!--end::Modal body-->
+
+
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+        <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_event_home" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_players_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchSummaryAdd'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Home Team' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">{% translate 'Match Goal' %}
+                                    <a href="#" class="fw-bold link-primary">{{ match.sport.name }}</a>.
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            {% if match.sport.name == 'football' %}
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Player' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_player" aria-label="{% translate 'Player' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Player' %}"
+                                                data-dropdown-parent="#kt_modal_event_home"
+                                                data-allow-clear="true"
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for item in home_players %}
+                                                <option value="{{ item.player.slug }}">{{ item.player.name }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Type' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_type" aria-label="{% translate 'Type' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Type' %}"
+                                                data-dropdown-parent="#kt_modal_event_home"
+                                                data-allow-clear="true"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.type.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Match Half' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_half" aria-label="{% translate 'Match Half' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Match Half' %}"
+                                                data-dropdown-parent="#kt_modal_event_home"
+                                                data-allow-clear="true"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.half.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Time' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="text" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Time' %}"
+                                               name="event_time"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball'  %}
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Set' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_set" aria-label="{% translate 'Set' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Set' %}"
+                                                data-dropdown-parent="#kt_modal_event_home"
+                                                data-allow-clear="true"
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.set.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Total Set Goal' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Total Set Goal' %}"
+                                               name="event_goal"/>
+                                        <input type="text" hidden class="form-control form-control-solid"
+                                               value="{{ match.home_team.id }}"
+                                               name="event_team"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                            {% endif %}
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
+                    <!--end::Modal body-->
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+        <!--begin::Modal - New Target-->
+        <div class="modal fade" id="kt_modal_event_away" tabindex="-1" aria-hidden="true">
+            <!--begin::Modal dialog-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <!--begin::Modal content-->
+                <div class="modal-content rounded">
+                    <!--begin::Modal header-->
+                    <div class="modal-header pb-0 border-0 justify-content-end">
+                        <!--begin::Close-->
+                        <div class="btn btn-sm btn-icon btn-active-color-primary" data-kt-modal-action-type="close">
+                            <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--begin::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                        <!--begin:Form-->
+                        <form id="kt_modal_players_form" class="form" enctype="multipart/form-data"
+                              action="{% url 'sport:AdminMatchSummaryAdd'  match.slug %}"
+                              method="post"
+                        >
+                            {% csrf_token %}
+                            <!--begin::Heading-->
+                            <div class="mb-13 text-center">
+                                <!--begin::Title-->
+                                <h1 class="mb-3">{% translate 'Away Team' %}</h1>
+                                <!--end::Title-->
+                                <!--begin::Description-->
+                                <div class="text-muted fw-semibold fs-5">If you need more info, please check
+                                    <a href="#" class="fw-bold link-primary">Bidding Guidelines</a>.
+                                </div>
+                                <!--end::Description-->
+                            </div>
+                            <!--end::Heading-->
+                            <!--begin::Input group-->
+                            {% if match.sport.name == 'football' %}
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Player' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_player" aria-label="{% translate 'Player' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Player' %}"
+                                                data-dropdown-parent="#kt_modal_event_away"
+                                                data-allow-clear="true"
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for item in home_players %}
+                                                <option value="{{ item.player.slug }}">{{ item.player.name }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Type' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_type" aria-label="{% translate 'Type' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Type' %}"
+                                                data-dropdown-parent="#kt_modal_event_away"
+                                                data-allow-clear="true"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.type.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Match Half' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_half" aria-label="{% translate 'Match Half' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Match Half' %}"
+                                                data-dropdown-parent="#kt_modal_event_away"
+                                                data-allow-clear="true"
+
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.half.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Time' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="text" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Time' %}"
+                                               name="event_time"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball'  %}
+                                <!--begin::Input group-->
+                                <div class="d-flex flex-wrap gap-5">
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Set' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <select name="event_set" aria-label="{% translate 'Set' %}"
+                                                data-control="select2"
+                                                data-placeholder="{% translate 'Set' %}"
+                                                data-dropdown-parent="#kt_modal_event_away"
+                                                data-allow-clear="true"
+                                                class="form-select form-select-solid fw-bolder">
+                                            <option value="" selected="">---------</option>
+                                            {% for value, text in summary_form.set.field.choices %}
+                                                <option value="{{ value }}">{{ text }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--begin::Input group-->
+                                    <div class="fv-row w-100 flex-md-root">
+                                        <!--begin::Label-->
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Total Set Goal' %}</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="number" class="form-control form-control-solid"
+                                               placeholder="{% translate 'Total Set Goal' %}"
+                                               name="event_goal"/>
+                                        <input type="text" hidden class="form-control form-control-solid"
+                                               value="{{ match.away_team.id }}"
+                                               name="event_team"/>
+                                        <!--end::Input-->
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Input group-->
+                            {% endif %}
+                            <!--begin::Input group-->
+                            <!--end::Notice-->
+                            <!--begin::Actions-->
+                            <div class="modal-footer flex-center text-center">
+                                <button type="reset" class="btn btn-light me-3" data-kt-modal-action-type="cancel">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary" data-kt-modal-action-type="submit">
+                                    <span class="indicator-label">{% translate 'Submit' %}</span>
+                                    <span class="indicator-progress">Please wait...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                </button>
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end:Form-->
+                    </div>
+                    <!--end::Modal body-->
+                </div>
+                <!--end::Modal content-->
+            </div>
+            <!--end::Modal dialog-->
+        </div>
+        <!--end::Modal - New Target-->
+
+
+        <div class="card-body pt-15">
+            {% if form_show_errors %}
+            {% endif %}
+            {% if match_team_player_form.errors %}
+                {% for error_field, error_message in match_team_player_form.errors.items %}
+
+                    <div class="alert alert-danger">
+                        {{ error_field|striptags }}: {{ error_message|striptags }}
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+
+            {% endif %}
+
+            {% for message in messages %}
+                {% if message.extra_tags == 'Match Team Player' %}
+                    {% if message.tags == 'Match Team Player success' %}
+                        <p class="alert alert-info">
+                            {% elif message.tags == 'Match Team Player danger' %}
+                        <p class="alert alert-danger">
+                            {% elif message.tags == 'Match Team Player warning' %}
+                        <p class="alert alert-warning">
+
+                    {% endif %}
+                {{ message.extra_tags|striptags }}: {{ message|striptags }}
+                </p>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+    <!--end:::Main-->
+
+
+
+
+{% endblock %}
+{% block custom_js %}
+
+
+    <script>
+        const DoctorAppointmentApp = Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    searchTerm: '',
+                    suggestions: '',
+                    filteredSuggestions: '',
+                    medicineSuggestions: '',
+                    showSuggestions: false,
+                    noItem: false,
+                    items: [{prescription_medicine: "", prescription_dose: ""}],
+                    timeSlot: [],
+                    nextFollowUp: false,
+                    nextFollowUpOBS: false,
+                    showPrescription: false,
+                    showOutService: false,
+                    showLabTest: false,
+                    showFollowUpOBS: false,
+                    clinicThirdPartyServices: {{ thirdparty_services_list|safe }},
+                    servicesOfThirdParty: [],
+                }
+            },
+            methods: {
+                getAppointmentDate(event) {
+                    console.log('addNewAppointment', event);
+
+                    payload = {
+
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+
+                        "date": event,
+
+                    }
+                    jQuery.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        data: payload,
+
+                        success: (data) => {
+
+                            console.log('data', data)
+                            this.timeSlot = data
+
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
+                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
+                            });
+                            app.showSuggestions = true;
+
+                        },
+                    });
+
+
+                },
+                getDiagnosisStatus(event) {
+                    console.log('getDiagnosisStatus', event);
+                    if (event == 'Followup') {
+                        this.nextFollowUp = true
+                        this.showPrescription = true
+                        this.showOutService = false
+                        this.showFollowUpOBS = false
+
+                    } else if (event == 'clinic Service') {
+                        this.nextFollowUp = true
+                        this.showPrescription = false
+                        this.showOutService = true
+                        this.showFollowUpOBS = false
+                    } else if (event == 'FollowupOBS') {
+                        this.nextFollowUp = true
+                        this.showPrescription = true
+                        this.showOutService = false
+                        this.showFollowUpOBS = true
+                    } else if (event == 'FollowupOBSMedicalService') {
+                        this.nextFollowUp = true
+                        this.showPrescription = false
+                        this.showOutService = true
+                        this.showFollowUpOBS = true
+                    } else {
+                        this.nextFollowUp = false
+                        this.showPrescription = false
+                        this.showOutService = false
+                        this.showFollowUpOBS = false
+                    }
+                },
+                getSuggestionsDoctorsMedicine: function (event) {
+                    console.log('getCurrentTrack event', encodeURIComponent(event), this.searchTerm)
+                    this.medicineSuggestions = encodeURIComponent(event.target.value)
+
+                    jQuery.ajax({
+                        type: 'GET',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+                            console.log('data', data)
+                            if (data == 'No Data Found') {
+                                this.suggestions = 'No Data Found'
+
+                                this.showSuggestions = false;
+                                this.noItem = true;
+
+                            } else {
+                                this.suggestions = data
+                                this.filteredSuggestions = this.suggestions.title
+                                this.showSuggestions = true;
+                                this.noItem = false;
+                            }
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+
+
+                        },
+                    });
+
+
+                },
+                addNewDoctorsMedicine: function (event) {
+                    console.log('getCurrentTrack', encodeURIComponent(event))
+
+
+                    jQuery.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+
+                            console.log('data', data)
+                            this.suggestions = data
+
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.suggestions = 'No Data Found'
+                            app.filteredSuggestions = app.suggestions.filter(function (suggestion) {
+                                return suggestion.toLowerCase().indexOf(app.searchTerm.toLowerCase()) > -1;
+                            });
+                            app.showSuggestions = true;
+
+                        },
+                    });
+                },
+                selectMedicineSuggestion: function (suggestion, index) {
+                    this.searchTerm = suggestion;
+                    this.showSuggestions = false;
+                },
+                addItem() {
+                    this.items.push({prescription_medicine: "", prescription_dose: ""});
+                },
+                removeItem(index) {
+                    this.items.splice(index, 1);
+                },
+                getThirdPartyServices: function (event) {
+                    console.log('getThirdPartyServices event', encodeURIComponent(event),)
+
+
+                    jQuery.ajax({
+                        type: 'GET',
+                        dataType: "json",
+                        url: url,
+                        timeout: 5000,
+                        success: (data) => {
+                            console.log('data', data)
+                            if (data == 'No Data Found') {
+                                this.servicesOfThirdParty = 'No Data Found'
+
+                            } else {
+                                this.servicesOfThirdParty = data
+
+                            }
+                        },
+                        error: function (data) {
+                            console.error("ERROR...", data)
+                            this.servicesOfThirdParty = 'No Data Found'
+
+
+                        },
+                    });
+
+
+                },
+
+
+            },
+
+
+        })
+        DoctorAppointmentApp.mount('#docpacapo-app')
+        DoctorAppointmentApp.config.devtools = true
+    </script>
+
+    <script>
+        "use strict";
+        var KTFormRepeaterSpeaker = {
+            init: function () {
+                $("#kt_docs_repeater_speaker").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select2"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select2"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterSpeaker.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterSponsor = {
+            init: function () {
+                $("#kt_docs_repeater_sponsor").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select3"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select3"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterSponsor.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterEmployee = {
+            init: function () {
+                $("#kt_docs_repeater_employee").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select4"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select4"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterEmployee.init();
+        });
+    </script>
+    <script>
+        "use strict";
+        var KTFormRepeaterCustody = {
+            init: function () {
+                $("#kt_docs_repeater_custody").repeater({
+                    initEmpty: !1,
+                    defaultValues: {"text-input": "foo"},
+                    show: function () {
+                        $(this).slideDown(),
+                            $(this).find('[data-kt-repeater="select5"]').select2(),
+
+                            new Tagify(this.querySelector('[data-kt-repeater="text"]'));
+                    },
+                    hide: function (e) {
+                        $(this).slideUp(e);
+                    },
+                    ready: function () {
+                        $('[data-kt-repeater="select5"]').select2(),
+
+                            new Tagify(document.querySelector('[data-kt-repeater="text"]'));
+                    }
+                });
+            }
+        };
+        KTUtil.onDOMContentLoaded(function () {
+            KTFormRepeaterCustody.init();
+        });
+    </script>
+
+    <script>
+        var identity = function (t) {
+                return t;
+            },
+            isArray = function (t) {
+                return $.isArray(t);
+            },
+            isObject = function (t) {
+                return !isArray(t) && t instanceof Object;
+            },
+            isNumber = function (t) {
+                return t instanceof Number;
+            },
+            isFunction = function (t) {
+                return t instanceof Function;
+            },
+            indexOf = function (t, e) {
+                return $.inArray(e, t);
+            },
+            inArray = function (t, e) {
+                return -1 !== indexOf(t, e);
+            },
+            foreach = function (t, e) {
+                for (var n in t) t.hasOwnProperty(n) && e(t[n], n, t);
+            },
+            last = function (t) {
+                return t[t.length - 1];
+            },
+            argumentsToArray = function (t) {
+                return Array.prototype.slice.call(t);
+            },
+            extend = function () {
+                var t = {};
+                return (
+                    foreach(argumentsToArray(arguments), function (e) {
+                        foreach(e, function (e, n) {
+                            t[n] = e;
+                        });
+                    }),
+                        t
+                );
+            },
+            mapToArray = function (t, e) {
+                var n = [];
+                return (
+                    foreach(t, function (t, r, i) {
+                        n.push(e(t, r, i));
+                    }),
+                        n
+                );
+            },
+            mapToObject = function (t, e, n) {
+                var r = {};
+                return (
+                    foreach(t, function (t, i, a) {
+                        (i = n ? n(i, t) : i), (r[i] = e(t, i, a));
+                    }),
+                        r
+                );
+            },
+            map = function (t, e, n) {
+                return isArray(t) ? mapToArray(t, e) : mapToObject(t, e, n);
+            },
+            pluck = function (t, e) {
+                return map(t, function (t) {
+                    return t[e];
+                });
+            },
+            filter = function (t, e) {
+                var n;
+                return (
+                    isArray(t)
+                        ? ((n = []),
+                            foreach(t, function (t, r, i) {
+                                e(t, r, i) && n.push(t);
+                            }))
+                        : ((n = {}),
+                            foreach(t, function (t, r, i) {
+                                e(t, r, i) && (n[r] = t);
+                            })),
+                        n
+                );
+            },
+            call = function (t, e, n) {
+                return map(t, function (t, r) {
+                    return t[e].apply(t, n || []);
+                });
+            },
+            throttle = function (t, e) {
+                var n = null;
+                return function () {
+                    var r = this,
+                        i = arguments;
+                    null === n &&
+                    ((n = setTimeout(function () {
+                        n = null;
+                    }, t)),
+                        e.apply(r, i));
+                };
+            },
+            mixinPubSub = function (t) {
+                var e = {};
+                return (
+                    ((t = t || {}).publish = function (t, n) {
+                        foreach(e[t], function (t) {
+                            t(n);
+                        });
+                    }),
+                        (t.subscribe = function (t, n) {
+                            (e[t] = e[t] || []), e[t].push(n);
+                        }),
+                        (t.unsubscribe = function (t) {
+                            foreach(e, function (e) {
+                                var n = indexOf(e, t);
+                                -1 !== n && e.splice(n, 1);
+                            });
+                        }),
+                        t
+                );
+            };
+        !(function (t) {
+            "use strict";
+            var e = function (t, e) {
+                    var n,
+                        r = mixinPubSub(),
+                        i = t.$;
+                    return (
+                        (r.getType = function () {
+                            throw 'implement me (return type. "text", "radio", etc.)';
+                        }),
+                            (r.$ = function (t) {
+                                return t ? i.find(t) : i;
+                            }),
+                            (r.disable = function () {
+                                r.$().prop("disabled", !0), r.publish("isEnabled", !1);
+                            }),
+                            (r.enable = function () {
+                                r.$().prop("disabled", !1), r.publish("isEnabled", !0);
+                            }),
+                            (e.equalTo = function (t, e) {
+                                return t === e;
+                            }),
+                            (e.publishChange = function (t, i) {
+                                var a = r.get();
+                                e.equalTo(a, n) || r.publish("change", {e: t, domElement: i}),
+                                    (n = a);
+                            }),
+                            r
+                    );
+                },
+                n = function (t, n) {
+                    var r = e(t, n);
+                    return (
+                        (r.get = function () {
+                            return r.$().val();
+                        }),
+                            (r.set = function (t) {
+                                r.$().val(t);
+                            }),
+                            (r.clear = function () {
+                                r.set("");
+                            }),
+                            (n.buildSetter = function (t) {
+                                return function (e) {
+                                    t.call(r, e);
+                                };
+                            }),
+                            r
+                    );
+                },
+                r = function (t, e) {
+                    (t = isArray(t) ? t : [t]), (e = isArray(e) ? e : [e]);
+                    var n = !0;
+                    return (
+                        t.length !== e.length
+                            ? (n = !1)
+                            : foreach(t, function (t) {
+                                inArray(e, t) || (n = !1);
+                            }),
+                            n
+                    );
+                },
+                i = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "button";
+                        }),
+                            r.$().on("change", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                a = function (e) {
+                    var i = {},
+                        a = n(e, i);
+                    return (
+                        (a.getType = function () {
+                            return "checkbox";
+                        }),
+                            (a.get = function () {
+                                var e = [];
+                                return (
+                                    a
+                                        .$()
+                                        .filter(":checked")
+                                        .each(function () {
+                                            e.push(t(this).val());
+                                        }),
+                                        e
+                                );
+                            }),
+                            (a.set = function (e) {
+                                (e = isArray(e) ? e : [e]),
+                                    a.$().each(function () {
+                                        t(this).prop("checked", !1);
+                                    }),
+                                    foreach(e, function (t) {
+                                        a.$()
+                                            .filter('[value="' + t + '"]')
+                                            .prop("checked", !0);
+                                    });
+                            }),
+                            (i.equalTo = r),
+                            a.$().change(function (t) {
+                                i.publishChange(t, this);
+                            }),
+                            a
+                    );
+                },
+                u = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "email";
+                        }),
+                            e
+                    );
+                },
+                c = function (n) {
+                    var r = {},
+                        i = e(n, r);
+                    return (
+                        (i.getType = function () {
+                            return "file";
+                        }),
+                            (i.get = function () {
+                                return last(i.$().val().split("\\"));
+                            }),
+                            (i.clear = function () {
+                                this.$().each(function () {
+                                    t(this).wrap("<form>").closest("form").get(0).reset(),
+                                        t(this).unwrap();
+                                });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                o = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "hidden";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                f = function (n) {
+                    var r = {},
+                        i = e(n, r);
+                    return (
+                        (i.getType = function () {
+                            return "file[multiple]";
+                        }),
+                            (i.get = function () {
+                                var t,
+                                    e = i.$().get(0).files || [],
+                                    n = [];
+                                for (t = 0; t < (e.length || 0); t += 1) n.push(e[t].name);
+                                return n;
+                            }),
+                            (i.clear = function () {
+                                this.$().each(function () {
+                                    t(this).wrap("<form>").closest("form").get(0).reset(),
+                                        t(this).unwrap();
+                                });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                s = function (t) {
+                    var e = {},
+                        i = n(t, e);
+                    return (
+                        (i.getType = function () {
+                            return "select[multiple]";
+                        }),
+                            (i.get = function () {
+                                return i.$().val() || [];
+                            }),
+                            (i.set = function (t) {
+                                i.$().val("" === t ? [] : isArray(t) ? t : [t]);
+                            }),
+                            (e.equalTo = r),
+                            i.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                l = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "password";
+                        }),
+                            e
+                    );
+                },
+                p = function (e) {
+                    var r = {},
+                        i = n(e, r);
+                    return (
+                        (i.getType = function () {
+                            return "radio";
+                        }),
+                            (i.get = function () {
+                                return i.$().filter(":checked").val() || null;
+                            }),
+                            (i.set = function (e) {
+                                e
+                                    ? i
+                                        .$()
+                                        .filter('[value="' + e + '"]')
+                                        .prop("checked", !0)
+                                    : i.$().each(function () {
+                                        t(this).prop("checked", !1);
+                                    });
+                            }),
+                            i.$().change(function (t) {
+                                r.publishChange(t, this);
+                            }),
+                            i
+                    );
+                },
+                h = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "range";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                d = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "select";
+                        }),
+                            r.$().change(function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                m = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "text";
+                        }),
+                            r.$().on("change keyup keydown", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                v = function (t) {
+                    var e = {},
+                        r = n(t, e);
+                    return (
+                        (r.getType = function () {
+                            return "textarea";
+                        }),
+                            r.$().on("change keyup keydown", function (t) {
+                                e.publishChange(t, this);
+                            }),
+                            r
+                    );
+                },
+                y = function (t) {
+                    var e = m(t, {});
+                    return (
+                        (e.getType = function () {
+                            return "url";
+                        }),
+                            e
+                    );
+                },
+                g = function (e) {
+                    var n = {},
+                        r = e.$,
+                        g = e.constructorOverride || {
+                            button: i,
+                            text: m,
+                            url: y,
+                            email: u,
+                            password: l,
+                            range: h,
+                            textarea: v,
+                            select: d,
+                            "select[multiple]": s,
+                            radio: p,
+                            checkbox: a,
+                            file: c,
+                            "file[multiple]": f,
+                            hidden: o
+                        },
+                        $ = function (e, i) {
+                            (isObject(i) ? i : r.find(i)).each(function () {
+                                var r = t(this).attr("name");
+                                n[r] = g[e]({$: t(this)});
+                            });
+                        },
+                        b = function (e, i) {
+                            var a = [],
+                                u = isObject(i) ? i : r.find(i);
+                            isObject(i)
+                                ? (n[u.attr("name")] = g[e]({$: u}))
+                                : (u.each(function () {
+                                    -1 === indexOf(a, t(this).attr("name")) &&
+                                    a.push(t(this).attr("name"));
+                                }),
+                                    foreach(a, function (t) {
+                                        n[t] = g[e]({$: r.find('input[name="' + t + '"]')});
+                                    }));
+                        };
+                    return (
+                        r.is("input, select, textarea")
+                            ? r.is('input[type="button"], button, input[type="submit"]')
+                                ? $("button", r)
+                                : r.is("textarea")
+                                    ? $("textarea", r)
+                                    : r.is('input[type="text"]') || (r.is("input") && !r.attr("type"))
+                                        ? $("text", r)
+                                        : r.is('input[type="password"]')
+                                            ? $("password", r)
+                                            : r.is('input[type="email"]')
+                                                ? $("email", r)
+                                                : r.is('input[type="url"]')
+                                                    ? $("url", r)
+                                                    : r.is('input[type="range"]')
+                                                        ? $("range", r)
+                                                        : r.is("select")
+                                                            ? r.is("[multiple]")
+                                                                ? $("select[multiple]", r)
+                                                                : $("select", r)
+                                                            : r.is('input[type="file"]')
+                                                                ? r.is("[multiple]")
+                                                                    ? $("file[multiple]", r)
+                                                                    : $("file", r)
+                                                                : r.is('input[type="hidden"]')
+                                                                    ? $("hidden", r)
+                                                                    : r.is('input[type="radio"]')
+                                                                        ? b("radio", r)
+                                                                        : r.is('input[type="checkbox"]')
+                                                                            ? b("checkbox", r)
+                                                                            : $("text", r)
+                            : ($("button", 'input[type="button"], button, input[type="submit"]'),
+                                $("text", 'input[type="text"]'),
+                                $("password", 'input[type="password"]'),
+                                $("email", 'input[type="email"]'),
+                                $("url", 'input[type="url"]'),
+                                $("range", 'input[type="range"]'),
+                                $("textarea", "textarea"),
+                                $("select", "select:not([multiple])"),
+                                $("select[multiple]", "select[multiple]"),
+                                $("file", 'input[type="file"]:not([multiple])'),
+                                $("file[multiple]", 'input[type="file"][multiple]'),
+                                $("hidden", 'input[type="hidden"]'),
+                                b("radio", 'input[type="radio"]'),
+                                b("checkbox", 'input[type="checkbox"]')),
+                            n
+                    );
+                };
+            (t.fn.inputVal = function (e) {
+                var n = t(this),
+                    r = g({$: n});
+                return n.is("input, textarea, select")
+                    ? void 0 === e
+                        ? r[n.attr("name")].get()
+                        : (r[n.attr("name")].set(e), n)
+                    : void 0 === e
+                        ? call(r, "get")
+                        : (foreach(e, function (t, e) {
+                            r[e].set(t);
+                        }),
+                            n);
+            }),
+                (t.fn.inputOnChange = function (e) {
+                    var n = t(this),
+                        r = g({$: n});
+                    return (
+                        foreach(r, function (t) {
+                            t.subscribe("change", function (t) {
+                                e.call(t.domElement, t.e);
+                            });
+                        }),
+                            n
+                    );
+                }),
+                (t.fn.inputDisable = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "disable"), e;
+                }),
+                (t.fn.inputEnable = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "enable"), e;
+                }),
+                (t.fn.inputClear = function () {
+                    var e = t(this);
+                    return call(g({$: e}), "clear"), e;
+                });
+        })(jQuery),
+            ($.fn.repeaterVal = function () {
+                var t,
+                    e,
+                    n = function (t) {
+                        if (
+                            1 === t.length &&
+                            (0 === t[0].key.length || (1 === t[0].key.length && !t[0].key[0]))
+                        )
+                            return t[0].val;
+                        foreach(t, function (t) {
+                            t.head = t.key.shift();
+                        });
+                        var e,
+                            r = (function () {
+                                var e = {};
+                                return (
+                                    foreach(t, function (t) {
+                                        e[t.head] || (e[t.head] = []), e[t.head].push(t);
+                                    }),
+                                        e
+                                );
+                            })();
+                        return (
+                            /^[0-9]+$/.test(t[0].head)
+                                ? ((e = []),
+                                    foreach(r, function (t) {
+                                        e.push(n(t));
+                                    }))
+                                : ((e = {}),
+                                    foreach(r, function (t, r) {
+                                        e[r] = n(t);
+                                    })),
+                                e
+                        );
+                    };
+                return n(
+                    ((t = $(this).inputVal()),
+                        (e = []),
+                        foreach(t, function (t, n) {
+                            var r = [];
+                            "undefined" !== n &&
+                            (r.push(n.match(/^[^\[]*/)[0]),
+                                (r = r.concat(
+                                    map(n.match(/\[[^\]]*\]/g), function (t) {
+                                        return t.replace(/[\[\]]/g, "");
+                                    })
+                                )),
+                                e.push({val: t, key: r}));
+                        }),
+                        e)
+                );
+            }),
+            ($.fn.repeater = function (t) {
+                var e;
+                return (
+                    (t = t || {}),
+                        $(this).each(function () {
+                            var n = $(this),
+                                r =
+                                    t.show ||
+                                    function () {
+                                        $(this).show();
+                                    },
+                                i =
+                                    t.hide ||
+                                    function (t) {
+                                        t();
+                                    },
+                                a = n.find("[data-repeater-list]").first(),
+                                u = function (t, e) {
+                                    return t.filter(function () {
+                                        return (
+                                            !e ||
+                                            0 === $(this).closest(pluck(e, "selector").join(",")).length
+                                        );
+                                    });
+                                },
+                                c = function () {
+                                    return u(a.find("[data-repeater-item]"), t.repeaters);
+                                },
+                                o = a.find("[data-repeater-item]").first().clone().hide(),
+                                f = u(
+                                    u($(this).find("[data-repeater-item]"), t.repeaters)
+                                        .first()
+                                        .find("[data-repeater-delete]"),
+                                    t.repeaters
+                                );
+                            t.isFirstItemUndeletable && f && f.remove();
+                            var s = function () {
+                                    var e = a.data("repeater-list");
+                                    return t.$parent ? t.$parent.data("item-name") + "[" + e + "]" : e;
+                                },
+                                l = function (e) {
+                                    t.repeaters &&
+                                    e.each(function () {
+                                        var e = $(this);
+                                        foreach(t.repeaters, function (t) {
+                                            e.find(t.selector).repeater(extend(t, {$parent: e}));
+                                        });
+                                    });
+                                },
+                                p = function (t, e, n) {
+                                    t &&
+                                    foreach(t, function (t) {
+                                        n.call(e.find(t.selector)[0], t);
+                                    });
+                                },
+                                h = function (t, e, n) {
+                                    t.each(function (t) {
+                                        var r = $(this);
+                                        r.data("item-name", e + "[" + t + "]"),
+                                            u(r.find("[name]"), n).each(function () {
+                                                var i = $(this),
+                                                    a = i.attr("name").match(/\[[^\]]+\]/g),
+                                                    c = a ? last(a).replace(/\[|\]/g, "") : i.attr("name"),
+                                                    o =
+                                                        "[" +
+                                                        c +
+                                                        "]" +
+                                                        (i.is(":checkbox") || i.attr("multiple") ? "[]" : "");
+                                                i.attr("name", o),
+                                                    p(n, r, function (n) {
+                                                        var r = $(this);
+                                                        h(
+                                                            u(r.find("[data-repeater-item]"), n.repeaters || []),
+                                                            e +
+                                                            "[" +
+                                                            t +
+                                                            "][" +
+                                                            r
+                                                                .find("[data-repeater-list]")
+                                                                .first()
+                                                                .data("repeater-list") +
+                                                            "]",
+                                                            n.repeaters
+                                                        );
+                                                    });
+                                            });
+                                    }),
+                                        a
+                                            .find("input[name][checked]")
+                                            .removeAttr("checked")
+                                            .prop("checked", !0);
+                                };
+                            h(c(), s(), t.repeaters),
+                                l(c()),
+                            t.initEmpty && c().remove(),
+                            t.ready &&
+                            t.ready(function () {
+                                h(c(), s(), t.repeaters);
+                            });
+                            var d,
+                                m =
+                                    ((d = function (e, n, r) {
+                                        if (n || t.defaultValues) {
+                                            var i = {};
+                                            u(e.find("[name]"), r).each(function () {
+                                                var t = $(this)
+                                                    .attr("name")
+                                                    .match(/\[([^\]]*)(\]|\]\[\])$/)[1];
+                                                i[t] = $(this).attr("name");
+                                            }),
+                                                e.inputVal(
+                                                    map(
+                                                        filter(n || t.defaultValues, function (t, e) {
+                                                            return i[e];
+                                                        }),
+                                                        identity,
+                                                        function (t) {
+                                                            return i[t];
+                                                        }
+                                                    )
+                                                );
+                                        }
+                                        p(r, e, function (t) {
+                                            var e = $(this);
+                                            u(e.find("[data-repeater-item]"), t.repeaters).each(
+                                                function () {
+                                                    var r = e
+                                                        .find("[data-repeater-list]")
+                                                        .data("repeater-list");
+                                                    if (n && n[r]) {
+                                                        var i = $(this).clone();
+                                                        e.find("[data-repeater-item]").remove(),
+                                                            foreach(n[r], function (n) {
+                                                                var r = i.clone();
+                                                                d(r, n, t.repeaters || []),
+                                                                    e.find("[data-repeater-list]").append(r);
+                                                            });
+                                                    } else d($(this), t.defaultValues, t.repeaters || []);
+                                                }
+                                            );
+                                        });
+                                    }),
+                                        function (e, n) {
+                                            a.append(e),
+                                                h(c(), s(), t.repeaters),
+                                                e.find("[name]").each(function () {
+                                                    $(this).inputClear();
+                                                }),
+                                                d(e, n || t.defaultValues, t.repeaters);
+                                        }),
+                                v = function (e) {
+                                    var n = o.clone();
+                                    m(n, e), t.repeaters && l(n), r.call(n.get(0));
+                                };
+                            (e = function (t) {
+                                c().remove(), foreach(t, v);
+                            }),
+                                u(n.find("[data-repeater-create]"), t.repeaters).click(function () {
+                                    v();
+                                }),
+                                a.on("click", "[data-repeater-delete]", function () {
+                                    var e = $(this).closest("[data-repeater-item]").get(0);
+                                    i.call(e, function () {
+                                        $(e).remove(), h(c(), s(), t.repeaters);
+                                    });
+                                });
+                        }),
+                        (this.setList = e),
+                        this
+                );
+            });
+
+
+    </script>
+
+{% endblock custom_js %}
+{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
+{% block js %} {% include BACKEND_JS %}  {% endblock %}

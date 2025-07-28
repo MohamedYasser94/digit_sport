@@ -72,7 +72,7 @@
 													</tr>
 												</thead>
 												<tbody class="fw-semibold text-gray-600">
-                                                     {% for item in teams %}
+                                                     {% for item in page_obj  %}
                                 <tr>
                                         <!--begin::Checkbox-->
                                         <td>
@@ -270,11 +270,46 @@
 
 												</tbody>
 												<!--end::Table body-->
+
 											</table>
+
 											<!--end::Table-->
 										</div>
+                                    <div class="d-flex justify-content-end">
+                                                <nav aria-label="Page navigation">
+                                                    {% if page_obj.has_other_pages %}
+                                                    <ul class="pagination">
+                                                        {% if page_obj.has_previous %}
+                                                            <li class="page-item"><a class="page-link" href="?page=1">&laquo; {% translate 'first' %}</a></li>
+                                                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% translate 'previous' %}</a></li>
+                                                        {% else %}
+                                                            <li class="page-item disabled"><span class="page-link">&laquo; {% translate 'first' %}</span></li>
+                                                            <li class="page-item disabled"><span class="page-link">{% translate 'previous' %}</span></li>
+                                                        {% endif %}
+
+                                                        {% for i in page_obj.paginator.page_range %}
+                                                            {% if page_obj.number == i %}
+                                                                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                                            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+                                                        {% if page_obj.has_next %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% translate 'next' %}</a></li>
+                                                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% translate 'last' %} &raquo;</a></li>
+                                                        {% else %}
+                                                            <li class="page-item disabled"><span class="page-link">{% translate 'next' %}</span></li>
+                                                            <li class="page-item disabled"><span class="page-link">{% translate 'last' %} &raquo;</span></li>
+                                                        {% endif %}
+                                                    </ul>
+                                                    {% endif %}
+                                                </nav>
+                                            </div>
+
+
 										<!--end::Card body-->
-									</div>
+
 									<!--end::Category-->
 								</div>
                                 <div class="card-body pt-15">
@@ -545,121 +580,62 @@ required
                     </div>
                     <!--end::Modal - item - Add-->
                  <!--begin::Modal - item - Add-->
-                    <div class="modal fade" id="kt_modal_add_teams" tabindex="-1" aria-hidden="true">
-                        <!--begin::Modal dialog-->
-                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                            <!--begin::Modal content-->
-                            <div class="modal-content">
-                                <!--begin::Form-->
-                                <form class="form" id="kt_modal_add_teams"
-
-                                      @submit.prevent="getMonkTeamsData"
-                                >
-                                    {% csrf_token %}
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header" id="kt_modal_add_teams_header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Api Pages Number' %}</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div id="kt_modal_add_teams_close" data-bs-dismiss="modal" aria-label="Close"
-                                             class="btn btn-icon btn-sm btn-active-icon-primary">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                                            <span class="svg-icon svg-icon-1">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                                                                  rx="1" transform="rotate(-45 6 17.3137)"
-                                                                  fill="black"/>
-															<rect x="7.41422" y="6" width="16" height="2" rx="1"
-                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
-														</svg>
-													</span>
-                                            <!--end::Svg Icon-->
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body py-10 px-lg-17">
-                                        <!--begin::Scroll-->
-                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_teams_scroll"
-                                             data-kt-scroll="true"
-                                             data-kt-scroll-activate="{default: false, lg: true}"
-                                             data-kt-scroll-max-height="auto"
-                                             data-kt-scroll-dependencies="#kt_modal_add_teams_header"
-                                             data-kt-scroll-wrappers="#kt_modal_add_teams_scroll"
-                                             data-kt-scroll-offset="300px">
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type='number' class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Number Of Pages' %}"
-                                                           v-model="numberOfPages"
-                                                           name="title" required/>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-                                                 <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'sportType Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="type" aria-label="{% translate 'Sport' %}"
-                                                    data-placeholder="{% translate 'Sport' %}"
-                                                    data-dropdown-parent="#kt_modal_add_teams"
-                                                            data-allow-clear="true" v-model="sportType"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                <option value="football" >{% translate 'football' %}</option>
-                                                <option value="basketball" >{% translate 'basketball' %}</option>
-                                                <option value="volleyball" >{% translate 'volleyball' %}</option>
-                                                <option value="handball" >{% translate 'handball' %}</option>
-
-
-
-
-
-                                            </select>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-
-
-                                            </div>
-                                            <!--end::Input group-->
-
-
-                                        </div>
-                                        <!--end::Scroll-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                    <!--begin::Modal footer-->
-                                    <div class="modal-footer flex-center">
-                                        <!--begin::Button-->
-                                        <button type="reset" id="kt_modal_add_teams_cancel"
-                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
-                                        <!--end::Button-->
-                                        <!--begin::Button-->
-                                        <button type="submit" id="" class="btn btn-primary">
-                                            <span class="indicator-label">{% translate 'Submit' %}</span>
-                                            <span class="indicator-progress">{% translate 'Please wait...' %}
-													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                        <!--end::Button-->
-                                    </div>
-                                    <!--end::Modal footer-->
-                                </form>
-                                <!--end::Form-->
+                  <div class="modal fade" id="kt_modal_add_teams" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="getMonkTeamsData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Fetch Teams Data from API' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                             </div>
                         </div>
-                    </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div class="scroll-y me-n7 pe-7">
+                                <div class="fv-row w-100 flex-md-root mb-5" v-if="!isLoading">
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Select Sport' %}</label>
+                                    <select v-model="sportType" class="form-select form-select-solid fw-bolder" required>
+                                        <option value="football">{% translate 'Football' %}</option>
+                                        <option value="basketball">{% translate 'Basketball' %}</option>
+                                        <option value="volleyball">{% translate 'Volleyball' %}</option>
+                                        <option value="handball">{% translate 'Handball' %}</option>
+                                    </select>
+                                </div>
+
+                                <div v-if="isLoading" class="mb-5">
+                                    <h4 class="text-center mb-3">[[ statusMessage ]]</h4>
+                                    <div class="progress h-20px">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                            :style="{width: progress + '%'}" :aria-valuenow="progress">
+                                        </div>
+                                    </div>
+                                    <p class="text-muted text-center mt-2">Please do not close this window. This may take several minutes.</p>
+                                </div>
+
+                                <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                    [[ finalMessage ]]
+                                </div>
+
+                                <div v-if="!isLoading">
+                                    <p>{% translate "Click 'Start Import' to automatically fetch all teams for the selected sport from the API." %}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">{% translate 'Start Import' %}</span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Fetching...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
                     <!--end::Modal - item - Add-->
 								<!--end::Content container-->
 							</div>
@@ -675,65 +651,62 @@ required
 
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/categories.js"></script>
   <script>
-        const MonkTeamsApp = Vue.createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    CheckOutVisible: false,
-                    CheckStatus: 'Hide',
-                    GetStatus: '',
-                    GetMessage: '',
-                    numberOfPages: 1,
-                    sportType: '',
-
-                }
-            },
-            methods: {
-                getMonkTeamsData: function () {
-                    event.preventDefault();
-                    console.log('addNewAppointment',);
-                    const url = "{% url 'sport:AdminMonksTeamsGetData'   %}";
-
-                    payload = {
-                        "csrfmiddlewaretoken": "{{ csrf_token }}",
-                        "pages": this.numberOfPages,
-                        "sport": this.sportType,
-
-                    }
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        data: payload,
-                        success: (data) => {
-                            console.log('data', data)
-                            this.CheckOutVisible = true
-                            this.CheckStatus = 'Show'
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.CheckOutVisible = true
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-
-                        },
-                    });
-                },
-            },
-            created() {
-
+    const MonkTeamsApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                isLoading: false,
+                progress: 0,
+                statusMessage: '',
+                finalMessage: '',
+                isSuccess: false,
+                sportType: 'football', // Default value for the dropdown
             }
-        })
-        MonkTeamsApp.mount('#monkteams-app')
-        MonkTeamsApp.config.devtools = true
+        },
+        methods: {
+            getMonkTeamsData: function () {
+                this.isLoading = true;
+                this.statusMessage = 'Starting data fetch...';
+                this.finalMessage = '';
+                this.progress = 5; // Start with a small amount of progress
 
+                let interval = setInterval(() => {
+                    if (this.progress < 90) { this.progress += 5; }
+                }, 800);
 
-    </script>
+                const url = "{% url 'sport:AdminMonksTeamsGetData' %}";
+                const payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "sport": this.sportType,
+                };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval);
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.finalMessage = data.message;
+                        this.isLoading = false;
+                        if (this.isSuccess) {
+                           setTimeout(() => location.reload(), 2000);
+                        }
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        clearInterval(interval);
+                        this.isSuccess = false;
+                        this.finalMessage = 'An unknown error occurred. Please check the server logs.';
+                        this.isLoading = false;
+                    },
+                });
+            },
+        },
+    })
+    MonkTeamsApp.mount('#monkteams-app')
+</script>
 
 {% endblock custom_js %}
 {% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}

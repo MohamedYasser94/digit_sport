@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.sport.views.utils import FrontIndexSportAppData
 from core.models.blog import BlogArticle
 from core.models.core import SystemSetting, CommonSocialLink
-from core.models.people import TeamSkill, Team
+
 from helper.commonHelper import FRONTEND_TEMPLATES, MAINTENANCE_TEMPLATES, BACKEND_TEMPLATES
 
 
@@ -33,23 +33,6 @@ def HomeIndex(request):
         return render(request, f'frontend/{FRONTEND_TEMPLATES}/index.html', context)
 
 
-def TheTeamFront(request):
-    teams = Team.objects.all()
-    team_list = []
-    for team in teams:
-        skills = TeamSkill.objects.filter(team=team)
-        social = CommonSocialLink.objects.filter(owner_model=ContentType.objects.get(model='Team'), owner_id=team.id, )
-        team_list.append({'team': team, 'skills': skills, 'social': social})
-    context = {'teams': team_list, }
-    return render(request, f'{FRONTEND_TEMPLATES}/contact/team.html', context)
-
-
-def FrontTheTeamDetails(request, slug):
-    team = Team.objects.get(slug=slug)
-    skills = TeamSkill.objects.filter(team=team)
-    social = CommonSocialLink.objects.filter(owner_model=ContentType.objects.get(model='Team'), owner_id=team.id, )
-    context = {'team': team, 'skills': skills, 'social': social, }
-    return render(request, f'{FRONTEND_TEMPLATES}/contact/team_details.html', context)
 
 
 def FAQ(request):

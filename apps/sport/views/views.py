@@ -2,7 +2,7 @@ from datetime import timezone, datetime
 
 from OpenSSL.rand import status
 from django.contrib import messages
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -1479,59 +1479,68 @@ def AdminVenuesDelete(request, slug):
 @authenticated_staf
 @staff_only
 def AdminTeamsList(request):
-    sport = Sport.objects.get(name='football')
-    teams = Teams.objects.all().exclude(sport=sport)
-
+    # The POST logic for adding a new team remains the same.
     if request.method == "POST":
         teams_form = AdminTeamsForm(request.POST or None, request.FILES or None)
 
-        if teams_form:
+        if teams_form.is_valid():  # It's good practice to check if the form is valid
             name = request.POST.get('name')
+            sport_id = request.POST.get('sport')
+
+            # Prevent creating a team with the same name in the same sport
+            if Teams.objects.filter(name=name, sport_id=sport_id).exists():
+                messages.error(request, _("A team with this name already exists for the selected sport."),
+                               extra_tags='Teams')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
+
+            # Your existing POST logic...
             short_code = request.POST.get('short_code')
-            club = request.POST.get('club')
-            sport = request.POST.get('sport')
+            club_id = request.POST.get('club')
             gender = request.POST.get('gender')
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
-            status = 'Active'
 
-            try:
-                check_teams = Teams.objects.get(name=name,sport=sport)
-                messages.error(request, _("Teams Already Exist , Please Try Again"), extra_tags='Teams')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
-            except:
-                pass
+            club = Clubs.objects.get(id=club_id) if club_id else None
+            sport = Sport.objects.get(id=sport_id) if sport_id else None
 
-
-
-            if club == None or club == '':
-                club = None
-            else:
-                club = Clubs.objects.get(id=club)
-
-            if sport == None or sport == '':
-                sport = None
-            else:
-                sport = Sport.objects.get(id=sport)
-
-
-            teams_object = Teams(  name=name,club=club,sport=sport,
-                                   gender=gender,short_code=short_code,image=image,
-                                      image_path=image_path,status='Active')
-
+            teams_object = Teams(
+                name=name, club=club, sport=sport,
+                gender=gender, short_code=short_code, image=image,
+                image_path=image_path, status='Active'
+            )
             teams_object.save()
-            messages.success(request, _("Teams Add Successfully"), extra_tags='Teams')
-
+            messages.success(request, _("Team added successfully."), extra_tags='Teams')
             return HttpResponseRedirect(reverse_lazy('sport:AdminTeamsList'))
         else:
+            messages.error(request, _("The form was not valid. Please try again."), extra_tags='Teams')
+            # Fall through to the GET request logic to re-display the page with form errors
 
-            messages.error(request, _("Teams Not Add , Please Try Again"), extra_tags='Teams')
+    # --- PAGINATION LOGIC FOR GET REQUEST ---
+    teams_list = Teams.objects.all().order_by('name')
 
-    else:
-        context = {'teams': teams, 'teams_form': AdminTeamsForm(), 'current_page': _('Teams')
+    # Create a Paginator instance, showing 25 teams per page.
+    paginator = Paginator(teams_list, 25)
 
-                   }
-        return render(request, f'{BACKEND_TEMPLATES}/sport/teams/admin.html', context)
+    # Get the current page number from the URL's 'page' parameter.
+    page_number = request.GET.get('page')
+
+    # Get the Page object for the requested page number.
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If the page is not an integer, deliver the first page.
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # If the page is out of range, deliver the last page of results.
+        page_obj = paginator.page(paginator.num_pages)
+
+    context = {
+        'page_obj': page_obj,  # Pass the paginated object to the template
+        'teams_form': AdminTeamsForm(),
+        'current_page': _('Teams')
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/teams/admin.html', context)
+
 
 @authenticated_staf
 @staff_only
@@ -1954,6 +1963,17 @@ def AdminPlayersList(request):
     sport_list = [ 'basketball', 'volleyball']
     players = Players.objects.all()
     teams = Teams.objects.all()
+    # GET logic with pagination
+    players_list = Players.objects.all().order_by('name')
+    paginator = Paginator(players_list, 25)  # Show 25 players per page
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     if request.method == "POST":
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
@@ -2014,7 +2034,11 @@ def AdminPlayersList(request):
         else:
             messages.error(request, _("Players Not Add , Please Try Again"), extra_tags='Players')
     else:
-        context = {'players': players,'teams': teams, 'players_form': AdminPlayersForm(), 'current_page': _('Players')}
+        context = {
+            'page_obj': page_obj,  # Pass the paginated object
+            'players_form': AdminPlayersForm(),
+            'current_page': _('Players')
+        }
 
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
 
@@ -2260,48 +2284,82 @@ def AdminPlayerStaticAdd(request, slug):
 @authenticated_staf
 @staff_only
 def AdminMatchList(request):
-    matches = Match.objects.all().order_by('-id')
-
+    # The POST logic for adding a new match remains the same.
     if request.method == "POST":
         matches_form = AdminMatchForm(request.POST or None, request.FILES or None)
-        if matches_form:
-            home_team = request.POST.get('home_team')
-            away_team = request.POST.get('away_team')
-            round = request.POST.get('round')
-            venues = request.POST.get('venues')
+        if matches_form.is_valid():  # Added form validation check
+            home_team_id = request.POST.get('home_team')
+            away_team_id = request.POST.get('away_team')
+
+            if home_team_id == away_team_id:
+                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+
+            # Your existing POST logic continues here...
+            round_id = request.POST.get('round')
+            venues_id = request.POST.get('venues')
             played = request.POST.get('played')
             start_time = request.POST.get('start_time')
 
+            home_team = Teams.objects.get(id=home_team_id)
+            away_team = Teams.objects.get(id=away_team_id)
+            round_obj = Round.objects.get(id=round_id)
 
-            home_team = Teams.objects.get(id=home_team)
-            away_team = Teams.objects.get(id=away_team)
-            round = Round.objects.get(id=round)
-
-            if home_team == away_team:
-                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
-            if home_team.sport != round.sport or away_team.sport != round.sport:
-                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
+            if home_team.sport != round_obj.sport or away_team.sport != round_obj.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"),
+                               extra_tags='Match')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
 
             name = home_team.name + ' vs ' + away_team.name
-            if venues == None or venues == '':
-                venues = None
-            else:
-                venues = Venues.objects.get(id=venues)
+            venues = Venues.objects.get(id=venues_id) if venues_id else None
 
-            match_object = Match(name=name,
-                home_team=home_team,away_team=away_team,round=round,group=round.group,league=round.league,season=round.season,sport=round.sport,
-
-                                 played=played,venues=venues,start_time=start_time,)
+            match_object = Match(
+                name=name,
+                home_team=home_team,
+                away_team=away_team,
+                round=round_obj,
+                group=round_obj.group,
+                league=round_obj.league,
+                season=round_obj.season,
+                sport=round_obj.sport,
+                played=played,
+                venues=venues,
+                start_time=start_time,
+            )
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
         else:
             messages.error(request, _("Match Not Add , Please Try Again"), extra_tags='Match')
-    else:
-        context = {'matches': matches, 'matches_form': AdminMatchForm(), 'current_page': _('Match')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/match/admin.html', context)
+
+    # --- PAGINATION LOGIC FOR GET REQUEST ---
+
+    # 1. Get the full list of fixtures
+    fixtures_list = Fixtures.objects.all().order_by('starting_at')
+
+    # 2. Create a Paginator object (e.g., 25 items per page)
+    paginator = Paginator(fixtures_list, 25)
+
+    # 3. Get the page number from the URL query parameter
+    page_number = request.GET.get('page')
+
+    # 4. Get the corresponding page object
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        page_obj = paginator.page(paginator.num_pages)
+
+    # 5. Pass the page object to the template
+    context = {
+        'page_obj': page_obj,  # Use 'page_obj' instead of 'fixtures'
+        'matches_form': AdminMatchForm(),
+        'current_page': _('Match')
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/admin.html', context)
 
 
 @authenticated_staf

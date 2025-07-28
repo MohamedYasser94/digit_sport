@@ -5,9 +5,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
-from apps.catalog.models.models import Products
+
 from core.models.localization import City
-from core.models.shop import OrderItem
+
 from helper.commonHelper import FRONTEND_TEMPLATES
 
 from user.models import UserProfile
