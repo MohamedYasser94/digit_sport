@@ -1,18 +1,19 @@
 from datetime import datetime
+from datetime import timezone as dt_timezone
+
 import pytz
 import requests
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
+# It's better to get these from settings
+from django.utils import timezone as django_timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-
-# Assuming your models, forms, and settings are correctly imported
-
-from django.conf import settings
 
 from ..models import Teams, Sport, Leagues, Players, FixtureParticipant, Fixtures, Season, Venues
 from ..models.monks import MonkCountry
 
-# It's better to get these from settings
+# Assuming your models, forms, and settings are correctly imported
 api_key = settings.SPORT_MONKS_TOKEN
 base_url = settings.SPORT_MONKS_URL
 
@@ -398,4 +399,155 @@ def AdminMonksFixturesGetData(request):
         return JsonResponse({'type': 'Success', 'message': success_message})
 
     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'})
-                            
+
+
+def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
+    """
+    Fetches fixtures and intelligently fetches any missing related data.
+    FIXED: Now correctly handles timezone conversion.
+    """
+    includes = "league;season;participants;state"
+    next_page_url = base_url + f'{sport}/fixtures/date/{fetch_date_str}?api_token={api_key}&include={includes}'
+
+    try:
+        sport_obj = Sport.objects.get(name__iexact=sport)
+    except Sport.DoesNotExist:
+        print(f"Sport '{sport}' not found in DB.")
+        return False
+
+    while next_page_url:
+        try:
+            response = requests.get(next_page_url)
+            if response.status_code != 200:
+                print(f"Sportmonks API request failed: {response.status_code}")
+                return False
+
+            data = response.json()
+            data_to_db = data.get('data', [])
+
+            for fixture_data in data_to_db:
+                league_id = fixture_data.get('league_id')
+                league = Leagues.objects.filter(api_id=league_id).first()
+                if not league:
+                    league = _fetch_and_store_single_league(league_id)
+                    if not league: continue
+
+                season_data = fixture_data.get('season')
+                if not season_data: continue
+
+                season_defaults = {'name': season_data.get('name'), 'league': league,
+                                   'is_current': season_data.get('is_current', False),
+                                   'starting_at': season_data.get('starting_at'),
+                                   'ending_at': season_data.get('ending_at')}
+                season, _ = Season.objects.update_or_create(api_id=season_data['id'], defaults=season_defaults)
+
+                api_defaults = {'league': league, 'season': season, 'name': fixture_data.get('name'),
+                                'leg': fixture_data.get('leg'), 'result_info': fixture_data.get('result_info'),
+                                'state': fixture_data.get('state', {}).get('state')}
+
+                # <<< FIX: Correctly parse and make datetime timezone-aware >>>
+                dt_str = fixture_data.get('starting_at')
+                if dt_str:
+                    try:
+                        # Parse the string into a naive datetime object first
+                        naive_dt = datetime.fromisoformat(dt_str.replace('Z', ''))
+                        # Make it timezone-aware, assuming the API provides UTC time
+                        aware_dt = django_timezone.make_aware(naive_dt, dt_timezone.utc)
+                        api_defaults['starting_at'] = aware_dt
+                    except (ValueError, TypeError):
+                        pass
+
+                fixture_obj, _ = Fixtures.objects.update_or_create(api_id=fixture_data['id'], defaults=api_defaults)
+
+                fixture_obj.participants.all().delete()
+                for participant_data in fixture_data.get('participants', []):
+                    team_id = participant_data.get('id')
+                    team = Teams.objects.filter(api_id=team_id).first()
+                    if not team:
+                        team = _fetch_and_store_single_team(team_id, sport_obj)
+
+                    if team:
+                        FixtureParticipant.objects.create(fixture=fixture_obj, team=team, api_id=team_id,
+                                                          meta_location=participant_data.get('meta', {}).get(
+                                                              'location'))
+
+            pagination = data.get('pagination', {})
+            next_page_url = f"{pagination.get('next_page')}&api_token={api_key}" if pagination.get('has_more') else None
+
+        except Exception as e:
+            print(f"An error occurred during fixture processing: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    return True
+
+
+def _fetch_and_store_single_league(league_api_id):
+    """Fetches a single league by its ID from the API and stores it in the DB."""
+    if not league_api_id:
+        return None
+
+    print(f"Fetching missing league with ID: {league_api_id}...")
+    url = base_url + f'football/leagues/{league_api_id}?api_token={api_key}&include=country'
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            item = response.json().get('data', {})
+            if not item:
+                return None
+
+            country_info = item.get('country')
+            defaults = {
+                'name': item.get('name'),
+                'sport': Sport.objects.get(name='football'),
+                'image_path': item.get('image_path'),
+                'country': country_info.get('name') if country_info else None,
+            }
+            league_obj, created = Leagues.objects.update_or_create(
+                api_id=item['id'],
+                defaults=defaults
+            )
+            if created:
+                print(f"SUCCESS: Stored new league '{league_obj.name}'.")
+            return league_obj
+        return None
+    except Exception as e:
+        print(f"ERROR fetching single league {league_api_id}: {e}")
+        return None
+
+
+# <<< NEW HELPER FUNCTION 2 >>>
+def _fetch_and_store_single_team(team_api_id, sport_obj):
+    """Fetches a single team by its ID from the API and stores it in the DB."""
+    if not team_api_id:
+        return None
+
+    print(f"Fetching missing team with ID: {team_api_id}...")
+    url = base_url + f'{sport_obj.name.lower()}/teams/{team_api_id}?api_token={api_key}&include=country'
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            item = response.json().get('data', {})
+            if not item:
+                return None
+
+            country_info = item.get('country')
+            defaults = {
+                'name': item.get('name'),
+                'sport': sport_obj,
+                'short_code': item.get('short_code'),
+                'image_path': item.get('image_path'),
+                'country': country_info.get('name') if country_info else None,
+            }
+            team_obj, created = Teams.objects.update_or_create(
+                api_id=item['id'],
+                defaults=defaults
+            )
+            if created:
+                print(f"SUCCESS: Stored new team '{team_obj.name}'.")
+            return team_obj
+        return None
+    except Exception as e:
+        print(f"ERROR fetching single team {team_api_id}: {e}")
+        return None

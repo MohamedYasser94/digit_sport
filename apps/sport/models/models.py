@@ -463,64 +463,91 @@ class SportState(models.Model):
         super(SportState, self).save(*args, **kwargs)
 
 
+# sports/models.py
+
+
+
 class Fixtures(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True)
-    sender_model = models.ForeignKey(ContentType,related_name='sport_fixture_sender', on_delete=models.CASCADE, null=True, blank=True)
+    # This is the most important change. `unique=True` ensures no duplicates.
+    api_id = models.CharField(max_length=200, null=True, unique=True, db_index=True)
+
+    # Generic Foreign Keys for Sender, Receiver, Owner
+    sender_model = models.ForeignKey(ContentType, related_name='sport_fixture_sender', on_delete=models.CASCADE,
+                                     null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
-    receiver_model = models.ForeignKey(ContentType,related_name='sport_fixture_receiver', on_delete=models.CASCADE, null=True, blank=True)
+
+    receiver_model = models.ForeignKey(ContentType, related_name='sport_fixture_receiver', on_delete=models.CASCADE,
+                                       null=True, blank=True)
     receiver_id = models.PositiveIntegerField(blank=True, null=True)
     receiver = GenericForeignKey('receiver_model', 'receiver_id')
-    owner_model = models.ForeignKey(ContentType,related_name='sport_fixture_owner', on_delete=models.CASCADE, null=True, blank=True)
+
+    owner_model = models.ForeignKey(ContentType, related_name='sport_fixture_owner', on_delete=models.CASCADE,
+                                    null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_fixture', null=True, blank=True)
-    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_fixture', null=True, blank=True)
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_fixture', null=True, blank=True)
-    stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_fixture', null=True, blank=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_fixture', null=True, blank=True)
-    aggregate = models.ForeignKey(Aggregate, on_delete=models.CASCADE, related_name='aggregate_fixture', null=True, blank=True)
-    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
-    state = models.ForeignKey(SportState, on_delete=models.CASCADE, related_name='state_fixture', null=True, blank=True)
-    venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
-    name = models.CharField(max_length=100, )
-    short_name = models.CharField(max_length=100,)
+
+    # Foreign Keys to other models
+    sport = models.ForeignKey('Sport', on_delete=models.CASCADE, related_name='sport_fixture', null=True, blank=True)
+    league = models.ForeignKey('Leagues', on_delete=models.CASCADE, related_name='league_fixture', null=True,
+                               blank=True)
+    season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name='season_fixture', null=True, blank=True)
+    stage = models.ForeignKey('Stages', on_delete=models.CASCADE, related_name='stage_fixture', null=True, blank=True)
+    group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='group_fixture', null=True, blank=True)
+    aggregate = models.ForeignKey('Aggregate', on_delete=models.CASCADE, related_name='aggregate_fixture', null=True,
+                                  blank=True)
+    round = models.ForeignKey('Round', on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
+    venue = models.ForeignKey('Venues', on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
+
+    # Fixture details
+    name = models.CharField(max_length=100)
+    short_name = models.CharField(max_length=100)
     starting_at = models.DateTimeField(null=True, blank=True)
     result_info = models.CharField(max_length=100, null=True, blank=True)
     leg = models.CharField(max_length=100, null=True, blank=True)
     details = models.TextField(null=True, blank=True)
     length = models.IntegerField(null=True, blank=True)
     placeholder = models.CharField(max_length=100, null=True, blank=True)
-    has_odds = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    has_odds = models.CharField(max_length=200, choices=[('Yes', 'Yes'), ('No', 'No')], default='Yes', null=True,
+                                blank=True)  # Example choices
     starting_at_timestamp = models.IntegerField(null=True, blank=True)
+
+    # Live game state
+    state = models.CharField(max_length=100, null=True, blank=True)
     time_status = models.CharField(max_length=100, null=True, blank=True)
     time_status_code = models.CharField(max_length=100, null=True, blank=True)
     minute = models.IntegerField(null=True, blank=True)
     extra_minute = models.IntegerField(null=True, blank=True)
     extra_time = models.IntegerField(null=True, blank=True)
+
+    # JSON Fields for complex data
     statistics = models.JSONField(null=True, blank=True)
     events = models.JSONField(null=True, blank=True)
     lineups = models.JSONField(null=True, blank=True)
+
+    # Metadata
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=200, choices=[('Active', 'Active'), ('Inactive', 'Inactive')],
+                              default='Active', null=True, blank=True)  # Example choices
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('name',)
-        verbose_name = 'fixture'  # verbose_name_plural = 'categories'
+        verbose_name = 'fixture'
+        verbose_name_plural = 'fixtures'
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            #CODE GENERATION  RANDOM NUMBER WITH DATE ADD WHILE TO SURE  NO DUBLICATE
-            code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
-            self.code = code
-            self.slug = slugify(code)
+        # Generate a unique code and slug only on creation
+        if not self.pk and not self.code:
+            base_code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
+            self.code = base_code
+            self.slug = slugify(base_code)
+            # Ensure the generated code is unique
             while Fixtures.objects.filter(code=self.code).exists():
-                code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
-                self.code = code
-                self.slug = slugify(code)
+                new_code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
+                self.code = new_code
+                self.slug = slugify(new_code)
         super(Fixtures, self).save(*args, **kwargs)
 
 
@@ -528,11 +555,32 @@ class FixtureParticipant(models.Model):
     """ Stores the teams (participants) for a given fixture """
     fixture = models.ForeignKey(Fixtures, related_name='participants', on_delete=models.CASCADE)
     team = models.ForeignKey('Teams', on_delete=models.CASCADE)
-    api_id = models.IntegerField(unique=True, null=True, blank=True)
+    api_id = models.IntegerField( null=True, blank=True)
     meta_location = models.CharField(max_length=50)  # 'home' or 'away'
 
     def __str__(self):
         return f"{self.team.name} in Fixture {self.fixture.api_id}"
+
+
+# your_app/models.py
+
+class FetchedDate(models.Model):
+    """
+    A simple model to log which dates have had their fixtures
+    successfully fetched from the source API (e.g., Sportmonks).
+    """
+    # <<< FIX: Removed primary_key=True from the 'date' field
+    date = models.DateField()
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, null=True, blank=True)
+    fetched_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # This constraint correctly ensures the combination of date and sport is unique.
+        unique_together = ('date', 'sport')
+
+    def __str__(self):
+        sport_name = self.sport.name if self.sport else "Unknown Sport"
+        return f"{self.date.strftime('%Y-%m-%d')} - {sport_name}"
 
 
 class LiveScores(models.Model):
@@ -744,6 +792,29 @@ class Standings(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(Standings, self).save(*args, **kwargs)
+
+
+class TopScorer(models.Model):
+    """
+    Stores top scorer and top assist provider data for a given season.
+    """
+    api_id = models.PositiveIntegerField(unique=True, primary_key=True)
+    season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name='topscorers')
+    player = models.ForeignKey('Players', on_delete=models.CASCADE, related_name='topscorer_records')
+    participant = models.ForeignKey('Teams', on_delete=models.CASCADE, related_name='topscorer_players')
+
+    # Type can be 'goals', 'assists', 'redcards', etc. based on the API type_id
+    type = models.CharField(max_length=50, db_index=True)
+    position = models.PositiveIntegerField()
+    total = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.player.name} - {self.season.name} ({self.type}: {self.total})"
+
+    class Meta:
+        ordering = ['position']
+        verbose_name = "Top Scorer / Assist"
+        verbose_name_plural = "Top Scorers & Assists"
 
 
 class LiveStandings(models.Model):
@@ -1674,3 +1745,17 @@ class TeamSeasonTable(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(TeamSeasonTable, self).save(*args, **kwargs)
+
+
+class FavoriteLeague(models.Model):
+    """ Links a user to a league they have favorited. """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_leagues')
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='favorited_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Ensures a user can only favorite a league once
+        unique_together = ('user', 'league')
+
+    def __str__(self):
+        return f"{self.user.username}'s favorite: {self.league.name}"
