@@ -34,18 +34,18 @@ User = get_user_model()
 class MonkCountry(models.Model):
 
     api_id = models.IntegerField(null=True, blank=True)
-    continent = models.CharField(max_length=200, null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    name_ar = models.CharField(max_length=200, null=True, blank=True)
-    official_name = models.CharField(max_length=200, null=True, blank=True)
-    fifa_name = models.CharField(max_length=200, null=True, blank=True)
-    iso2 = models.CharField(max_length=200, null=True, blank=True)
-    iso3 = models.CharField(max_length=200, null=True, blank=True)
-    latitude = models.CharField(max_length=200, null=True, blank=True)
-    longitude = models.CharField(max_length=200, null=True, blank=True)
+    continent = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    name_ar = models.CharField(max_length=100, null=True, blank=True)
+    official_name = models.CharField(max_length=100, null=True, blank=True)
+    fifa_name = models.CharField(max_length=100, null=True, blank=True)
+    iso2 = models.CharField(max_length=100, null=True, blank=True)
+    iso3 = models.CharField(max_length=100, null=True, blank=True)
+    latitude = models.CharField(max_length=100, null=True, blank=True)
+    longitude = models.CharField(max_length=100, null=True, blank=True)
     image_path = models.ImageField(upload_to=get_file_path, null=True, blank=True)
-    borders = models.CharField(max_length=200, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    borders = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -65,8 +65,8 @@ class MonkLeague(models.Model):
     A generic model for a league or competition in any sport.
     """
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='leagues')
-    name = models.CharField(_("League Name"), max_length=255)
-    logo_url = models.URLField(_("Logo URL"), max_length=500, null=True, blank=True)
+    name = models.CharField(_("League Name"), max_length=100)
+    logo_url = models.URLField(_("Logo URL"), max_length=100, null=True, blank=True)
 
     # Source Data Management
     # This is crucial for tracking where the data came from.
@@ -76,7 +76,7 @@ class MonkLeague(models.Model):
                                  help_text=_("The ID from the source API"))
 
     # Custom data fields for your employees
-    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=255, null=True, blank=True)
+    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=100, null=True, blank=True)
 
     class Meta:
         verbose_name = _("League")
@@ -93,16 +93,16 @@ class MonkTeam(models.Model):
     A generic model for a team in any sport.
     """
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='teams')
-    name = models.CharField(_("Team Name"), max_length=255)
-    logo_url = models.URLField(_("Logo URL"), max_length=500, null=True, blank=True)
+    name = models.CharField(_("Team Name"), max_length=100)
+    logo_url = models.URLField(_("Logo URL"), max_length=100, null=True, blank=True)
 
     # Source Data Management
     source_api = models.CharField(_("Source API"), max_length=50, db_index=True)
     source_id = models.CharField(_("Source ID"), max_length=100, db_index=True)
 
     # Custom data fields for your employees
-    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=255, null=True, blank=True)
-    custom_image_url = models.URLField(_("Custom Image URL"), max_length=500, null=True, blank=True)
+    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=100, null=True, blank=True)
+    custom_image_url = models.URLField(_("Custom Image URL"), max_length=100, null=True, blank=True)
 
     class Meta:
         verbose_name = _("Team")
@@ -137,7 +137,7 @@ class MonkMatch(models.Model):
     source_id = models.CharField(_("Source ID"), max_length=100, db_index=True)
 
     # Custom data fields for your employees
-    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=255, null=True, blank=True)
+    custom_translation_name = models.CharField(_("Custom Translation Name"), max_length=100, null=True, blank=True)
 
     class Meta:
         verbose_name = _("Match")

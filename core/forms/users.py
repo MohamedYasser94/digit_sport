@@ -93,7 +93,7 @@ class UserProfileUpdateForm(forms.ModelForm):
 
 ################REst Password###########
 class PasswordResetForm(forms.Form):
-    email = forms.EmailField(label=_("Email"), max_length=254, widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
+    email = forms.EmailField(label=_("Email"), max_length=100, widget=forms.EmailInput(attrs={'autocomplete': 'email'}))
 
     def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email,
                   html_email_template_name=None):

@@ -8,7 +8,7 @@ User = get_user_model()
 
 class MatchReport(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_player_reports')
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
