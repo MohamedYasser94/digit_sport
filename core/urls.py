@@ -59,14 +59,6 @@ urlpatterns = [
     path('blog/video/delete/<slug:slug>/', blog.AdminBlogArticleDelete, name='AdminBlogVideoDelete'),
 
 
-    ########## Services Admin #########
-    path('blog/Service/', blog.AdminBlogServicesList, name='AdminBlogServicesList'),
-    path('blog/Service/add/', blog.BlogServicesCreate, name='AdminBlogServicesCreate'),
-    path('blog/Service/detail/<slug:slug>/', blog.BlogServicesDetail, name='AdminBlogServicesDetails'),
-    path('blog/Service/update/<slug:slug>/', blog.BlogServicesUpdate, name='AdminBlogServicesUpdate'),
-    path('blog/Service/delete/<slug:slug>/', blog.BlogServicesDelete, name='AdminBlogServicesDelete'),
-    path('blog/article/images/delete/<slug:slug>/', blog.AdminApiBlogServicesImageDelete,
-         name='AdminApiBlogServicesImageDelete'),
 
     ########## Inbox Admin #########
     path('inbox/all/<slug:slug>/', emails.AdminEmailList, name='AdminInbox'),

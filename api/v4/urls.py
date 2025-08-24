@@ -1,36 +1,31 @@
-from django.urls import path, include
+from django.urls import path
 
-from api.v3.views import notification
-from api.v3.views.apps.sport import sport, media, hive, monks
-from api.v3.views.apps.sport.monks import FavoriteLeagueToggle
+from api.v4.views.apps.sport import new_app
 
 app_name = 'api'
-# DELETE_EXPIRED_TOKENS_INTERVAL = DjangoRestJwtRegistrationConfig.settings['DELETE_EXPIRED_TOKENS_INTERVAL']
-from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
-
-from rest_framework.routers import DefaultRouter
-
-
-
 
 urlpatterns = [
-
-    path('v4/fixtures/<str:sport>/<str:date>/<str:lang>/list/', monks.FixturesByDateApiList,
+    ############# Home Fixtures api urls #############
+    path('v4/fixtures/<str:sport>/<str:date>/<str:lang>/list/', new_app.FixturesByDateApiList,
          name='FixturesByDateApiList'),
 
-    path('v4/leagues/toggle-favorite/', FavoriteLeagueToggle.as_view(), name='toggle-favorite-league'),
+    path('v4/leagues/toggle-favorite/', new_app.FavoriteLeagueToggle.as_view(), name='toggle-favorite-league'),
 
-    path('v4/fixtures/detail/<int:fixture_id>/<str:lang>/', monks.FixtureDetailApiView, name='FixtureDetailApiView'),
+    path('v4/fixtures/detail/<int:fixture_id>/<str:lang>/', new_app.FixtureDetailApiView, name='FixtureDetailApiView'),
 
-    ############# league api urls #############
+    ######################### team Screen api urls #########################
+    path('v4/teams/<str:sport>/details/<str:lang>/list/', new_app.TeamScreenApiView, name='TeamScreenApiView'),
+    path('v4/teams/detail/<int:team_id>/<str:lang>/', new_app.TeamDetailApiView, name='TeamDetailApiView'),
 
-    path('v4/leagues/detail/<int:league_id>/<str:lang>/', monks.LeagueDetailApiView, name='LeagueDetailApiView'),
-    path('v4/leagues/<int:league_id>/<str:lang>/standings/', monks.LeagueStandingsApiView, name='LeagueStandingsApiView'),
+    ############# league Screen api urls #############
 
-    path('v4/leagues/<int:league_id>/<str:lang>/top-scorers/', monks.LeagueTopScorersApiView, name='LeagueTopScorersApiView'),
+    path('v4/leagues/<str:sport>/list/<str:lang>/list/', new_app.LeaguesApiView, name='LeaguesApiView'),
 
+    path('v4/leagues/detail/<int:league_id>/<str:lang>/', new_app.LeagueDetailApiView, name='LeagueDetailApiView'),
 
+    ######################### News api urls #########################
+    path('v4/news/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
 
+    path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView')
 
-
-               ]
+]

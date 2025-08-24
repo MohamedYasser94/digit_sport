@@ -1,22 +1,17 @@
-from rest_framework.fields import SerializerMethodField
-from rest_framework.templatetags import rest_framework
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, serializers
+from rest_framework.filters import SearchFilter
 
-from api.v3.serializers.blog import *
-from api.v3.serializers.sport.operations import *
-from apps.sport.models import *
 from apps.sport.models.models import *
 from apps.sport.models.monks import *
 from core.models.blog import *
-from digit_sport.settings import env
+
+
 # sports/api_views.py
 #
 # This file contains the primary API views for your Flutter application.
 # It uses Django REST Framework (DRF) ViewSets for power and efficiency.
-
-from rest_framework import viewsets, serializers
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
-
 
 
 # -----------------------------------------------------------------------------
@@ -40,6 +35,29 @@ class LeagueSerializer(serializers.ModelSerializer):
             'custom_translation_name'
         ]
 
+class TeamWithMatchesSerializer(serializers.ModelSerializer):
+    sport = SportSerializer(read_only=True)
+    upcoming_fixtures = serializers.SerializerMethodField()
+    previous_fixtures = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teams # FIX: Changed from MonkTeam to Teams to match your view
+        fields = [
+            'api_id', 'name', 'image_path', 'sport',
+            'upcoming_fixtures', 'previous_fixtures'
+        ]
+
+    def get_upcoming_fixtures(self, obj):
+        # Use the pre-fetched data from the context for efficiency
+        all_upcoming = self.context.get('upcoming_fixtures', {})
+        team_fixtures = all_upcoming.get(obj.api_id, [])
+        return FixtureSerializer(team_fixtures, many=True).data
+
+    def get_previous_fixtures(self, obj):
+        # Use the pre-fetched data from the context for efficiency
+        all_previous = self.context.get('previous_fixtures', {})
+        team_fixtures = all_previous.get(obj.api_id, [])
+        return FixtureSerializer(team_fixtures, many=True).data
 
 class TeamSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
@@ -61,9 +79,9 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = [
-            'id', 'match_time', 'status', 'home_score', 'away_score',
-            'league', 'home_team', 'away_team', 'events_data', 'statistics_data',
-            'custom_translation_name'
+            'id',  'status', 'home_score', 'away_score',
+            'league', 'home_team', 'away_team',
+
         ]
 
 

@@ -271,7 +271,7 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://relaxed-curie-e9a516.
 CORS_ORIGIN_REGEX_WHITELIST = [r"^https://\w+\.netlify\.app$", ]
 
 REST_FRAMEWORK = {'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-                  'EXCEPTION_HANDLER': 'core.utils.custom_exception_handler',
+                  'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
                   'NON_FIELD_ERRORS_KEY': 'error',
                   'DEFAULT_AUTHENTICATION_CLASSES': [  # 'rest_framework.authentication.SessionAuthentication',
                       'rest_framework.authentication.BasicAuthentication', ],

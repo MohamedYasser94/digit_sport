@@ -567,3 +567,9 @@ def SportPlayersApiDetails(request,player_id):
         sport_data = {'players': [], }
         data = {'success': success, 'data': sport_data, 'message': message, }
         return JsonResponse(data, safe=False,status=200)
+
+
+
+
+
+

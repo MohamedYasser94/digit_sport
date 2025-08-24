@@ -56,41 +56,7 @@ class BlogCategories(MPTTModel):
             self.slug = slugify(code)
         super(BlogCategories, self).save(*args, **kwargs)
 
-class BlogServices(models.Model):
-    title = models.CharField(max_length=100, null=False, blank=False)
-    service_type = models.CharField(max_length=50, choices=Service_Type, default='Service')
-    keyword = models.CharField(max_length=100, null=False, blank=False)
-    category = models.ForeignKey(BlogCategories, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(CommonTags,related_name='services_tags', blank=True)
-    body = models.TextField(blank=True,null=True)
-    project_name = models.CharField(max_length=100, null=True, blank=True)
-    project_type = models.CharField(max_length=100, null=True, blank=True)
-    skills = models.CharField(max_length=100, null=True, blank=True)
-    demo = models.URLField(max_length=100, null=True, blank=True)
-    files = models.FileField(blank=True, upload_to=get_file_path)
-    pdf = models.FileField(blank=True, upload_to=get_file_path)
-    cloud_file = models.URLField(max_length=100, null=True, blank=True)
-    brand = models.CharField(max_length=50, null=True, blank=True)
-    featured = models.CharField(max_length=100, choices=Featured_Status, default='Inactive')
-    status = models.CharField(max_length=60, choices=Active_Status, null=True, default='Active')
-    sort_order = models.SmallIntegerField(default=0, null=True)
-    code = models.CharField(max_length=50, null=True, blank=True)
-    slug = models.SlugField(unique=True, null=True, blank=True, max_length=128)
-    created_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('ServicesDetail', args=[str(self.id)])
-
-    def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Our-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
-        super(BlogServices, self).save(*args, **kwargs)
 
 
 

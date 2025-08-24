@@ -1,4 +1,4 @@
-from datetime import timezone, datetime
+from datetime import  datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
@@ -524,6 +525,7 @@ class Fixtures(models.Model):
     statistics = models.JSONField(null=True, blank=True)
     events = models.JSONField(null=True, blank=True)
     lineups = models.JSONField(null=True, blank=True)
+    scores = models.JSONField(null=True, blank=True)
 
     # Metadata
     code = models.CharField(max_length=100, null=True, blank=True)
@@ -720,6 +722,23 @@ class Teams(models.Model):
 
     def __str__(self):
         return f"{self.name}-{self.sport}"
+
+    def get_last_fixture(self):
+        """Returns the most recent fixture that has finished."""
+        return Fixtures.objects.filter(
+            participants__team=self,
+            state='FT',  # Filter for finished matches
+            starting_at__lt=timezone.now()
+        ).order_by('-starting_at').first()
+
+    def get_next_fixture(self):
+        """Returns the nearest upcoming fixture."""
+        return Fixtures.objects.filter(
+            participants__team=self,
+            starting_at__gte=timezone.now()
+        ).order_by('starting_at').first()
+
+
 
     def save(self, *args, **kwargs):
         # This new method creates a unique slug from the league name and api_id
