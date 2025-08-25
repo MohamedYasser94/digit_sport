@@ -89,7 +89,7 @@ def FixturesByDateApiList(request, sport, date, lang):
 
         # --- Main Logic Branch ---
         if fetched_record and has_fixtures:
-            print(f"✅ Cache HIT for {sport} on {fetch_date}. Serving from local DB.")
+
 
             # For today's date, check if the data is "stale" (e.g., older than 2 minutes)
             today = django_timezone.now().date()
@@ -97,7 +97,7 @@ def FixturesByDateApiList(request, sport, date, lang):
                 time_since_last_fetch = django_timezone.now() - fetched_record.fetched_at
                 # Refresh if data is older than 2 minutes
                 if time_since_last_fetch > timedelta(minutes=2):
-                    print(f"🔄 Data for today is stale. Starting background refresh...")
+
                     # Start the fetch in a separate thread so it doesn't block the response
                     thread = threading.Thread(
                         target=_fetch_and_store_fixtures_from_source,
@@ -110,7 +110,7 @@ def FixturesByDateApiList(request, sport, date, lang):
             return Response(response_data, status=status.HTTP_200_OK)
         else:
             # --- CACHE MISS ---
-            print(f"❌ Cache MISS for {sport} on {fetch_date}. Fetching synchronously.")
+
             success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
 
             if not success:
@@ -122,15 +122,15 @@ def FixturesByDateApiList(request, sport, date, lang):
                 date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
             )
 
-            print(f"✅ Fetch successful. Now serving newly stored data for {fetch_date}.")
+
             response_data = _get_serialized_fixtures_for_date(fetch_date)
             return Response(response_data, status=status.HTTP_200_OK)
 
     except Sport.DoesNotExist:
         return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        print(f"An unexpected error occurred in FixturesByDateApiList: {str(e)}")
-        return Response({"error": "An unexpected server error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"error": f"An unexpected server error occurred.{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FavoriteLeagueToggle(APIView):
     """
