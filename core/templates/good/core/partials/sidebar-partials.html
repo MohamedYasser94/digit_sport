@@ -69,20 +69,7 @@
                         </div>
                     {% endif %}
                     <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    {% if user.access_level == 'SuperAdmin' %}
-                        <div class="menu-item">
-                            <!--begin:Menu link-->
-                            <a class="menu-link" href="{% url 'core:AdminPaymentGatewayList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                                <span class="menu-title">{% translate 'Payment Gateway' %}</span>
-                            </a>
-                            <!--end:Menu link-->
-                        </div>
-                    {% endif %}
-                    <!--end:Menu item-->
+
                 </div>
 
                 <!--end:Menu sub-->
@@ -99,36 +86,7 @@
 												<span class="menu-arrow"></span>
 											</span>
                 <!--end:Menu link-->
-                <!--begin:Menu sub-->
-                <div class="menu-sub menu-sub-accordion menu-active-bg">
-                    <!--begin:Menu item-->
-                    <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link" href="{% url 'core:AdminMembershipList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                            <span class="menu-title">{% translate "Membership's" %}</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item">
-                        <!--begin:Menu link-->
-                        <a class="menu-link" href="{% url 'core:AdminSubscriptionList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                            <span class="menu-title">{% translate 'Subscriptions' %}</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
 
-
-                </div>
-                <!--end:Menu sub-->
             </div>
             <!--end:Menu item-->
         {% endif %}
@@ -192,47 +150,6 @@
 											</span>
             <!--end:Menu link-->
 
-            <!--begin:Menu sub-->
-            <div class="menu-sub menu-sub-accordion menu-active-bg">
-                <!--begin:Menu item-->
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="{% url 'core:AdminSliderList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                        <span class="menu-title">{% translate 'Slider' %}</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                <!--end:Menu item-->
-                <!--begin:Menu item-->
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="{% url 'core:AdminCountryList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                        <span class="menu-title">{% translate 'Bannnesr' %}</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                <!--end:Menu item-->
-                <!--begin:Menu item-->
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link" href="{% url 'core:AdminTestimonialsList' %}">
-														<span class="menu-bullet">
-															<span class="bullet bullet-dot"></span>
-														</span>
-                        <span class="menu-title">{% translate 'Testimonials' %}</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-                <!--end:Menu item-->
-
-            </div>
-            <!--end:Menu sub-->
 
         </div>
         <!--end:Menu item-->

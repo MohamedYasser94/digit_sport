@@ -3,789 +3,194 @@
 {% load i18n %}
 
 {% block body %}
-    <!--begin::Main-->
-    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-        <!--begin::Content wrapper-->
-        <div class="d-flex flex-column flex-column-fluid" id="monkplayer-app">
-            <!--begin::Content-->
-            <div id="kt_app_content" class="app-content flex-column-fluid">
-                <!--begin::Content container-->
-                <div id="kt_app_content_container" class="app-container container-fluid">
-                    <!--begin::item-->
-                    <div class="card card-flush">
-                        <!--begin::Card header-->
-                        <div class="card-header align-items-center py-5 gap-2 gap-md-5">
-                            <!--begin::Card title-->
-                            <div class="card-title">
-                                <!--begin::Search-->
-                                <div class="d-flex align-items-center position-relative my-1">
-                                    <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
-                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
-														<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                             xmlns="http://www.w3.org/2000/svg">
-															<rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546"
-                                                                  height="2" rx="1"
-                                                                  transform="rotate(45 17.0365 15.1223)"
-                                                                  fill="currentColor"/>
-															<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                  fill="currentColor"/>
-														</svg>
-													</span>
-                                    <!--end::Svg Icon-->
-                                    <input type="text" data-kt-ecommerce-category-filter="search"
-                                           class="form-control form-control-solid w-250px ps-14"
-                                           placeholder="{% translate 'Search' %}"/>
-                                </div>
-                                <!--end::Search-->
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid" id="monkplayers-app">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                <div class="card card-flush">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
                             </div>
-                            <!--end::Card title-->
-                            <!--begin::Card toolbar-->
-                            <div class="card-toolbar">
-                                <!--begin::Add customer-->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#kt_modal_add_customer">{% translate 'Add Players' %}
-                                </button>
-                                <!--end::Add customer-->
-{#                                <!--begin::Add customer-->#}
-{#                                <a class="btn btn-primary m-10" data-bs-toggle="modal"#}
-{#                                   data-bs-target="#kt_modal_add_monks">{% translate 'Add Players From Api' %}#}
-{#                                </a>#}
-{#                                <!--end::Add customer-->#}
-                            </div>
-                            <!--end::Card toolbar-->
+                        <div class="card-toolbar">
+                             <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#kt_modal_add_player">
+                                {% translate 'Add Player' %}
+                            </button>
+                            <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#kt_modal_add_player_api">
+                                {% translate 'Fetch Players From API' %}
+                            </a>
                         </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-0">
-                            <!--begin::Table-->
-                            <table class="table align-middle table-row-dashed fs-6 gy-5"
-                                   id="kt_customers_table">
-                                <!--begin::Table head-->
-                                <thead>
-                                <!--begin::Table row-->
-                                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                    <th class="w-10px pe-2">
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                            <input class="form-check-input" type="checkbox" data-kt-check="true"
-                                                   data-kt-check-target="#kt_customers_table .form-check-input"
-                                                   value="1"/>
-                                        </div>
-                                    </th>
-                                    <th class="min-w-20px">{% translate '#' %}</th>
+                    </div>
+                    <div class="card-body pt-0">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_category_table">
+                            <thead>
+                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                    <th class="min-w-20px">#</th>
                                     <th class="min-w-125px">{% translate 'Name' %}</th>
-                                    <th class="min-w-125px">{% translate 'Code' %}</th>
+                                    <th class="min-w-125px">{% translate 'Team' %}</th>
                                     <th class="min-w-125px">{% translate 'Sport' %}</th>
-                                     <th class="min-w-125px">{% translate 'Team' %}</th>
-                                    <th class="min-w-125px">{% translate 'Country' %}</th>
-{#                                    <th class="min-w-125px">{% translate 'Image' %}</th>#}
-                                    <th class="min-w-125px">{% translate 'Nationality' %}</th>
-                                    <th class="min-w-125px">{% translate 'In Team' %}</th>
+                                    <th class="min-w-125px">{% translate 'Image' %}</th>
+                                    <th class="min-w-125px">{% translate 'Status' %}</th>
                                     <th class="text-end min-w-70px">{% translate 'Action' %}</th>
                                 </tr>
-                                <!--end::Table row-->
-                                </thead>
-                                <!--end::Table head-->
-                                <!--begin::Table body-->
-                                <tbody class="fw-semibold text-gray-600">
-                                <!--begin::Table row-->
-                                {% for item in players %}
-                                    <tr>
-                                        <!--begin::Checkbox-->
-                                        <td>
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="1"/>
-                                            </div>
+                            </thead>
+                            <tbody class="fw-semibold text-gray-600">
+                                {% for item in page_obj %} <tr>
+                                    <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.team.name|default:"N/A" }}</td>
+                                    <td>{{ item.sport.name|default:"N/A" }}</td>
+                                    <td>
+                                        {% if item.image_path %}
+                                            <img src="{{ item.image_path }}" alt="{{ item.name }}" width="40" height="40" style="object-fit: cover;"/>
+                                        {% elif item.image %}
+                                             <img src="{{ item.image.url }}" alt="{{ item.name }}" width="40" height="40" style="object-fit: cover;"/>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="badge badge-light-success">{{ item.status }}</div>
+                                    </td>
+                                    <td class="text-end">
                                         </td>
-                                        <!--end::Checkbox-->
-                                        <!--begin::counter=-->
-                                        <td>
-                                            {{ forloop.counter }}
-                                        </td>
-                                        <!--end::counter=-->
-                                        <!--begin::Name=-->
-                                        <td>
-                                            <a href="{% url 'sport:AdminPlayerStaticAdd' item.slug %}"
-                                                    class="text-gray-800 text-hover-primary mb-1">
-                                                {{ item.name }}
-                                            </a>
-                                        </td>
-                                        <!--end::Name=-->
-                                        <!--begin::Email=-->
-                                        <td>
-                                            <a href="{% url 'sport:AdminPlayerStaticAdd' item.slug %}"
-                                                    class="text-gray-600 text-hover-primary mb-1">
-                                                {{ item.code }}
-                                            </a>
-                                        </td>
-                                        <!--end::Email=-->
-                                        <!--begin::Email=-->
-                                        <td>
-                                            <a href="#"
-                                               class="text-gray-600 text-hover-primary mb-1">
-                                                {{ item.sport }}
-                                            </a>
-                                        </td>
-                                        <!--end::Email=-->
-                                    <!--begin::Email=-->
-                                        <td>
-                                            <a href="#"
-                                               class="text-gray-600 text-hover-primary mb-1">
-                                                {{ item.team.name }}
-                                            </a>
-                                        </td>
-                                        <!--end::Email=-->
-                                        <!--begin::Email=-->
-                                        <td>
-                                            <a href="#"
-                                               class="text-gray-600 text-hover-primary mb-1">
-                                                {{ item.country }}
-                                            </a>
-                                        </td>
-                                        <!--end::Email=-->
-{#                                        <!--begin::Image=-->#}
-{#                                        <td>#}
-{#                                            <div class="d-flex align-items-center">#}
-{#                                                <!--begin::Thumbnail-->#}
-{#                                                <a class="symbol symbol-50px">#}
-{#                                                    {% if item.image_path %}#}
-{#                                                        <span class="symbol-label"#}
-{#                                                              style="background-image:url({{ item.image_path }});"></span>#}
-{##}
-{#                                                    {% elif item.image %}#}
-{#                                                        <span class="symbol-label"#}
-{#                                                              style="background-image:url({{ item.image.url }});"></span>#}
-{#                                                    {% else %}#}
-{#                                                        <span class="symbol-label" style="background-image:url(#}
-{#                                                                {% static '' %}{{ BACKEND_ASSETS }}/media/stock/ecommerce/41.gif);"></span>#}
-{#                                                    {% endif %}#}
-{##}
-{#                                                </a>#}
-{#                                                <!--end::Thumbnail-->#}
-{##}
-{#                                            </div>#}
-{#                                        </td>#}
-{#                                        <!--end::Image=-->#}
-                                        <!--begin::Email=-->
-                                        <td>
-                                            <a
-                                                    class="text-gray-600 text-hover-primary mb-1">
-                                                {{ item.nationality }}
-                                            </a>
-                                        </td>
-                                        <!--end::Email=-->
-
-                                        <!--begin::Payment method=-->
-                                        <td>
-                                            {% if item.in_team == 'Yes' %}
-                                                <div class="badge badge-light-info">
-
-                                            {% elif item.in_team == 'No' %}
-                                                <div class="badge badge-light-danger">
-                                            {% endif %}
-                                            {{ item.in_team }}</div>
-
-                                        </td>
-                                        <!--end::Payment method=-->
-
-                                        <!--begin::Action=-->
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-light btn-active-light-primary"
-                                               data-kt-menu-trigger="click"
-                                               data-kt-menu-placement="bottom-end">{% translate 'Actions' %}
-                                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
-                                                <span class="svg-icon svg-icon-5 m-0">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
-                                                                  fill="black"/>
-														</svg>
-													</span>
-                                                <!--end::Svg Icon--></a>
-                                            <!--begin::Menu-->
-                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
-                                                 data-kt-menu="true">
-                                                <!--begin::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <a href="{% url 'sport:AdminPlayersUpdate' item.slug %}"
-                                                       class="menu-link px-3">{% translate 'Edit' %}</a>
-                                                </div>
-                                                <!--end::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <form id="{{ item.slug }}" method="POST"
-                                                          action="{% url 'sport:AdminPlayersArchive' item.slug %}">
-                                                        {% csrf_token %} </form>
-
-
-                                                    <a class="menu-link px-3" onclick="
-                                                            if (confirm('Are You Sure To Archive {{ item.name }} ?')){document.getElementById('{{ item.slug }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
-                                                       title="Link Title">
-                                                        {% translate 'Archive' %}
-                                                    </a>
-
-                                                </div>
-                                                <!--end::Menu item-->
-                                                <!--end::Menu item-->
-                                                <div class="menu-item px-3">
-                                                    <form id="{{ item.id }}" method="POST"
-                                                          action="{% url 'sport:AdminPlayersDelete' item.slug %}">
-                                                        {% csrf_token %} </form>
-
-
-                                                    <a class="menu-link px-3" onclick="
-                                                            if (confirm('Are You Sure To Delete {{ item.name }} ?')){document.getElementById('{{ item.id }}').submit();}else{event.stopPropagation(); event.preventDefault();}"
-                                                       title="Link Title">
-                                                        {% translate 'Delete' %}
-                                                    </a>
-
-                                                </div>
-                                                <!--end::Menu item-->
-                                            </div>
-                                            <!--end::Menu-->
-                                        </td>
-                                        <!--end::Action=-->
-                                    </tr>
-{#                                {% empty %}#}
-{#                                    {% block nodata %}{% include 'good/common/no-data-table.html' %}{% endblock %}#}
+                                </tr>
                                 {% endfor %}
-                                <!--end::Table row-->
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end">
+                            <nav aria-label="Page navigation">
+                                {% if page_obj.has_other_pages %}
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; {% translate 'first' %}</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% translate 'previous' %}</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">&laquo; {% translate 'first' %}</span></li>
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'previous' %}</span></li>
+                                    {% endif %}
 
-                                </tbody>
-                                <!--end::Table body-->
-                            </table>
-                            <!--end::Table-->
-                        </div>
-                        <!--end::Card body-->
-                    </div>
-                    <div v-show="CheckOutVisible" v-if="CheckStatus == 'Show'"
-                         class="notice d-flex bg-light-danger rounded border-danger border border-dashed p-6 m-20">
-                        <!--begin::Icon-->
-                        <!--begin::Svg Icon | path: icons/duotune/finance/fin001.svg-->
-                        <span class="svg-icon svg-icon-2tx svg-icon-primary me-4">
-													<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                                         xmlns="http://www.w3.org/2000/svg">
-														<path d="M20 19.725V18.725C20 18.125 19.6 17.725 19 17.725H5C4.4 17.725 4 18.125 4 18.725V19.725H3C2.4 19.725 2 20.125 2 20.725V21.725H22V20.725C22 20.125 21.6 19.725 21 19.725H20Z"
-                                                              fill="currentColor"/>
-														<path opacity="0.3"
-                                                              d="M22 6.725V7.725C22 8.325 21.6 8.725 21 8.725H18C18.6 8.725 19 9.125 19 9.725C19 10.325 18.6 10.725 18 10.725V15.725C18.6 15.725 19 16.125 19 16.725V17.725H15V16.725C15 16.125 15.4 15.725 16 15.725V10.725C15.4 10.725 15 10.325 15 9.725C15 9.125 15.4 8.725 16 8.725H13C13.6 8.725 14 9.125 14 9.725C14 10.325 13.6 10.725 13 10.725V15.725C13.6 15.725 14 16.125 14 16.725V17.725H10V16.725C10 16.125 10.4 15.725 11 15.725V10.725C10.4 10.725 10 10.325 10 9.725C10 9.125 10.4 8.725 11 8.725H8C8.6 8.725 9 9.125 9 9.725C9 10.325 8.6 10.725 8 10.725V15.725C8.6 15.725 9 16.125 9 16.725V17.725H5V16.725C5 16.125 5.4 15.725 6 15.725V10.725C5.4 10.725 5 10.325 5 9.725C5 9.125 5.4 8.725 6 8.725H3C2.4 8.725 2 8.325 2 7.725V6.725L11 2.225C11.6 1.925 12.4 1.925 13.1 2.225L22 6.725ZM12 3.725C11.2 3.725 10.5 4.425 10.5 5.225C10.5 6.025 11.2 6.725 12 6.725C12.8 6.725 13.5 6.025 13.5 5.225C13.5 4.425 12.8 3.725 12 3.725Z"
-                                                              fill="currentColor"/>
-													</svg>
-												</span>
-                        <!--end::Svg Icon-->
-                        <!--end::Icon-->
-                        <!--begin::Wrapper-->
-                        <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap h-200px">
-                            <!--begin::Content-->
-                            <div class="mb-3 mb-md-0 fw-semibold">
-                                <h2 class="text-gray-900 fs-5hx fw-bold">Status [[GetStatus]] <br> [[GetMessage]]</h2>
+                                    {% for i in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == i %}
+                                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
 
-                            </div>
-                            <!--end::Content-->
-
-                        </div>
-                        <!--end::Wrapper-->
-                    </div>
-                    <div class="card-body pt-15">
-                        {% if form_show_errors %}
-                        {% endif %}
-                        {% if players_form.errors %}
-                            {% for error_field, error_message in players_form.errors.items %}
-
-                                <div class="alert alert-danger">
-                                    {{ error_field|striptags }}: {{ error_message|striptags }}
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-
-                        {% endif %}
-                        {% if translate_form.errors %}
-                            {% for error_field, error_message in translate_form.errors.items %}
-
-                                <div class="alert alert-danger">
-                                    {{ error_field|striptags }}: {{ error_message|striptags }}
-                                    <strong>{{ error|escape }}</strong>
-                                </div>
-                            {% endfor %}
-
-                        {% endif %}
-                        {% for message in messages %}
-                            {% if message.extra_tags == 'Players' %}
-                                {% if message.tags == 'Players success' %}
-                                    <div class="alert alert-info">
-                                {% elif message.tags == 'Players danger' %}
-                                    <div class="alert alert-danger">
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% translate 'next' %}</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% translate 'last' %} &raquo;</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'next' %}</span></li>
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'last' %} &raquo;</span></li>
+                                    {% endif %}
+                                </ul>
                                 {% endif %}
-                            {{ message.extra_tags|striptags }}: {{ message|striptags }}
-
-                            </div>
-                            {% endif %}
-                        {% endfor %}
+                            </nav>
                         </div>
-                        <!--end::item-->
-                    </div>
-                    <!--begin::Modal - item - Add-->
-                    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
-                        <!--begin::Modal dialog-->
-                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                            <!--begin::Modal content-->
-                            <div class="modal-content">
-                                <!--begin::Form-->
-                                <form class="form" id="kt_modal_add_customer" enctype="multipart/form-data"
-                                      action="{% url 'sport:AdminPlayersList' %}"
-                                      method="POST"
-                                >
-                                    {% csrf_token %}
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header" id="kt_modal_add_customer_header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Add' %}</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div id="kt_modal_add_customer_close" data-bs-dismiss="modal" aria-label="Close"
-                                             class="btn btn-icon btn-sm btn-active-icon-primary">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                                            <span class="svg-icon svg-icon-1">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                                                                  rx="1" transform="rotate(-45 6 17.3137)"
-                                                                  fill="black"/>
-															<rect x="7.41422" y="6" width="16" height="2" rx="1"
-                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
-														</svg>
-													</span>
-                                            <!--end::Svg Icon-->
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body py-10 px-lg-17">
-                                        <!--begin::Scroll-->
-                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll"
-                                             data-kt-scroll="true"
-                                             data-kt-scroll-activate="{default: false, lg: true}"
-                                             data-kt-scroll-max-height="auto"
-                                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
-                                             data-kt-scroll-wrappers="#kt_modal_add_customer_scroll"
-                                             data-kt-scroll-offset="300px">
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Name' %}"
-                                                           name="name"/>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                              <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                     <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Name' %}"
-                                                           name="position"/>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-
-                                            </div>
-                                            <!--begin::Input group-->
-                                         <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-
-                                             <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Age' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Age' %}"
-                                                           name="age"/>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Height' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                  <input type="text" class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Height' %}"
-                                                           name="height"/>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-
-                                            </div>
-                                            <!--begin::Input group-->
-
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="country" aria-label="{% translate 'Country' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Country' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for value, text in players_form.country.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                            <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Team' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="team" aria-label="{% translate 'Team' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Team' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for item in teams %}
-                                                            <option value="{{ item.id }}">{{ item.name }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-
-
-
-                                            </div>
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="sport" aria-label="{% translate 'Sport' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Sport' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for value, text in players_form.sport.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="gender" aria-label="{% translate 'Gender' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Gender' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for value, text in players_form.gender.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-
-
-                                            </div>
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class=" fs-6 fw-bold mb-2">{% translate 'Image' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type="file" accept="image/*"
-                                                           class="form-control form-control-solid"
-
-                                                           name="image"/>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'League' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="leagues" aria-label="{% translate 'League' %}"
-                                                            data-control="select2" multiple
-                                                            data-placeholder="{% translate 'League' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for value, text in players_form.league.field.choices %}
-                                                            <option value="{{ value }}">{{ text }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-
-                                            </div>
-
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <!--begin::Label-->
-                                                    <label class="form-label">{% translate 'Keyword' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <textarea class="form-control" name="keyword" rows="3"
-                                                              placeholder="{% translate 'Keyword' %}"></textarea>
-                                                    <!--end::Input-->
-                                                </div>
-                                                <!--end::Input group-->
-
-                                            </div>
-
-
-                                        </div>
-                                        <!--end::Scroll-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                    <!--begin::Modal footer-->
-                                    <div class="modal-footer flex-center">
-                                        <!--begin::Button-->
-                                        <button type="reset" id="kt_modal_add_customer_cancel"
-                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
-                                        <!--end::Button-->
-                                        <!--begin::Button-->
-                                        <button type="submit" id="" class="btn btn-primary">
-                                            <span class="indicator-label">{% translate 'Submit' %}</span>
-                                            <span class="indicator-progress">{% translate 'Please wait...' %}
-													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                        <!--end::Button-->
-                                    </div>
-                                    <!--end::Modal footer-->
-                                </form>
-                                <!--end::Form-->
-                            </div>
                         </div>
-                    </div>
-                    <!--end::Modal - item - Add-->
-                    <!--begin::Modal - item - Add-->
-                    <div class="modal fade" id="kt_modal_add_monks" tabindex="-1" aria-hidden="true">
-                        <!--begin::Modal dialog-->
-                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                            <!--begin::Modal content-->
-                            <div class="modal-content">
-                                <!--begin::Form-->
-                                <form class="form" id="kt_modal_add_monks"
-
-                                      @submit.prevent="getMonkPlayerData"
-                                >
-                                    {% csrf_token %}
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header" id="kt_modal_add_monks_header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Api Pages Number' %}</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div id="kt_modal_add_monks_close" data-bs-dismiss="modal" aria-label="Close"
-                                             class="btn btn-icon btn-sm btn-active-icon-primary">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                                            <span class="svg-icon svg-icon-1">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                                                                  rx="1" transform="rotate(-45 6 17.3137)"
-                                                                  fill="black"/>
-															<rect x="7.41422" y="6" width="16" height="2" rx="1"
-                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
-														</svg>
-													</span>
-                                            <!--end::Svg Icon-->
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body py-10 px-lg-17">
-                                        <!--begin::Scroll-->
-                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_monks_scroll"
-                                             data-kt-scroll="true"
-                                             data-kt-scroll-activate="{default: false, lg: true}"
-                                             data-kt-scroll-max-height="auto"
-                                             data-kt-scroll-dependencies="#kt_modal_add_monks_header"
-                                             data-kt-scroll-wrappers="#kt_modal_add_monks_scroll"
-                                             data-kt-scroll-offset="300px">
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type='number' class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Number Of Pages' %}"
-                                                           v-model="numberOfPages"
-                                                           name="title" required/>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'sportType Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="type" aria-label="{% translate 'Sport' %}"
-                                                            data-placeholder="{% translate 'Sport' %}"
-                                                            data-dropdown-parent="#kt_modal_add_monks"
-                                                            data-allow-clear="true" v-model="sportType"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        <option value="football">{% translate 'Football' %}</option>
-                                                        <option value="basketball">{% translate 'Basketball' %}</option>
-                                                        <option value="volleyball">{% translate 'Volleyball' %}</option>
-                                                        <option value="handball">{% translate 'Handball' %}</option>
-                                                        <option value="ice-hockey">{% translate 'Ice Hockey' %}</option>
-
-
-                                                    </select>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-
-
-                                            </div>
-                                            <!--end::Input group-->
-
-
-                                        </div>
-                                        <!--end::Scroll-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                    <!--begin::Modal footer-->
-                                    <div class="modal-footer flex-center">
-                                        <!--begin::Button-->
-                                        <button type="reset" id="kt_modal_add_monks_cancel"
-                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
-                                        <!--end::Button-->
-                                        <!--begin::Button-->
-                                        <button type="submit" id="" class="btn btn-primary">
-                                            <span class="indicator-label">{% translate 'Submit' %}</span>
-                                            <span class="indicator-progress">{% translate 'Please wait...' %}
-													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                        <!--end::Button-->
-                                    </div>
-                                    <!--end::Modal footer-->
-                                </form>
-                                <!--end::Form-->
-                            </div>
-                        </div>
-                    </div>
-                    <!--end::Modal - item - Add-->
-
-                    <!--end::Content container-->
                 </div>
-                <!--end::Content-->
             </div>
-            <!--end::Content wrapper-->
-
         </div>
-        <!--end:::Main-->
-    </div>
+
+        <div class="modal fade" id="kt_modal_add_player_api" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="getMonkPlayersData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Fetch Players Data from API' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div v-if="!isLoading" class="fv-row w-100 flex-md-root mb-5">
+                                <label class="required fs-6 fw-bold mb-2">{% translate 'Select Sport' %}</label>
+                                <select v-model="sportType" class="form-select form-select-solid fw-bolder" required>
+                                    <option value="football">{% translate 'Football' %}</option>
+                                    <option value="basketball">{% translate 'Basketball' %}</option>
+                                </select>
+                            </div>
+                            <div v-if="isLoading" class="mb-5">
+                                <h4 class="text-center mb-3">[[ statusMessage ]]</h4>
+                                <div class="progress h-20px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: progress + '%'}"></div>
+                                </div>
+                                <p class="text-muted text-center mt-2">Please do not close this window. This may take several minutes.</p>
+                            </div>
+                            <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                [[ finalMessage ]]
+                            </div>
+                            <div v-if="!isLoading">
+                                <p>{% translate "Click 'Start Import' to automatically fetch players for the selected sport." %}</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">{% translate 'Start Import' %}</span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Fetching...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+</div>
 {% endblock %}
+
 {% block custom_js %}
-
-    <script>
-        const MonkPlayerApp = Vue.createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    CheckOutVisible: false,
-                    CheckStatus: 'Hide',
-                    GetStatus: '',
-                    GetMessage: '',
-                    numberOfPages: 1,
-                    sportType: '',
-
-                }
-            },
-            methods: {
-                getMonkPlayerData: function () {
-                    event.preventDefault();
-                    console.log('addNewAppointment',);
-                    const url = "{% url 'sport:AdminMonksPlayersGetData'   %}";
-
-                    payload = {
-                        "csrfmiddlewaretoken": "{{ csrf_token }}",
-                        "pages": this.numberOfPages,
-                        "sport": this.sportType,
-
-                    }
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        data: payload,
-                        success: (data) => {
-                            console.log('data', data)
-                            this.CheckOutVisible = true
-                            this.CheckStatus = 'Show'
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.CheckOutVisible = true
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-
-                        },
-                    });
-                },
-            },
-            created() {
-
+<script>
+    const MonkPlayersApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                isLoading: false,
+                progress: 0,
+                statusMessage: '',
+                finalMessage: '',
+                isSuccess: false,
+                sportType: 'football',
             }
-        })
-        MonkPlayerApp.mount('#monkplayer-app')
-        MonkPlayerApp.config.devtools = true
+        },
+        methods: {
+            getMonkPlayersData: function () {
+                this.isLoading = true;
+                this.finalMessage = '';
+                this.progress = 5;
+                this.statusMessage = 'Starting import for ' + this.sportType + ' players...';
 
+                let interval = setInterval(() => { if (this.progress < 90) { this.progress += 5; } }, 800);
 
-    </script>
+                const url = "{% url 'sport:AdminMonksPlayersGetData' %}"; // Make sure this URL is correct
+                const payload = { "csrfmiddlewaretoken": "{{ csrf_token }}", "sport": this.sportType };
 
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval);
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.finalMessage = data.message;
+                        this.isLoading = false;
+                        if (this.isSuccess) { setTimeout(() => location.reload(), 2000); }
+                    },
+                    error: (jqXHR) => {
+                        clearInterval(interval);
+                        this.isSuccess = false;
+                        this.finalMessage = 'An unknown error occurred. Please check the server logs.';
+                        this.isLoading = false;
+                    },
+                });
+            },
+        },
+    })
+    MonkPlayersApp.mount('#monkplayers-app')
+</script>
 {% endblock custom_js %}
-{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
-{% block js %} {% include BACKEND_JS %}  {% endblock %}

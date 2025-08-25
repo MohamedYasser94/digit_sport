@@ -40,5 +40,5 @@ if __name__ == '__main__':
     tuples = format_clinic_categories(extract_clinic_categories('clinic_categories.pdf'))
 
     print(tuples)
-python manage.py runserver 192.168.1.36:8058
+python manage.py runserver 192.168.1.4:8058
 '''

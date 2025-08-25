@@ -23,9 +23,7 @@ from digit_sport import settings
 from core.forms.users import AdminUserSignUpForm, UserUpdateForm, AdminGroupForm, UserProfileForm, \
     AdminUserLoginForm, AdminUserUpdateForm, UserProfileUpdateForm
 from core.models.localization import Country, Language
-from core.models.services import Newsletter, Contact
-from core.models.social import FriendList, FriendRequest
-from core.utils.friend_request_status import FriendRequestStatus, get_friend_request_or_false
+
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import superuser_only, unauthenticated_user, authenticated_user, staff_only, authenticated_staf, \
     admin_only
@@ -420,79 +418,7 @@ def AdminUserAccountSettings(request, slug):
         return redirect('core:AdminError403')
 
 
-@authenticated_staf
-@staff_only
-def UserPublicProfile(request, slug, *args, **kwargs):
-    user = User.objects.get(slug=slug)
-    suggestions_user = User.objects.all()
 
-    setting_form = UserProfileForm(instance=user)
-    context = {}
-    user_slug = kwargs.get("slug")
-    try:
-        account = User.objects.get(slug=slug)
-    except:
-        return HttpResponse("Something went wrong.")
-    if account:
-        context['id'] = account.id
-
-        context['email'] = account.email
-        if user.image:
-            context['profile_image'] = user.image.url
-        context['hide_email'] = user.hide_email
-
-        try:
-            friend_list = FriendList.objects.get(user=account)
-        except FriendList.DoesNotExist:
-            friend_list = FriendList(user=account)
-            friend_list.save()
-        friends = friend_list.friends.all()
-        context['friends'] = friends
-
-        # Define template variables
-        is_self = True
-        is_friend = False
-        request_sent = FriendRequestStatus.NO_REQUEST_SENT.value  # range: ENUM -> friend/friend_request_status.FriendRequestStatus
-        friend_requests = None
-        user = request.user
-        if user.is_authenticated and user != account:
-            is_self = False
-            if friends.filter(pk=user.id):
-                is_friend = True
-            else:
-                is_friend = False
-                # CASE1: Request has been sent from THEM to YOU: FriendRequestStatus.THEM_SENT_TO_YOU
-                if get_friend_request_or_false(sender=account, receiver=user) != False:
-                    request_sent = FriendRequestStatus.THEM_SENT_TO_YOU.value
-                    context['pending_friend_request_id'] = get_friend_request_or_false(sender=account, receiver=user).id
-                # CASE2: Request has been sent from YOU to THEM: FriendRequestStatus.YOU_SENT_TO_THEM
-                elif get_friend_request_or_false(sender=user, receiver=account) != False:
-                    request_sent = FriendRequestStatus.YOU_SENT_TO_THEM.value
-                # CASE3: No request sent from YOU or THEM: FriendRequestStatus.NO_REQUEST_SENT
-                else:
-                    request_sent = FriendRequestStatus.NO_REQUEST_SENT.value
-
-        elif not user.is_authenticated:
-            is_self = False
-        else:
-            try:
-                friend_requests = FriendRequest.objects.filter(receiver=user, is_active=True)
-            except:
-                pass
-
-        context = {
-            'user': user,
-            'suggestions_user': suggestions_user,
-            'setting_form': setting_form,
-            'is_self': is_self,
-            'is_friend': is_friend,
-            'request_sent': request_sent,
-            'friend_requests': friend_requests,
-            'BASE_URL': settings.BASE_URL,
-
-        }
-
-    return render(request, f'{BACKEND_TEMPLATES}/account/user/profile.html', context)
 
 
 @authenticated_staf
@@ -711,56 +637,3 @@ def AdminUsersFcmTokenList(request):
     return render(request, f'{BACKEND_TEMPLATES}/account/user/fcm.html', context)
 
 
-@authenticated_staf
-@superuser_only
-def AdminUsersNewsletterList(request):
-    users = Newsletter.objects.all()
-    context = {
-        'users': users,
-        'current_page': _('Users Newsletter')
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/account/user/newsletter.html', context)
-
-
-@authenticated_staf
-@superuser_only
-def AdminClientContactList(request):
-    contacts = Contact.objects.all()
-    context = {
-        'contacts': contacts,
-        'current_page': _('Client Contact')
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/people/contact/admin.html', context)
-
-
-def AdminClientContactDetail(request, slug):
-    context = {}
-    try:
-        contact = Contact.objects.get(slug=slug)
-        context['contact'] = contact
-    except Contact.DoesNotExist:
-        return redirect('core:AdminClientContactList')
-    return render(request, f'{BACKEND_TEMPLATES}/people/contact/details.html', context)
-
-
-def AdminPublicSearch(request, *args, **kwargs):
-    context = {}
-    if request.method == "GET":
-        search_query = request.GET.get("q")
-        if len(search_query) > 0:
-            search_results = User.objects.filter(email__icontains=search_query).filter(
-                username__icontains=search_query).distinct()
-            user = request.user
-            accounts = []  # [(account1, True), (account2, False), ...]
-            if user.is_authenticated:
-                # get the authenticated users friend list
-                auth_user_friend_list = FriendList.objects.get(user=user)
-                for account in search_results:
-                    accounts.append((account, auth_user_friend_list.is_mutual_friend(account)))
-                context['accounts'] = accounts
-            else:
-                for account in search_results:
-                    accounts.append((account, False))
-                context['accounts'] = accounts
-
-    return render(request, "good/utilities/serach/search.html", context)

@@ -22,12 +22,12 @@ User = get_user_model()
 
 
 class YoutubeChannel(models.Model):
-    name = models.CharField(max_length=255,null=True,blank=True,)
+    name = models.CharField(max_length=100,null=True,blank=True,)
     url = models.URLField(null=True,blank=True)
-    channel_id = models.CharField(max_length=255,null=True,blank=True,)
+    channel_id = models.CharField(max_length=100,null=True,blank=True,)
     image = models.ImageField(upload_to=get_file_path,null=True,blank=True, )
     image_path = models.URLField(blank=True, null=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -49,14 +49,14 @@ class YoutubeChannel(models.Model):
 
 
 class YoutubeVideo(models.Model):
-    name = models.CharField(max_length=255,null=True,blank=True,)
+    name = models.CharField(max_length=100,null=True,blank=True,)
     url = models.URLField(null=True,blank=True)
-    video_id = models.CharField(max_length=255,null=True,blank=True,)
+    video_id = models.CharField(max_length=100,null=True,blank=True,)
     image = models.ImageField(upload_to=get_file_path, null=True, blank=True,)
     image_path = models.URLField(blank=True, null=True)
     channel = models.ForeignKey(YoutubeChannel, on_delete=models.CASCADE, null=True, blank=True, related_name='videos')
 
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -79,12 +79,12 @@ class YoutubeVideo(models.Model):
 
 
 class Media(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True, )
+    name = models.CharField(max_length=100, null=True, blank=True, )
     url = models.URLField(null=True, blank=True)
-    channel_id = models.CharField(max_length=255, null=True, blank=True, )
+    channel_id = models.CharField(max_length=100, null=True, blank=True, )
     image = models.ImageField(upload_to=get_file_path, null=True, blank=True, )
     image_path = models.URLField(blank=True, null=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)

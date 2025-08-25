@@ -11,12 +11,12 @@ from django.core.cache import cache
 from django.core.files.storage import FileSystemStorage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.functional import Promise
-from qrcode.compat.pil import Image
+
 from urllib3.util import Url
 import qrcode
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from apps.catalog.models.models import Products
+
 from core.models.core import CommonUrlShortener
 from digit_sport import settings
 import glob
@@ -115,31 +115,7 @@ def expire_view_cache(path, servername, serverport, key_prefix=None):
     return False
 
 
-class CommonMarkdown:
-    @staticmethod
-    def _convert_markdown(value):
-        import markdown
-        md = markdown.Markdown(
-            extensions=[
-                'extra',
-                'codehilite',
-                'toc',
-                'tables',
-            ]
-        )
-        body = md.convert(value)
-        toc = md.toc
-        return body, toc
 
-    @staticmethod
-    def get_markdown_with_toc(value):
-        body, toc = CommonMarkdown._convert_markdown(value)
-        return body, toc
-
-    @staticmethod
-    def get_markdown(value):
-        body, toc = CommonMarkdown._convert_markdown(value)
-        return body
 
 
 def generate_code() -> str:
@@ -195,20 +171,7 @@ def AdminCommonUrlShortener(request,title,keyword,url,owner_model,owner_id):
         shortener_object.save()
 
 
-def product_qrcode(request, product_id):
-    # Get the product from the database
-    product = get_object_or_404(Products, pk=product_id)
 
-    # Generate the QR code image using the product URL
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(product.url)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    # Serve the QR code image as an HTTP response
-    response = HttpResponse(content_type="image/png")
-    img.save(response, "PNG")
-    return response
 
 
 def get_qrcode(request, url):

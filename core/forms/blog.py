@@ -30,13 +30,7 @@ class AdminBlogArticleTagsForm(forms.ModelForm):
         exclude = ['tag_status']
 
 
-class AdminBlogServicesForm(forms.ModelForm):
-    category_id = forms.IntegerField(required=False)
 
-
-    class Meta:
-        model = BlogServices
-        fields = '__all__'
 
 
 class AdminBlogArticleForm(forms.ModelForm):

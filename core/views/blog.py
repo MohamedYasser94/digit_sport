@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
-from time import timezone
-from urllib.request import request_host
+
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -13,12 +12,13 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
 from apps.sport.models.models import Sport
-from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm, AdminBlogServicesForm, AdminBlogArticleForm, \
+from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm,  AdminBlogArticleForm, \
     AdminBlogArticleTagsForm, AdminBlogVideoForm
 from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, AdminCommonTranslateForm
-from core.models.blog import BlogArticle, BlogCategories, BlogServices, CommonTags, BlogVideo
+from core.models.blog import BlogArticle, BlogCategories,  CommonTags, BlogVideo
 from core.models.core import CommonSeo, CommonTranslate, CommonMediaFiles
 from core.utils.notification import FcmNotifications
+
 from core.views.core import AdminCommonMediaHeroFiles, AdminCommonMediaImagesFiles, \
     AdminCommonMediaVideoFiles, AdminCommonTranslate, AdminCommonSeo
 from core.views.notifications import AdminCommonNotifications
@@ -506,16 +506,16 @@ def AdminBlogArticleSCreate(request):
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-            try:
-                if image_path != None or image_path != '':
-                    request_host(request)
-
-                    image_path =  request_host(request) + str(article_object.image.url)
-                    print(' image_path ,', image_path)
-                    article_object.image_path = image_path
-                    article_object.save()
-            except Exception as e:
-                pass
+            # try:
+            #     if image_path != None or image_path != '':
+            #         request_host(request)
+            #
+            #         image_path =  request_host(request) + str(article_object.image.url)
+            #         print(' image_path ,', image_path)
+            #         article_object.image_path = image_path
+            #         article_object.save()
+            # except Exception as e:
+            #     pass
             image_url = article_object.image.url
             image = request.build_absolute_uri(image_url)
             FcmNotifications(request, title, keyword, article_object.image_path)
@@ -716,298 +716,6 @@ def AdminApiBlogArticleImageDelete(request, slug):
     else:
         return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
-
-##########################      Services Admin            ################################
-@authenticated_staf
-@author_only
-def AdminBlogServicesList(request):
-    services = BlogServices.objects.all()
-    context = {
-        'services': services,
-        'current_page': _('Services'),
-
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/blog/services/admin.html', context)
-
-
-@authenticated_staf
-@author_only
-def BlogServicesDetail(request, slug):
-    services = BlogServices.objects.get(slug=slug)
-    context = {
-        'labtest': services,
-        'current_page': _('Services'),
-
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/blog/services/detail.html', context)
-
-
-@authenticated_staf
-@author_only
-def BlogServicesCreate(request):  # sourcery skip: aug-assign, convert-to-enumerate
-    categories = BlogCategories.objects.all()
-    blog_tags = CommonTags.objects.all()
-    if request.method == "POST":
-        service_form = AdminBlogServicesForm(request.POST or None, request.FILES or None)
-        category_form = AdminBlogCategoriesForm(request.POST or None, request.FILES or None)
-        tags_form = AdminCommonTagsForm(request.POST or None, request.FILES or None)
-        extra_form = AdminCommonMediaFilesForm(request.POST or None, request.FILES or None)
-        seo_form = AdminCommonSeoForm(request.POST or None, request.FILES or None)
-
-        if service_form:
-
-            title = request.POST.get('title')
-            service_type = request.POST.get('service_type')
-            keyword = request.POST.get('keyword')
-            category = request.POST.get('category')
-            body = request.POST.get('body')
-            featured = request.POST.get('featured')
-            project_name = request.POST.get('project_name')
-            project_type = request.POST.get('project_type')
-            skills = request.POST.get('skills')
-            demo = request.POST.get('demo')
-            cloud_file = request.POST.get('cloud_file')
-            files = request.FILES.get('files')
-            pdf = request.FILES.get('pdf')
-            brand = request.POST.get('brand')
-            status = request.POST.get('status')
-            sort_order = request.POST.get('sort_order')
-            tags = request.POST.getlist('tags')
-
-            title_tr = request.POST.get('title_tr')
-            keyword_tr = request.POST.get('keyword_tr')
-            body_tr = request.POST.get('body_tr')
-            ########## Image #########
-            hero_image = request.FILES.get('hero_image')
-            images = request.FILES.getlist('images')
-            image_url = request.POST.getlist('image_url')
-            video_url = request.POST.get('video_url')
-            video_cover = request.FILES.get('video_cover')
-            ########## Seo #########
-            meta_title = title
-            meta_keywords = keyword
-            meta_description = keyword
-            seo_image = hero_image
-            category_id = BlogCategories.objects.get(id=category)
-
-            user = request.user.id
-            author = User.objects.get(id=user)
-            service_form = BlogServices(title=title, service_type=service_type, keyword=keyword,
-                                        category=category_id, featured=featured,
-                                        body=body, project_name=project_name, project_type=project_type,
-                                        skills=skills, demo=demo, cloud_file=cloud_file,
-                                        files=files, pdf=pdf, brand=brand, status=status, sort_order=sort_order, )
-
-            service_form.save()
-            AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogServices', service_form.id)
-            AdminCommonSeo(request, meta_title, meta_description, meta_keywords, author.id, seo_image, 'BlogServices',
-                           service_form.id)
-            AdminCommonMediaHeroFiles(request, hero_image, 'BlogServices', service_form.id)
-            AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogServices', service_form.id)
-            j = 0
-            for tag in tags:
-                tag_id = CommonTags.objects.get(id=tag)
-                service_form.tags.add(tag_id)
-                j = j + 1
-
-            i = 0
-            for image in images:
-                AdminCommonMediaImagesFiles(request, image, 'BlogServices', service_form.id)
-                i = i + 1
-
-            messages.success(request, _("Service Add Successfully, check it out on the home page!"),
-                             extra_tags='Service')
-
-            if service_type in ['Service', 'Product', 'Work']:
-                return HttpResponseRedirect(reverse('core:AdminBlogServicesList'))
-        else:
-
-            messages.error(request, _("Service Not Add , check it out on the home page!"), extra_tags='Service')
-
-    context = {
-        'categories': categories,
-        'blog_tags': blog_tags,
-        'service_form': AdminBlogServicesForm(),
-        'seo_form': AdminCommonSeoForm(),
-        'extra_form': AdminCommonMediaFilesForm(),
-        'current_page': _('Add'),
-        'prev_Page': _('Services'),
-        'prev_url': reverse('core:AdminBlogServicesList'),
-
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/blog/services/add.html', context)
-
-
-@authenticated_staf
-@author_only
-def BlogServicesUpdate(request, slug):  # sourcery skip: aug-assign, convert-to-enumerate
-    service = BlogServices.objects.get(slug=slug)
-    categories = BlogCategories.objects.all()
-    service_tag = CommonTags.objects.filter(owner_model=ContentType.objects.get(model='BlogServices'),
-                                            owner_id=service.id)
-    service_cover = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogServices')
-                                                 , owner_id=service.id, type='hero')
-
-    service_video = CommonMediaFiles.objects.get(owner_model=ContentType.objects.get(model='BlogServices'),
-                                                 owner_id=service.id, type='video')
-
-    service_images = CommonMediaFiles.objects.filter(owner_model=ContentType.objects.get(model='BlogServices')
-                                                     , owner_id=service.id, type='image')
-    service_translate = CommonTranslate.objects.get(
-        owner_model=ContentType.objects.get(model='BlogServices'), owner_id=service.id)
-    service_seo = CommonSeo.objects.get(owner_model=ContentType.objects.get(model='BlogServices'), owner_id=service.id)
-
-    blog_tags = CommonTags.objects.all()
-
-    if request.method == "POST":
-
-        service_form = AdminBlogServicesForm(request.POST or None, request.FILES or None)
-        category_form = AdminBlogCategoriesForm(request.POST or None, request.FILES or None)
-        tags_form = AdminCommonTagsForm(request.POST or None, request.FILES or None)
-        seo_form = AdminCommonSeoForm(request.POST or None, request.FILES or None)
-
-        if service_form:
-
-            title = request.POST.get('title')
-            keyword = request.POST.get('keyword')
-            category = request.POST.get('category')
-            body = request.POST.get('body')
-            is_featured = request.POST.get('is_featured')
-            image = request.FILES.get('image')
-            banner = request.FILES.get('image')
-            banner_second = request.FILES.get('image')
-            brand = request.POST.get('brand')
-            status = request.POST.get('status')
-            sort_order = request.POST.get('sort_order')
-            tags = request.POST.getlist('tags')
-
-            title_tr = request.POST.get('title_tr')
-            keyword_tr = request.POST.get('keyword_tr')
-            body_tr = request.POST.get('body_tr')
-            ########## Image #########
-            hero_image = request.FILES.get('hero_image')
-            images = request.FILES.getlist('images')
-            image_url = request.POST.getlist('image_url')
-            video_url = request.POST.get('video_url')
-            video_cover = request.FILES.get('video_cover')
-            ########## Seo #########
-            meta_title = title
-            meta_keywords = keyword
-            meta_description = keyword
-            seo_image = hero_image
-
-            category_id = BlogCategories.objects.get(id=category)
-            user = request.user.id
-            author = User.objects.get(id=user)
-
-            if service_form:
-                service_object = BlogServices.objects.get(slug=slug)
-                service_object.title = title
-                service_object.keyword = keyword
-                service_object.category = category_id
-                service_object.body = body
-                service_object.image = image
-                service_object.banner = banner
-                service_object.banner_second = banner_second
-                service_object.is_featured = is_featured
-                service_object.brand = brand
-                service_object.status = status
-                service_object.sort_order = sort_order
-                service_object.save()
-
-                AdminCommonSeo(request, meta_title, meta_description, meta_keywords, author.id, seo_image,
-                               'BlogServices',
-                               service_object.id)
-                AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogServices', service_object.id)
-
-                AdminCommonMediaHeroFiles(request, hero_image, 'BlogServices', service_object.id)
-                AdminCommonMediaVideoFiles(request, video_url, video_cover, 'BlogServices', service_object.id)
-                j = 0
-                for tag in tags:
-                    tag_id = CommonTags.objects.get(id=tag)
-                    service_object.tags.add(tag_id)
-                    j = j + 1
-
-                if images != '' or images != None:
-
-                    i = 0
-                    for image in images:
-                        AdminCommonMediaImagesFiles(request, image, 'BlogServices', service_object.id)
-                        i = i + 1
-
-                messages.success(request, "Service Update Successfully, check it out on the home page!",
-                                 extra_tags='Service')
-
-                return HttpResponseRedirect(reverse('core:AdminBlogServicesList'))
-            else:
-
-                messages.error(request, "Service Not Update , check it out on the home page!", extra_tags='Service')
-    else:
-        service_form = AdminBlogServicesForm()
-
-        tags_form = AdminCommonTagsForm()
-        context = {
-            'service': service,
-            'categories': categories,
-            'service_tag': service_tag,
-            'service_cover': service_cover,
-            'service_video': service_video,
-            'service_images': service_images,
-            'service_translate': service_translate,
-            'service_seo': service_seo,
-            'service_form': service_form,
-            'tags_form': tags_form,
-            'current_page': _('Update'),
-            'prev_Page': _('Services'),
-            'prev_url': reverse('core:AdminBlogServicesList'),
-
-        }
-        return render(request, f'{BACKEND_TEMPLATES}/blog/services/update.html', context)
-    context = {
-        'service': service,
-        'categories': categories,
-        'service_tag': service_tag,
-        'service_cover': service_cover,
-        'service_video': service_video,
-        'service_images': service_images,
-        'service_translate': service_translate,
-        'service_seo': service_seo,
-        'service_form': service_form,
-        'tags_form': tags_form,
-        'current_page': _('Update'),
-        'prev_Page': _('Services'),
-        'prev_url': reverse('core:AdminBlogServicesList'),
-
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/blog/services/update.html', context)
-
-
-@authenticated_staf
-@author_only
-def BlogServicesDelete(request, slug):
-    service = BlogServices.objects.get(slug=slug)
-
-    if request.method == "POST":
-        service.delete()
-        messages.success(request, _("Service deleted successfully"))
-        return HttpResponseRedirect(reverse('core:AdminBlogServicesList'))
-    return HttpResponseRedirect(reverse('core:AdminBlogServicesList'))
-
-
-def AdminApiBlogServicesImageDelete(request, slug):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
-    if request.method == "POST":
-        try:
-            article_image = CommonMediaFiles.objects.get(slug=slug)
-            article_image.delete()
-            return JsonResponse({'status': 'success', 'message': 'Image Delete Successfully'},
-                                status=status.HTTP_200_OK)
-        except Exception as e:
-
-            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
-    else:
-        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
 
 

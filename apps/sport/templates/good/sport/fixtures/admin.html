@@ -1,0 +1,180 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid" id="monkfixtures-app"> <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                <div class="card card-flush">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
+                                <input type="text" data-kt-ecommerce-category-filter="search" class="form-control form-control-solid w-250px ps-12" placeholder="Search Fixtures" />
+                            </div>
+                            </div>
+                        <div class="card-toolbar d-flex flex-wrap gap-5">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_fixture">
+                                {% translate 'Add Fixture' %}
+                            </button>
+                            <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#kt_modal_fetch_fixtures">
+                                {% translate 'Fetch Fixtures by Date' %}
+                            </a>
+                            </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5">
+                            <thead>
+                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                    <th class="min-w-20px">#</th>
+                                    <th class="min-w-250px">{% translate 'Fixture Name' %}</th>
+                                    <th class="min-w-150px">{% translate 'League' %}</th>
+                                    <th class="min-w-150px">{% translate 'Start Time' %}</th>
+                                    <th class="text-end min-w-70px">{% translate 'Actions' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fw-semibold text-gray-600">
+                                {% for item in page_obj %}
+                                <tr>
+                                    <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.league.name|default:"N/A" }}</td>
+                                    <td>{{ item.starting_at|date:"Y-m-d H:i" }}</td>
+                                    <td class="text-end">
+                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary">Actions</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end">
+                            <nav aria-label="Page navigation">
+                                {% if page_obj.has_other_pages %}
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% translate 'Previous' %}</a></li>
+                                    {% endif %}
+                                    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% translate 'Next' %}</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </nav>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="modal fade" id="kt_modal_fetch_fixtures" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="getMonkFixturesData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Fetch Fixtures from API' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div v-if="!isLoading" class="fv-row w-100 flex-md-root mb-5">
+                                <label class="required fs-6 fw-bold mb-2">{% translate 'Select Date' %}</label>
+                                <input type="date" v-model="fetchDate" class="form-control form-control-solid" required/>
+                            </div>
+                            <div v-if="isLoading" class="mb-5">
+                                <h4 class="text-center mb-3">[[ statusMessage ]]</h4>
+                                <div class="progress h-20px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: progress + '%'}"></div>
+                                </div>
+                                <p class="text-muted text-center mt-2">Please do not close this window.</p>
+                            </div>
+                            <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                [[ finalMessage ]]
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">{% translate 'Start Import' %}</span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Fetching...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="kt_modal_add_fixture" tabindex="-1" aria-hidden="true">
+            </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    const MonkFixturesApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                isLoading: false,
+                progress: 0,
+                statusMessage: '',
+                finalMessage: '',
+                isSuccess: false,
+                fetchDate: new Date().toISOString().slice(0, 10), // Default to today's date
+            }
+        },
+        methods: {
+            getMonkFixturesData: function () {
+                if (!this.fetchDate) {
+                    alert('Please select a date.');
+                    return;
+                }
+                this.isLoading = true;
+                this.finalMessage = '';
+                this.progress = 5;
+                this.statusMessage = 'Fetching fixtures for ' + this.fetchDate + '...';
+
+                let interval = setInterval(() => { if (this.progress < 90) { this.progress += 5; } }, 800);
+
+                const url = "{% url 'sport:AdminMonksFixturesGetData' %}";
+                const payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "fetch_date": this.fetchDate
+                };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval);
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.finalMessage = data.message;
+                        this.isLoading = false;
+                        if (this.isSuccess) {
+                           setTimeout(() => location.reload(), 2000);
+                        }
+                    },
+                    error: (jqXHR) => {
+                        clearInterval(interval);
+                        this.isSuccess = false;
+                        this.finalMessage = 'An error occurred. Check server logs for details.';
+                        this.isLoading = false;
+                    },
+                });
+            },
+        },
+    })
+    MonkFixturesApp.mount('#monkfixtures-app')
+</script>
+{% endblock custom_js %}

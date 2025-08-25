@@ -10,8 +10,7 @@ from core.models.blog import BlogArticle
 from core.models.core import SystemSetting, SiteSetting, CommonMediaFiles, CommonSeo
 from core.models.localization import Language
 from core.models.notifications import Notification
-from core.models.people import Employee
-from core.models.subscriptions import Subscription
+
 
 User = get_user_model()
 
@@ -358,9 +357,9 @@ def user_processors(request):
 
         current_user = User.objects.get(id=request.user.id)
         if current_user.access_level == 'Employee':
-            employee = Employee.objects.get(owner_model=ContentType.objects.get(model='User'), owner_id=request.user.id)
+
             access = 'Employee'
-            employee_access = employee.role
+
         elif current_user.access_level == 'Owner':
             access = 'Owner'
         elif current_user.access_level == 'ThirdPartyService':
@@ -452,40 +451,4 @@ def admin_summary(request):
         }
 
 
-def membership_processors(request):
-    user_membership = 'Inactive'
-    if not request.user.is_authenticated:
-        return {
-            'user_membership': 'Inactive',
-        }
-    try:
-        user = User.objects.get(id=request.user.id)
-        if user.is_superuser == False:
-            user_subscription = Subscription.objects.get(owner_model=ContentType.objects.get(model='User'),
-                                                         owner_id=user.id, )
-            if user_subscription.membership.membership_type == 'Paid' or user_subscription.membership.membership_type == 'PromoCode' \
-                    or user_subscription.membership.membership_type == 'Free':
-                print('user_subscription.end_date', user_subscription.remaining_days)
-                print('datetime.now().day', datetime.now())
 
-                if user_subscription.remaining_days <= 0:
-                    user_subscription.status = 'Expired'
-                    user_subscription.save()
-                    user_membership = 'Inactive'
-                else:
-                    user_membership = 'Active'
-            else:
-                user_membership = 'Active'
-        else:
-            user_membership = 'Active'
-
-        return {
-            'user_membership': user_membership,
-        }
-    except BaseException as e:
-        print('user_membership', e)
-        return {
-
-            'user_membership': user_membership,
-
-        }

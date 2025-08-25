@@ -549,120 +549,52 @@
                     <!--end::Modal - item - Add-->
                 <!--begin::Modal - item - Add-->
                     <div class="modal fade" id="kt_modal_add_monks" tabindex="-1" aria-hidden="true">
-                        <!--begin::Modal dialog-->
-                        <div class="modal-dialog modal-dialog-centered mw-650px">
-                            <!--begin::Modal content-->
-                            <div class="modal-content">
-                                <!--begin::Form-->
-                                <form class="form" id="kt_modal_add_monks"
-
-                                      @submit.prevent="getMonkLeaguesData"
-                                >
-                                    {% csrf_token %}
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header" id="kt_modal_add_monks_header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bolder">{% translate 'Api Pages Number' %}</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div id="kt_modal_add_monks_close" data-bs-dismiss="modal" aria-label="Close"
-                                             class="btn btn-icon btn-sm btn-active-icon-primary">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
-                                            <span class="svg-icon svg-icon-1">
-														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none">
-															<rect opacity="0.5" x="6" y="17.3137" width="16" height="2"
-                                                                  rx="1" transform="rotate(-45 6 17.3137)"
-                                                                  fill="black"/>
-															<rect x="7.41422" y="6" width="16" height="2" rx="1"
-                                                                  transform="rotate(45 7.41422 6)" fill="black"/>
-														</svg>
-													</span>
-                                            <!--end::Svg Icon-->
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body py-10 px-lg-17">
-                                        <!--begin::Scroll-->
-                                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_monks_scroll"
-                                             data-kt-scroll="true"
-                                             data-kt-scroll-activate="{default: false, lg: true}"
-                                             data-kt-scroll-max-height="auto"
-                                             data-kt-scroll-dependencies="#kt_modal_add_monks_header"
-                                             data-kt-scroll-wrappers="#kt_modal_add_monks_scroll"
-                                             data-kt-scroll-offset="300px">
-                                            <!--begin::Input group-->
-                                            <div class="d-flex flex-wrap gap-5">
-                                                <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <input type='number' class="form-control form-control-solid"
-                                                           placeholder="{% translate 'Number Of Pages' %}"
-                                                           v-model="numberOfPages"
-                                                           name="title" required/>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-                                                 <!--begin::Input group-->
-                                                <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'sportType Number Of Pages' %}</label>
-                                                    <!--end::Label-->
-                                                    <!--begin::Input-->
-                                                    <select name="type" aria-label="{% translate 'Sport' %}"
-                                                    data-placeholder="{% translate 'Sport' %}"
-                                                    data-dropdown-parent="#kt_modal_add_monks"
-                                                            data-allow-clear="true" v-model="sportType"
-                                                    class="form-select form-select-solid fw-bolder">
-                                                <option value="" selected="">---------</option>
-                                                <option value="football" >{% translate 'Football' %}</option>
-                                                <option value="basketball" >{% translate 'Basketball' %}</option>
-                                                <option value="volleyball" >{% translate 'Volleyball' %}</option>
-                                                <option value="handball" >{% translate 'Handball' %}</option>
-                                                <option value="ice-hockey" >{% translate 'Ice Hockey' %}</option>
-
-
-
-
-                                            </select>
-                                                    <!--end::Input-->
-
-                                                </div>
-                                                <!--end::Input group-->
-
-
-                                            </div>
-                                            <!--end::Input group-->
-
-
-                                        </div>
-                                        <!--end::Scroll-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                    <!--begin::Modal footer-->
-                                    <div class="modal-footer flex-center">
-                                        <!--begin::Button-->
-                                        <button type="reset" id="kt_modal_add_monks_cancel"
-                                                class="btn btn-light me-3">{% translate 'Discard' %}</button>
-                                        <!--end::Button-->
-                                        <!--begin::Button-->
-                                        <button type="submit" id="" class="btn btn-primary">
-                                            <span class="indicator-label">{% translate 'Submit' %}</span>
-                                            <span class="indicator-progress">{% translate 'Please wait...' %}
-													<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                        </button>
-                                        <!--end::Button-->
-                                    </div>
-                                    <!--end::Modal footer-->
-                                </form>
-                                <!--end::Form-->
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="getMonkLeaguesData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Fetch Leagues Data from API' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                             </div>
                         </div>
-                    </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div class="scroll-y me-n7 pe-7">
+                                <div v-if="isLoading" class="mb-5">
+                                    <h3 class="text-center">[[ statusMessage ]]</h3>
+                                    <div class="progress h-20px">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                            :style="{width: progress + '%'}" :aria-valuenow="progress" aria-valuemin="0"
+                                            aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <p class="text-muted text-center mt-2">Please do not close this window. This may take several minutes.</p>
+                                </div>
+
+                                <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                    [[ finalMessage ]]
+                                </div>
+
+                                <div v-if="!isLoading">
+                                    <p>{% translate "Click 'Start Import' to automatically fetch all football leagues from the API. The system will process all pages until completion." %}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">{% translate 'Start Import' %}</span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Fetching...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+                         </div>
                     <!--end::Modal - item - Add-->
 								<!--end::Content container-->
 							</div>
@@ -678,65 +610,61 @@
 
 <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/catalog/categories.js"></script>
  <script>
-        const MonkLeaguesApp = Vue.createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    CheckOutVisible: false,
-                    CheckStatus: 'Hide',
-                    GetStatus: '',
-                    GetMessage: '',
-                    numberOfPages: 1,
-                    sportType: '',
-
-                }
-            },
-            methods: {
-                getMonkLeaguesData: function () {
-                    event.preventDefault();
-                    console.log('addNewAppointment',);
-                    const url = "{% url 'sport:AdminMonksLeaguesGetData'   %}";
-
-                    payload = {
-                        "csrfmiddlewaretoken": "{{ csrf_token }}",
-                        "pages": this.numberOfPages,
-                        "sport": this.sportType,
-
-                    }
-                    jQuery.ajax({
-                        type: 'POST',
-                        dataType: "json",
-                        url: url,
-                        timeout: 5000,
-                        data: payload,
-                        success: (data) => {
-                            console.log('data', data)
-                            this.CheckOutVisible = true
-                            this.CheckStatus = 'Show'
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-                        },
-                        error: function (data) {
-                            console.error("ERROR...", data)
-                            this.CheckOutVisible = true
-                            this.GetStatus = data.type
-                            this.GetMessage = data.message
-
-
-                        },
-                    });
-                },
-            },
-            created() {
-
+    const MonkLeaguesApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                isLoading: false,
+                progress: 0,
+                statusMessage: '',
+                finalMessage: '',
+                isSuccess: false,
             }
-        })
-        MonkLeaguesApp.mount('#monkleagues-app')
-        MonkLeaguesApp.config.devtools = true
+        },
+        methods: {
+            getMonkLeaguesData: function () {
+                this.isLoading = true;
+                this.statusMessage = 'Starting data fetch...';
+                this.finalMessage = '';
 
+                // Animate the progress bar to show activity
+                let interval = setInterval(() => {
+                    if (this.progress < 90) {
+                        this.progress += 5;
+                    }
+                }, 500);
 
-    </script>
+                const url = "{% url 'sport:AdminMonksLeaguesGetData' %}";
+                const payload = { "csrfmiddlewaretoken": "{{ csrf_token }}" };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval); // Stop the animation
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.finalMessage = data.message;
+                        this.isLoading = false;
+                        // Optional: Refresh the page or table data after success
+                        if (this.isSuccess) {
+                           setTimeout(() => location.reload(), 2000);
+                        }
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        clearInterval(interval); // Stop the animation
+                        this.isSuccess = false;
+                        this.finalMessage = 'An unknown error occurred. Please check the server logs.';
+                        this.isLoading = false;
+                    },
+                });
+            },
+        },
+    })
+    MonkLeaguesApp.mount('#monkleagues-app')
+</script>
 
 {% endblock custom_js %}
 {% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}

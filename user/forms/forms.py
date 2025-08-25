@@ -110,7 +110,7 @@ class UserUpdateImageForm(forms.ModelForm):
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(
         label=_("Email"),
-        max_length=254,
+        max_length=100,
         widget=forms.EmailInput(attrs={'autocomplete': 'email'})
     )
 

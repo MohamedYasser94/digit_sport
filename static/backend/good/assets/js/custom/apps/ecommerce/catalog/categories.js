@@ -13,6 +13,7 @@ var KTAppEcommerceCategories = function () {
             "info": false,
             'order': [],
             'pageLength': 10,
+            'paging': false,
             'columnDefs': [
                 { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
                 { orderable: false, targets: 3 }, // Disable ordering on column 3 (actions)

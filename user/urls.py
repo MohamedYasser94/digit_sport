@@ -28,9 +28,9 @@ urlpatterns = [
     ##################UserProfile#################
     path('user/profile/', FrontUserProfile, name='FrontUserProfile'),
     path('user/myprofile/<slug:slug>', FrontLoginUserProfile, name='FrontLoginUserProfile'),
-    path('user/uproile/<slug:slug>', UserProfile, name='UpdateImage'),
+
     path('user/uprofile/<slug:slug>', FrontUpdateProfile, name='FrontUpdateProfile'),
-    path('user/upsetting/<slug:slug>', UserProfile, name='UserSettingUpdate'),
+
     # path('user/upsetting/<slug:slug>', UserSettingUpdate, title='UserSettingUpdate'),  # <-- this one here
     # ###########Password###########
     #

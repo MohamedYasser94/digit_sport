@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import  datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
@@ -30,12 +31,12 @@ class SportCategory(MPTTModel):
     owner_model = models.ForeignKey(ContentType,related_name='sport_category_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='sport_children', on_delete=models.CASCADE)
-    name = models.CharField(max_length=200, validators=[UnicodeUsernameValidator])
+    name = models.CharField(max_length=100, validators=[UnicodeUsernameValidator])
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
-    status = models.CharField(max_length=200, choices=Active_Status,default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status,default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -75,14 +76,14 @@ class Sport(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    name = models.CharField(max_length=200, choices=Sport_Type, default='Football', null=True, blank=True)
+    name = models.CharField(max_length=100, choices=Sport_Type, default='Football', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sport_category',blank=True, null=True)
-    country = models.CharField(max_length=200, choices=Country_List, default='', null=True, blank=True)
+    country = models.CharField(max_length=100, choices=Country_List, default='', null=True, blank=True)
     keyword = models.CharField(max_length=100, blank=True, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     url = models.URLField(blank=True, null=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -123,29 +124,29 @@ class Leagues(models.Model):
     owner_model = models.ForeignKey(ContentType,related_name='sport_league_owner', on_delete=models.CASCADE, null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    name = models.CharField(max_length=200)
-    name_tr = models.CharField(max_length=200, null=True, blank=True)
+    name = models.CharField(max_length=100)
+    name_tr = models.CharField(max_length=100, null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_league', null=True, blank=True)
     category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='category_league', null=True, blank=True)
-    api_category = models.CharField(max_length=200,  default='league', null=True, blank=True)
+    api_category = models.CharField(max_length=100,  default='league', null=True, blank=True)
     sub_category = models.ForeignKey(SportCategory, on_delete=models.CASCADE, related_name='sub_category_league', null=True, blank=True)
     keyword = models.TextField(null=True, blank=True)
-    country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
-    api_country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
+    country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    short_code = models.CharField(max_length=200, null=True, blank=True)
+    short_code = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     country_image = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=200,  default='league', null=True, blank=True)
-    sub_type = models.CharField(max_length=200,  default='domestic', null=True, blank=True)
-    currentseason = models.CharField(max_length=200,  default='2021', null=True, blank=True)
+    type = models.CharField(max_length=100,  default='league', null=True, blank=True)
+    sub_type = models.CharField(max_length=100,  default='domestic', null=True, blank=True)
+    currentseason = models.CharField(max_length=100,  default='2021', null=True, blank=True)
 
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
     has_jerseys = models.BooleanField(default=True)
     api_active = models.BooleanField(default=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -165,7 +166,7 @@ class Leagues(models.Model):
 
 
 class Season(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True)
+    api_id = models.CharField(max_length=100, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_season_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -177,7 +178,7 @@ class Season(models.Model):
     owner = GenericForeignKey('owner_model', 'owner_id')
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_season', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_season', null=True, blank=True)
-    tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    tie_breaker_rule = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     title =models.CharField(max_length=100)
     name = models.CharField(max_length=40)
     keyword = models.TextField(null=True, blank=True)
@@ -188,7 +189,7 @@ class Season(models.Model):
     ending_at = models.DateField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
     games_in_current_week = models.BooleanField(default=False,null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -210,7 +211,7 @@ class Season(models.Model):
 
 
 class Stages(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True)
+    api_id = models.CharField(max_length=100, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_stage_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -223,9 +224,9 @@ class Stages(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_stage', null=True, blank=True)
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_stage', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_stage', null=True, blank=True)
-    type = models.CharField(max_length=200, choices=Sport_Core_type, default='Other', null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    short_name = models.CharField(max_length=200,null=True, blank=True )
+    type = models.CharField(max_length=100, choices=Sport_Core_type, default='Other', null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    short_name = models.CharField(max_length=100,null=True, blank=True )
     sort_order = models.IntegerField(null=True, blank=True)
     finished = models.BooleanField(default=False)
     is_current = models.BooleanField(default=False)
@@ -233,8 +234,8 @@ class Stages(models.Model):
     ending_at = models.DateTimeField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
     games_in_current_week = models.BooleanField(default=False)
-    tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    tie_breaker_rule = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -266,18 +267,18 @@ class Group(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_group', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_group', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_group', null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    short_name = models.CharField(max_length=200, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    short_name = models.CharField(max_length=100, null=True, blank=True)
     sort_order = models.IntegerField(null=True, blank=True)
-    finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    finished = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    is_current = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     starting_at = models.DateTimeField(null=True, blank=True)
     ending_at = models.DateTimeField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
-    games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
+    games_in_current_week = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True,
                                              blank=True)
-    tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    tie_breaker_rule = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -313,7 +314,7 @@ class Aggregate(models.Model):
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_aggregate', null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=200, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -331,7 +332,7 @@ class Aggregate(models.Model):
 
 
 class Round(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True)
+    api_id = models.CharField(max_length=100, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_round_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -346,16 +347,16 @@ class Round(models.Model):
     league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_rounds', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_rounds', null=True, blank=True)
     stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_rounds', null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    short_name = models.CharField(max_length=200, null=True, blank=True)
-    finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    short_name = models.CharField(max_length=100, null=True, blank=True)
+    finished = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    is_current = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     starting_at = models.DateField(null=True, blank=True)
     ending_at = models.DateTimeField(null=True, blank=True)
     standings_recalculated_at = models.DateTimeField(null=True, blank=True)
-    games_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
+    games_in_current_week = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True,
                                              blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -380,7 +381,7 @@ class Round(models.Model):
 
 
 class Venues(models.Model):
-    api_id = models.CharField(max_length=200, null=True, blank=True)
+    api_id = models.CharField(max_length=100, null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_venue_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -392,16 +393,16 @@ class Venues(models.Model):
     owner = GenericForeignKey('owner_model', 'owner_id')
     name = models.CharField(max_length=40, unique=True)
     keyword = models.TextField( blank=True, null=True)
-    country = models.CharField(max_length=200, choices=Country_List, default='Egypt', null=True, blank=True)
-    api_country = models.CharField(max_length=200,  null=True, blank=True)
-    city = models.CharField(max_length=200, choices=Governorates_List, default='Cairo', null=True, blank=True)
-    city_name = models.CharField(max_length=200,  null=True, blank=True)
-    api_city = models.CharField(max_length=200,  null=True, blank=True)
-    short_code = models.CharField(max_length=200, null=True, blank=True)
+    country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    api_country = models.CharField(max_length=100,  null=True, blank=True)
+    city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
+    city_name = models.CharField(max_length=100,  null=True, blank=True)
+    api_city = models.CharField(max_length=100,  null=True, blank=True)
+    short_code = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, null=True, blank=True)
-    address = models.CharField(max_length=200, null=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
     zipcode = models.CharField(max_length=100, null=True, blank=True)
     latitude = models.CharField(max_length=100, null=True, blank=True)
     longitude = models.CharField(max_length=100, null=True, blank=True)
@@ -410,7 +411,7 @@ class Venues(models.Model):
     surface = models.CharField(max_length=100, null=True, blank=True)
     national_team = models.BooleanField(default=False)
     club_team = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -446,7 +447,7 @@ class SportState(models.Model):
     developer_name = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=200, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -463,56 +464,125 @@ class SportState(models.Model):
         super(SportState, self).save(*args, **kwargs)
 
 
+# sports/models.py
+
+
+
 class Fixtures(models.Model):
-    sender_model = models.ForeignKey(ContentType,related_name='sport_fixture_sender', on_delete=models.CASCADE, null=True, blank=True)
+    # This is the most important change. `unique=True` ensures no duplicates.
+    api_id = models.CharField(max_length=100, null=True, unique=True, db_index=True)
+
+    # Generic Foreign Keys for Sender, Receiver, Owner
+    sender_model = models.ForeignKey(ContentType, related_name='sport_fixture_sender', on_delete=models.CASCADE,
+                                     null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
-    receiver_model = models.ForeignKey(ContentType,related_name='sport_fixture_receiver', on_delete=models.CASCADE, null=True, blank=True)
+
+    receiver_model = models.ForeignKey(ContentType, related_name='sport_fixture_receiver', on_delete=models.CASCADE,
+                                       null=True, blank=True)
     receiver_id = models.PositiveIntegerField(blank=True, null=True)
     receiver = GenericForeignKey('receiver_model', 'receiver_id')
-    owner_model = models.ForeignKey(ContentType,related_name='sport_fixture_owner', on_delete=models.CASCADE, null=True, blank=True)
+
+    owner_model = models.ForeignKey(ContentType, related_name='sport_fixture_owner', on_delete=models.CASCADE,
+                                    null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_fixture', null=True, blank=True)
-    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='league_fixture', null=True, blank=True)
-    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_fixture', null=True, blank=True)
-    stage = models.ForeignKey(Stages, on_delete=models.CASCADE, related_name='stage_fixture', null=True, blank=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_fixture', null=True, blank=True)
-    aggregate = models.ForeignKey(Aggregate, on_delete=models.CASCADE, related_name='aggregate_fixture', null=True, blank=True)
-    round = models.ForeignKey(Round, on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
-    state = models.ForeignKey(SportState, on_delete=models.CASCADE, related_name='state_fixture', null=True, blank=True)
-    venue = models.ForeignKey(Venues, on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
-    name = models.CharField(max_length=100, unique=True)
-    short_name = models.CharField(max_length=100, unique=True)
+
+    # Foreign Keys to other models
+    sport = models.ForeignKey('Sport', on_delete=models.CASCADE, related_name='sport_fixture', null=True, blank=True)
+    league = models.ForeignKey('Leagues', on_delete=models.CASCADE, related_name='league_fixture', null=True,
+                               blank=True)
+    season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name='season_fixture', null=True, blank=True)
+    stage = models.ForeignKey('Stages', on_delete=models.CASCADE, related_name='stage_fixture', null=True, blank=True)
+    group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='group_fixture', null=True, blank=True)
+    aggregate = models.ForeignKey('Aggregate', on_delete=models.CASCADE, related_name='aggregate_fixture', null=True,
+                                  blank=True)
+    round = models.ForeignKey('Round', on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
+    venue = models.ForeignKey('Venues', on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
+
+    # Fixture details
+    name = models.CharField(max_length=100)
+    short_name = models.CharField(max_length=100)
     starting_at = models.DateTimeField(null=True, blank=True)
     result_info = models.CharField(max_length=100, null=True, blank=True)
     leg = models.CharField(max_length=100, null=True, blank=True)
     details = models.TextField(null=True, blank=True)
     length = models.IntegerField(null=True, blank=True)
     placeholder = models.CharField(max_length=100, null=True, blank=True)
-    has_odds = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    has_odds = models.CharField(max_length=100, choices=[('Yes', 'Yes'), ('No', 'No')], default='Yes', null=True,
+                                blank=True)  # Example choices
     starting_at_timestamp = models.IntegerField(null=True, blank=True)
+
+    # Live game state
+    state = models.CharField(max_length=100, null=True, blank=True)
     time_status = models.CharField(max_length=100, null=True, blank=True)
     time_status_code = models.CharField(max_length=100, null=True, blank=True)
     minute = models.IntegerField(null=True, blank=True)
     extra_minute = models.IntegerField(null=True, blank=True)
     extra_time = models.IntegerField(null=True, blank=True)
+
+    # JSON Fields for complex data
+    statistics = models.JSONField(null=True, blank=True)
+    events = models.JSONField(null=True, blank=True)
+    lineups = models.JSONField(null=True, blank=True)
+    scores = models.JSONField(null=True, blank=True)
+
+    # Metadata
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=[('Active', 'Active'), ('Inactive', 'Inactive')],
+                              default='Active', null=True, blank=True)  # Example choices
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        # ordering = ('name',)
-        verbose_name = 'fixture'  # verbose_name_plural = 'categories'
+        verbose_name = 'fixture'
+        verbose_name_plural = 'fixtures'
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Sport-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
+        # Generate a unique code and slug only on creation
+        if not self.pk and not self.code:
+            base_code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
+            self.code = base_code
+            self.slug = slugify(base_code)
+            # Ensure the generated code is unique
+            while Fixtures.objects.filter(code=self.code).exists():
+                new_code = f'Fixtures-{get_random_string(5).upper()}-{datetime.now().strftime("%Y%m%d")}'
+                self.code = new_code
+                self.slug = slugify(new_code)
         super(Fixtures, self).save(*args, **kwargs)
+
+
+class FixtureParticipant(models.Model):
+    """ Stores the teams (participants) for a given fixture """
+    fixture = models.ForeignKey(Fixtures, related_name='participants', on_delete=models.CASCADE)
+    team = models.ForeignKey('Teams', on_delete=models.CASCADE)
+    api_id = models.IntegerField( null=True, blank=True)
+    meta_location = models.CharField(max_length=50)  # 'home' or 'away'
+
+    def __str__(self):
+        return f"{self.team.name} in Fixture {self.fixture.api_id}"
+
+
+# your_app/models.py
+
+class FetchedDate(models.Model):
+    """
+    A simple model to log which dates have had their fixtures
+    successfully fetched from the source API (e.g., Sportmonks).
+    """
+    # <<< FIX: Removed primary_key=True from the 'date' field
+    date = models.DateField()
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, null=True, blank=True)
+    fetched_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # This constraint correctly ensures the combination of date and sport is unique.
+        unique_together = ('date', 'sport')
+
+    def __str__(self):
+        sport_name = self.sport.name if self.sport else "Unknown Sport"
+        return f"{self.date.strftime('%Y-%m-%d')} - {sport_name}"
 
 
 class LiveScores(models.Model):
@@ -542,11 +612,11 @@ class LiveScores(models.Model):
     details = models.TextField(null=True, blank=True)
     length = models.IntegerField(null=True, blank=True)
     placeholder = models.CharField(max_length=100, null=True, blank=True)
-    has_odds = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    has_odds = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     starting_at_timestamp = models.IntegerField(null=True, blank=True)
     states = models.CharField(max_length=100, null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=200, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
+    type = models.CharField(max_length=100, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -583,7 +653,7 @@ class Clubs(models.Model):
     founded = models.CharField(max_length=100, null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -638,9 +708,9 @@ class Teams(models.Model):
     placeholder = models.BooleanField(default=False,null=True, blank=True)
     last_played_at = models.DateTimeField(null=True, blank=True)
     next_played_at = models.DateTimeField(null=True, blank=True)
-    has_jersey = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    has_jersey = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     player_count = models.IntegerField(null=True, blank=True,default=0)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -653,11 +723,38 @@ class Teams(models.Model):
     def __str__(self):
         return f"{self.name}-{self.sport}"
 
+    def get_last_fixture(self):
+        """Returns the most recent fixture that has finished."""
+        return Fixtures.objects.filter(
+            participants__team=self,
+            state='FT',  # Filter for finished matches
+            starting_at__lt=timezone.now()
+        ).order_by('-starting_at').first()
+
+    def get_next_fixture(self):
+        """Returns the nearest upcoming fixture."""
+        return Fixtures.objects.filter(
+            participants__team=self,
+            starting_at__gte=timezone.now()
+        ).order_by('starting_at').first()
+
+
+
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Teams-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
+        # This new method creates a unique slug from the league name and api_id
+        if not self.slug and self.name and self.api_id:
+            self.slug = slugify(f"{self.name}-{self.api_id}")
+
+        # Fallback for manually created entries without an api_id
+        elif not self.slug and self.name:
+            base_slug = slugify(self.name)
+            slug_candidate = base_slug
+            counter = 1
+            while Teams.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+
         super(Teams, self).save(*args, **kwargs)
 
 
@@ -674,7 +771,7 @@ class Statistics(models.Model):
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_statistics', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_statistics', null=True, blank=True)
     season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name='season_statistics', null=True, blank=True)
-    has_values = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    has_values = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
 
 
 class Standings(models.Model):
@@ -699,7 +796,7 @@ class Standings(models.Model):
     result = models.CharField(max_length=100, null=True, blank=True)
     points = models.IntegerField(null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -714,6 +811,29 @@ class Standings(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(Standings, self).save(*args, **kwargs)
+
+
+class TopScorer(models.Model):
+    """
+    Stores top scorer and top assist provider data for a given season.
+    """
+    api_id = models.PositiveIntegerField(unique=True, primary_key=True)
+    season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name='topscorers')
+    player = models.ForeignKey('Players', on_delete=models.CASCADE, related_name='topscorer_records')
+    participant = models.ForeignKey('Teams', on_delete=models.CASCADE, related_name='topscorer_players')
+
+    # Type can be 'goals', 'assists', 'redcards', etc. based on the API type_id
+    type = models.CharField(max_length=50, db_index=True)
+    position = models.PositiveIntegerField()
+    total = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.player.name} - {self.season.name} ({self.type}: {self.total})"
+
+    class Meta:
+        ordering = ['position']
+        verbose_name = "Top Scorer / Assist"
+        verbose_name_plural = "Top Scorers & Assists"
 
 
 class LiveStandings(models.Model):
@@ -738,7 +858,7 @@ class LiveStandings(models.Model):
     result = models.CharField(max_length=100, null=True, blank=True)
     points = models.IntegerField(null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
 
     class Meta:
@@ -769,13 +889,13 @@ class Schedules(models.Model):
     sport_state = models.ForeignKey(SportState, on_delete=models.CASCADE, related_name='state_schedules_scores', null=True, blank=True)
     name = models.CharField(max_length=100, unique=True)
     sort_order = models.IntegerField(null=True, blank=True)
-    finished = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    is_current = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    finished = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    is_current = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     starting_at = models.DateTimeField(null=True, blank=True)
     ending_at = models.DateTimeField(null=True, blank=True)
-    game_in_current_week = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    tie_breaker_rule = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    game_in_current_week = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    tie_breaker_rule = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     creat_at = models.DateTimeField(auto_now_add=True)
@@ -840,8 +960,8 @@ class  Players(models.Model):
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    in_team = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    in_team = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     creat_at = models.DateTimeField(auto_now_add=True)
@@ -863,10 +983,20 @@ class  Players(models.Model):
             return None
 
     def save(self, *args, **kwargs):
-        if not self.code and not self.slug:
-            code = f'Player-{get_random_string(5).upper()}'
-            self.code = code
-            self.slug = slugify(code)
+        # This new method creates a unique slug from the league name and api_id
+        if not self.slug and self.name and self.api_id:
+            self.slug = slugify(f"{self.name}-{self.api_id}")
+
+        # Fallback for manually created entries without an api_id
+        elif not self.slug and self.name:
+            base_slug = slugify(self.name)
+            slug_candidate = base_slug
+            counter = 1
+            while Players.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+
         super(Players, self).save(*args, **kwargs)
 
 
@@ -889,10 +1019,10 @@ class Squads(models.Model):
                                          blank=True)
     start = models.DateField(null=True, blank=True)
     end = models.DateField(null=True, blank=True)
-    captain = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    captain = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     jersey_number = models.IntegerField(null=True, blank=True)
-    loan = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    loan = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -928,7 +1058,7 @@ class TVStations(models.Model):
     url = models.URLField(blank=True, null=True)
     type = models.CharField(max_length=100, choices=Tv_Type, default='Tv', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -975,7 +1105,7 @@ class Coaches(models.Model):
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1011,7 +1141,7 @@ class TopScorers(models.Model):
     participant_type = models.CharField(max_length=100, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
     participant = models.IntegerField(null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -1043,7 +1173,7 @@ class Rivals(models.Model):
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_rival', null=True, blank=True)
     rival = models.ForeignKey('self', on_delete=models.CASCADE, related_name='rival_rival', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -1074,10 +1204,10 @@ class Commentaries(models.Model):
     comment = models.TextField(null=True, blank=True)
     minute = models.IntegerField(null=True, blank=True)
     extra_minute = models.IntegerField(null=True, blank=True)
-    is_goal = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
-    important = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True, blank=True)
+    is_goal = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
+    important = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True, blank=True)
     order = models.IntegerField(null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1121,7 +1251,7 @@ class Referees(models.Model):
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1158,14 +1288,14 @@ class Transfers(models.Model):
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
     date = models.DateField(null=True, blank=True)
-    career_ended = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
-    free_transfer = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    career_ended = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
+    free_transfer = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
     market_value = models.CharField(max_length=100, null=True, blank=True)
     market_value_currency = models.CharField(max_length=100, null=True, blank=True)
     fee = models.CharField(max_length=100, null=True, blank=True)
-    completed = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    completed = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
     amount = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1208,7 +1338,7 @@ class PreMatchOdds(models.Model):
     participants = models.CharField(max_length=100, null=True, blank=True)
     original_label = models.CharField(max_length=100, null=True, blank=True)
     latest_bookmaker_update = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1255,7 +1385,7 @@ class InPlayOdds(models.Model):
     total = models.CharField(max_length=100, null=True, blank=True)
     handicap = models.CharField(max_length=100, null=True, blank=True)
     latest_bookmaker_update = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1285,10 +1415,10 @@ class Markets(models.Model):
     owner = GenericForeignKey('owner_model', 'owner_id')
     legacy = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
-    developer_name = models.CharField(max_length=200, null=True, blank=True)
-    has_winning_calculations = models.CharField(max_length=200, choices=Public_Status, default='Yes', null=True,
+    developer_name = models.CharField(max_length=100, null=True, blank=True)
+    has_winning_calculations = models.CharField(max_length=100, choices=Public_Status, default='Yes', null=True,
                                                 blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1318,7 +1448,7 @@ class Bookmakers(models.Model):
     owner = GenericForeignKey('owner_model', 'owner_id')
     legacy = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1365,10 +1495,10 @@ class Match(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     current_minute = models.CharField(max_length=100, null=True, blank=True,default='0')
     current_half = models.CharField(max_length=100, choices=Half_List, default='1st Half', null=True, blank=True)
-    played = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
-    is_live = models.CharField(max_length=200, choices=Match_Status, default='No', null=True, blank=True)
+    played = models.CharField(max_length=100, choices=Match_Status, default='No', null=True, blank=True)
+    is_live = models.CharField(max_length=100, choices=Match_Status, default='No', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -1399,7 +1529,7 @@ class MatchTeamPlayer(models.Model):
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
     shirt_number = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128,unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1450,7 +1580,7 @@ class MatchSummary(models.Model):
     time = models.CharField(max_length=100, null=True, blank=True)
     minute = models.IntegerField(null=True, blank=True)
     extra_minute = models.IntegerField(null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1474,7 +1604,7 @@ class MatchStatics(models.Model):
     type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
     home = models.CharField(max_length=100, null=True, blank=True)
     away = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1496,7 +1626,7 @@ class MatchTeamLineups(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='match_lineups', null=True, blank=True)
     team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_match_lineups', null=True, blank=True)
     plan = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1521,9 +1651,9 @@ class MatchTeamLineupsPlayer(models.Model):
     player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_lineups_summary', null=True,
                                blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
-    captain = models.CharField(max_length=200, choices=Public_Status, default='No', null=True, blank=True)
+    captain = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
     shirt_number = models.CharField(max_length=100, null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128,unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1549,7 +1679,7 @@ class MatchPlayerSummary(models.Model):
     type = models.CharField(max_length=100, choices=Match_Statics, default='Messed Shots', null=True, blank=True)
     percentage = models.CharField(max_length=100, null=True, blank=True)
     total = models.IntegerField(null=True, blank=True)
-    status = models.CharField(max_length=200, choices=Active_Status, default='Active', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -1634,3 +1764,17 @@ class TeamSeasonTable(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(TeamSeasonTable, self).save(*args, **kwargs)
+
+
+class FavoriteLeague(models.Model):
+    """ Links a user to a league they have favorited. """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_leagues')
+    league = models.ForeignKey(Leagues, on_delete=models.CASCADE, related_name='favorited_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Ensures a user can only favorite a league once
+        unique_together = ('user', 'league')
+
+    def __str__(self):
+        return f"{self.user.username}'s favorite: {self.league.name}"
