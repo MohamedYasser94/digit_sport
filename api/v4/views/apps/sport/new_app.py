@@ -231,49 +231,74 @@ def FixtureDetailApiView(request, fixture_id, lang):
 @api_view(['GET'])
 def TeamScreenApiView(request, sport, lang):
     """
-    Optimized API endpoint for Flutter to get teams with their recent and upcoming matches.
+    Robust API endpoint to get active teams with their single most
+    recent previous match and single nearest upcoming match.
     """
     try:
-        # 1. Get a set of recent and upcoming fixtures
-        starting_at = django_timezone.now() - timedelta(days=7)
-        ending_at = django_timezone.now() + timedelta(days=7)
-        fixtures = Fixtures.objects.filter(
-            starting_at__range=(starting_at, ending_at)
-        ).prefetch_related('participants__team')
-
-        # 2. Get the unique teams from those fixtures
-        team_ids = set()
-        for fixture in fixtures:
-            for participant in fixture.participants.all():
-                team_ids.add(participant.team.api_id)
-
-        teams = Teams.objects.filter(api_id__in=team_ids).order_by('name')
-
-        if not teams.exists():
-            teams = Teams.objects.all()[:10]
-
-        # 3. Prepare fixtures data for efficient lookup in the serializer
         now = django_timezone.now()
+
+        # 1. Identify a pool of "active" teams using a flexible time window.
+        active_window_start = now - timedelta(days=30)
+        active_window_end = now + timedelta(days=30)
+
+        target_team_ids = set(FixtureParticipant.objects.filter(
+            fixture__starting_at__range=(active_window_start, active_window_end)
+        ).values_list('team__api_id', flat=True))
+
+        # 2. Get the Team objects, with a fallback if no teams are currently active.
+        if not target_team_ids:
+            # Fallback: If no teams are active, get the first 20 teams from the database.
+            teams = Teams.objects.all().order_by('name')[:20]
+            target_team_ids = set(teams.values_list('api_id', flat=True))
+        else:
+            teams = Teams.objects.filter(api_id__in=target_team_ids).order_by('name')
+
+        # 3. Prepare maps to hold the single fixture for each team.
+        # Using defaultdict ensures that if a team is missing a past or future match,
+        # the serializer will receive an empty list [] instead of causing an error.
         upcoming_fixtures_map = defaultdict(list)
         previous_fixtures_map = defaultdict(list)
 
-        # Separate all fixtures into upcoming and previous
-        all_team_fixtures = Fixtures.objects.filter(
-            participants__team__api_id__in=team_ids,
-        ).distinct()
+        # 4. Get all relevant past fixtures for our target teams, sorted most recent first.
+        # This query correctly searches all of history for the selected teams.
+        previous_fixtures_qs = Fixtures.objects.filter(
+            participants__team__api_id__in=target_team_ids,
+            starting_at__lt=now
+        ).order_by('-starting_at').prefetch_related('participants__team')
 
-        for fixture in all_team_fixtures:
+        # 5. Get all relevant upcoming fixtures, sorted nearest first.
+        upcoming_fixtures_qs = Fixtures.objects.filter(
+            participants__team__api_id__in=target_team_ids,
+            starting_at__gte=now
+        ).order_by('starting_at').prefetch_related('participants__team')
+
+        # 6. Populate previous_fixtures_map with the single most recent match for each team.
+        temp_previous_map = {}  # Helper to track which teams we've found a match for
+        for fixture in previous_fixtures_qs:
             for participant in fixture.participants.all():
-                if fixture.starting_at >= now:
-                    # Limit to 5 upcoming matches
-                    if len(upcoming_fixtures_map[participant.team.api_id]) < 5:
-                        upcoming_fixtures_map[participant.team.api_id].append(fixture)
-                else:
-                    # Limit to 5 previous matches
-                    if len(previous_fixtures_map[participant.team.api_id]) < 5:
-                        previous_fixtures_map[participant.team.api_id].append(fixture)
+                team_id = participant.team.api_id
+                if team_id in target_team_ids and team_id not in temp_previous_map:
+                    # Because the query is sorted, the first match we find is the most recent.
+                    previous_fixtures_map[team_id] = [fixture]
+                    temp_previous_map[team_id] = True
+            # Optimization: Stop looping if we've found a match for every team.
+            if len(temp_previous_map) == len(target_team_ids):
+                break
 
-        # 4. Pass the prepared data to the serializer via context
+        # 7. Populate upcoming_fixtures_map with the single nearest match for each team.
+        temp_upcoming_map = {}  # Helper to track which teams we've found a match for
+        for fixture in upcoming_fixtures_qs:
+            for participant in fixture.participants.all():
+                team_id = participant.team.api_id
+                if team_id in target_team_ids and team_id not in temp_upcoming_map:
+                    # Because the query is sorted, the first match we find is the nearest.
+                    upcoming_fixtures_map[team_id] = [fixture]
+                    temp_upcoming_map[team_id] = True
+            # Optimization: Stop looping if we've found a match for every team.
+            if len(temp_upcoming_map) == len(target_team_ids):
+                break
+
+        # 8. Pass the prepared data to the serializer.
         serializer_context = {
             'upcoming_fixtures': upcoming_fixtures_map,
             'previous_fixtures': previous_fixtures_map,
@@ -283,8 +308,8 @@ def TeamScreenApiView(request, sport, lang):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Exception as e:
-        # Log the full exception for debugging
-        print(f"Error in TeamScreenApiView: {e}")
+        import traceback
+        traceback.print_exc()
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -356,11 +381,12 @@ def NewsApiView(request, lang):
     API endpoint to get a list of news articles.
     """
     try:
-        news_articles = BlogArticle.objects.all().order_by('-published_at')  # Assuming a 'published_at' field
+        news_articles = BlogArticle.objects.all().order_by('-id')  # Assuming a 'published_at' field
         serializer = BlogArticleSerializer(news_articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Exception as e:
+        print('Error in NewsApiView:', str(e))
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

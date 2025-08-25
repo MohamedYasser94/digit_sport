@@ -29,10 +29,11 @@ class LeagueSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
 
     class Meta:
-        model = MonkLeague
+        model = Leagues
         fields = [
-            'id', 'name', 'logo_url', 'sport',
-            'custom_translation_name'
+            'id', 'name',  'sport',
+            'image_path', 'image', 'currentseason', 'name_tr'
+
         ]
 
 class TeamWithMatchesSerializer(serializers.ModelSerializer):
