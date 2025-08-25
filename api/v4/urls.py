@@ -19,7 +19,7 @@ urlpatterns = [
 
     ############# league Screen api urls #############
 
-    path('v4/leagues/<str:sport>/list/<str:lang>/list/', new_app.LeaguesApiView, name='LeaguesApiView'),
+    path('v4/leagues/<str:sport>/<str:lang>/list/', new_app.LeaguesApiView, name='LeaguesApiView'),
 
     path('v4/leagues/detail/<int:league_id>/<str:lang>/', new_app.LeagueDetailApiView, name='LeagueDetailApiView'),
 
