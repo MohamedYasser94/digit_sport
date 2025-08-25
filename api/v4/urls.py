@@ -14,7 +14,7 @@ urlpatterns = [
     path('v4/fixtures/detail/<int:fixture_id>/<str:lang>/', new_app.FixtureDetailApiView, name='FixtureDetailApiView'),
 
     ######################### team Screen api urls #########################
-    path('v4/teams/<str:sport>/details/<str:lang>/list/', new_app.TeamScreenApiView, name='TeamScreenApiView'),
+    path('v4/teams/<str:sport>/<str:lang>/list/', new_app.TeamScreenApiView, name='TeamScreenApiView'),
     path('v4/teams/detail/<int:team_id>/<str:lang>/', new_app.TeamDetailApiView, name='TeamDetailApiView'),
 
     ############# league Screen api urls #############
