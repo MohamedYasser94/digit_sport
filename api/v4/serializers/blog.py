@@ -32,7 +32,7 @@ class AdminBlogArticleDetailsSerializer(serializers.ModelSerializer)    :
     def get_body(self, obj):
         return obj.body
 
-class AdminBlogVideoSerializer(serializers.ModelSerializer)    :
+class BlogVideoSerializer(serializers.ModelSerializer)    :
     class Meta:
         model = BlogVideo
         fields = [ 'id','title','video_source','video_url']

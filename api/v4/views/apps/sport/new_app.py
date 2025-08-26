@@ -7,15 +7,18 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.v4.serializers.blog import BlogArticleSerializer
+import requests
+
+from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
 from api.v4.serializers.sport.sport import LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSerializer, \
     TeamWithMatchesSerializer
 from apps.sport.models.models import *
-from apps.sport.views.monks import _fetch_and_store_fixtures_from_source
-from core.models.blog import BlogArticle
+from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
+from core.models.blog import BlogArticle, BlogVideo
 
 from digit_sport import settings
-from datetime import datetime, time, timezone # <<< ADD THIS IMPORT
+from datetime import datetime, time, timezone
+
 api_key = settings.SPORT_MONKS_TOKEN
 base_url = settings.SPORT_MONKS_URL
 
@@ -46,14 +49,12 @@ def _get_serialized_fixtures_for_date(fetch_date):
             'matches': fixture_serializer.data
         })
 
-    # <<< FIX: Using the correct list of live statuses from Sportmonks >>>
     live_statuses_from_docs = [
         'INPLAY_1ST_HALF', 'HT', 'INPLAY_2ND_HALF', 'BREAK',
         'INPLAY_ET', 'EXTRA_TIME_BREAK', 'INPLAY_PENALTIES', 'PEN_BREAK',
         'SUSPENDED', 'INTERRUPTED'
     ]
 
-    # The 'state' field in your Fixtures model should store the Sportmonks state string.
     live_count = fixtures_for_day.filter(
         state__in=live_statuses_from_docs
     ).count()
@@ -62,6 +63,7 @@ def _get_serialized_fixtures_for_date(fetch_date):
         'live_count': live_count,
         'leagues': leagues_data
     }
+
 
 @api_view(['GET'])
 def FixturesByDateApiList(request, sport, date, lang):
@@ -81,129 +83,77 @@ def FixturesByDateApiList(request, sport, date, lang):
 
     try:
         sport_obj = Sport.objects.get(name__iexact=sport)
-
-        # Check if data exists in our database
         fetched_record = FetchedDate.objects.filter(date=fetch_date, sport=sport_obj).first()
         has_fixtures = Fixtures.objects.filter(starting_at__date=fetch_date,
                                                sport=sport_obj).exists() if fetched_record else False
 
-        # --- Main Logic Branch ---
         if fetched_record and has_fixtures:
-
-
-            # For today's date, check if the data is "stale" (e.g., older than 2 minutes)
             today = django_timezone.now().date()
             if fetch_date == today:
                 time_since_last_fetch = django_timezone.now() - fetched_record.fetched_at
-                # Refresh if data is older than 2 minutes
                 if time_since_last_fetch > timedelta(minutes=2):
-
-                    # Start the fetch in a separate thread so it doesn't block the response
                     thread = threading.Thread(
                         target=_fetch_and_store_fixtures_from_source,
                         args=(sport, fetch_date.strftime('%Y-%m-%d'))
                     )
                     thread.start()
 
-            # Return the cached data immediately
             response_data = _get_serialized_fixtures_for_date(fetch_date)
             return Response(response_data, status=status.HTTP_200_OK)
         else:
-            # --- CACHE MISS ---
-
             success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
-
             if not success:
                 return Response({"error": "Failed to fetch data from the source API."},
                                 status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
-            # Log the successful fetch
             FetchedDate.objects.update_or_create(
                 date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
             )
-
-
             response_data = _get_serialized_fixtures_for_date(fetch_date)
             return Response(response_data, status=status.HTTP_200_OK)
 
     except Sport.DoesNotExist:
         return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        return Response({"error": f"An unexpected server error occurred.{e}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response({"error": f"An unexpected server error occurred.{e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FavoriteLeagueToggle(APIView):
-    """
-    Toggles a league as a favorite for the authenticated user.
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         league_id = request.data.get('league_id')
         if not league_id:
             return Response({'error': 'League ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             league = Leagues.objects.get(api_id=league_id)
         except Leagues.DoesNotExist:
             return Response({'error': 'League not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Try to get the favorite, if it exists, delete it.
         favorite, created = FavoriteLeague.objects.get_or_create(user=request.user, league=league)
-
         if not created:
-            # The favorite already existed, so we delete it (un-star)
             favorite.delete()
             return Response({'status': 'removed'}, status=status.HTTP_200_OK)
-
-        # The favorite was just created (star)
         return Response({'status': 'added'}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
 def FixtureDetailApiView(request, fixture_id, lang):
-    """
-    API endpoint for Flutter to get all details for a single fixture,
-    including participants, scores, events, statistics, and lineups.
-    """
     try:
-        # Fetch the specific fixture using its primary key (or api_id)
         fixture = Fixtures.objects.prefetch_related(
             'participants__team', 'league', 'season'
         ).get(api_id=fixture_id)
-
     except Fixtures.DoesNotExist:
-        return Response(
-            {"error": "Fixture not found."},
-            status=status.HTTP_404_NOT_FOUND
-        )
+        return Response({"error": "Fixture not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response(
-            {"error": f"An unexpected server error occurred: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        return Response({"error": f"An unexpected server error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # Use your existing FixtureSerializer to structure the data.
-    # Ensure this serializer is configured to include nested data for
-    # participants, events, statistics, lineups, league, and season.
-    # If it's not, you'll need to adjust it or create a new detailed one.
-
-    # For demonstration, we'll manually construct the response dictionary
-    # based on what the Flutter app will expect.
-
-    participants_data = []
-    for p in fixture.participants.all():
-        participants_data.append({
-            'api_id': p.team.api_id,
-            'name': p.team.name,
-            'image_path': p.team.image_path,
-            'meta_location': p.meta_location
-        })
-
-    # Assuming 'events', 'statistics', and 'lineups' are stored as JSONFields on the Fixture model
-    events_data = fixture.events if isinstance(fixture.events, list) else []
-    statistics_data = fixture.statistics if isinstance(fixture.statistics, list) else []
-    lineups_data = fixture.lineups if isinstance(fixture.lineups, list) else []
+    participants_data = [{
+        'api_id': p.team.api_id,
+        'name': p.team.name,
+        'image_path': p.team.image_path,
+        'meta_location': p.meta_location
+    } for p in fixture.participants.all()]
 
     response_data = {
         'api_id': fixture.api_id,
@@ -211,162 +161,123 @@ def FixtureDetailApiView(request, fixture_id, lang):
         'starting_at': fixture.starting_at,
         'leg': fixture.leg,
         'result_info': fixture.result_info,
-        'league': {
-            'api_id': fixture.league.api_id,
-            'name': fixture.league.name,
-            'image_path': fixture.league.image_path
-        } if fixture.league else None,
+        'league': {'api_id': fixture.league.api_id, 'name': fixture.league.name,
+                   'image_path': fixture.league.image_path} if fixture.league else None,
         'season_id': fixture.season.api_id if fixture.season else None,
         'participants': participants_data,
-        'events': events_data,
-        'statistics': statistics_data,
-        'lineups': lineups_data,
-        # You may need to serialize scores and other fields similarly
+        'events': fixture.events if isinstance(fixture.events, list) else [],
+        'statistics': fixture.statistics if isinstance(fixture.statistics, list) else [],
+        'lineups': fixture.lineups if isinstance(fixture.lineups, list) else [],
     }
-
     return Response(response_data, status=status.HTTP_200_OK)
 
 
 ######################### team Screen api urls #########################
 @api_view(['GET'])
 def TeamScreenApiView(request, sport, lang):
-    """
-    Robust API endpoint to get active teams with their single most
-    recent previous match and single nearest upcoming match.
-    """
     try:
         now = django_timezone.now()
-
-        # 1. Identify a pool of "active" teams using a flexible time window.
         active_window_start = now - timedelta(days=30)
         active_window_end = now + timedelta(days=30)
-
         target_team_ids = set(FixtureParticipant.objects.filter(
             fixture__starting_at__range=(active_window_start, active_window_end)
         ).values_list('team__api_id', flat=True))
 
-        # 2. Get the Team objects, with a fallback if no teams are currently active.
         if not target_team_ids:
-            # Fallback: If no teams are active, get the first 20 teams from the database.
             teams = Teams.objects.all().order_by('name')[:20]
             target_team_ids = set(teams.values_list('api_id', flat=True))
         else:
             teams = Teams.objects.filter(api_id__in=target_team_ids).order_by('name')
 
-        # 3. Prepare maps to hold the single fixture for each team.
-        # Using defaultdict ensures that if a team is missing a past or future match,
-        # the serializer will receive an empty list [] instead of causing an error.
         upcoming_fixtures_map = defaultdict(list)
         previous_fixtures_map = defaultdict(list)
 
-        # 4. Get all relevant past fixtures for our target teams, sorted most recent first.
-        # This query correctly searches all of history for the selected teams.
         previous_fixtures_qs = Fixtures.objects.filter(
             participants__team__api_id__in=target_team_ids,
             starting_at__lt=now
         ).order_by('-starting_at').prefetch_related('participants__team')
 
-        # 5. Get all relevant upcoming fixtures, sorted nearest first.
         upcoming_fixtures_qs = Fixtures.objects.filter(
             participants__team__api_id__in=target_team_ids,
             starting_at__gte=now
         ).order_by('starting_at').prefetch_related('participants__team')
 
-        # 6. Populate previous_fixtures_map with the single most recent match for each team.
-        temp_previous_map = {}  # Helper to track which teams we've found a match for
+        temp_previous_map = {}
         for fixture in previous_fixtures_qs:
             for participant in fixture.participants.all():
                 team_id = participant.team.api_id
                 if team_id in target_team_ids and team_id not in temp_previous_map:
-                    # Because the query is sorted, the first match we find is the most recent.
                     previous_fixtures_map[team_id] = [fixture]
                     temp_previous_map[team_id] = True
-            # Optimization: Stop looping if we've found a match for every team.
             if len(temp_previous_map) == len(target_team_ids):
                 break
 
-        # 7. Populate upcoming_fixtures_map with the single nearest match for each team.
-        temp_upcoming_map = {}  # Helper to track which teams we've found a match for
+        temp_upcoming_map = {}
         for fixture in upcoming_fixtures_qs:
             for participant in fixture.participants.all():
                 team_id = participant.team.api_id
                 if team_id in target_team_ids and team_id not in temp_upcoming_map:
-                    # Because the query is sorted, the first match we find is the nearest.
                     upcoming_fixtures_map[team_id] = [fixture]
                     temp_upcoming_map[team_id] = True
-            # Optimization: Stop looping if we've found a match for every team.
             if len(temp_upcoming_map) == len(target_team_ids):
                 break
 
-        # 8. Pass the prepared data to the serializer.
         serializer_context = {
             'upcoming_fixtures': upcoming_fixtures_map,
             'previous_fixtures': previous_fixtures_map,
         }
-
         serializer = TeamWithMatchesSerializer(teams, many=True, context=serializer_context)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
 def TeamDetailApiView(request, team_id, lang):
-    """
-    API endpoint for Flutter to get detailed information about a team,
-    including its players and statistics.
-    """
     try:
         team = Teams.objects.get(api_id=team_id)
         serializer = TeamSerializer(team)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except Teams.DoesNotExist:
         return Response({"error": "Team not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-################ Leagues  API Endpoints ################
+
+
+################ Leagues API Endpoints ################
 
 @api_view(['GET'])
 def LeaguesApiView(request, sport, lang):
-    """
-    API endpoint to get a list of leagues for a specific sport.
-    """
     try:
         sport_obj = Sport.objects.get(name__iexact=sport)
         leagues = Leagues.objects.filter(sport=sport_obj).order_by('name')
         serializer = LeagueSerializer(leagues, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except Sport.DoesNotExist:
         return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @api_view(['GET'])
 def LeagueDetailApiView(request, league_id, lang):
-    """
-    API endpoint to get basic details for a single league, including its current season.
-    """
     try:
         league = Leagues.objects.get(api_id=league_id)
-        # Assuming a related name 'seasons' or similar on the League model
+        fixturess = Fixtures.objects.filter(league=league).order_by('-starting_at')
         current_season = league.currentseason
+        fixtures_serializer = FixtureSerializer(fixturess, many=True)
         response_data = {
             'api_id': league.api_id,
             'name': league.name,
             'image_path': league.image_path,
             'country': league.country,
             'current_season_id': current_season if current_season else None,
+            'fixtures': fixtures_serializer.data
         }
         return Response(response_data, status=status.HTTP_200_OK)
-
     except Leagues.DoesNotExist:
         return Response({"error": "League not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -374,34 +285,92 @@ def LeagueDetailApiView(request, league_id, lang):
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-  ######################### News api urls #########################
+# --- NEW VIEW FOR LIVE STANDINGS ---
 @api_view(['GET'])
-def NewsApiView(request, lang):
+def LiveStandingsByLeagueApiView(request, league_id):
     """
-    API endpoint to get a list of news articles.
+    Acts as a proxy to fetch live standings for a league from SportMonks.
+    """
+    include_params = request.query_params.get('include', 'participant')
+    url = f"{base_url}football/standings/live/leagues/{league_id}?api_token={api_key}&include={include_params}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return Response(response.json(), status=status.HTTP_200_OK)
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch standings from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# --- CORRECTED VIEW FOR TOP SCORERS ---
+@api_view(['GET'])
+def TopScorersBySeasonApiView(request, season_id):
+    """
+    Acts as a proxy to fetch top scorers for a season from SportMonks.
+    This version correctly constructs the URL with multiple separate 'filters' parameters.
     """
     try:
-        news_articles = BlogArticle.objects.all().order_by('-id')  # Assuming a 'published_at' field
-        serializer = BlogArticleSerializer(news_articles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Start with the base URL and API token
+        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
+        # Append the 'include' parameter
+        include_param = request.query_params.get('include', 'player')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        # Manually append each filter as a separate parameter
+        for key, value in request.query_params.items():
+            if key.startswith('filters['):
+                # Example key: 'filters[fixtureLeagues]'
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+
+        # Make the request with the fully constructed URL
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch top scorers from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
     except Exception as e:
-        print('Error in NewsApiView:', str(e))
+        return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+######################### News api urls #########################
+@api_view(['GET'])
+def NewsApiView(request, lang):
+    try:
+        news_articles = BlogArticle.objects.all().order_by('-id')
+        news_video = BlogVideo.objects.all().order_by('-id').first()
+        news_serializer = BlogArticleSerializer(news_articles, many=True,context={'request': request})
+        video_serializer = BlogVideoSerializer(news_video,many=True,context={'request': request})
+        response_data = {
+            'articles': news_serializer.data,
+            'videos': video_serializer.data if news_video else None
+        }
+
+
+        return Response( response_data, status=status.HTTP_200_OK)
+    except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 @api_view(['GET'])
 def NewsDetailApiView(request, news_id, lang):
-    """
-    API endpoint to get detailed information about a single news article.
-    """
     try:
         news_article = BlogArticle.objects.get(id=news_id)
-        serializer =BlogArticleSerializer(news_article)
+        serializer = BlogArticleSerializer(news_article)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
     except BlogArticle.DoesNotExist:
         return Response({"error": "News article not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
