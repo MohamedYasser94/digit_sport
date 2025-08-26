@@ -136,40 +136,35 @@ class FavoriteLeagueToggle(APIView):
         return Response({'status': 'added'}, status=status.HTTP_201_CREATED)
 
 
+# ... (other code)
+
 @api_view(['GET'])
 def FixtureDetailApiView(request, fixture_id, lang):
+    """
+    Acts as a proxy to fetch live fixture details from SportMonks.
+    This ensures the app always gets the most up-to-date information.
+    """
+    # This is the full include string needed to get all the data for the screen
+    include_string = "scores;sport;round;stage;league;season;state;lineups.player;events.player;participants;metadata"
+
+    url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
+
     try:
-        fixture = Fixtures.objects.prefetch_related(
-            'participants__team', 'league', 'season'
-        ).get(api_id=fixture_id)
-    except Fixtures.DoesNotExist:
-        return Response({"error": "Fixture not found."}, status=status.HTTP_404_NOT_FOUND)
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch fixture details from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    participants_data = [{
-        'api_id': p.team.api_id,
-        'name': p.team.name,
-        'image_path': p.team.image_path,
-        'meta_location': p.meta_location
-    } for p in fixture.participants.all()]
 
-    response_data = {
-        'api_id': fixture.api_id,
-        'name': fixture.name,
-        'starting_at': fixture.starting_at,
-        'leg': fixture.leg,
-        'result_info': fixture.result_info,
-        'league': {'api_id': fixture.league.api_id, 'name': fixture.league.name,
-                   'image_path': fixture.league.image_path} if fixture.league else None,
-        'season_id': fixture.season.api_id if fixture.season else None,
-        'participants': participants_data,
-        'events': fixture.events if isinstance(fixture.events, list) else [],
-        'statistics': fixture.statistics if isinstance(fixture.statistics, list) else [],
-        'lineups': fixture.lineups if isinstance(fixture.lineups, list) else [],
-    }
-    return Response(response_data, status=status.HTTP_200_OK)
+# ... (rest of the file)
 
 
 ######################### team Screen api urls #########################
