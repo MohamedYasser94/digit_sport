@@ -350,20 +350,46 @@ def TopScorersBySeasonApiView(request, season_id):
 def NewsApiView(request, lang):
     try:
         news_articles = BlogArticle.objects.all().order_by('-id')
-        news_video = BlogVideo.objects.all().order_by('-id').first()
+        # FIX: Fetch all video objects, not just the first one.
+        news_videos = BlogVideo.objects.all().order_by('-id')
+
         news_serializer = BlogArticleSerializer(news_articles, many=True,context={'request': request})
-        video_serializer = BlogVideoSerializer(news_video,many=True,context={'request': request})
+        # FIX: Serialize the entire list of videos. This will correctly return [] if empty.
+        video_serializer = BlogVideoSerializer(news_videos, many=True,context={'request': request})
+
         response_data = {
             'articles': news_serializer.data,
-            'videos': video_serializer.data if news_video else None
+            'videos': video_serializer.data
         }
 
-
-        return Response( response_data, status=status.HTTP_200_OK)
+        return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['GET'])
+def TransfersApiView(request):
+    """
+    Acts as a proxy to fetch the latest football transfers from SportMonks.
+    """
+    try:
+        # Construct the URL with includes for player and team details
+        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam"
+
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an exception for 4xx/5xx errors
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch transfers from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def NewsDetailApiView(request, news_id, lang):
