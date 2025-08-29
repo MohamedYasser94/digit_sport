@@ -339,7 +339,30 @@ def TopScorersBySeasonApiView(request, season_id):
         return Response({"error": f"An unexpected error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+################## Player Detail API Endpoint ##################
+@api_view(['GET'])
+def PlayerDetailApiView(request, player_id, lang):
+    """
+    Acts as a proxy to fetch player details from SportMonks.
+    include
+    country;nationality;city;position;detailedPosition;teams;statistics;transfers;pendingTransfers;lineups;sport;trophies;latest;
+    """
+    include_string = "country;nationality;city;position;detailedPosition;teams;statistics;transfers;pendingTransfers;lineups;sport;trophies;latest"
+    url = f"{base_url}football/players/{player_id}?api_token={api_key}&include={include_string}"
 
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch player details from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected server error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 ######################### News api urls #########################
 @api_view(['GET'])
 def NewsApiView(request, lang):
