@@ -143,9 +143,10 @@ def FixtureDetailApiView(request, fixture_id, lang):
     """
     Acts as a proxy to fetch live fixture details from SportMonks.
     This ensures the app always gets the most up-to-date information.
+    round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;league;season;state;lineups.player;events.player;participants;metadata"
+    include_string = "scores;sport;round;stage;group;league;season;state;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
