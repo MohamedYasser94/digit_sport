@@ -24,7 +24,7 @@ urlpatterns = [
     # --- NEW URLS FOR SPORTMONKS PROXY ---
     path('v4/football/standings/live/leagues/<int:league_id>/', new_app.LiveStandingsByLeagueApiView, name='LiveStandingsByLeagueApiView'),
     path('v4/football/topscorers/seasons/<int:season_id>/', new_app.TopScorersBySeasonApiView, name='TopScorersBySeasonApiView'),
-
+    path('v4/football/topassists/seasons/<int:season_id>/', new_app.TopAssistsBySeasonApiView, name='TopScorersBySeasonApiView'),
 
     path('v4/football/players/detail/<int:player_id>/<str:lang>/', new_app.PlayerDetailApiView, name='PlayerDetailApiView'),
 

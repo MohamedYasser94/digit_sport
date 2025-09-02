@@ -146,7 +146,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
@@ -287,7 +287,7 @@ def LiveStandingsByLeagueApiView(request, league_id):
     """
     Acts as a proxy to fetch live standings for a league from SportMonks.
     """
-    include_params = request.query_params.get('include', 'participant')
+    include_params = request.query_params.get('include', 'participant;details;details.type',)
     url = f"{base_url}football/standings/live/leagues/{league_id}?api_token={api_key}&include={include_params}"
 
     try:
@@ -316,7 +316,43 @@ def TopScorersBySeasonApiView(request, season_id):
         url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
         # Append the 'include' parameter
-        include_param = request.query_params.get('include', 'player')
+        include_param = request.query_params.get('include', 'player;&filters=seasonTopscorerTypes:208')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        # Manually append each filter as a separate parameter
+        for key, value in request.query_params.items():
+            if key.startswith('filters['):
+                # Example key: 'filters[fixtureLeagues]'
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+
+        # Make the request with the fully constructed URL
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch top scorers from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# --- NEW VIEW FOR TOP ASSISTS ---
+@api_view(['GET'])
+def TopAssistsBySeasonApiView(request, season_id):
+    """
+    Acts as a proxy to fetch top scorers for a season from SportMonks.
+    This version correctly constructs the URL with multiple separate 'filters' parameters.
+    """
+    try:
+        # Start with the base URL and API token
+        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
+
+        # Append the 'include' parameter
+        include_param = request.query_params.get('include', 'player;&filters=seasonTopscorerTypes:209')
         url += f"&include={include_param.replace(',', ';')}"
 
         # Manually append each filter as a separate parameter
