@@ -31,7 +31,7 @@ class LeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
         fields = [
-            'id', 'name',  'sport',
+            'id', 'api_id', 'name',  'sport',
             'image_path', 'image', 'currentseason', 'name_tr'
 
         ]

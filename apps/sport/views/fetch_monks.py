@@ -303,7 +303,7 @@ def AdminMonksPlayersGetData(request):
     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'})
 
 
-# In your monks.py file
+# In your fetch_monks.py file
 
 @csrf_exempt
 def AdminMonksFixturesGetData(request):

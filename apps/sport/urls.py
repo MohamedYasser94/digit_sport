@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.sport.views import views, monks, media,operations
+from apps.sport.views import views, fetch_monks, media,operations
 
 app_name = 'sport'
 
@@ -21,7 +21,7 @@ urlpatterns = [
     path('leagues/delete/<slug:slug>/', views.AdminLeaguesDelete, name='AdminLeaguesDelete'),
     path('leagues/teams/<slug:slug>/', views.AdminLeaguesTeams, name='AdminLeaguesTeams'),
     path('leagues/match/<slug:slug>/', views.AdminMatchByLeague, name='AdminMatchByLeague'),
-    path('monk/leagues/api/get/', monks.AdminMonksLeaguesGetData, name='AdminMonksLeaguesGetData'),
+    path('monk/leagues/api/get/', fetch_monks.AdminMonksLeaguesGetData, name='AdminMonksLeaguesGetData'),
 
     ##########   Season  #########
     path('season/', views.AdminSeasonList, name='AdminSeasonList'),
@@ -87,7 +87,7 @@ urlpatterns = [
     path('team/archive/<slug:slug>/', views.AdminTeamsArchive, name='AdminTeamsArchive'),
     path('team/delete/<slug:slug>/', views.AdminTeamsDelete, name='AdminTeamsDelete'),
     # path('monk/teams/list/', monks.AdminMonksTeamsList, name='AdminMonksTeamsList'),
-    path('monk/teams/api/get/', monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
+    path('monk/teams/api/get/', fetch_monks.AdminMonksTeamsGetData, name='AdminMonksTeamsGetData'),
     path('team/playr/list/<slug:slug>/', views.AdminTeamPlayerList, name='AdminTeamPlayerList'),
     path('team/playr/add/<slug:slug>/', views.AdminTeamPlayerAdd, name='AdminTeamPlayerAdd'),
 
@@ -100,7 +100,7 @@ urlpatterns = [
     path('player/archive/<slug:slug>/', views.AdminPlayersArchive, name='AdminPlayersArchive'),
     path('player/delete/<slug:slug>/', views.AdminPlayersDelete, name='AdminPlayersDelete'),
     path('player/static/add/<slug:slug>/', views.AdminPlayerStaticAdd, name='AdminPlayerStaticAdd'),
-    path('monk/players/api/get/', monks.AdminMonksPlayersGetData, name='AdminMonksPlayersGetData'),
+    path('monk/players/api/get/', fetch_monks.AdminMonksPlayersGetData, name='AdminMonksPlayersGetData'),
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),
@@ -115,7 +115,7 @@ urlpatterns = [
 
 
     path('match/goals/add/<slug:slug>/', views.AdminMatchGoalsAdd, name='AdminMatchGoalsAdd'),
-    path('monk/match/api/get/', monks.AdminMonksFixturesGetData, name='AdminMonksFixturesGetData'),
+    path('monk/match/api/get/', fetch_monks.AdminMonksFixturesGetData, name='AdminMonksFixturesGetData'),
 
 
     ##########   Match By Team #########
@@ -148,11 +148,11 @@ urlpatterns = [
     path('match/player/report/delete/<slug:slug>/', operations.AdminMatchPlayerReportDelete, name='AdminMatchPlayerReportDelete'),
 
     ##########   Api Data  #########
-    path('country/api/', monks.AdminMonksCountryList, name='AdminMonksCountryList'),
-    path('country/api/add/', monks.AdminMonksCountryList, name='AdminMonksCountryAdd'),
-    path('country/api/update/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
-    path('country/api/archive/<slug:slug>/', monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
-    path('monk/country/api/get/', monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
+    path('country/api/', fetch_monks.AdminMonksCountryList, name='AdminMonksCountryList'),
+    path('country/api/add/', fetch_monks.AdminMonksCountryList, name='AdminMonksCountryAdd'),
+    path('country/api/update/<slug:slug>/', fetch_monks.AdminMonksCountryList, name='AdminMonksCountryUpdate'),
+    path('country/api/archive/<slug:slug>/', fetch_monks.AdminMonksCountryList, name='AdminMonksCountryArchive'),
+    path('monk/country/api/get/', fetch_monks.AdminMonksCountryGetData, name='AdminMonksCountryGetData'),
 
     ################## Media ##################
     path('media/', media.AdminYoutubeChannelList, name='AdminYoutubeChannelList'),
