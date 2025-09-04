@@ -375,7 +375,71 @@ def TopAssistsBySeasonApiView(request, season_id):
     except Exception as e:
         return Response({"error": f"An unexpected error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# --- NEW VIEW FOR HEAD-TO-HEAD PREVIOUS MATCHES (CURRENT SCORES ONLY) ---
+@api_view(['GET'])
+def PreviousMatchesApiView(request, team1_id, team2_id):
+    """
+    Fetch previous matches between two teams (head-to-head) from SportMonks,
+    including only scores with description = 'CURRENT'.
+    """
+    try:
+        # Build the API URL
+        url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;"
 
+        # Call SportMonks API
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        # SportMonks returns fixtures inside "data"
+        fixtures = data.get("data", [])
+
+        filtered_fixtures = []
+        for fixture in fixtures:
+            # Filter only scores with description == "CURRENT"
+            scores = fixture.get("scores", [])
+            current_scores = [s for s in scores if s.get("description") == "CURRENT"]
+
+            # Rebuild fixture with filtered scores
+            filtered_fixture = {
+                "id": fixture.get("id"),
+                "sport_id": fixture.get("sport_id"),
+                "league_id": fixture.get("league_id"),
+                "season_id": fixture.get("season_id"),
+                "stage_id": fixture.get("stage_id"),
+                "group_id": fixture.get("group_id"),
+                "aggregate_id": fixture.get("aggregate_id"),
+                "round_id": fixture.get("round_id"),
+                "state_id": fixture.get("state_id"),
+                "venue_id": fixture.get("venue_id"),
+                "name": fixture.get("name"),
+                "starting_at": fixture.get("starting_at"),
+                "result_info": fixture.get("result_info"),
+                "leg": fixture.get("leg"),
+                "details": fixture.get("details"),
+                "length": fixture.get("length"),
+                "placeholder": fixture.get("placeholder"),
+                "has_odds": fixture.get("has_odds"),
+                "has_premium_odds": fixture.get("has_premium_odds"),
+                "starting_at_timestamp": fixture.get("starting_at_timestamp"),
+                "scores": current_scores,
+            }
+            filtered_fixtures.append(filtered_fixture)
+
+        return Response(filtered_fixtures, status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch previous matches: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
 ################## Player Detail API Endpoint ##################
 @api_view(['GET'])
 def PlayerDetailApiView(request, player_id, lang):
