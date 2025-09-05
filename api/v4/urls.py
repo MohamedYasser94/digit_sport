@@ -24,16 +24,16 @@ urlpatterns = [
     # --- NEW URLS FOR SPORTMONKS PROXY ---
     path('v4/football/standings/live/leagues/<int:league_id>/', new_app.LiveStandingsByLeagueApiView, name='LiveStandingsByLeagueApiView'),
     path('v4/football/topscorers/seasons/<int:season_id>/', new_app.TopScorersBySeasonApiView, name='TopScorersBySeasonApiView'),
-
+    path('v4/football/topassists/seasons/<int:season_id>/', new_app.TopAssistsBySeasonApiView, name='TopScorersBySeasonApiView'),
 
     path('v4/football/players/detail/<int:player_id>/<str:lang>/', new_app.PlayerDetailApiView, name='PlayerDetailApiView'),
-
+    path('v4/football/headtohead/current-scores/<int:team1_id>/<int:team2_id>/',new_app.PreviousMatchesApiView,name='PreviousMatchesApiView'),
 
 
 
     ######################### News api urls #########################
     path('v4/news/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
-path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
+    path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
     path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView')
 
 ]
