@@ -406,7 +406,7 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
     Fetches fixtures and intelligently fetches any missing related data.
     FIXED: Now correctly handles timezone conversion.
     """
-    includes = "league;season;participants;state"
+    includes = "league;season;participants;state;scores"
     next_page_url = base_url + f'{sport}/fixtures/date/{fetch_date_str}?api_token={api_key}&include={includes}'
 
     try:
@@ -440,9 +440,11 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                                    'starting_at': season_data.get('starting_at'),
                                    'ending_at': season_data.get('ending_at')}
                 season, _ = Season.objects.update_or_create(api_id=season_data['id'], defaults=season_defaults)
+                scores_data = fixture_data.get('scores', [])
 
                 api_defaults = {'league': league, 'season': season, 'name': fixture_data.get('name'),
                                 'leg': fixture_data.get('leg'), 'result_info': fixture_data.get('result_info'),
+                                'scores': scores_data,
                                 'state': fixture_data.get('state', {}).get('state')}
 
                 # <<< FIX: Correctly parse and make datetime timezone-aware >>>
