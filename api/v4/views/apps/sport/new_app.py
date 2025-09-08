@@ -146,7 +146,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;coaches;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
@@ -231,12 +231,20 @@ def TeamScreenApiView(request, sport, lang):
 
 @api_view(['GET'])
 def TeamDetailApiView(request, team_id, lang):
+    include_string = "coaches;coaches.coach;players;players.player;players.player.nationality;upcoming;latest;activeSeasons;activeseasons.league;country;venue;"
+
+    url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include={include_string}"
+
     try:
-        team = Teams.objects.get(api_id=team_id)
-        serializer = TeamSerializer(team)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Teams.DoesNotExist:
-        return Response({"error": "Team not found."}, status=status.HTTP_404_NOT_FOUND)
+        response = requests.get(url)
+        response.raise_for_status()
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch team details from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -316,7 +324,7 @@ def TopScorersBySeasonApiView(request, season_id):
         url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
         # Append the 'include' parameter
-        include_param = request.query_params.get('include', 'player;&filters=seasonTopscorerTypes:208')
+        include_param = request.query_params.get('include', 'player;player.nationality;&filters=seasonTopscorerTypes:208')
         url += f"&include={include_param.replace(',', ';')}"
 
         # Manually append each filter as a separate parameter
@@ -352,7 +360,7 @@ def TopAssistsBySeasonApiView(request, season_id):
         url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
         # Append the 'include' parameter
-        include_param = request.query_params.get('include', 'player;&filters=seasonTopscorerTypes:209')
+        include_param = request.query_params.get('include', 'player;player.nationality;&filters=seasonTopscorerTypes:209')
         url += f"&include={include_param.replace(',', ';')}"
 
         # Manually append each filter as a separate parameter
@@ -448,7 +456,7 @@ def PlayerDetailApiView(request, player_id, lang):
     include
     country;nationality;city;position;detailedPosition;teams;statistics;transfers;pendingTransfers;lineups;sport;trophies;latest;
     """
-    include_string = "country;nationality;city;position;detailedPosition;teams;statistics;transfers;pendingTransfers;lineups;sport;trophies;latest"
+    include_string = "country;nationality;position;detailedPosition;teams;statistics;transfers;transfers.FromTeam;transfers.ToTeam;pendingTransfers;lineups;sport;trophies;latest"
     url = f"{base_url}football/players/{player_id}?api_token={api_key}&include={include_string}"
 
     try:
@@ -494,7 +502,7 @@ def TransfersApiView(request):
     """
     try:
         # Construct the URL with includes for player and team details
-        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam"
+        url = f"{base_url}football/transfers?api_token={api_key}&include=player;player.nationality;fromTeam;toTeam"
 
         response = requests.get(url)
         response.raise_for_status()  # Raises an exception for 4xx/5xx errors
