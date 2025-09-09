@@ -146,7 +146,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;lineups.player;events.player;participants;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;participants;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
@@ -231,7 +231,7 @@ def TeamScreenApiView(request, sport, lang):
 
 @api_view(['GET'])
 def TeamDetailApiView(request, team_id, lang):
-    include_string = "coaches;coaches.coach;players;players.player;players.player.nationality;upcoming;latest;activeSeasons;activeseasons.league;country;venue;"
+    include_string = "coaches;coaches.coach;players;players.player;players.player.nationality;latest;latest.scores;latest.participants;upcoming;upcoming.participants;activeSeasons;activeseasons.league;country;venue;"
 
     url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include={include_string}"
 
@@ -324,7 +324,7 @@ def TopScorersBySeasonApiView(request, season_id):
         url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
         # Append the 'include' parameter
-        include_param = request.query_params.get('include', 'player;player.nationality;&filters=seasonTopscorerTypes:208')
+        include_param = request.query_params.get('include', 'player;player.nationality;player.position;participant;type;&filters=seasonTopscorerTypes:208')
         url += f"&include={include_param.replace(',', ';')}"
 
         # Manually append each filter as a separate parameter
@@ -360,7 +360,7 @@ def TopAssistsBySeasonApiView(request, season_id):
         url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
 
         # Append the 'include' parameter
-        include_param = request.query_params.get('include', 'player;player.nationality;&filters=seasonTopscorerTypes:209')
+        include_param = request.query_params.get('include', 'player;player.nationality;player.position;participant;type;&filters=seasonTopscorerTypes:209')
         url += f"&include={include_param.replace(',', ';')}"
 
         # Manually append each filter as a separate parameter
@@ -447,6 +447,99 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
             {"error": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def TeamLatestUpcomingApiView(request, team_id):
+    """
+    Fetch a single team's latest match (with only CURRENT scores) and first upcoming match.
+    """
+    try:
+        url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include=latest;latest.participants;latest.scores;upcoming;upcoming.participants"
+
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json().get("data", {})
+
+        # --- Filter latest: take only the most recent one ---
+        latest_matches = data.get("latest", [])
+        latest_match = latest_matches[0] if latest_matches else None
+
+        if latest_match:
+            # keep only scores with description == CURRENT
+            scores = latest_match.get("scores", [])
+            current_scores = [s for s in scores if s.get("description") == "CURRENT"]
+            latest_match["scores"] = current_scores
+            data["latest"] = [latest_match]
+        else:
+            data["latest"] = []
+
+        # --- Filter upcoming: take only the nearest one ---
+        upcoming_matches = data.get("upcoming", [])
+        upcoming_match = upcoming_matches[0] if upcoming_matches else None
+        data["upcoming"] = [upcoming_match] if upcoming_match else []
+
+        return Response({"data": data}, status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch team data: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def standingsByseasonsApiView(request, season_id):
+    """
+    Acts as a proxy to fetch season details from SportMonks.
+    Includes fixtures, teams, sport, league, stages, groups, statistics, etc.
+    """
+    try:
+        # Start with the base URL and API token
+        url = f"{base_url}football/standings/seasons/{season_id}?api_token={api_key}"
+
+        # Handle include parameters
+        include_param = request.query_params.get('include', 'participant;rule.type;details.type;form;stage;league;group')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        # Handle additional query parameters
+        query_params = request.query_params.copy()
+        
+        # Remove 'include' since we already handled it
+        query_params.pop('include', None)
+        
+        # Add other query parameters to the URL
+        for key, value in query_params.items():
+            if 'filters[' in key:
+                # Handle filter parameters (e.g., filters[league_id]=123)
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+            else:
+                # Handle regular parameters
+                url += f"&{key}={value}"
+
+        # Make the request with the fully constructed URL
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        error_msg = f"Failed to fetch season data from source: {err.response.status_code} {err.response.reason}"
+        if err.response.status_code == 404:
+            error_msg = f"Season with ID {season_id} not found"
+        return Response({"error": error_msg}, status=err.response.status_code)
+    
+    except requests.exceptions.RequestException as err:
+        return Response({"error": f"Network error occurred: {str(err)}"}, 
+                       status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    
+    except Exception as e:
+        return Response({"error": f"An unexpected error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 ################## Player Detail API Endpoint ##################
 @api_view(['GET'])
@@ -502,7 +595,7 @@ def TransfersApiView(request):
     """
     try:
         # Construct the URL with includes for player and team details
-        url = f"{base_url}football/transfers?api_token={api_key}&include=player;player.nationality;fromTeam;toTeam"
+        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam"
 
         response = requests.get(url)
         response.raise_for_status()  # Raises an exception for 4xx/5xx errors
