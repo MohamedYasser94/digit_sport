@@ -156,12 +156,13 @@ class FixtureSerializer(serializers.ModelSerializer):
     # This will nest the list of participants (home/away teams) inside each fixture
     participants = ParticipantSerializer(many=True, read_only=True)
     scores = serializers.JSONField(required=False, allow_null=True)
+    state = serializers.JSONField(source='state_data', required=False, allow_null=True)
 
     class Meta:
         model = Fixtures
         fields = [
             'api_id', 'name', 'starting_at', 'result_info', 'leg', 'details', 'length',
-            'statistics', 'events', 'lineups', 'participants', 'scores'
+            'statistics', 'events', 'lineups', 'participants', 'scores', 'state'
         ]
 
 

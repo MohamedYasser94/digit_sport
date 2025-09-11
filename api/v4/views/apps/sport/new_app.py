@@ -541,15 +541,193 @@ def standingsByseasonsApiView(request, season_id):
         return Response({"error": f"An unexpected error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+
+@api_view(['GET'])
+def LeagueInformationApiView(request, league_id):
+    """
+    Acts as a proxy to fetch league details (seasons, latest, upcoming, currentSeason, stages)
+    from SportMonks API for the given league_id.
+    """
+    try:
+        url = f"{base_url}football/leagues/{league_id}?api_token={api_key}"
+
+        include_param = request.query_params.get("include","seasons;latest;upcoming;currentSeason;stages;latest.participants;latest.scores;upcoming.participants")
+        url += f"&include={include_param.replace(',', ';')}"
+
+        for key, value in request.query_params.items():
+            if key.startswith("filters["):
+                filter_key = key.split("[")[1].split("]")[0]
+                url += f"&filters={filter_key}:{value}"
+
+        response = requests.get(url)
+        response.raise_for_status()
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch league details: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code)
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def SeasonSchedulesApiView(request, season_id):
+    """
+    Proxy to fetch schedules for a given season from SportMonks API.
+    Supports dynamic 'include' and 'filters'.
+    """
+    try:
+        url = f"{base_url}football/schedules/seasons/{season_id}?api_token={api_key}"
+
+        include_param = request.query_params.get("include", "")
+        if include_param:
+            url += f"&include={include_param.replace(',', ';')}"
+
+        for key, value in request.query_params.items():
+            if key.startswith("filters["):
+                filter_key = key.split("[")[1].split("]")[0]
+                url += f"&filters={filter_key}:{value}"
+
+        response = requests.get(url)
+        response.raise_for_status()
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch schedules: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
+@api_view(['GET'])
+def LeagueSearchApiView(request, name):
+    """
+    Proxy endpoint to search leagues by name using SportMonks API.
+    Example: /v4/football/leagues/search/Premier/
+    """
+    try:
+        # Base URL for searching leagues
+        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}"
+
+        # Append the include param (default currentseason)
+        include_param = request.query_params.get('include', 'currentSeason')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        # Forward extra query parameters (filters, pagination, etc.)
+        for key, value in request.query_params.items():
+            if key not in ["include"]:
+                url += f"&{key}={value}"
+
+        # Make request
+        response = requests.get(url)
+        response.raise_for_status()
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch leagues: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"Unexpected error: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def TeamSearchApiView(request, name):
+    """
+    Proxy endpoint to search teams by name using SportMonks API.
+    Example: /v4/football/teams/search/man/
+    """
+    try:
+        # Base URL for searching teams
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+
+        # Append the include param (default none, but user can pass their own)
+        include_param = request.query_params.get('include', '')
+        if include_param:
+            url += f"&include={include_param.replace(',', ';')}"
+
+        # Forward extra query parameters (pagination, filters, etc.)
+        for key, value in request.query_params.items():
+            if key not in ["include"]:
+                url += f"&{key}={value}"
+
+        # Make request to SportMonks
+        response = requests.get(url)
+        response.raise_for_status()
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch teams: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def PlayerSearchApiView(request, name):
+    """
+    Proxy endpoint to search teams by name using SportMonks API.
+    Example: /v4/football/teams/search/man/
+    """
+    try:
+        # Base URL for searching teams
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+
+        # Append the include param (default none, but user can pass their own)
+        include_param = request.query_params.get('include', '')
+        if include_param:
+            url += f"&include={include_param.replace(',', ';')}"
+
+        # Forward extra query parameters (pagination, filters, etc.)
+        for key, value in request.query_params.items():
+            if key not in ["include"]:
+                url += f"&{key}={value}"
+
+        # Make request to SportMonks
+        response = requests.get(url)
+        response.raise_for_status()
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch teams: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
 ################## Player Detail API Endpoint ##################
 @api_view(['GET'])
 def PlayerDetailApiView(request, player_id, lang):
     """
     Acts as a proxy to fetch player details from SportMonks.
     include
-    country;nationality;city;position;detailedPosition;teams;statistics;transfers;pendingTransfers;lineups;sport;trophies;latest;
+    country;nationality;city;position;detailedPosition;teams;transfers;pendingTransfers;sport;
     """
-    include_string = "country;nationality;position;detailedPosition;teams;statistics;transfers;transfers.FromTeam;transfers.ToTeam;pendingTransfers;lineups;sport;trophies;latest"
+    include_string = "country;nationality;position;detailedPosition;teams;teams.team;transfers;transfers.type;transfers.FromTeam;transfers.ToTeam;pendingTransfers;sport;"
     url = f"{base_url}football/players/{player_id}?api_token={api_key}&include={include_string}"
 
     try:
