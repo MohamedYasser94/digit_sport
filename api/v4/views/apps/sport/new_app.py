@@ -11,7 +11,7 @@ import requests
 
 from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
 from api.v4.serializers.sport.sport import LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSerializer, \
-    TeamWithMatchesSerializer
+    TeamWithMatchesSerializer, PlyerSerializer
 from apps.sport.models.models import *
 from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
 from core.models.blog import BlogArticle, BlogVideo
@@ -333,7 +333,17 @@ def TopScorersBySeasonApiView(request, season_id):
                 # Example key: 'filters[fixtureLeagues]'
                 filter_key = key.split('[')[1].split(']')[0]
                 url += f"&filters={filter_key}:{value}"
-
+        toppscorer = []
+        for key, value in request.query_params.items():
+            if key == 'topscorer':
+                toppscorer.append(value)
+        if toppscorer:
+            url += f"&topscorer={','.join(toppscorer)}"
+            palyer = Players.objects.filter(api_id__in=toppscorer).values_list('api_id', flat=True)
+            if len(palyer) != len(toppscorer):
+                return Response({"error": "One or more player IDs are invalid."}, status=status.HTTP_400_BAD_REQUEST)
+            player_serializer = PlyerSerializer(Players.objects.filter(api_id__in=toppscorer), many=True)
+            # You can include player_serializer.data in the final response if needed
         # Make the request with the fully constructed URL
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)

@@ -171,3 +171,16 @@ class SimpleLeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
         fields = ['api_id', 'name', 'image_path', 'country','currentseason']
+
+
+class PlyerSerializer(serializers.ModelSerializer):
+    team = TeamSerializer(read_only=True)
+    league = LeagueSerializer(read_only=True)
+
+    class Meta:
+        model = Players
+        fields = [
+            'id', 'api_id', 'common_name', 'display_name', 'first_name', 'last_name',
+            'position', 'height', 'weight', 'birthdate', 'nationality', 'image_path',
+            'team', 'league'
+        ]
