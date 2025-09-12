@@ -6,9 +6,7 @@ app_name = 'api'
 
 urlpatterns = [
     ############# Home Fixtures api urls #############
-    path('v4/fixtures/<str:sport>/<str:date>/<str:lang>/list/', new_app.FixturesByDateApiList,
-         name='FixturesByDateApiList'),
-
+    path('v4/fixtures/<str:sport>/<str:date>/<str:lang>/list/', new_app.FixturesByDateApiList,name='FixturesByDateApiList'),
     path('v4/leagues/toggle-favorite/', new_app.FavoriteLeagueToggle.as_view(), name='toggle-favorite-league'),
 
     path('v4/fixtures/detail/<int:fixture_id>/<str:lang>/', new_app.FixtureDetailApiView, name='FixtureDetailApiView'),
@@ -30,8 +28,12 @@ urlpatterns = [
     path('v4/football/headtohead/current-scores/<int:team1_id>/<int:team2_id>/',new_app.PreviousMatchesApiView,name='PreviousMatchesApiView'),
     path('v4/football/team/<int:team_id>/', new_app.TeamLatestUpcomingApiView, name='TeamLatestUpcomingApiView'),
     path('v4/football/standings/seasons/<int:season_id>/', new_app.standingsByseasonsApiView, name='SeasonDetailApiView'),
+    path('v4/football/information/leagues/<int:league_id>/',new_app.LeagueInformationApiView,name='LeagueInformationApiView'),
+    path('v4/football/information/schedules/seasons/<int:season_id>/',new_app.SeasonSchedulesApiView,name='SeasonSchedulesApiView'),
 
-
+    path('v4/football/leagues/search/<str:name>/', new_app.LeagueSearchApiView, name='LeagueSearchApiView'),
+    path('v4/football/teams/search/<str:name>/', new_app.TeamSearchApiView, name='TeamSearchApiView'),
+    path('v4/football/players/search/<str:name>/', new_app.PlayerSearchApiView, name='PlayerSearchApiView'),
     ######################### News api urls #########################
     path('v4/news/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
     path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
