@@ -526,7 +526,8 @@ class Fixtures(models.Model):
     events = models.JSONField(null=True, blank=True)
     lineups = models.JSONField(null=True, blank=True)
     scores = models.JSONField(null=True, blank=True)
-
+    state_data = models.JSONField(null=True, blank=True)
+    
     # Metadata
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)

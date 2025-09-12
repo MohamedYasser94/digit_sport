@@ -441,11 +441,13 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                                    'ending_at': season_data.get('ending_at')}
                 season, _ = Season.objects.update_or_create(api_id=season_data['id'], defaults=season_defaults)
                 scores_data = fixture_data.get('scores', [])
-
+                state_data = fixture_data.get('state', {}) or {}
                 api_defaults = {'league': league, 'season': season, 'name': fixture_data.get('name'),
                                 'leg': fixture_data.get('leg'), 'result_info': fixture_data.get('result_info'),
                                 'scores': scores_data,
-                                'state': fixture_data.get('state', {}).get('state')}
+                                'state': state_data.get('state'),   # short string (e.g. FT)
+                                'state_data': state_data}            # full JSON object}
+
 
                 # <<< FIX: Correctly parse and make datetime timezone-aware >>>
                 dt_str = fixture_data.get('starting_at')
