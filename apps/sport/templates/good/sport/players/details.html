@@ -1,150 +1,488 @@
 {% extends BACKEND_BASE %}
-
 {% load static %}
 {% load i18n %}
 
-
 {% block body %}
-    <!--begin::Page Vendor Stylesheets(used by this page)-->
-    <link href="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet"
-          type="text/css"/>
-    <!--end::Page Vendor Stylesheets-->
-    <!--end::Header-->
-    <!--begin::Content-->
-    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Container-->
-        <div id="kt_content_container" class="container-fluid">
-            <!--begin::Form-->
-            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'core:AdminUpdateBlogCategory' object.id %}"
-                  method="POST">
-                {% csrf_token %}
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid" id="player-details-app">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                
+                <!-- Breadcrumb -->
+                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mb-5">
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                        {% translate 'Player Details' %}
+                    </h1>
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                        <li class="breadcrumb-item text-muted">
+                            <a href="" class="text-muted text-hover-primary">
+                                {% translate 'Players' %}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        </li>
+                        <li class="breadcrumb-item text-muted">{{ player.name }}</li>
+                    </ul>
+                </div>
 
-                <!--begin::Main column-->
-                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-
-                    <!--begin::Order details-->
-                    <div class="card card-flush py-4">
-                        <!--begin::Card header-->
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2>{% translate 'Client Data' %}</h2>
-                            </div>
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-0">
-                            <!--begin::Billing address-->
-                            <div class="d-flex flex-column gap-5 gap-md-7">
-                                <!--begin::Title-->
-                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
-                                <!--end::Title-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Name' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input class="form-control" name="name"
-                                               placeholder="{% translate 'Court Name' %}" value="{{ blogcategories.title }}"/>
-                                        <!--end::Input-->
-                                    </div>
-                                    <div class="flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Active_Status' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select class="form-select" data-placeholder="Select an option"
-                                                name="status" id="kt_ecommerce_edit_order_shipping_country">
-
-
-                                            {% for value, text in form.status.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <!--end::Input-->
+                <div class="row g-5 g-xl-8">
+                    <!-- Player Profile Card -->
+                    <div class="col-xl-4">
+                        <div class="card card-flush mb-6 mb-xl-9">
+                            <div class="card-header mt-5">
+                                <div class="card-title d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-2">
+                                        {% if player.image_path %}
+                                            <img src="{{ player.image_path }}" alt="{{ player.name }}" class="symbol symbol-100px me-5" style="border-radius: 8px;"/>
+                                        {% elif player.image %}
+                                            <img src="{{ player.image.url }}" alt="{{ player.name }}" class="symbol symbol-100px me-5" style="border-radius: 8px;"/>
+                                        {% elif player.image_url %}
+                                            <img src="{{ player.image_url }}" alt="{{ player.name }}" class="symbol symbol-100px me-5" style="border-radius: 8px;"/>
+                                        {% else %}
+                                            <div class="symbol symbol-100px me-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px;">
+                                                <span class="symbol-label text-white fs-1 fw-bold">{{ player.name|slice:":1"|upper }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="d-flex flex-column">
+                                            <h2 class="fw-bold text-gray-900 text-hover-primary fs-2 mb-0">{{ player.name }}</h2>
+                                            {% if player.display_name and player.display_name != player.name %}
+                                                <span class="text-gray-500 fw-semibold fs-6">{{ player.display_name }}</span>
+                                            {% endif %}
+                                            {% if player.position %}
+                                                <span class="badge badge-light-primary fs-7 fw-bold mt-1">{{ player.position }}</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                                <!--end::Input group-->
-
-
-
                             </div>
-                            <!--end::Billing address-->
-                        </div>
-                        <!--end::Card body-->
-                        <div class="card-body pt-0">
-                            {% if form_show_errors %}
-                            {% endif %}
-                            {% if form.errors %}
-                                {% for error_field, error_message in form.errors.items %}
-
-                                    <div class="alert alert-danger">
-                                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                                        <strong>{{ error|escape }}</strong>
+                            
+                            <div class="card-body pt-0">
+                                <!-- Basic Information -->
+                                <div class="d-flex flex-wrap flex-stack">
+                                    <div class="d-flex flex-column flex-grow-1 pe-8">
+                                        <div class="d-flex flex-wrap">
+                                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fs-2 fw-bold text-gray-900 me-2 lh-1">{{ player.age|default:"N/A" }}</div>
+                                                    <div class="fs-7 fw-semibold text-gray-500">{% translate 'Years Old' %}</div>
+                                                </div>
+                                            </div>
+                                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fs-2 fw-bold text-gray-900 me-2 lh-1">{{ player.height|default:"N/A" }}</div>
+                                                    <div class="fs-7 fw-semibold text-gray-500">{% translate 'Height' %}</div>
+                                                </div>
+                                            </div>
+                                            {% if player.current_market_value %}
+                                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fs-2 fw-bold text-success me-2 lh-1">{{ player.current_market_value }}</div>
+                                                    <div class="fs-7 fw-semibold text-gray-500">{% translate 'Market Value' %}</div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                {% endfor %}
-
-                            {% endif %}
+                                </div>
+                                
+                                <!-- Status and Actions -->
+                                <div class="separator separator-solid my-7"></div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                    <div class="d-flex align-items-center">
+                                        <div class="badge badge-light-{% if player.status == 'Active' %}success{% else %}secondary{% endif %} fs-8 fw-bold me-2">
+                                            {{ player.status }}
+                                        </div>
+                                        {% if player.primary_data_source %}
+                                        <div class="badge badge-light-{% if player.primary_data_source.name == 'Sportmonks' %}primary{% elif player.primary_data_source.name == 'Transfer Market' %}warning{% else %}info{% endif %} fs-8 fw-bold">
+                                            {{ player.primary_data_source.name }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex">
+                                        <a href="" class="btn btn-sm btn-light-primary me-2">
+                                            <i class="ki-duotone ki-pencil fs-5"></i>
+                                            {% translate 'Edit' %}
+                                        </a>
+                                        <a href="" class="btn btn-sm btn-light-warning">
+                                            <i class="ki-duotone ki-archive fs-5"></i>
+                                            {% if player.status == 'Active' %}{% translate 'Archive' %}{% else %}{% translate 'Activate' %}{% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Info Card -->
+                        <div class="card card-flush">
+                            <div class="card-header">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="fw-bold text-dark fs-3 mb-1">{% translate 'Quick Information' %}</span>
+                                </h3>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-row-bordered mb-0 fs-6 gy-5 min-w-300px">
+                                        <tbody class="fw-semibold text-gray-600">
+                                            {% if player.sport %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Sport' %}</td>
+                                                <td class="fw-bold text-end">{{ player.sport.name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.team %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Current Team' %}</td>
+                                                <td class="fw-bold text-end">{{ player.team.name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.birthdate %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Birth Date' %}</td>
+                                                <td class="fw-bold text-end">{{ player.birthdate|date:"F d, Y" }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.country %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Country' %}</td>
+                                                <td class="fw-bold text-end">{{ player.country }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.gender %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Gender' %}</td>
+                                                <td class="fw-bold text-end">{{ player.gender }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.weight %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Weight' %}</td>
+                                                <td class="fw-bold text-end">{{ player.weight }} kg</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!--end::Order details-->
-                    <div class="d-flex justify-content-end">
-                        <!--begin::Button-->
-                        <a href="../dist/apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
-                           class="btn btn-light me-5">Cancel</a>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                            <span class="indicator-label">Save Changes</span>
-                            <span class="indicator-progress">Please wait...
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
+                    
+                    <div class="col-xl-8">
+                        <!-- Data Sources Information -->
+                        <div class="card card-flush mb-6">
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <div class="card-title">
+                                    <h2>{% translate 'Data Sources' %}</h2>
+                                    <span class="text-muted fs-7">{% translate 'Information from different data sources' %}</span>
+                                </div>
+                                <div class="card-toolbar">
+                                    <span class="badge badge-light-info fs-8">
+                                        {{ source_info.count }} {% translate 'Sources' %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                {% for info in source_info %}
+                                <div class="border border-gray-300 border-dashed rounded p-6 mb-5">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="badge badge-light-{% if info.data_source.name == 'Sportmonks' %}primary{% elif info.data_source.name == 'Transfer Market' %}warning{% else %}info{% endif %} me-3">
+                                            {{ info.data_source.name }}
+                                        </div>
+                                        <span class="text-muted fs-7">
+                                            {% translate 'Updated' %}: {{ info.updated_at|timesince }} {% translate 'ago' %}
+                                        </span>
+                                        {% if info.data_source == player.primary_data_source %}
+                                        <span class="badge badge-light-success ms-3 fs-8">{% translate 'Primary' %}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if info.raw_data %}
+                                    <div class="row g-3">
+                                        {% for key, value in info.raw_data.items %}
+                                        {% if value %}
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted fw-semibold">{{ key|title }}:</span>
+                                                <span class="fw-bold">
+                                                    {% if key == 'current_market_value' and value %}
+                                                        <span class="text-success">{{ value }}</span>
+                                                    {% elif key == 'image_url' and value %}
+                                                        <a href="{{ value }}" target="_blank" class="text-primary">{% translate 'View Image' %}</a>
+                                                    {% else %}
+                                                        {{ value }}
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- API IDs -->
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        {% if info.data_source.slug == 'sportmonks' and player.sportmonks_api_id %}
+                                            <span class="badge badge-light-primary fs-8">Sportmonks ID: {{ player.sportmonks_api_id }}</span>
+                                        {% endif %}
+                                        {% if info.data_source.slug == 'transfermarkt' and player.transfermarkt_id %}
+                                            <span class="badge badge-light-warning fs-8">Transfer Market ID: {{ player.transfermarkt_id }}</span>
+                                        {% endif %}
+                                        {% if info.data_source.slug == 'manual' and player.manual_entry_id %}
+                                            <span class="badge badge-light-info fs-8">Manual ID: {{ player.manual_entry_id }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-10">
+                                    <div class="text-gray-500 fs-6">{% translate 'No data source information available' %}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Transfer Market Information -->
+                        {% if player.transfermarkt_id or player.current_market_value or player.highest_market_value %}
+                        <div class="card card-flush mb-6">
+                            <div class="card-header align-items-center py-5">
+                                <div class="card-title">
+                                    <h2>{% translate 'Transfer Market Information' %}</h2>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="row g-5">
+                                    {% if player.current_market_value %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <div class="fs-2hx fw-bold text-success">{{ player.current_market_value }}</div>
+                                            <div class="text-muted fw-semibold">{% translate 'Current Market Value' %}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if player.highest_market_value %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column">
+                                            <div class="fs-2hx fw-bold text-warning">{{ player.highest_market_value }}</div>
+                                            <div class="text-muted fw-semibold">{% translate 'Highest Market Value' %}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if player.market_value_history %}
+                                <div class="separator my-5"></div>
+                                <h4 class="fw-bold text-gray-800 mb-3">{% translate 'Market Value History' %}</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-row-bordered gy-5">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-muted">
+                                                <th>{% translate 'Date' %}</th>
+                                                <th>{% translate 'Market Value' %}</th>
+                                                <th>{% translate 'Age' %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for entry in player.market_value_history %}
+                                            <tr>
+                                                <td>{{ entry.date }}</td>
+                                                <td class="text-success fw-bold">{{ entry.value }}</td>
+                                                <td>{{ entry.age }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Conflicts Section -->
+                        {% if conflicts %}
+                        <div class="card card-flush mb-6">
+                            <div class="card-header align-items-center py-5">
+                                <div class="card-title">
+                                    <h2 class="text-danger">{% translate 'Data Conflicts' %}</h2>
+                                    <span class="text-muted fs-7">{% translate 'Conflicts that require resolution' %}</span>
+                                </div>
+                                <div class="card-toolbar">
+                                    <span class="badge badge-light-danger">{{ conflicts.count }} {% translate 'Conflicts' %}</span>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                {% for conflict in conflicts %}
+                                <div class="border border-danger border-dashed rounded p-5 mb-5" id="conflict-{{ conflict.id }}">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="fw-bold text-gray-800">{{ conflict.field_name|title }}</h4>
+                                        <span class="text-muted fs-7">{{ conflict.created_at|timesince }} {% translate 'ago' %}</span>
+                                    </div>
+                                    
+                                    <div class="row g-5 mb-3">
+                                        <div class="col-md-6">
+                                            <div class="border border-gray-300 rounded p-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="badge badge-light-primary me-2">{{ conflict.source_1.name }}</div>
+                                                </div>
+                                                <div class="fw-bold">{{ conflict.value_1 }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="border border-gray-300 rounded p-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div class="badge badge-light-warning me-2">{{ conflict.source_2.name }}</div>
+                                                </div>
+                                                <div class="fw-bold">{{ conflict.value_2 }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-primary" onclick="resolveConflict({{ conflict.id }}, 'source_1')">
+                                            {% translate 'Use' %} {{ conflict.source_1.name }}
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="resolveConflict({{ conflict.id }}, 'source_2')">
+                                            {% translate 'Use' %} {{ conflict.source_2.name }}
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary" onclick="resolveConflict({{ conflict.id }}, 'ignore')">
+                                            {% translate 'Ignore' %}
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Additional Information -->
+                        <div class="card card-flush">
+                            <div class="card-header align-items-center py-5">
+                                <div class="card-title">
+                                    <h2>{% translate 'Additional Information' %}</h2>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-row-bordered mb-0 fs-6 gy-5">
+                                        <tbody class="fw-semibold text-gray-600">
+                                            {% if player.first_name or player.last_name %}
+                                            <tr>
+                                                <td class="text-muted min-w-200px">{% translate 'Full Name' %}</td>
+                                                <td class="fw-bold">{{ player.first_name|default:"" }} {{ player.last_name|default:"" }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.common_name %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Common Name' %}</td>
+                                                <td class="fw-bold">{{ player.common_name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.place_of_birth %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Place of Birth' %}</td>
+                                                <td class="fw-bold">{{ player.place_of_birth }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.nationality %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Nationality' %}</td>
+                                                <td class="fw-bold">{{ player.nationality }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.preferred_foot %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Preferred Foot' %}</td>
+                                                <td class="fw-bold">{{ player.preferred_foot|title }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.joined_date %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Joined Current Team' %}</td>
+                                                <td class="fw-bold">{{ player.joined_date }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.contract_expires %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Contract Expires' %}</td>
+                                                <td class="fw-bold">{{ player.contract_expires }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.agent %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Agent' %}</td>
+                                                <td class="fw-bold">{{ player.agent }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Created' %}</td>
+                                                <td class="fw-bold">{{ player.created_at|date:"F d, Y H:i" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Last Updated' %}</td>
+                                                <td class="fw-bold">{{ player.updated_at|date:"F d, Y H:i" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!--end::Main column-->
-            </form>
-            <!--end::Form-->
+            </div>
         </div>
-        <!--end::Container-->
     </div>
-    <!--end::Content-->
-
-
-
-
-
-    {% if uploaded_file_url %}
-        <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
-    {% endif %}
-
+</div>
 {% endblock %}
+
 {% block custom_js %}
+<script>
+function resolveConflict(conflictId, resolution) {
+    if (confirm("Are you sure you want to resolve this conflict?")) {
+        jQuery.ajax({
+            url: "/multi-source/resolve-conflict/",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                conflict_id: conflictId,
+                resolution: resolution
+            },
+            success: function(response) {
+                if (response.type === "Success") {
+                    jQuery("#conflict-" + conflictId).fadeOut(500, function() {
+                        jQuery(this).remove();
+                    });
+                    
+                    // Show success message if toastr is available
+                    if (typeof toastr !== "undefined") {
+                        toastr.success(response.message);
+                    }
+                    
+                    // Reload page after 2 seconds to reflect changes
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    if (typeof toastr !== "undefined") {
+                        toastr.error(response.message);
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            },
+            error: function() {
+                if (typeof toastr !== "undefined") {
+                    toastr.error("An error occurred while resolving the conflict.");
+                } else {
+                    alert("An error occurred while resolving the conflict.");
+                }
+            }
+        });
+    }
+}
 
-
-    <!--begin::Page Vendors Javascript(used by this page)-->
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/datatables/datatables.bundle.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/plugins/custom/formrepeater/formrepeater.bundle.js"></script>
-    <!--end::Page Vendors Javascript-->
-    <!--begin::Page Custom Javascript(used by this page)-->
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/ecommerce/sales/save-order.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/widgets.bundle.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/widgets.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/apps/chat/chat.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/type.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/budget.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/settings.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/team.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/targets.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/files.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/complete.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/create-project/main.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/upgrade-plan.js"></script>
-    <script src="{% static '' %}{{ BACKEND_ASSETS }}/js/custom/utilities/modals/users-search.js"></script>
-    <!--end::Page Custom Javascript-->
-
+// Initialize tooltips and other components
+jQuery(document).ready(function() {
+    if (typeof KTApp !== "undefined") {
+        KTApp.init();
+    }
+});
+</script>
 {% endblock custom_js %}
-{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
-{% block js %} {% include BACKEND_JS %}  {% endblock %}

@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-
+import asyncio
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -17,7 +17,10 @@ from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm,  Admin
 from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, AdminCommonTranslateForm
 from core.models.blog import BlogArticle, BlogCategories,  CommonTags, BlogVideo
 from core.models.core import CommonSeo, CommonTranslate, CommonMediaFiles
+
 from core.utils.notification import FcmNotifications
+from core.utils.telegram_services import TelegramBotService
+from core.utils.telgram_bot import send_immediate_post
 
 from core.views.core import AdminCommonMediaHeroFiles, AdminCommonMediaImagesFiles, \
     AdminCommonMediaVideoFiles, AdminCommonTranslate, AdminCommonSeo
@@ -410,6 +413,7 @@ def AdminBlogArticleCreate(request):
 
 
 
+
             messages.success(request, _("Article Add Successfully, check it out on the home page!"),
                              extra_tags='Article')
 
@@ -506,19 +510,23 @@ def AdminBlogArticleSCreate(request):
                                          author=author, comment_status=comment_status)
             article_object.save()
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
-            # try:
-            #     if image_path != None or image_path != '':
-            #         request_host(request)
-            #
-            #         image_path =  request_host(request) + str(article_object.image.url)
-            #         print(' image_path ,', image_path)
-            #         article_object.image_path = image_path
-            #         article_object.save()
-            # except Exception as e:
-            #     pass
-            image_url = article_object.image.url
-            image = request.build_absolute_uri(image_url)
+
+            image_url = article_object.image.url if article_object.image else None
+            image = request.build_absolute_uri(image_url) if image_url else None
             FcmNotifications(request, title, keyword, article_object.image_path)
+            
+            # Send to Telegram using improved integration
+            try:
+                from core.utils.improved_telegram_integration import send_blog_article_to_telegram
+                telegram_result = send_blog_article_to_telegram(article_object, request)
+                
+                if telegram_result['success']:
+                    logger.info(f"Successfully sent article to Telegram: {title}")
+                else:
+                    logger.warning(f"Failed to send article to Telegram: {telegram_result['error']}")
+                    
+            except Exception as e:
+                logger.error(f"Error in sending to Telegram: {e}")
 
             messages.success(request, _("Article Add Successfully, check it out on the home page!"),
                              extra_tags='Article')

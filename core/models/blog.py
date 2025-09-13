@@ -63,7 +63,7 @@ class BlogCategories(MPTTModel):
 class BlogArticle(models.Model):
     """article"""
 
-    title = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=100, )
     keyword = models.CharField(max_length=100, null=True, blank=True, default='')
     category = models.ForeignKey(BlogCategories, verbose_name='Classification', on_delete=models.CASCADE, blank=True,
                                  null=True)

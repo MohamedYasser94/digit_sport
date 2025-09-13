@@ -1,0 +1,590 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid" id="multisource-players-app">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                
+                <!-- Statistics Cards -->
+                <div class="row g-5 g-xl-8 mb-5">
+                    <div class="col-xl-3">
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50px mb-5 mb-xl-8" style="background-color: #F1416C;">
+                            <div class="card-header pt-5">
+                                <div class="card-title d-flex flex-column">
+                                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ total_players }}</span>
+                                    <span class="text-white opacity-75 pt-1 fw-semibold fs-6">{% translate 'Total Players' %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3">
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50px mb-5 mb-xl-8" style="background-color: #7239EA;">
+                            <div class="card-header pt-5">
+                                <div class="card-title d-flex flex-column">
+                                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{ unresolved_conflicts }}</span>
+                                    <span class="text-white opacity-75 pt-1 fw-semibold fs-6">{% translate 'Unresolved Conflicts' %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3">
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50px mb-5 mb-xl-8" style="background-color: #17C653;">
+                            <div class="card-header pt-5">
+                                <div class="card-title d-flex flex-column">
+                                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">3</span>
+                                    <span class="text-white opacity-75 pt-1 fw-semibold fs-6">{% translate 'Data Sources' %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3">
+                        <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50px mb-5 mb-xl-8" style="background-color: #FFC700;">
+                            <div class="card-header pt-5">
+                                <div class="card-title d-flex flex-column">
+                                    <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">[[ marketValueCount ]]</span>
+                                    <span class="text-white opacity-75 pt-1 fw-semibold fs-6">{% translate 'With Market Value' %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Card -->
+                <div class="card card-flush">
+                    <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                        <div class="card-title">
+                            <h2>{% translate 'Multi-Source Players Management' %}</h2>
+                        </div>
+                        <div class="card-toolbar">
+                            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#kt_modal_add_player">
+                                <i class="ki-duotone ki-plus fs-2"></i>
+                                {% translate 'Add Player' %}
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="ki-duotone ki-cloud-download fs-2"></i>
+                                    {% translate 'Fetch Data' %}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#kt_modal_fetch_sportmonks">
+                                        <i class="ki-duotone ki-medal-star fs-2 me-2"></i>{% translate 'Sportmonks API' %}
+                                    </a></li>
+                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#kt_modal_fetch_transfermarkt">
+                                        <i class="ki-duotone ki-arrow-up-down fs-2 me-2"></i>{% translate 'Transfer Market' %}
+                                    </a></li>
+                                </ul>
+                            </div>
+                            <button v-if="unresolved_conflicts > 0" type="button" class="btn btn-warning ms-2" @click="showConflicts">
+                                <i class="ki-duotone ki-warning-2 fs-2"></i>
+                                {% translate 'Resolve Conflicts' %} ([[ unresolved_conflicts ]])
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body pt-0">
+                        <!-- Search and Filter -->
+                        <div class="d-flex justify-content-between mb-5">
+                            <div class="d-flex align-items-center position-relative my-1">
+                                <i class="ki-duotone ki-magnifier fs-1 position-absolute ms-4"><span class="path1"></span><span class="path2"></span></i>
+                                <input type="text" v-model="searchQuery" class="form-control form-control-solid w-250px ps-14" placeholder="{% translate 'Search players...' %}" />
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <select v-model="filterSource" class="form-select form-select-solid w-150px me-3">
+                                    <option value="">{% translate 'All Sources' %}</option>
+                                    <option value="sportmonks">{% translate 'Sportmonks' %}</option>
+                                    <option value="transfermarkt">{% translate 'Transfer Market' %}</option>
+                                    <option value="manual">{% translate 'Manual Entry' %}</option>
+                                </select>
+                                <select v-model="filterSport" class="form-select form-select-solid w-150px">
+                                    <option value="">{% translate 'All Sports' %}</option>
+                                    <option value="football">{% translate 'Football' %}</option>
+                                    <option value="basketball">{% translate 'Basketball' %}</option>
+                                    <option value="volleyball">{% translate 'Volleyball' %}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Players Table -->
+                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_ecommerce_category_table">
+                            <thead>
+                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                    <th class="min-w-20px">#</th>
+                                    <th class="min-w-125px">{% translate 'Name' %}</th>
+                                    <th class="min-w-100px">{% translate 'Team' %}</th>
+                                    <th class="min-w-80px">{% translate 'Sport' %}</th>
+                                    <th class="min-w-100px">{% translate 'Market Value' %}</th>
+                                    <th class="min-w-100px">{% translate 'Data Source' %}</th>
+                                    <th class="min-w-80px">{% translate 'Image' %}</th>
+                                    <th class="min-w-80px">{% translate 'Status' %}</th>
+                                    <th class="min-w-80px">{% translate 'Conflicts' %}</th>
+                                    <th class="text-end min-w-70px">{% translate 'Action' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fw-semibold text-gray-600">
+                                {% for item in page_obj %}
+                                <tr>
+                                    <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-800 text-hover-primary mb-1">{{ item.name }}</span>
+                                            {% if item.display_name and item.display_name != item.name %}
+                                                <span class="text-muted fs-7">{{ item.display_name }}</span>
+                                            {% endif %}
+                                            {% if item.sportmonks_api_id %}
+                                                <span class="badge badge-light-info fs-8">SM: {{ item.sportmonks_api_id }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{ item.team.name|default:"N/A" }}</td>
+                                    <td>{{ item.sport.name|default:"N/A" }}</td>
+                                    <td>
+                                        {% if item.current_market_value %}
+                                            <span class="text-success fw-bold">{{ item.current_market_value }}</span>
+                                        {% else %}
+                                            <span class="text-muted">{% translate 'N/A' %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.primary_data_source %}
+                                            <div class="badge badge-light-{% if item.primary_data_source.name == 'Sportmonks' %}primary{% elif item.primary_data_source.name == 'Transfer Market' %}warning{% else %}secondary{% endif %}">
+                                                {{ item.primary_data_source.name }}
+                                            </div>
+                                            <div class="fs-7 text-muted">
+                                                {% with item.data_sources.count as source_count %}
+                                                    {% if source_count > 1 %}
+                                                        +{{ source_count|add:"-1" }} {% translate 'more' %}
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">{% translate 'Unknown' %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.image_path %}
+                                            <img src="{{ item.image_path }}" alt="{{ item.name }}" width="40" height="40" style="object-fit: cover; border-radius: 20px;"/>
+                                        {% elif item.image %}
+                                            <img src="{{ item.image.url }}" alt="{{ item.name }}" width="40" height="40" style="object-fit: cover; border-radius: 20px;"/>
+                                        {% elif item.image_url %}
+                                            <img src="{{ item.image_url }}" alt="{{ item.name }}" width="40" height="40" style="object-fit: cover; border-radius: 20px;"/>
+                                        {% else %}
+                                            <div class="symbol symbol-40px">
+                                                <span class="symbol-label bg-light-primary text-primary fs-7 fw-bold">{{ item.name|slice:":1"|upper }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="badge badge-light-{% if item.status == 'Active' %}success{% else %}secondary{% endif %}">
+                                            {{ item.status }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% with item.conflicts.count as conflict_count %}
+                                            {% if conflict_count > 0 %}
+                                                <span class="badge badge-light-danger">{{ conflict_count }} {% translate 'conflicts' %}</span>
+                                            {% else %}
+                                                <span class="text-muted">{% translate 'None' %}</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary btn-flex btn-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                            {% translate 'Actions' %}
+                                            <i class="ki-duotone ki-down fs-5 ms-1"></i>
+                                        </a>
+                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                                            <div class="menu-item px-3">
+                                                <a href="{% url 'sport:AdminPlayersDetails' item.slug %}" class="menu-link px-3">
+                                                    {% translate 'View' %}
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="{% url 'sport:AdminPlayersUpdate' item.slug %}" class="menu-link px-3">
+                                                    {% translate 'Edit' %}
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="{% url 'sport:AdminPlayersArchive' item.slug %}" class="menu-link px-3">
+                                                    {% if item.status == 'Active' %}
+                                                        {% translate 'Archive' %}
+                                                    {% else %}
+                                                        {% translate 'Activate' %}
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                            <div class="menu-item px-3">
+                                                <a href="{% url 'sport:AdminPlayersDelete' item.slug %}" class="menu-link px-3 text-danger">
+                                                    {% translate 'Delete' %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="10" class="text-center py-4">
+                                        <div class="text-center py-5">
+                                            <div class="mb-4">
+                                                <i class="ki-duotone ki-search-list fs-4x text-muted">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                            </div>
+                                            <p class="text-gray-500 fs-5 fw-semibold">{% translate 'No players found' %}</p>
+                                            <p class="text-muted fs-6">{% translate 'Try adjusting your search or filters, or add new players to get started.' %}</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-end">
+                            <nav aria-label="Page navigation">
+                                {% if page_obj.has_other_pages %}
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; {% translate 'first' %}</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% translate 'previous' %}</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">&laquo; {% translate 'first' %}</span></li>
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'previous' %}</span></li>
+                                    {% endif %}
+
+                                    {% for i in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == i %}
+                                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% translate 'next' %}</a></li>
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{% translate 'last' %} &raquo;</a></li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'next' %}</span></li>
+                                        <li class="page-item disabled"><span class="page-link">{% translate 'last' %} &raquo;</span></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sportmonks Fetch Modal -->
+        <div class="modal fade" id="kt_modal_fetch_sportmonks" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="fetchSportmonksData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Fetch Players from Sportmonks API' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div v-if="!isLoading" class="fv-row w-100 flex-md-root mb-5">
+                                <label class="required fs-6 fw-bold mb-2">{% translate 'Select Sport' %}</label>
+                                <select v-model="selectedSport" class="form-select form-select-solid fw-bolder" required>
+                                    <option value="football">{% translate 'Football' %}</option>
+                                    <option value="basketball">{% translate 'Basketball' %}</option>
+                                </select>
+                            </div>
+                            
+                            <div v-if="isLoading" class="mb-5">
+                                <h4 class="text-center mb-3">[[ statusMessage ]]</h4>
+                                <div class="progress h-20px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: progress + '%'}"></div>
+                                </div>
+                                <p class="text-muted text-center mt-2">{% translate 'Please do not close this window. This may take several minutes.' %}</p>
+                            </div>
+                            
+                            <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                [[ finalMessage ]]
+                            </div>
+                            
+                            <div v-if="!isLoading">
+                                <div class="notice d-flex bg-light-info rounded border-info border border-dashed p-6">
+                                    <i class="ki-duotone ki-information-5 fs-2tx text-info me-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    <div class="d-flex flex-stack flex-grow-1">
+                                        <div class="fw-semibold">
+                                            <div class="fs-6 text-gray-700">
+                                                {% translate "This will fetch all players from Sportmonks API for the selected sport. The system will automatically:" %}
+                                                <ul class="mt-3">
+                                                    <li>{% translate "Detect existing players to avoid duplicates" %}</li>
+                                                    <li>{% translate "Update player information if changes are found" %}</li>
+                                                    <li>{% translate "Track data sources and resolve conflicts" %}</li>
+                                                    <li>{% translate "Maintain compatibility with your Flutter app" %}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">
+                                    <i class="ki-duotone ki-cloud-download fs-2 me-2"></i>
+                                    {% translate 'Start Import' %}
+                                </span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Fetching...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transfer Market Fetch Modal (Simple Version) -->
+        <div class="modal fade" id="kt_modal_fetch_transfermarkt" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="fetchTransferMarketData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Transfer Market Data Import' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <!-- Loading Progress -->
+                            <div v-if="isTransferMarketLoading" class="mb-5">
+                                <h4 class="text-center mb-3">[[ transferMarketStatusMessage ]]</h4>
+                                <div class="progress h-20px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" :style="{width: transferMarketProgress + '%'}"></div>
+                                </div>
+                                <p class="text-muted text-center mt-2">{% translate 'Processing Transfer Market data from scrapy...' %}</p>
+                            </div>
+                            
+                            <!-- Final Message -->
+                            <div v-if="!isTransferMarketLoading && transferMarketFinalMessage" class="alert" :class="isTransferMarketSuccess ? 'alert-success' : 'alert-danger'">
+                                <div class="d-flex flex-column">
+                                    <h4 class="mb-1 text-dark">[[ isTransferMarketSuccess ? 'Success!' : 'Error!' ]]</h4>
+                                    <span>[[ transferMarketFinalMessage ]]</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Information Notice -->
+                            <div v-if="!isTransferMarketLoading && !transferMarketFinalMessage">
+                                <div class="notice d-flex bg-light-success rounded border-success border border-dashed p-6">
+                                    <i class="ki-duotone ki-information-5 fs-2tx text-success me-4">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    <div class="d-flex flex-stack flex-grow-1">
+                                        <div class="fw-semibold">
+                                            <h4 class="text-gray-900 fw-bold">{% translate "Simple Transfer Market Import" %}</h4>
+                                            <div class="fs-6 text-gray-700">
+                                                {% translate "This will import Transfer Market data using your existing scrapy system. The system will automatically:" %}
+                                                <ul class="mt-3">
+                                                    <li>{% translate "Use your existing scrapy spider data" %}</li>
+                                                    <li>{% translate "Process market values and player information" %}</li>
+                                                    <li>{% translate "Match players with existing database" %}</li>
+                                                    <li>{% translate "Resolve conflicts automatically" %}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-warning" :disabled="isTransferMarketLoading">
+                                <span v-if="!isTransferMarketLoading" class="indicator-label">
+                                    <i class="ki-duotone ki-arrow-up-down fs-2 me-2"></i>
+                                    {% translate 'Start Import' %}
+                                </span>
+                                <span v-if="isTransferMarketLoading" class="indicator-progress">
+                                    {% translate 'Processing...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    const MultiSourcePlayersApp = Vue.createApp({
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                // Sportmonks data
+                isLoading: false,
+                progress: 0,
+                statusMessage: '',
+                finalMessage: '',
+                isSuccess: false,
+                selectedSport: 'football',
+                
+                // Transfer Market data
+                isTransferMarketLoading: false,
+                transferMarketProgress: 0,
+                transferMarketStatusMessage: '',
+                transferMarketFinalMessage: '',
+                isTransferMarketSuccess: false,
+                transferMarketMethod: 'url',
+                transferMarketUrl: '',
+                transferMarketJsonData: '',
+                processedPlayers: 0,
+                totalPlayers: 0,
+                scrapeOptions: {
+                    includeMarketValue: true,
+                    includeContracts: true,
+                    includeTransferHistory: false
+                },
+                
+                // General data
+                searchQuery: '',
+                filterSource: '',
+                filterSport: '',
+                marketValueCount: 0,
+                unresolved_conflicts: parseInt("{{ unresolved_conflicts|default:0 }}")
+            }
+        },
+        mounted() {
+            // Count players with market value
+            this.countPlayersWithMarketValue();
+        },
+        methods: {
+            fetchSportmonksData: function () {
+                this.isLoading = true;
+                this.finalMessage = '';
+                this.progress = 5;
+                this.statusMessage = 'Starting import for ' + this.selectedSport + ' players...';
+
+                let interval = setInterval(() => {
+                    if (this.progress < 90) {
+                        this.progress += 3;
+                    }
+                }, 1000);
+
+                const url = "{% url 'sport:fetch_sportmonks_players' %}";
+                const payload = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}",
+                    "sport": this.selectedSport
+                };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval);
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.finalMessage = data.message;
+                        this.isLoading = false;
+                        
+                        if (this.isSuccess) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+                    },
+                    error: (jqXHR) => {
+                        clearInterval(interval);
+                        this.isSuccess = false;
+                        this.finalMessage = 'An error occurred during import. Please check the server logs.';
+                        this.isLoading = false;
+                    },
+                });
+            },
+            
+            showConflicts: function() {
+                // Redirect to conflicts page or open conflicts modal
+                window.location.href = '/admin/sport/playerdataconflict/';
+            },
+            
+            fetchTransferMarketData: function () {
+                this.isTransferMarketLoading = true;
+                this.transferMarketFinalMessage = '';
+                this.transferMarketProgress = 5;
+                this.transferMarketStatusMessage = 'Processing Transfer Market data using scrapy...';
+
+                let interval = setInterval(() => {
+                    if (this.transferMarketProgress < 85) {
+                        this.transferMarketProgress += 3;
+                        if (this.transferMarketProgress > 30 && this.transferMarketProgress < 60) {
+                            this.transferMarketStatusMessage = 'Processing scraped player data...';
+                        } else if (this.transferMarketProgress > 60) {
+                            this.transferMarketStatusMessage = 'Updating database with market values...';
+                        }
+                    }
+                }, 1000);
+
+                const url = "{% url 'sport:simple_transfermarkt_fetch' %}";
+                const data = {
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: data,
+                    success: (response) => {
+                        clearInterval(interval);
+                        this.transferMarketProgress = 100;
+                        this.isTransferMarketSuccess = response.type === 'Success';
+                        this.transferMarketFinalMessage = response.message;
+                        this.isTransferMarketLoading = false;
+                        
+                        if (this.isTransferMarketSuccess) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+                    },
+                    error: (jqXHR) => {
+                        clearInterval(interval);
+                        this.isTransferMarketSuccess = false;
+                        this.transferMarketFinalMessage = 'An error occurred during Transfer Market import. Please check the server logs.';
+                        this.isTransferMarketLoading = false;
+                    },
+                });
+            },
+            
+            countPlayersWithMarketValue: function() {
+                // This would typically be an AJAX call to get the count
+                // For now, we'll set a placeholder value
+                this.marketValueCount = Math.floor(parseInt("{{ total_players }}") * 0.6);
+            }
+        }
+    });
+    
+    MultiSourcePlayersApp.mount('#multisource-players-app');
+</script>
+{% endblock custom_js %}

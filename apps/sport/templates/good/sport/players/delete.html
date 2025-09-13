@@ -1,0 +1,148 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+                
+                <!-- Breadcrumb -->
+                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mb-5">
+                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                        {% translate 'Delete Player' %}
+                    </h1>
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                        <li class="breadcrumb-item text-muted">
+                            <a href="{% url 'sport:AdminMultiSourcePlayersList' %}" class="text-muted text-hover-primary">
+                                {% translate 'Players' %}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        </li>
+                        <li class="breadcrumb-item text-muted">
+                            <a href="{% url 'sport:AdminMultiSourcePlayersDetails' player.slug %}" class="text-muted text-hover-primary">
+                                {{ player.name }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                        </li>
+                        <li class="breadcrumb-item text-muted">{% translate 'Delete' %}</li>
+                    </ul>
+                </div>
+
+                <!-- Main Card -->
+                <div class="card card-flush">
+                    <div class="card-header align-items-center py-5">
+                        <div class="card-title">
+                            <h2 class="text-danger">{% translate 'Delete Player Confirmation' %}</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="notice d-flex bg-light-danger rounded border-danger border border-dashed p-6 mb-8">
+                            <i class="ki-duotone ki-information-5 fs-2tx text-danger me-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                            <div class="d-flex flex-stack flex-grow-1">
+                                <div class="fw-semibold">
+                                    <h4 class="text-gray-900 fw-bold">{% translate "Warning: This action cannot be undone!" %}</h4>
+                                    <div class="fs-6 text-gray-700">
+                                        {% translate "Deleting this player will permanently remove:" %}
+                                        <ul class="mt-3">
+                                            <li>{% translate "All player information and statistics" %}</li>
+                                            <li>{% translate "Data from all sources (Sportmonks, Transfer Market, Manual)" %}</li>
+                                            <li>{% translate "Any associated conflicts and resolution history" %}</li>
+                                            <li>{% translate "This action will affect your Flutter app if the player is referenced" %}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Player Information Summary -->
+                        <div class="row g-5 mb-8">
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    {% if player.image_path %}
+                                        <img src="{{ player.image_path }}" alt="{{ player.name }}" class="symbol symbol-150px mb-4" style="border-radius: 8px;"/>
+                                    {% elif player.image %}
+                                        <img src="{{ player.image.url }}" alt="{{ player.name }}" class="symbol symbol-150px mb-4" style="border-radius: 8px;"/>
+                                    {% elif player.image_url %}
+                                        <img src="{{ player.image_url }}" alt="{{ player.name }}" class="symbol symbol-150px mb-4" style="border-radius: 8px;"/>
+                                    {% else %}
+                                        <div class="symbol symbol-150px mb-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px;">
+                                            <span class="symbol-label text-white fs-1 fw-bold">{{ player.name|slice:":1"|upper }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h3 class="fw-bold text-gray-900 mb-3">{{ player.name }}</h3>
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-row-bordered mb-0 fs-6 gy-5">
+                                        <tbody class="fw-semibold text-gray-600">
+                                            {% if player.sport %}
+                                            <tr>
+                                                <td class="text-muted min-w-150px">{% translate 'Sport' %}</td>
+                                                <td class="fw-bold">{{ player.sport.name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.position %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Position' %}</td>
+                                                <td class="fw-bold">{{ player.position }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.team %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Current Team' %}</td>
+                                                <td class="fw-bold">{{ player.team.name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.current_market_value %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Market Value' %}</td>
+                                                <td class="fw-bold text-success">{{ player.current_market_value }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Primary Source' %}</td>
+                                                <td class="fw-bold">
+                                                    {% if player.primary_data_source %}
+                                                        <span class="badge badge-light-primary">{{ player.primary_data_source.name }}</span>
+                                                    {% else %}
+                                                        <span class="text-muted">{% translate 'None' %}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-flex justify-content-end gap-3">
+                                <a href="{% url 'sport:AdminMultiSourcePlayersDetails' player.slug %}" class="btn btn-light">
+                                    {% translate 'Cancel' %}
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="ki-duotone ki-trash fs-2 me-2"></i>
+                                    {% translate 'Yes, Delete Player' %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
