@@ -527,6 +527,7 @@ class Fixtures(models.Model):
     lineups = models.JSONField(null=True, blank=True)
     scores = models.JSONField(null=True, blank=True)
     state_data = models.JSONField(null=True, blank=True)
+    periods = models.JSONField(null=True, blank=True)
     
     # Metadata
     code = models.CharField(max_length=100, null=True, blank=True)

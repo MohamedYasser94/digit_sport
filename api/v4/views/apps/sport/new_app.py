@@ -146,7 +146,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;statistics.type;participants;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;statistics.type;participants;periods;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
