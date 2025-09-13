@@ -248,17 +248,72 @@ def AdminMultiSourcePlayersDetails(request, slug):
     """
     player = get_object_or_404(MultiSourcePlayers, slug=slug)
     
-    # Get data source information
-    source_info = player.source_info.all().select_related('data_source')
+    # Get data source information with related data
+    try:
+        source_info = player.source_info.all().select_related('data_source').order_by('-updated_at')
+    except:
+        source_info = []
     
     # Get unresolved conflicts
-    conflicts = player.conflicts.filter(resolved=False)
+    try:
+        conflicts = player.conflicts.filter(resolved=False).select_related('source_1', 'source_2')
+    except:
+        conflicts = []
+    
+    # Get related data for context
+    all_players_count = MultiSourcePlayers.objects.count()
+    active_players_count = MultiSourcePlayers.objects.filter(status='Active').count()
+    
+    # Get market value history (if it exists in JSON format)
+    market_value_history = []
+    if player.market_value_history:
+        try:
+            import json
+            if isinstance(player.market_value_history, str):
+                market_value_history = json.loads(player.market_value_history)
+            elif isinstance(player.market_value_history, list):
+                market_value_history = player.market_value_history
+            else:
+                market_value_history = []
+        except (json.JSONDecodeError, TypeError):
+            market_value_history = []
+    
+    # Process market value history to show recent entries
+    if market_value_history:
+        # Show only the last 10 entries
+        market_value_history = market_value_history[-10:]
+        # Update player object with processed history
+        player.market_value_history = market_value_history
+    
+    # Get all data sources that have info for this player
+    data_sources = []
+    if player.primary_data_source:
+        data_sources.append(player.primary_data_source)
+    
+    # Add any additional sources from source_info
+    for info in source_info:
+        if info.data_source not in data_sources:
+            data_sources.append(info.data_source)
+    
+    # Prepare API IDs display
+    api_ids = {}
+    if player.sportmonks_api_id:
+        api_ids['Sportmonks'] = player.sportmonks_api_id
+    if player.transfermarkt_id:
+        api_ids['Transfer Market'] = player.transfermarkt_id
+    if player.manual_entry_id:
+        api_ids['Manual Entry'] = player.manual_entry_id
     
     context = {
         'player': player,
         'source_info': source_info,
         'conflicts': conflicts,
-        'current_page': _('Player Details')
+        'data_sources': data_sources,
+        'api_ids': api_ids,
+        'all_players_count': all_players_count,
+        'active_players_count': active_players_count,
+        'current_page': _('Player Details'),
+        'page_title': f"{player.name} - {_('Player Details')}"
     }
     
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/details.html', context)

@@ -1965,6 +1965,7 @@ def AdminPlayersList(request):
     teams = Teams.objects.all()
     # GET logic with pagination
     players_list = Players.objects.all().order_by('name')
+    players_list = MultiSourcePlayers.objects.all().order_by('name')
     paginator = Paginator(players_list, 25)  # Show 25 players per page
     page_number = request.GET.get('page')
 
@@ -2042,12 +2043,24 @@ def AdminPlayersList(request):
 
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
 
+@authenticated_staf
+@staff_only
+def AdminPlayersDetail(request, slug):
+    player = MultiSourcePlayers.objects.get(slug=slug)
+
+    teams = Teams.objects.all()
+    context = {'player': player, 'teams': teams,
+               'players_form': AdminPlayersForm(instance=player), 'transfer_form': AdminTransfersForm(),
+
+               'current_page': _('Detail'),
+                'prev_Page': _('Players'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/players/details.html', context)
 
 @authenticated_staf
 @staff_only
 def AdminPlayersUpdate(request, slug):
 
-    player = Players.objects.get(slug=slug)
+    player = MultiSourcePlayers.objects.get(slug=slug)
     player_transform = Transfers.objects.filter(player=player)
     teams = Teams.objects.all()
 

@@ -120,7 +120,7 @@ urlpatterns = [
 
     ##########   Players  #########
     path('player/', views.AdminPlayersList, name='AdminPlayersList'),
-    path('player/details/<slug:slug>/', views.AdminPlayersUpdate, name='AdminPlayersDetails'),
+    path('player/details/<slug:slug>/', views.AdminPlayersDetail, name='AdminPlayersDetails'),
     path('player/update/<slug:slug>/', views.AdminPlayersUpdate, name='AdminPlayersUpdate'),
     path('player/archive/<slug:slug>/', views.AdminPlayersArchive, name='AdminPlayersArchive'),
     path('player/delete/<slug:slug>/', views.AdminPlayersDelete, name='AdminPlayersDelete'),

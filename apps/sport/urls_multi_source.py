@@ -25,8 +25,22 @@ from .views.multi_source_api import (
     get_player_by_api_id
 )
 from .views.simple_transfer_market import AdminSimpleTransferMarketFetch
+from .views.multi_source_admin import (
+    AdminMultiSourcePlayersList,
+    AdminMultiSourcePlayersDetails,
+    AdminMultiSourcePlayersUpdate,
+    AdminMultiSourcePlayersDelete,
+    AdminMultiSourcePlayersArchive
+)
 
 urlpatterns = [
+    # HTML Admin views for multi-source players
+    path('', AdminMultiSourcePlayersList, name='AdminMultiSourcePlayersList'),
+    path('player/<slug:slug>/', AdminMultiSourcePlayersDetails, name='AdminMultiSourcePlayersDetails'),
+    path('player/<slug:slug>/update/', AdminMultiSourcePlayersUpdate, name='AdminMultiSourcePlayersUpdate'),
+    path('player/<slug:slug>/delete/', AdminMultiSourcePlayersDelete, name='AdminMultiSourcePlayersDelete'),
+    path('player/<slug:slug>/archive/', AdminMultiSourcePlayersArchive, name='AdminMultiSourcePlayersArchive'),
+    
     # Multi-source player data fetching (Legacy endpoints)
     path('fetch-sportmonks/', AdminMultiSourcePlayersGetData, name='fetch_sportmonks_players'),
     path('fetch-transfermarkt/', AdminTransfermarktPlayersGetData, name='fetch_transfermarkt_players'),
