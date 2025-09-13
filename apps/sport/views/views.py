@@ -2040,7 +2040,7 @@ def AdminPlayersList(request):
             'current_page': _('Players')
         }
 
-        return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
+        return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
 
 
 @authenticated_staf
