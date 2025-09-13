@@ -2,7 +2,6 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 
-
 from core.views import blog,  core,emails,  localization, notifications, \
      users, utilities
 
@@ -164,11 +163,7 @@ urlpatterns = [
 
 
 
-    ########### Otp Url ############
-    # path('api/otp/setup/', ApiAdminOtpSetupView, name='ApiAdminOtpSetupView'),
-    # path('api/otp/qrcode/', ApiAdminOtpQrCodeView, name='ApiAdminOtpQrCodeView'),
-    # path('otp/setup/', AdminOtpSetupView.as_view(), name='AdminOtpSetupView'),
-    # path('api/otp/otp/', ApiAdminOtpCodeView, name='ApiAdminOtpCodeView'),
-    # path('api/otp/verify/', ApiAdminOtpVerifyView, name='ApiAdminOtpVerifyView'),
+    ########### Bot Url ############
+
 
 ]
