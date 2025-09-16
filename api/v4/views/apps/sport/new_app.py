@@ -146,7 +146,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;participants;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;statistics.type;participants;periods;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
@@ -231,7 +231,7 @@ def TeamScreenApiView(request, sport, lang):
 
 @api_view(['GET'])
 def TeamDetailApiView(request, team_id, lang):
-    include_string = "coaches;coaches.coach;players;players.player;players.player.nationality;latest;latest.scores;latest.participants;upcoming;upcoming.participants;activeSeasons;activeseasons.league;country;venue;"
+    include_string = "coaches;coaches.coach;players;players.player;players.player.nationality;latest;latest.league;latest.scores;latest.participants;upcoming;upcoming.league;upcoming.participants;activeSeasons;activeseasons.league;country;venue;"
 
     url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include={include_string}"
 
@@ -399,18 +399,17 @@ def TopAssistsBySeasonApiView(request, season_id):
 def PreviousMatchesApiView(request, team1_id, team2_id):
     """
     Fetch previous matches between two teams (head-to-head) from SportMonks,
-    including only scores with description = 'CURRENT'.
+    including only scores with description = 'CURRENT' and league details.
     """
     try:
-        # Build the API URL
-        url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;"
+        # Build the API URL with league include
+        url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;league"
 
         # Call SportMonks API
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
 
-        # SportMonks returns fixtures inside "data"
         fixtures = data.get("data", [])
 
         filtered_fixtures = []
@@ -419,7 +418,10 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
             scores = fixture.get("scores", [])
             current_scores = [s for s in scores if s.get("description") == "CURRENT"]
 
-            # Rebuild fixture with filtered scores
+            # League details (SportMonks بيرجّعها في include)
+            league = fixture.get("league")
+
+            # Rebuild fixture with filtered scores and league
             filtered_fixture = {
                 "id": fixture.get("id"),
                 "sport_id": fixture.get("sport_id"),
@@ -441,6 +443,7 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
                 "has_odds": fixture.get("has_odds"),
                 "has_premium_odds": fixture.get("has_premium_odds"),
                 "starting_at_timestamp": fixture.get("starting_at_timestamp"),
+                "league": league,   # <<<<<< هنا ضفنا league
                 "scores": current_scores,
             }
             filtered_fixtures.append(filtered_fixture)
@@ -464,7 +467,7 @@ def TeamLatestUpcomingApiView(request, team_id):
     Fetch a single team's latest match (with only CURRENT scores) and first upcoming match.
     """
     try:
-        url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include=latest;latest.participants;latest.scores;upcoming;upcoming.participants"
+        url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include=latest;latest.participants;latest.league;latest.scores;upcoming;upcoming.league;upcoming.participants"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -561,7 +564,7 @@ def LeagueInformationApiView(request, league_id):
     try:
         url = f"{base_url}football/leagues/{league_id}?api_token={api_key}"
 
-        include_param = request.query_params.get("include","seasons;latest;upcoming;currentSeason;stages;latest.participants;latest.scores;upcoming.participants")
+        include_param = request.query_params.get("include","seasons;currentSeason;stages;")
         url += f"&include={include_param.replace(',', ';')}"
 
         for key, value in request.query_params.items():

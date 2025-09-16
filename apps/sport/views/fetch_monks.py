@@ -406,7 +406,7 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
     Fetches fixtures and intelligently fetches any missing related data.
     FIXED: Now correctly handles timezone conversion.
     """
-    includes = "league;season;participants;state;scores"
+    includes = "league;season;participants;state;scores;periods;events"
     next_page_url = base_url + f'{sport}/fixtures/date/{fetch_date_str}?api_token={api_key}&include={includes}'
 
     try:
@@ -442,11 +442,20 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                 season, _ = Season.objects.update_or_create(api_id=season_data['id'], defaults=season_defaults)
                 scores_data = fixture_data.get('scores', [])
                 state_data = fixture_data.get('state', {}) or {}
+                periods_data = fixture_data.get('periods', []) or []
+                # Filter and store events with type_id 20 and 21
+                all_events_data = fixture_data.get('events', [])
+                filtered_events = [
+                    event for event in all_events_data 
+                    if event.get('type_id') in [20, 21]
+                    ]
                 api_defaults = {'league': league, 'season': season, 'name': fixture_data.get('name'),
                                 'leg': fixture_data.get('leg'), 'result_info': fixture_data.get('result_info'),
                                 'scores': scores_data,
                                 'state': state_data.get('state'),   # short string (e.g. FT)
-                                'state_data': state_data}            # full JSON object}
+                                'state_data': state_data,
+                                'events': filtered_events,
+                                'periods': periods_data}            # full JSON object}
 
 
                 # <<< FIX: Correctly parse and make datetime timezone-aware >>>

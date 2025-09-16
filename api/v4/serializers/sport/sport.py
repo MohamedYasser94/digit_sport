@@ -157,12 +157,13 @@ class FixtureSerializer(serializers.ModelSerializer):
     participants = ParticipantSerializer(many=True, read_only=True)
     scores = serializers.JSONField(required=False, allow_null=True)
     state = serializers.JSONField(source='state_data', required=False, allow_null=True)
-
+    periods = serializers.JSONField(required=False, allow_null=True)
+    events = serializers.JSONField(required=False, allow_null=True)  
     class Meta:
         model = Fixtures
         fields = [
             'api_id', 'name', 'starting_at', 'result_info', 'leg', 'details', 'length',
-            'statistics', 'events', 'lineups', 'participants', 'scores', 'state'
+            'statistics', 'events', 'lineups', 'participants', 'scores', 'state', 'periods', 'events'
         ]
 
 
