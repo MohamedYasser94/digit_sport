@@ -146,14 +146,49 @@ def FixtureDetailApiView(request, fixture_id, lang):
     round;group;scores;sport;stage;aggregate;league;season;referees;coaches;venue;state;lineups;events;timeline;trends;statistics;periods;participants;metadata;sidelined;formations;sidelined.sideline.player
     """
     # This is the full include string needed to get all the data for the screen
-    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;statistics.type;participants;periods;events.player;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
+    include_string = "scores;sport;round;stage;group;league;season;state;coaches;formations;statistics;statistics.type;participants;periods;events.player;events.relatedplayer;lineups.player;lineups.details;metadata;venue;sidelined.sideline.player"
 
     url = f"{base_url}football/fixtures/{fixture_id}?api_token={api_key}&include={include_string}"
 
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+
+        # Initialize variables to find the best player
+        best_player = None
+        highest_rating = 0.0
+
+        for player in data['data']['lineups']:
+            player_details = player.get('details', [])
+                
+            # Loop through the details to find the player rating 
+            for detail in player_details:
+                if detail.get('type_id') == 118:
+                    try:
+                        rating = float(detail['data']['value'])
+                        if rating > highest_rating:
+                            highest_rating = rating
+                            best_player = {
+                                "name": player.get('player_name'),
+                                "rating": rating,
+                                "team_id": player.get('team_id')
+                            }
+                    except (ValueError, KeyError):
+                        continue
+            
+        if data.get('data'):
+            data['data']['man_of_the_match'] = best_player
+            #Time conversion to UTC+3
+            if 'starting_at' in data['data'] and isinstance(data['data']['starting_at'], str):
+                try:
+                    utc_time = datetime.strptime(data['data']['starting_at'], '%Y-%m-%d %H:%M:%S')
+                    utc_plus_3_time = utc_time + timedelta(hours=3)
+                    data['data']['starting_at'] = utc_plus_3_time.strftime('%Y-%m-%d %H:%M:%S')
+                    data['data']['timezone'] = 'UTC+3'
+                except ValueError:
+                    pass
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -163,10 +198,6 @@ def FixtureDetailApiView(request, fixture_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# ... (rest of the file)
-
 
 ######################### team Screen api urls #########################
 @api_view(['GET'])
@@ -402,10 +433,8 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
     including only scores with description = 'CURRENT' and league details.
     """
     try:
-        # Build the API URL with league include
         url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;league"
 
-        # Call SportMonks API
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
@@ -418,7 +447,6 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
             scores = fixture.get("scores", [])
             current_scores = [s for s in scores if s.get("description") == "CURRENT"]
 
-            # League details (SportMonks بيرجّعها في include)
             league = fixture.get("league")
 
             # Rebuild fixture with filtered scores and league
@@ -443,7 +471,7 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
                 "has_odds": fixture.get("has_odds"),
                 "has_premium_odds": fixture.get("has_premium_odds"),
                 "starting_at_timestamp": fixture.get("starting_at_timestamp"),
-                "league": league,   # <<<<<< هنا ضفنا league
+                "league": league,
                 "scores": current_scores,
             }
             filtered_fixtures.append(filtered_fixture)
