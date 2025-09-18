@@ -170,10 +170,16 @@ def FixtureDetailApiView(request, fixture_id, lang):
                         if rating > highest_rating:
                             highest_rating = rating
                             best_player = {
-                                "name": player.get('player_name'),
-                                "rating": rating,
-                                "team_id": player.get('team_id')
-                            }
+                            "player_id": player.get('player_id'),
+                            "team_id": player.get('team_id'),
+                            "country_id": player.get('player', {}).get('country_id'),
+                            "nationality_id": player.get('player', {}).get('nationality_id'),
+                            "position_id": player.get('position_id'),
+                            "player_name": player.get('player_name'),
+                            "jersey_number": player.get('jersey_number'),
+                            "image_path": player.get('player', {}).get('image_path'),
+                            "rating": rating
+                        }
                     except (ValueError, KeyError):
                         continue
             
@@ -814,7 +820,7 @@ def TransfersApiView(request):
     """
     try:
         # Construct the URL with includes for player and team details
-        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam"
+        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam;type;"
 
         response = requests.get(url)
         response.raise_for_status()  # Raises an exception for 4xx/5xx errors
