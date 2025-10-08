@@ -14,6 +14,7 @@ urlpatterns = [
     ######################### team Screen api urls #########################
     path('v4/teams/<str:sport>/<str:lang>/list/', new_app.TeamScreenApiView, name='TeamScreenApiView'),
     path('v4/teams/detail/<int:team_id>/<str:lang>/', new_app.TeamDetailApiView, name='TeamDetailApiView'),
+    path('v4/teams/top', new_app.TopTeamsApiView, name='TopTeamsApiView'),
 
     ############# league Screen api urls #############
     path('v4/leagues/<str:sport>/<str:lang>/list/', new_app.LeaguesApiView, name='LeaguesApiView'),

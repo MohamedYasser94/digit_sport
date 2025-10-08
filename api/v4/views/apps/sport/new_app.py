@@ -287,6 +287,42 @@ def TeamDetailApiView(request, team_id, lang):
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['GET'])
+def TopTeamsApiView(request):
+    """
+    Fetch details for top teams (specified by IDs)
+    """
+    TOP_TEAM_IDS = [8, 9 , 6, 14, 19 ,18 , 3468, 83, 134474, 503, 68, 591, 44, 597, 37, 113 ,2930 , 625, 2506, 476, 7011]  
+    top_teams_data = []
+    
+    try:
+        for team_id in TOP_TEAM_IDS:
+            url = f"{base_url}football/teams/{team_id}?api_token={api_key}"
+            
+            response = requests.get(url)
+            response.raise_for_status()
+
+            team_response = response.json()
+            
+            if 'data' in team_response and isinstance(team_response['data'], dict):
+                team_data = {
+                    "data": team_response['data']
+                }
+                top_teams_data.append(team_data)
+        
+        return Response({
+            "data": top_teams_data
+        }, status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch team details from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected server error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 ################ Leagues API Endpoints ################
 
 @api_view(['GET'])
