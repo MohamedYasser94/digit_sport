@@ -780,7 +780,14 @@ def PlayerDetailApiView(request, player_id, lang):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return Response(response.json(), status=status.HTTP_200_OK)
+
+        data = response.json()
+        
+        if 'data' in data and 'transfers' in data['data']:
+            clubs_timeline = process_transfers_to_clubs_timeline(data['data']['transfers'])
+            data['data']['clubs_played_for'] = clubs_timeline
+        
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -790,6 +797,69 @@ def PlayerDetailApiView(request, player_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def process_transfers_to_clubs_timeline(transfers):
+    """
+    Process transfers data to create a chronological timeline of clubs played for.
+    Handles special cases like loan returns.
+    """
+    if not transfers:
+        return []
+
+    relevant_transfers = [
+        transfer for transfer in transfers 
+        if transfer['type']['name'].lower() != 'end of loan'
+    ]
+    sorted_transfers = sorted(relevant_transfers, key=lambda x: x['date'])
+    
+    clubs_timeline = []
+    club_periods = {}
+    
+    for i, transfer in enumerate(sorted_transfers):
+        transfer_type = transfer['type']['name']
+        transfer_date = transfer['date']
+        transfer_id = transfer['id']
+        to_team = transfer['toteam']
+        
+        club_entry = {
+            "id": to_team['id'],
+            "name": to_team['name'],
+            "image_path": to_team['image_path'],
+            "short_code": to_team.get('short_code'),
+            "start_date": transfer_date,
+            "end_date": None,  
+            "transfer_type": transfer_type,
+            "transfer_id": transfer_id
+        }
+        
+        club_key = to_team['id']
+        if club_key in club_periods:
+            for period in clubs_timeline:
+                if period['id'] == club_key and period['end_date'] is None:
+                    period['end_date'] = transfer_date
+                    break
+        
+        club_periods[club_key] = club_entry
+        clubs_timeline.append(club_entry)
+    
+    if sorted_transfers:
+        first_transfer = sorted_transfers[0]
+        first_club = first_transfer['fromteam']
+        first_club_entry = {
+            "id": first_club['id'],
+            "name": first_club['name'],
+            "image_path": first_club['image_path'],
+            "short_code": first_club.get('short_code'),
+            "start_date": None,
+            "end_date": first_transfer['date'],
+            "transfer_type": first_transfer['type']['name'],
+            "transfer_id": first_transfer['id']
+        }
+        clubs_timeline.insert(0, first_club_entry)
+    
+    return clubs_timeline
+
 ######################### News api urls #########################
 @api_view(['GET'])
 def NewsApiView(request, lang):
