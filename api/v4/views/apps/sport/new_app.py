@@ -953,3 +953,41 @@ def NewsDetailApiView(request, news_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def TeamNewsApiView(request, team_id, lang):
+    """
+    Fetch news articles for a specific team.
+    """
+    try:
+        team = Teams.objects.get(id=team_id)
+
+        team_news = BlogArticle.objects.filter(
+            team=team,
+            pub_type='Published'  
+        ).order_by('-created_at')
+        
+        serializer = BlogArticleSerializer(team_news, many=True, context={'request': request})
+        
+        response_data = {
+            'team': {
+                'id': team.id,  
+                'name': team.name,
+                'image_path': team.image_path
+            },
+            'articles': serializer.data,
+            'count': team_news.count()
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+    except Teams.DoesNotExist:
+        return Response(
+            {"error": f"Team with ID {team_id} not found."}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected server error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

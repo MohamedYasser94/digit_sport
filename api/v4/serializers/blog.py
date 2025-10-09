@@ -3,6 +3,7 @@ from rest_framework import serializers
 from core.models.blog import BlogArticle, BlogCategories, CommonTags,  BlogVideo
 from core.models.localization import Language
 
+from api.v4.serializers.sport.sport import TeamSerializer
 
 
 
@@ -19,9 +20,10 @@ class AdminBlogTagsiesSerializer(serializers.ModelSerializer)    :
 
 
 class BlogArticleSerializer(serializers.ModelSerializer)    :
+    team = TeamSerializer(read_only=True)
     class Meta:
         model = BlogArticle
-        fields =[ 'id','title','image','keyword','body','author','created_at',]
+        fields =[ 'id','title','image','keyword','body','author','created_at','team',]
 
 class AdminBlogArticleDetailsSerializer(serializers.ModelSerializer)    :
     body = serializers.SerializerMethodField()

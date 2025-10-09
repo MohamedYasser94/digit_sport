@@ -307,6 +307,29 @@
                                                     <!--end::Description-->
                                                 </div>
                                                 <!--end::Input group-->
+                                                <!--begin::Input group - TEAM SELECTION -->
+                                                <div class="fv-row w-100 flex-md-root">
+                                                    <!--begin::Label-->
+                                                    <label class="form-label">{% translate 'Team' %}</label>
+                                                    <!--end::Label-->
+                                                    <!--begin::Select-->
+                                                    <select class="form-select mb-2" data-control="select2" 
+                                                            data-placeholder="Select a team" name="team">
+                                                        <option value="">{% translate 'Select Team' %}</option>
+                                                        {% for team in teams %}
+                                                            <option value="{{ team.id }}">
+                                                                {{ team.name }} 
+                                                                {% if team.sport %} - {{ team.sport.name }}{% endif %}
+                                                                {% if team.league %} ({{ team.league.name }}){% endif %}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <!--end::Select-->
+                                                    <!--begin::Description-->
+                                                    <div class="text-muted fs-7">{% translate 'Select the team this news article is about.' %}</div>
+                                                    <!--end::Description-->
+                                                </div>
+                                                <!--end::Input group-->
 
 {#                                                <!--begin::Input group-->#}
 {#                                                <div class="fv-row w-100 flex-md-root">#}
