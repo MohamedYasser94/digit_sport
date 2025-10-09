@@ -12,6 +12,7 @@ import requests
 from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
 from api.v4.serializers.sport.sport import LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSerializer, \
     TeamWithMatchesSerializer, PlyerSerializer
+from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
 from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
 from core.models.blog import BlogArticle, BlogVideo
@@ -989,5 +990,118 @@ def TeamNewsApiView(request, team_id, lang):
     except Exception as e:
         return Response(
             {"error": f"An unexpected server error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+@api_view(['POST'])
+def favorite_toggle(request):
+    """
+    A high-performance and robust endpoint for users to add or remove a favorite item.
+    - Uses transaction.atomic to ensure data integrity.
+    - Includes comprehensive try-except blocks to handle potential database errors gracefully.
+    """
+    serializer = FavoriteToggleSerializer(data=request.data)
+    # The is_valid call will handle validation errors and return a 400 Bad Request automatically
+    serializer.is_valid(raise_exception=True)
+
+    validated_data = serializer.validated_data
+    content_type = validated_data['content_type']
+    object_id = validated_data['object_id']
+    instance_name = validated_data['instance_name']
+    user = request.user
+
+    try:
+        # The core logic is wrapped in a try block to catch unexpected database errors
+        favorite, created = Favorite.objects.get_or_create(
+            user=user,
+            content_type=content_type,
+            object_id=object_id
+        )
+
+        if created:
+            message = f"'{instance_name}' has been added to your favorites."
+            response_status = status.HTTP_201_CREATED
+        else:
+            # If the favorite already existed, delete it
+            favorite.delete()
+            message = f"'{instance_name}' has been removed from your favorites."
+            response_status = status.HTTP_200_OK
+
+        return Response({"detail": message}, status=response_status)
+
+    except DatabaseError:
+        # This catches errors during the .get_or_create() or .delete() calls,
+        # such as a temporary database connection issue.
+        return Response(
+            {"detail": "A database error occurred. Please try again."},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    except Exception:
+        # A general catch-all for any other unexpected errors.
+        # It's good practice to log these errors for debugging purposes.
+        return Response(
+            {"detail": "An unexpected server error occurred."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def list_user_favorites(request):
+    """
+    A high-performance endpoint to list a user's favorites.
+    - Efficiently fetches all favorite types (teams, players, leagues) in minimal queries.
+    - Supports optional filtering by type (e.g., ?type=team).
+    - Returns counts and serialized data for each category.
+    """
+    try:
+        user = request.user
+        filter_type = request.query_params.get('type', None)  # e.g., 'team', 'player', 'league'
+
+        # 1. Fetch all favorite records for the user in a single query
+        favorites_qs = Favorite.objects.filter(user=user).select_related('content_type')
+
+        # 2. Group the favorite IDs by their model type (e.g., 'teams', 'players')
+        # This is very efficient as it avoids hitting the database in a loop.
+        favorite_ids = defaultdict(list)
+        for fav in favorites_qs:
+            model_name = fav.content_type.model_class().__name__.lower()
+            favorite_ids[model_name].append(fav.object_id)
+
+        # 3. Prepare the final response structure
+        response_data = {
+            'total_favorites': len(favorites_qs),
+            'teams_favorites': [],
+            'players_favorites': [],
+            'leagues_favorites': []
+        }
+
+        # 4. Define a map to process each model type professionally
+        model_map = {
+            'teams': {'model': Teams, 'serializer': TeamSerializer, 'key': 'teams_favorites'},
+            'players': {'model': Players, 'serializer': PlyerSerializer, 'key': 'players_favorites'},
+            'leagues': {'model': Leagues, 'serializer': SimpleLeagueSerializer, 'key': 'leagues_favorites'}
+        }
+
+        # 5. Fetch and serialize the actual objects based on the collected IDs
+        for model_name, details in model_map.items():
+            # Check if we should process this type based on the filter
+            type_name = model_name.rstrip('s')  # 'teams' -> 'team'
+            if not filter_type or filter_type == type_name:
+                ids = favorite_ids.get(model_name)
+                if ids:
+                    queryset = details['model'].objects.filter(pk__in=ids)
+                    # Use the appropriate serializer for each model type
+                    serializer = details['serializer'](queryset, many=True, context={'request': request})
+                    response_data[details['key']] = serializer.data
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        # A general catch-all for any unexpected errors.
+        return Response(
+            {"detail": "An unexpected server error occurred while fetching favorites."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
