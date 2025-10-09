@@ -960,12 +960,12 @@ def TeamNewsApiView(request, team_id, lang):
     Fetch news articles for a specific team.
     """
     try:
-        team = Teams.objects.get(id=team_id)
+        team = Teams.objects.get(api_id=team_id)
 
         team_news = BlogArticle.objects.filter(
-            team=team,
-            pub_type='Published'  
+            team=team,   
         ).order_by('-created_at')
+
         
         serializer = BlogArticleSerializer(team_news, many=True, context={'request': request})
         
