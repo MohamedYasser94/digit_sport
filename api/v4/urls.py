@@ -14,6 +14,7 @@ urlpatterns = [
     ######################### team Screen api urls #########################
     path('v4/teams/<str:sport>/<str:lang>/list/', new_app.TeamScreenApiView, name='TeamScreenApiView'),
     path('v4/teams/detail/<int:team_id>/<str:lang>/', new_app.TeamDetailApiView, name='TeamDetailApiView'),
+    path('v4/teams/top', new_app.TopTeamsApiView, name='TopTeamsApiView'),
 
     ############# league Screen api urls #############
     path('v4/leagues/<str:sport>/<str:lang>/list/', new_app.LeaguesApiView, name='LeaguesApiView'),
@@ -37,6 +38,6 @@ urlpatterns = [
     ######################### News api urls #########################
     path('v4/news/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
     path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
-    path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView')
-
+    path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView'),
+    path('v4/news/teams/<int:team_id>/<str:lang>/list/', new_app.TeamNewsApiView, name='TeamNewsApiView'),
 ]

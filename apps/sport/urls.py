@@ -55,7 +55,7 @@ urlpatterns = [
     path('season/archive/<slug:slug>/', views.AdminSeasonArchive, name='AdminSeasonArchive'),
     path('season/delete/<slug:slug>/', views.AdminSeasonDelete, name='AdminSeasonDelete'),
     path('season/match/<slug:slug>/', views.AdminMatchBySeason, name='AdminMatchBySeason'),
-    # path('monk/season/api/get/', monks.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
+    path('monk/season/api/get/', media.AdminMonksSeasonGetData, name='AdminMonksSeasonGetData'),
 
     ##########   Group #########
     path('group/', views.AdminGroupList, name='AdminGroupList'),

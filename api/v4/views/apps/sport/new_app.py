@@ -287,6 +287,42 @@ def TeamDetailApiView(request, team_id, lang):
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['GET'])
+def TopTeamsApiView(request):
+    """
+    Fetch details for top teams (specified by IDs)
+    """
+    TOP_TEAM_IDS = [8, 9 , 6, 14, 19 ,18 , 3468, 83, 134474, 503, 68, 591, 44, 597, 37, 113 ,2930 , 625, 2506, 476, 7011]  
+    top_teams_data = []
+    
+    try:
+        for team_id in TOP_TEAM_IDS:
+            url = f"{base_url}football/teams/{team_id}?api_token={api_key}"
+            
+            response = requests.get(url)
+            response.raise_for_status()
+
+            team_response = response.json()
+            
+            if 'data' in team_response and isinstance(team_response['data'], dict):
+                team_data = {
+                    "data": team_response['data']
+                }
+                top_teams_data.append(team_data)
+        
+        return Response({
+            "data": top_teams_data
+        }, status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch team details from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response({"error": f"An unexpected server error occurred: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 ################ Leagues API Endpoints ################
 
 @api_view(['GET'])
@@ -780,7 +816,14 @@ def PlayerDetailApiView(request, player_id, lang):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return Response(response.json(), status=status.HTTP_200_OK)
+
+        data = response.json()
+        
+        if 'data' in data and 'transfers' in data['data']:
+            clubs_timeline = process_transfers_to_clubs_timeline(data['data']['transfers'])
+            data['data']['clubs_played_for'] = clubs_timeline
+        
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -790,6 +833,69 @@ def PlayerDetailApiView(request, player_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def process_transfers_to_clubs_timeline(transfers):
+    """
+    Process transfers data to create a chronological timeline of clubs played for.
+    Handles special cases like loan returns.
+    """
+    if not transfers:
+        return []
+
+    relevant_transfers = [
+        transfer for transfer in transfers 
+        if transfer['type']['name'].lower() != 'end of loan'
+    ]
+    sorted_transfers = sorted(relevant_transfers, key=lambda x: x['date'])
+    
+    clubs_timeline = []
+    club_periods = {}
+    
+    for i, transfer in enumerate(sorted_transfers):
+        transfer_type = transfer['type']['name']
+        transfer_date = transfer['date']
+        transfer_id = transfer['id']
+        to_team = transfer['toteam']
+        
+        club_entry = {
+            "id": to_team['id'],
+            "name": to_team['name'],
+            "image_path": to_team['image_path'],
+            "short_code": to_team.get('short_code'),
+            "start_date": transfer_date,
+            "end_date": None,  
+            "transfer_type": transfer_type,
+            "transfer_id": transfer_id
+        }
+        
+        club_key = to_team['id']
+        if club_key in club_periods:
+            for period in clubs_timeline:
+                if period['id'] == club_key and period['end_date'] is None:
+                    period['end_date'] = transfer_date
+                    break
+        
+        club_periods[club_key] = club_entry
+        clubs_timeline.append(club_entry)
+    
+    if sorted_transfers:
+        first_transfer = sorted_transfers[0]
+        first_club = first_transfer['fromteam']
+        first_club_entry = {
+            "id": first_club['id'],
+            "name": first_club['name'],
+            "image_path": first_club['image_path'],
+            "short_code": first_club.get('short_code'),
+            "start_date": None,
+            "end_date": first_transfer['date'],
+            "transfer_type": first_transfer['type']['name'],
+            "transfer_id": first_transfer['id']
+        }
+        clubs_timeline.insert(0, first_club_entry)
+    
+    return clubs_timeline
+
 ######################### News api urls #########################
 @api_view(['GET'])
 def NewsApiView(request, lang):
@@ -847,3 +953,41 @@ def NewsDetailApiView(request, news_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def TeamNewsApiView(request, team_id, lang):
+    """
+    Fetch news articles for a specific team.
+    """
+    try:
+        team = Teams.objects.get(id=team_id)
+
+        team_news = BlogArticle.objects.filter(
+            team=team,
+            pub_type='Published'  
+        ).order_by('-created_at')
+        
+        serializer = BlogArticleSerializer(team_news, many=True, context={'request': request})
+        
+        response_data = {
+            'team': {
+                'id': team.id,  
+                'name': team.name,
+                'image_path': team.image_path
+            },
+            'articles': serializer.data,
+            'count': team_news.count()
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+        
+    except Teams.DoesNotExist:
+        return Response(
+            {"error": f"Team with ID {team_id} not found."}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected server error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

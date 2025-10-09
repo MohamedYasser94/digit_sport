@@ -14,7 +14,7 @@ from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 from slugify import slugify
 
-from apps.sport.models.models import Sport
+from apps.sport.models.models import Sport, Teams
 from core.models.core import CommonTags
 from core.utils.utils import cache_decorator
 from helper.viewHelper import get_file_path
@@ -76,6 +76,7 @@ class BlogArticle(models.Model):
     article_type = models.CharField('type', max_length=10, choices=Article_Type, default='Article', blank=True, null=True, )
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_news', null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='team_news', null=True, blank=True)
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.CharField(max_length=100, null=True, blank=True)
     video_url = models.URLField(max_length=100, null=True, blank=True)

@@ -11,7 +11,7 @@ from django.urls import reverse_lazy, reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 
-from apps.sport.models.models import Sport
+from apps.sport.models.models import Sport, Teams
 from core.forms.blog import AdminBlogCategoriesForm, AdminCommonTagsForm,  AdminBlogArticleForm, \
     AdminBlogArticleTagsForm, AdminBlogVideoForm
 from core.forms.core import AdminCommonSeoForm, AdminCommonMediaFilesForm, AdminCommonTranslateForm
@@ -445,16 +445,20 @@ def AdminBlogArticleCreate(request):
     }
     return render(request, f'{BACKEND_TEMPLATES}/blog/article/add.html', context)
 
-@authenticated_staf
+@authenticated_staf  # Change back to your original decorator name
 @author_only
 def AdminBlogArticleSCreate(request):
     blog_tags = CommonTags.objects.all()
+    # Get active teams for the dropdown
+    teams = Teams.objects.filter(status='Active').select_related('sport')
+    
     if request.method == "POST":
         article_form = AdminBlogArticleForm(request.POST or None, request.FILES or None)
         translate_form = AdminCommonTranslateForm(request.POST or None, request.FILES or None)
         category_form = AdminBlogCategoriesForm(request.POST or None, request.FILES or None)
         tags_form = AdminBlogArticleTagsForm(request.POST or None, request.FILES or None)
         seo_form = AdminCommonSeoForm(request.POST or None, request.FILES or None)
+        
         if article_form:
             title = request.POST.get('title')
             keyword = request.POST.get('keyword')
@@ -468,9 +472,14 @@ def AdminBlogArticleSCreate(request):
             title_tr = request.POST.get('title_tr')
             keyword_tr = request.POST.get('keyword_tr')
             body_tr = request.POST.get('body_tr')
-            author= request.POST.get('author')
+            author = request.POST.get('author')
             country = request.POST.get('country')
             sport = request.POST.get('sport')
+            
+            ########## TEAM FIELD - ADD THIS ##########
+            team_id = request.POST.get('team')
+            ###########################################
+            
             ########## Image #########
             hero_image = request.FILES.get('hero_image')
             images = request.FILES.getlist('images')
@@ -478,37 +487,70 @@ def AdminBlogArticleSCreate(request):
             image_url = request.POST.getlist('image_url')
             video_url = request.POST.get('video_url')
             video_cover = request.FILES.get('video_cover')
+            
             ########## Seo #########
             meta_title = title
             meta_keywords = keyword
             meta_description = keyword
             seo_image = hero_image
+            
             ########## Category #########
             if pub_time == '' or pub_time == None:
                 pub_time = datetime.now()
             else:
                 pub_time = pub_time
+                
             if category == '' or category == None:
                 category_id = None
             else:
                 category_id = BlogCategories.objects.get(id=category)
 
             if sport == '' or sport == None:
-                sport = None
+                sport_obj = None
             else:
-                sport = Sport.objects.get(id=sport)
+                sport_obj = Sport.objects.get(id=sport)
+                
+            ########## TEAM HANDLING - ADD THIS ##########
+            if team_id == '' or team_id == None:
+                team_obj = None
+            else:
+                try:
+                    team_obj = Teams.objects.get(id=team_id)
+                    # If sport is not set, use team's sport
+                    if sport_obj is None and team_obj.sport:
+                        sport_obj = team_obj.sport
+                except Teams.DoesNotExist:
+                    team_obj = None
+            ##############################################
+                
             if author == '' or author == None:
                 author = 'Blog'
             else:
                 author = author
 
-
-
-            article_object = BlogArticle(title=title, keyword=title, category=category_id, body=body,
-                                         pub_time=pub_time, pub_type=pub_type, is_featured=is_featured,
-                                         sport=sport, country=country,image_path=image_path,image=hero_image,
-                                         author=author, comment_status=comment_status)
+            # Create article with team
+            article_object = BlogArticle(
+                title=title, 
+                keyword=keyword, 
+                category=category_id, 
+                body=body,
+                pub_time=pub_time, 
+                pub_type=pub_type, 
+                is_featured=is_featured,
+                sport=sport_obj, 
+                country=country,
+                image_path=image_path,
+                image=hero_image,
+                author=author, 
+                comment_status=comment_status,
+                team=team_obj  # ADD TEAM HERE
+            )
             article_object.save()
+            
+            # Handle tags if any
+            if tags:
+                article_object.tags.set(tags)
+            
             AdminCommonTranslate(request, title_tr, keyword_tr, body_tr, 'BlogArticle', article_object.id)
 
             image_url = article_object.image.url if article_object.image else None
@@ -541,21 +583,22 @@ def AdminBlogArticleSCreate(request):
             'article_form': article_form,
             'tags_form': tags_form,
             'seo_form': AdminCommonSeoForm,
+            'teams': teams,  # ADD TEAMS TO CONTEXT
             'current_page': _('Add'),
             'prev_Page': _('Articles'),
             'prev_Page_url': reverse_lazy('core:AdminBlogArticleList'),
-
         }
         return render(request, f'{BACKEND_TEMPLATES}/blog/article/sadd.html', context)
+    
     context = {
         'blog_tags': blog_tags,
         'article_form': article_form,
         'tags_form': tags_form,
         'seo_form': AdminCommonSeoForm,
+        'teams': teams,  # ADD TEAMS TO CONTEXT
         'current_page': _('Add'),
         'prev_Page': _('Articles'),
         'prev_Page_url': reverse_lazy('core:AdminBlogArticleList'),
-
     }
     return render(request, f'{BACKEND_TEMPLATES}/blog/article/sadd.html', context)
 

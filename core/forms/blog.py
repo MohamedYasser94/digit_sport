@@ -34,11 +34,10 @@ class AdminBlogArticleTagsForm(forms.ModelForm):
 
 
 class AdminBlogArticleForm(forms.ModelForm):
-    tags = forms.ModelMultipleChoiceField(queryset=CommonTags.objects.filter(status='Active') )
+    tags = forms.ModelMultipleChoiceField(queryset=CommonTags.objects.filter(status='Active'))
     category = forms.ModelChoiceField(queryset=BlogCategories.objects.filter(status='Active'))
-
-
-
+    team = forms.ModelChoiceField(queryset=Teams.objects.filter(status='Active'), required=False)
+    
     class Meta:
         model = BlogArticle
         fields = '__all__'
