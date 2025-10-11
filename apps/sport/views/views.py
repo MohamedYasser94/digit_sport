@@ -1,9 +1,9 @@
 from datetime import timezone, datetime
-
+import json
 from OpenSSL.rand import status
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -2366,14 +2366,92 @@ def AdminMatchList(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         page_obj = paginator.page(paginator.num_pages)
 
-    # 5. Pass the page object to the template
+    # Get dropdown data for Add Fixture modal
+    sports_data = list(Sport.objects.values('id', 'name'))
+    leagues_data = list(Leagues.objects.values('id', 'name'))
+    seasons_data = list(Season.objects.values('id', 'name'))
+    venues_data = list(Venues.objects.values('id', 'name'))
+
     context = {
-        'page_obj': page_obj,  # Use 'page_obj' instead of 'fixtures'
+        'page_obj': page_obj,
         'matches_form': AdminMatchForm(),
-        'current_page': _('Match')
+        'current_page': _('Match'),
+        'sports': json.dumps(sports_data),
+        'leagues': json.dumps(leagues_data),
+        'seasons': json.dumps(seasons_data),
+        'venues': json.dumps(venues_data),
     }
     return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/admin.html', context)
 
+@authenticated_staf
+@staff_only
+def AdminFixtureAdd(request):
+    if request.method == "POST":
+        try:
+            # Get required fields
+            name = request.POST.get('name')
+            short_name = request.POST.get('short_name')
+            
+            if not name or not short_name:
+                return JsonResponse({
+                    'type': 'Error', 
+                    'message': 'Name and Short Name are required.'
+                }, status=400)
+            
+            # Create fixture object
+            fixture = Fixtures()
+            fixture.name = name
+            fixture.short_name = short_name
+            
+            # Optional fields
+            sport_id = request.POST.get('sport')
+            if sport_id:
+                try:
+                    fixture.sport = Sport.objects.get(id=sport_id)
+                except Sport.DoesNotExist:
+                    pass
+            
+            league_id = request.POST.get('league')
+            if league_id:
+                try:
+                    fixture.league = Leagues.objects.get(id=league_id)
+                except Leagues.DoesNotExist:
+                    pass
+            
+            season_id = request.POST.get('season')
+            if season_id:
+                try:
+                    fixture.season = Season.objects.get(id=season_id)
+                except Season.DoesNotExist:
+                    pass
+            
+            venue_id = request.POST.get('venue')
+            if venue_id:
+                try:
+                    fixture.venue = Venues.objects.get(id=venue_id)
+                except Venues.DoesNotExist:
+                    pass
+            
+            starting_at = request.POST.get('starting_at')
+            if starting_at:
+                fixture.starting_at = starting_at
+            
+            details = request.POST.get('details')
+            if details:
+                fixture.details = details
+            
+            fixture.save()
+            
+            messages.success(request, _("Fixture Added Successfully"), extra_tags='Fixture')
+            return JsonResponse({'type': 'Success', 'message': 'Fixture Added Successfully'})
+            
+        except Exception as e:
+            return JsonResponse({
+                'type': 'Error', 
+                'message': f'Error: {str(e)}'
+            }, status=400)
+    
+    return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'}, status=400)
 
 @authenticated_staf
 @staff_only

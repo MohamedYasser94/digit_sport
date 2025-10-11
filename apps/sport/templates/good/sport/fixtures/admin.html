@@ -1,7 +1,6 @@
 {% extends BACKEND_BASE %}
 {% load static %}
 {% load i18n %}
-
 {% block body %}
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid" id="monkfixtures-app"> <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -112,7 +111,101 @@
             </div>
         </div>
         <div class="modal fade" id="kt_modal_add_fixture" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-900px">
+                <div class="modal-content">
+                    <form id="kt_form_add_fixture" class="form" @submit.prevent="addFixture">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Add New Fixture' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div v-if="fixtureLoading" class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <div v-if="!fixtureLoading">
+                                <!-- Name Field (Required) -->
+                                <div class="fv-row mb-7">
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Fixture Name' %}</label>
+                                    <input type="text" v-model="fixtureForm.name" class="form-control form-control-solid" 
+                                        placeholder="{% translate 'Enter fixture name' %}" required/>
+                                </div>
+                                <!-- Short Name Field (Required) -->
+                                <div class="fv-row mb-7">
+                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Short Name' %}</label>
+                                    <input type="text" v-model="fixtureForm.short_name" class="form-control form-control-solid" 
+                                        placeholder="{% translate 'Enter short name' %}" required/>
+                                </div>
+                                <div class="row">
+                                <!-- Sport -->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                    <select v-model="fixtureForm.sport" class="form-select form-select-solid">
+                                        <option value="">{% translate 'Select Sport' %}</option>
+                                        <option v-for="sport in sports" :key="sport.id" :value="sport.id">[[ sport.name ]]</option>
+                                    </select>
+                                </div>
+                                <!-- League -->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'League' %}</label>
+                                    <select v-model="fixtureForm.league" class="form-select form-select-solid">
+                                        <option value="">{% translate 'Select League' %}</option>
+                                        <option v-for="league in leagues" :key="league.id" :value="league.id">[[ league.name ]]</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                <!-- Season -->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'Season' %}</label>
+                                    <select v-model="fixtureForm.season" class="form-select form-select-solid">
+                                        <option value="">{% translate 'Select Season' %}</option>
+                                        <option v-for="season in seasons" :key="season.id" :value="season.id">[[ season.name ]]</option>
+                                    </select>
+                                </div>
+                                <!-- Venue -->
+                                <div class="col-md-6 fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'Venue' %}</label>
+                                    <select v-model="fixtureForm.venue" class="form-select form-select-solid">
+                                        <option value="">{% translate 'Select Venue' %}</option>
+                                        <option v-for="venue in venues" :key="venue.id" :value="venue.id">[[ venue.name ]]</option>
+                                    </select>
+                                </div>
+                                </div>
+                                <!-- Starting Date/Time -->
+                                <div class="fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'Starting At' %}</label>
+                                    <input type="datetime-local" v-model="fixtureForm.starting_at" class="form-control form-control-solid"/>
+                                </div>
+                                <!-- Details -->
+                                <div class="fv-row mb-7">
+                                    <label class="fs-6 fw-bold mb-2">{% translate 'Details' %}</label>
+                                    <textarea v-model="fixtureForm.details" class="form-control form-control-solid" rows="3"
+                                            placeholder="{% translate 'Enter fixture details' %}"></textarea>
+                                </div>
+                            </div>
+                            <!-- Error/Success Message -->
+                            <div v-if="fixtureMessage" class="alert" :class="fixtureSuccess ? 'alert-success' : 'alert-danger'">
+                                [[ fixtureMessage ]]
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="fixtureLoading">
+                                <span v-if="!fixtureLoading" class="indicator-label">{% translate 'Add Fixture' %}</span>
+                                <span v-if="fixtureLoading" class="indicator-progress">
+                                    {% translate 'Saving...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
         </div>
 </div>
 {% endblock %}
@@ -128,9 +221,28 @@
                 statusMessage: '',
                 finalMessage: '',
                 isSuccess: false,
-                fetchDate: new Date().toISOString().slice(0, 10), // Default to today's date
+                fetchDate: new Date().toISOString().slice(0, 10),
+                
+                fixtureLoading: false,
+                fixtureMessage: '',
+                fixtureSuccess: false,
+                fixtureForm: {
+                    name: '',
+                    short_name: '',
+                    sport: '',
+                    league: '',
+                    season: '',
+                    venue: '',
+                    starting_at: '',
+                    details: ''
+                },
+                sports: [],
+                leagues: [],
+                seasons: [],
+                venues: []
             }
         },
+
         methods: {
             getMonkFixturesData: function () {
                 if (!this.fetchDate) {
@@ -142,7 +254,11 @@
                 this.progress = 5;
                 this.statusMessage = 'Fetching fixtures for ' + this.fetchDate + '...';
 
-                let interval = setInterval(() => { if (this.progress < 90) { this.progress += 5; } }, 800);
+                let interval = setInterval(() => { 
+                    if (this.progress < 90) { 
+                        this.progress += 5; 
+                    } 
+                }, 800);
 
                 const url = "{% url 'sport:AdminMonksFixturesGetData' %}";
                 const payload = {
@@ -173,8 +289,72 @@
                     },
                 });
             },
+            
+            addFixture: function() {
+                if (!this.fixtureForm.name || !this.fixtureForm.short_name) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Name and Short Name are required.';
+                    return;
+                }
+
+                this.fixtureLoading = true;
+                this.fixtureMessage = '';
+
+                const url = "{% url 'sport:AdminFixtureAdd' %}";
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                formData.append('name', this.fixtureForm.name);
+                formData.append('short_name', this.fixtureForm.short_name);
+                
+                if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
+                if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
+                if (this.fixtureForm.season) formData.append('season', this.fixtureForm.season);
+                if (this.fixtureForm.venue) formData.append('venue', this.fixtureForm.venue);
+                if (this.fixtureForm.starting_at) formData.append('starting_at', this.fixtureForm.starting_at);
+                if (this.fixtureForm.details) formData.append('details', this.fixtureForm.details);
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = data.type === 'Success';
+                    this.fixtureMessage = data.message;
+                    
+                    if (this.fixtureSuccess) {
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                })
+                .catch(error => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'An error occurred. Please try again.';
+                    console.error('Error:', error);
+                });
+            },
+
+            loadDropdownData: function() {
+                try {
+                    this.sports = {{ sports|default:"[]"|safe }};
+                    this.leagues = {{ leagues|default:"[]"|safe }};
+                    this.seasons = {{ seasons|default:"[]"|safe }};
+                    this.venues = {{ venues|default:"[]"|safe }};
+                } catch (e) {
+                    console.error('Error loading dropdown data:', e);
+                    this.sports = [];
+                    this.leagues = [];
+                    this.seasons = [];
+                    this.venues = [];
+                }
+            }
         },
-    })
-    MonkFixturesApp.mount('#monkfixtures-app')
+        mounted() {
+            this.loadDropdownData();
+        }
+    });
+    
+    MonkFixturesApp.mount('#monkfixtures-app');
 </script>
 {% endblock custom_js %}
