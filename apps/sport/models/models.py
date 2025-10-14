@@ -1780,3 +1780,53 @@ class FavoriteLeague(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s favorite: {self.league.name}"
+
+
+
+class Favorite(models.Model):
+    """
+    A generic model to allow users to favorite different types of content,
+    such as Leagues, Teams, or Players.
+    """
+    FAVORITE_TYPE_CHOICES = [
+        ('league', 'League'),
+        ('team', 'Team'),
+        ('player', 'Player'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+
+    favorite_type = models.CharField(
+        max_length=20,
+        choices=FAVORITE_TYPE_CHOICES,
+        help_text="The type of the favorited item (League, Team, or Player)"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
+        ordering = ['-created_at']
+        verbose_name = 'User Favorite'
+        verbose_name_plural = 'User Favorites'
+
+    def __str__(self):
+        return f"{self.user.email}'s favorite: {self.content_object}"
+
+    def save(self, *args, **kwargs):
+
+        model_name = self.content_type.model.lower()
+        if 'leagues' in model_name:
+            self.favorite_type = 'league'
+        elif 'teams' in model_name:
+            self.favorite_type = 'team'
+        elif 'players' in model_name:
+            self.favorite_type = 'player'
+        super().save(*args, **kwargs)
+
+

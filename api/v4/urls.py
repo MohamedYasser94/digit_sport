@@ -1,10 +1,20 @@
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 
+from api.v4.views import user
 from api.v4.views.apps.sport import new_app
 
 app_name = 'api'
 
 urlpatterns = [
+
+    ##########User API################
+path('auth/signup/register/', user.UserRegister, name="UserRegister"),
+
+    path('auth/login/', user.UserLogin, name="UserLogin"),
+
+    path('auth/logout/', user.UserLogout, name="UserLogout"),
+path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     ############# Home Fixtures api urls #############
     path('v4/fixtures/<str:sport>/<str:date>/<str:lang>/list/', new_app.FixturesByDateApiList,name='FixturesByDateApiList'),
     path('v4/leagues/toggle-favorite/', new_app.FavoriteLeagueToggle.as_view(), name='toggle-favorite-league'),
@@ -40,4 +50,7 @@ urlpatterns = [
     path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
     path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView'),
     path('v4/news/teams/<int:team_id>/<str:lang>/list/', new_app.TeamNewsApiView, name='TeamNewsApiView'),
+    path('v4/favorites/toggle/', new_app.favorite_toggle, name='toggle-favorite'),
+    path('v4/favorites/list/', new_app.list_user_favorites, name='list-user-favorites'),
+
 ]
