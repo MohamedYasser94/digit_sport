@@ -27,13 +27,14 @@ base_url = settings.SPORT_MONKS_URL
 ############# Home Fixtures api urls #############
 
 
-def _get_serialized_fixtures_for_date(fetch_date):
-    """Queries the DB for a given date, serializes the data, and returns it."""
+def _get_serialized_fixtures_for_date(fetch_date, sport_obj):
+    """Queries the DB for a given date and sport, serializes the data, and returns it."""
     start_of_day_utc = datetime.combine(fetch_date, time.min, tzinfo=timezone.utc)
     end_of_day_utc = datetime.combine(fetch_date, time.max, tzinfo=timezone.utc)
 
     fixtures_for_day = Fixtures.objects.filter(
-        starting_at__range=(start_of_day_utc, end_of_day_utc)
+        starting_at__range=(start_of_day_utc, end_of_day_utc),
+        sport=sport_obj
     ).select_related('league', 'season').prefetch_related('participants__team').order_by('league__name', 'starting_at')
 
     leagues_with_fixtures = defaultdict(list)
@@ -99,7 +100,8 @@ def FixturesByDateApiList(request, sport, date, lang):
                     )
                     thread.start()
 
-            response_data = _get_serialized_fixtures_for_date(fetch_date)
+            # FIX: Pass sport_obj to the function
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj)
             return Response(response_data, status=status.HTTP_200_OK)
         else:
             success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
@@ -109,7 +111,8 @@ def FixturesByDateApiList(request, sport, date, lang):
             FetchedDate.objects.update_or_create(
                 date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
             )
-            response_data = _get_serialized_fixtures_for_date(fetch_date)
+            # FIX: Pass sport_obj to the function
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj)
             return Response(response_data, status=status.HTTP_200_OK)
 
     except Sport.DoesNotExist:
