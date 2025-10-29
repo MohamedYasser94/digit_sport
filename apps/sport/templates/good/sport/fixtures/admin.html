@@ -41,7 +41,31 @@
                                     <td>{{ item.league.name|default:"N/A" }}</td>
                                     <td>{{ item.starting_at|date:"Y-m-d H:i" }}</td>
                                     <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary">Actions</a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light btn-active-light-primary dropdown-toggle" 
+                                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                {% translate 'Actions' %}
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item text-warning" 
+                                                    href="{% url 'sport:AdminMatchUpdate' item.slug %}">
+                                                    <i class="ki-duotone ki-pencil fs-3 me-2"></i>
+                                                    {% translate 'Edit' %}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form method="post" action="{% url 'sport:AdminMatchDelete' item.slug %}" 
+                                                        class="d-inline delete-form" data-item-name="{{ item.name }}">
+                                                        {% csrf_token %}
+                                                        <button type="button" class="dropdown-item text-danger delete-btn">
+                                                            <i class="ki-duotone ki-trash fs-3 me-2"></i>
+                                                            {% translate 'Delete' %}
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -186,6 +210,31 @@
                                     <textarea v-model="fixtureForm.details" class="form-control form-control-solid" rows="3"
                                             placeholder="{% translate 'Enter fixture details' %}"></textarea>
                                 </div>
+
+                                <div class="fv-row mb-7">
+                                <label class="fs-6 fw-bold mb-2">{% translate 'Participants' %}</label>
+                                
+                                <!-- Home Team -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'Home Team' %}</label>
+                                        <select v-model="fixtureForm.home_team" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select Home Team' %}</option>
+                                            <option v-for="team in teams" :key="team.id" :value="team.id">[[ team.name ]]</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- Away Team -->
+                                    <div class="col-md-6">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'Away Team' %}</label>
+                                        <select v-model="fixtureForm.away_team" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select Away Team' %}</option>
+                                            <option v-for="team in teams" :key="team.id" :value="team.id">[[ team.name ]]</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
                             </div>
                             <!-- Error/Success Message -->
                             <div v-if="fixtureMessage" class="alert" :class="fixtureSuccess ? 'alert-success' : 'alert-danger'">
@@ -234,12 +283,15 @@
                     season: '',
                     venue: '',
                     starting_at: '',
-                    details: ''
+                    details: '',
+                    home_team: '',
+                    away_team: ''
                 },
                 sports: [],
                 leagues: [],
                 seasons: [],
-                venues: []
+                venues: [],
+                teams: [],
             }
         },
 
@@ -335,23 +387,106 @@
                 });
             },
 
+            validateTeams: function() {
+                if (this.fixtureForm.home_team && this.fixtureForm.away_team && 
+                    this.fixtureForm.home_team === this.fixtureForm.away_team) {
+                    this.teamError = '{% translate "Home Team and Away Team cannot be the same" %}';
+                } else {
+                    this.teamError = '';
+                }
+            },
+            addFixture: function() {
+                if (!this.fixtureForm.name || !this.fixtureForm.short_name) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Name and Short Name are required.';
+                    return;
+                }
+                
+                if (!this.fixtureForm.home_team || !this.fixtureForm.away_team) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Both Home Team and Away Team are required.';
+                    return;
+                }
+                
+                if (this.fixtureForm.home_team === this.fixtureForm.away_team) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Home Team and Away Team cannot be the same.';
+                    return;
+                }
+
+                this.fixtureLoading = true;
+                this.fixtureMessage = '';
+
+                const url = "{% url 'sport:AdminFixtureAdd' %}";
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                formData.append('name', this.fixtureForm.name);
+                formData.append('short_name', this.fixtureForm.short_name);
+                
+                if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
+                if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
+                if (this.fixtureForm.season) formData.append('season', this.fixtureForm.season);
+                if (this.fixtureForm.venue) formData.append('venue', this.fixtureForm.venue);
+                if (this.fixtureForm.starting_at) formData.append('starting_at', this.fixtureForm.starting_at);
+                if (this.fixtureForm.details) formData.append('details', this.fixtureForm.details);
+                
+                formData.append('home_team', this.fixtureForm.home_team);
+                formData.append('away_team', this.fixtureForm.away_team);
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = data.type === 'Success';
+                    this.fixtureMessage = data.message;
+                    
+                    if (this.fixtureSuccess) {
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                })
+                .catch(error => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'An error occurred. Please try again.';
+                    console.error('Error:', error);
+                });
+            },
             loadDropdownData: function() {
                 try {
                     this.sports = {{ sports|default:"[]"|safe }};
                     this.leagues = {{ leagues|default:"[]"|safe }};
                     this.seasons = {{ seasons|default:"[]"|safe }};
                     this.venues = {{ venues|default:"[]"|safe }};
+                    this.teams = {{ teams|default:"[]"|safe }};
                 } catch (e) {
                     console.error('Error loading dropdown data:', e);
                     this.sports = [];
                     this.leagues = [];
                     this.seasons = [];
                     this.venues = [];
+                    this.teams = [];
                 }
-            }
+            },
+            setupDeleteHandlers: function() {
+                const self = this;
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-btn')) {
+                        const form = e.target.closest('.delete-form');
+                        const itemName = form.getAttribute('data-item-name');
+                        
+                        if (confirm(`Are you sure you want to delete "${itemName}"? This action cannot be undone.`)) {
+                            form.submit();
+                        }
+                    }
+                });
+            },
         },
         mounted() {
             this.loadDropdownData();
+            this.setupDeleteHandlers();
         }
     });
     

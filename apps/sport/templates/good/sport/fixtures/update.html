@@ -13,7 +13,8 @@
         <div id="kt_content_container" class="container-fluid">
             <!--begin::Form-->
             <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'sport:AdminMatchUpdate' match.slug %}"
+                  enctype="multipart/form-data" 
+                  action="{% if is_fixture %}{% url 'sport:AdminMatchUpdate' fixture.slug %}{% else %}{% url 'sport:AdminMatchUpdate' match.slug %}{% endif %}"
                   method="post">
                 {% csrf_token %}
 
@@ -25,214 +26,207 @@
                         <!--begin::Card header-->
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>{% translate 'players' %}</h2>
+                                <h2>{% if is_fixture %}{% translate 'Update Fixture' %}{% else %}{% translate 'Update Match' %}{% endif %}</h2>
                             </div>
                         </div>
                         <!--end::Card header-->
+                        
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
-                            <!--begin::Billing address-->
-                            <div class="d-flex flex-column gap-5 gap-md-7">
-                                <!--begin::Title-->
-                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
-                                <!--end::Title-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Home Team' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="home_team" aria-label="{% translate 'Home Team' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Home Team' %}"
-
-                                                data-allow-clear="true" required
-
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.home_team.id }}"
-                                                    selected="">{{ match.home_team.name }}</option>
-                                            {% for item in teams %}
-                                                <option value="{{ item.id }}">{{ item.name }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
+                            {% if is_fixture %}
+                                <!-- Form for Fixtures -->
+                                <div class="d-flex flex-column gap-5 gap-md-7">
+                                    <!--begin::Title-->
+                                    <div class="fs-3 fw-bolder mb-n2">{% translate 'Fixture Details' %}</div>
+                                    <!--end::Title-->
+                                    
+                                    <!-- Name Field -->
+                                    <div class="fv-row">
+                                        <label class="required form-label">{% translate 'Fixture Name' %}</label>
+                                        <input type="text" name="name" class="form-control form-control-solid" 
+                                               value="{{ fixture.name }}" required />
                                     </div>
-                                    <div class="flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Away Team' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="away_team" aria-label="{% translate 'Away Team' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Away Team' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.away_team.id }}"
-                                                    selected="">{{ match.away_team }}</option>
-                                            {% for item in teams %}
-                                                <option value="{{ item.id }}">{{ item.name }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
+                                    
+                                    <!-- Short Name Field -->
+                                    <div class="fv-row">
+                                        <label class="required form-label">{% translate 'Short Name' %}</label>
+                                        <input type="text" name="short_name" class="form-control form-control-solid" 
+                                               value="{{ fixture.short_name }}" required />
                                     </div>
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Venues' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="venues" aria-label="{% translate 'Venues' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Venues' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.venues }}" selected="">{{ match.venues }}</option>
-                                            {% for value, text in matches_form.venues.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
+                                    
+                                    <!-- Sport and League -->
+                                    <div class="d-flex flex-column flex-md-row gap-5">
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="form-label">{% translate 'Sport' %}</label>
+                                            <select name="sport" class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Sport' %}</option>
+                                                {% for sport in sports %}
+                                                    <option value="{{ sport.id }}" {% if fixture.sport.id == sport.id %}selected{% endif %}>
+                                                        {{ sport.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="form-label">{% translate 'League' %}</label>
+                                            <select name="league" class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select League' %}</option>
+                                                {% for league in leagues %}
+                                                    <option value="{{ league.id }}" {% if fixture.league.id == league.id %}selected{% endif %}>
+                                                        {{ league.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Round' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="round" aria-label="{% translate 'Round' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Round' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.round.id }}" selected="">{{ match.round }}</option>
-                                            {% for value, text in matches_form.round.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-
-
-                                        <!--end::Input-->
+                                    
+                                    <!-- Season and Venue -->
+                                    <div class="d-flex flex-column flex-md-row gap-5">
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="form-label">{% translate 'Season' %}</label>
+                                            <select name="season" class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Season' %}</option>
+                                                {% for season in seasons %}
+                                                    <option value="{{ season.id }}" {% if fixture.season.id == season.id %}selected{% endif %}>
+                                                        {{ season.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="form-label">{% translate 'Venue' %}</label>
+                                            <select name="venue" class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Venue' %}</option>
+                                                {% for venue in venues %}
+                                                    <option value="{{ venue.id }}" {% if fixture.venue.id == venue.id %}selected{% endif %}>
+                                                        {{ venue.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Starting Date/Time -->
+                                    <div class="fv-row">
+                                        <label class="form-label">{% translate 'Starting At' %}</label>
+                                        <input type="datetime-local" name="starting_at" class="form-control form-control-solid" 
+                                               value="{{ fixture.starting_at|date:'Y-m-d\TH:i' }}" />
+                                    </div>
+                                    
+                                    <!-- Details -->
+                                    <div class="fv-row">
+                                        <label class="form-label">{% translate 'Details' %}</label>
+                                        <textarea name="details" class="form-control form-control-solid" rows="3">{{ fixture.details }}</textarea>
                                     </div>
                                 </div>
-                                <!--end::Input group--> <!--begin::Input group-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Match Played' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="played" aria-label="{% translate 'Match Played' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Match Played' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.played }}" selected="">{{ match.played }}</option>
-                                            {% for value, text in matches_form.played.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
+                            {% else %}
+                                <!-- Form for Match (الكود الأصلي) -->
+                                <div class="d-flex flex-column gap-5 gap-md-7">
+                                    <!--begin::Title-->
+                                    <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
+                                    <!--end::Title-->
+                                    
+                                    <!-- Home Team & Away Team -->
+                                    <div class="d-flex flex-column flex-md-row gap-5">
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="required form-label">{% translate 'Home Team' %}</label>
+                                            <select name="home_team" class="form-select form-select-solid" required>
+                                                <option value="{{ match.home_team.id }}" selected>{{ match.home_team.name }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="flex-row-fluid">
+                                            <label class="form-label">{% translate 'Away Team' %}</label>
+                                            <select name="away_team" class="form-select form-select-solid" required>
+                                                <option value="{{ match.away_team.id }}" selected>{{ match.away_team }}</option>
+                                                {% for item in teams %}
+                                                    <option value="{{ item.id }}">{{ item.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class=" form-label">{% translate 'Start Time' %}{% localtime on %}
-                                            {{ match.start_time }}{% endlocaltime %}||
-
-                                        {% translate 'UTC Time' %}{{  match.start_time|utc }}
-
-
-
-                                        </label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="datetime-local" class="form-control form-control-solid"
-                                               placeholder="{% translate 'Start Time' %}"
-
-                                               name="start_time"/>
-
-
-                                        <!--end::Input-->
+                                    
+                                    <!-- Venues & Round -->
+                                    <div class="d-flex flex-column flex-md-row gap-5">
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="required form-label">{% translate 'Venues' %}</label>
+                                            <select name="venues" class="form-select form-select-solid" required>
+                                                <option value="{{ match.venues }}" selected>{{ match.venues }}</option>
+                                                {% for value, text in matches_form.venues.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="required form-label">{% translate 'Round' %}</label>
+                                            <select name="round" class="form-select form-select-solid" required>
+                                                <option value="{{ match.round.id }}" selected>{{ match.round }}</option>
+                                                {% for value, text in matches_form.round.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Played & Start Time -->
+                                    <div class="d-flex flex-column flex-md-row gap-5">
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="required form-label">{% translate 'Match Played' %}</label>
+                                            <select name="played" class="form-select form-select-solid" required>
+                                                <option value="{{ match.played }}" selected>{{ match.played }}</option>
+                                                {% for value, text in matches_form.played.field.choices %}
+                                                    <option value="{{ value }}">{{ text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="fv-row flex-row-fluid">
+                                            <label class="form-label">{% translate 'Start Time' %}</label>
+                                            <input type="datetime-local" class="form-control form-control-solid"
+                                                   name="start_time" value="{{ match.start_time|date:'Y-m-d\TH:i' }}" />
+                                        </div>
                                     </div>
                                 </div>
-                                <!--end::Input group--> <!--begin::Input group-->
-
-
-                            </div>
-                            <!--end::Billing address-->
-                        </div>
-                        <!--end::Card body-->
-                        <div class="card-body pt-0">
-                            {% if form_show_errors %}
                             {% endif %}
-                            {% if matches_form.errors %}
-                                {% for error_field, error_message in matches_form.errors.items %}
-
-                                    <div class="alert alert-danger">
-                                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-
+                            
+                            <!-- Error Messages -->
+                            {% if form.errors %}
+                                <div class="alert alert-danger mt-5">
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <strong>{{ field }}:</strong> {{ error }}<br>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
                             {% endif %}
 
                             {% for message in messages %}
-                                {% if message.extra_tags == 'Match' %}
-                                    {% if message.tags == 'Match success' %}
-                                        <div class="alert alert-info">
-                                    {% elif message.tags == 'Match danger' %}
-                                        <div class="alert alert-danger">
-                                    {% endif %}
-                                {{ message.extra_tags|striptags }}: {{ message|striptags }}
-
+                                <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} mt-5">
+                                    {{ message }}
                                 </div>
-                                {% endif %}
                             {% endfor %}
-                            </div>
                         </div>
-                        <!--end::Order details-->
-                        <div class="d-flex justify-content-end">
-                            <!--begin::Button-->
-                            <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
-                               class="btn btn-light me-5">{% translate 'Cancel' %}</a>
-                            <!--end::Button-->
-                            <!--begin::Button-->
-                            <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                                <span class="indicator-label">{% translate 'Save' %}</span>
-                                <span class="indicator-progress">{% translate 'Please wait...' %}
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                            <!--end::Button-->
-                        </div>
+                        <!--end::Card body-->
                     </div>
-                    <!--end::Main column-->
+                    <!--end::Order details-->
+                    
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ prev_Page_link }}" class="btn btn-light me-5">{% translate 'Cancel' %}</a>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="indicator-label">{% translate 'Save Changes' %}</span>
+                            <span class="indicator-progress">{% translate 'Please wait...' %}
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <!--end::Main column-->
             </form>
             <!--end::Form-->
         </div>
         <!--end::Container-->
     </div>
     <!--end::Content-->
-
-
-
-
-
-
-
 {% endblock %}
-{% block custom_js %}
-
-
-
-
-{% endblock custom_js %}
-{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
-{% block js %} {% include BACKEND_JS %}  {% endblock %}
