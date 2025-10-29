@@ -2407,7 +2407,24 @@ def AdminFixtureAdd(request):
             fixture = Fixtures()
             fixture.name = name
             fixture.short_name = short_name
+            is_finished = request.POST.get('is_finished') == 'true'
             
+            if is_finished:
+                fixture.state_data = {
+                    "id": 5,
+                    "name": "Full Time",
+                    "state": "FT",
+                    "short_name": "FT",
+                    "developer_name": "FT"
+                }
+            else:
+                fixture.state_data = {
+                    "id": 1, 
+                    "name": "Not Started",
+                    "state": "NS",
+                    "short_name": "NS",
+                    "developer_name": "NS"
+                }
             # Optional fields
             sport_id = request.POST.get('sport')
             if sport_id:

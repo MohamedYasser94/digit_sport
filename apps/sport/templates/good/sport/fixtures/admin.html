@@ -234,7 +234,17 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="fv-row mb-7">
+                                <label class="required fs-6 fw-bold mb-2">{% translate 'Match Finished' %}</label>
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" v-model="fixtureForm.is_finished" value="true"/>
+                                    <span class="form-check-label">{% translate 'Yes' %}</span>
+                                </div>
+                                <div class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" v-model="fixtureForm.is_finished" value="false" checked/>
+                                    <span class="form-check-label">{% translate 'No' %}</span>
+                                </div>
+                            </div>
                             </div>
                             <!-- Error/Success Message -->
                             <div v-if="fixtureMessage" class="alert" :class="fixtureSuccess ? 'alert-success' : 'alert-danger'">
@@ -285,7 +295,8 @@
                     starting_at: '',
                     details: '',
                     home_team: '',
-                    away_team: ''
+                    away_team: '',
+                    is_finished: 'false',
                 },
                 sports: [],
                 leagues: [],
@@ -342,51 +353,6 @@
                 });
             },
             
-            addFixture: function() {
-                if (!this.fixtureForm.name || !this.fixtureForm.short_name) {
-                    this.fixtureSuccess = false;
-                    this.fixtureMessage = 'Name and Short Name are required.';
-                    return;
-                }
-
-                this.fixtureLoading = true;
-                this.fixtureMessage = '';
-
-                const url = "{% url 'sport:AdminFixtureAdd' %}";
-                const formData = new FormData();
-                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-                formData.append('name', this.fixtureForm.name);
-                formData.append('short_name', this.fixtureForm.short_name);
-                
-                if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
-                if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
-                if (this.fixtureForm.season) formData.append('season', this.fixtureForm.season);
-                if (this.fixtureForm.venue) formData.append('venue', this.fixtureForm.venue);
-                if (this.fixtureForm.starting_at) formData.append('starting_at', this.fixtureForm.starting_at);
-                if (this.fixtureForm.details) formData.append('details', this.fixtureForm.details);
-
-                fetch(url, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    this.fixtureLoading = false;
-                    this.fixtureSuccess = data.type === 'Success';
-                    this.fixtureMessage = data.message;
-                    
-                    if (this.fixtureSuccess) {
-                        setTimeout(() => location.reload(), 1500);
-                    }
-                })
-                .catch(error => {
-                    this.fixtureLoading = false;
-                    this.fixtureSuccess = false;
-                    this.fixtureMessage = 'An error occurred. Please try again.';
-                    console.error('Error:', error);
-                });
-            },
-
             validateTeams: function() {
                 if (this.fixtureForm.home_team && this.fixtureForm.away_team && 
                     this.fixtureForm.home_team === this.fixtureForm.away_team) {
@@ -422,6 +388,7 @@
                 formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
                 formData.append('name', this.fixtureForm.name);
                 formData.append('short_name', this.fixtureForm.short_name);
+                formData.append('is_finished', this.fixtureForm.is_finished);
                 
                 if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
                 if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
