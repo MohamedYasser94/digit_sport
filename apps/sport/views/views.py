@@ -2652,64 +2652,216 @@ def AdminMatchDetails(request, slug):
 def AdminMatchUpdate(request, slug):
     try:
         fixture = Fixtures.objects.get(slug=slug)
-        match = None
-        is_fixture = True
-        try:
-            match = Match.objects.get(fixture=fixture)
-        except Match.DoesNotExist:
-            pass
-            
     except Fixtures.DoesNotExist:
-        match = Match.objects.get(slug=slug)
-        fixture = match.fixture if match.fixture else None
-        is_fixture = False
+        messages.error(request, _("Fixture not found"), extra_tags='Fixture')
+        return redirect('sport:AdminMatchList')
+
+    # Get current participants
+    participants = FixtureParticipant.objects.filter(fixture=fixture)
+    home_participant = participants.filter(meta_location='home').first()
+    away_participant = participants.filter(meta_location='away').first()
 
     if request.method == "POST":
-        if is_fixture and fixture:
-            fixture_form = AdminFixturesForm(request.POST, instance=fixture)
-            if fixture_form.is_valid():
-                fixture_form.save()
-                messages.success(request, _("Fixture updated successfully"), extra_tags='Fixture')
-                return redirect('sport:AdminMatchList')
+        try:
+            # Update basic fixture data
+            fixture.name = request.POST.get('name')
+            fixture.short_name = request.POST.get('short_name')
+            
+            # Update optional fields
+            sport_id = request.POST.get('sport')
+            if sport_id:
+                try:
+                    fixture.sport = Sport.objects.get(id=sport_id)
+                except Sport.DoesNotExist:
+                    fixture.sport = None
             else:
-                messages.error(request, _("Error updating fixture"), extra_tags='Fixture')
-        elif match:
-            matches_form = AdminMatchForm(request.POST, instance=match)
-            if matches_form.is_valid():
-                matches_form.save()
-                messages.success(request, _("Match updated successfully"), extra_tags='Match')
-                return redirect('sport:AdminMatchList')
+                fixture.sport = None
+            
+            league_id = request.POST.get('league')
+            if league_id:
+                try:
+                    fixture.league = Leagues.objects.get(id=league_id)
+                except Leagues.DoesNotExist:
+                    fixture.league = None
+            else:
+                fixture.league = None
+            
+            season_id = request.POST.get('season')
+            if season_id:
+                try:
+                    fixture.season = Season.objects.get(id=season_id)
+                except Season.DoesNotExist:
+                    fixture.season = None
+            else:
+                fixture.season = None
+            
+            venue_id = request.POST.get('venue')
+            if venue_id:
+                try:
+                    fixture.venue = Venues.objects.get(id=venue_id)
+                except Venues.DoesNotExist:
+                    fixture.venue = None
+            else:
+                fixture.venue = None
+            
+            # Update starting_at
+            starting_at = request.POST.get('starting_at')
+            if starting_at:
+                fixture.starting_at = starting_at
+            else:
+                fixture.starting_at = None
+            
+            # Update details
+            details = request.POST.get('details')
+            fixture.details = details if details else None
+            
+            # Get teams
+            home_team_id = request.POST.get('home_team')
+            away_team_id = request.POST.get('away_team')
+            
+            if not home_team_id or not away_team_id:
+                messages.error(request, _("Both Home Team and Away Team are required"), extra_tags='Fixture')
+                return redirect('sport:AdminMatchUpdate', slug=slug)
+            
+            if home_team_id == away_team_id:
+                messages.error(request, _("Home Team and Away Team cannot be the same"), extra_tags='Fixture')
+                return redirect('sport:AdminMatchUpdate', slug=slug)
+            
+            try:
+                home_team = Teams.objects.get(id=home_team_id)
+                away_team = Teams.objects.get(id=away_team_id)
+            except Teams.DoesNotExist:
+                messages.error(request, _("Selected team not found"), extra_tags='Fixture')
+                return redirect('sport:AdminMatchUpdate', slug=slug)
+            
+            # Update is_finished state
+            is_finished = request.POST.get('is_finished') == 'true'
+            
+            if is_finished:
+                # Match is finished - update state and scores
+                fixture.state_data = {
+                    "id": 5,
+                    "name": "Full Time",
+                    "state": "FT",
+                    "short_name": "FT",
+                    "developer_name": "FT"
+                }
+                
+                # Get and validate goals
+                home_goals = request.POST.get('home_goals')
+                away_goals = request.POST.get('away_goals')
+                
+                if home_goals is None or away_goals is None or home_goals == '' or away_goals == '':
+                    messages.error(request, _("Please provide scores for both teams when match is finished"), extra_tags='Fixture')
+                    return redirect('sport:AdminMatchUpdate', slug=slug)
+                
+                try:
+                    home_goals = int(home_goals)
+                    away_goals = int(away_goals)
+                    
+                    if home_goals < 0 or away_goals < 0:
+                        messages.error(request, _("Goals cannot be negative"), extra_tags='Fixture')
+                        return redirect('sport:AdminMatchUpdate', slug=slug)
+                    
+                    # Update scores
+                    fixture.scores = [
+                        {
+                            "id": home_team.id,
+                            "score": {
+                                "goals": home_goals,
+                                "participant_name": home_team.name,
+                                "meta_location": "home"
+                            }
+                        },
+                        {
+                            "id": away_team.id,
+                            "score": {
+                                "goals": away_goals,
+                                "participant_name": away_team.name,
+                                "meta_location": "away"
+                            }
+                        }
+                    ]
+                    
+                except ValueError:
+                    messages.error(request, _("Invalid goal values. Please enter valid numbers"), extra_tags='Fixture')
+                    return redirect('sport:AdminMatchUpdate', slug=slug)
+            else:
+                # Match not finished - clear scores and set state to Not Started
+                fixture.state_data = {
+                    "id": 1,
+                    "name": "Not Started",
+                    "state": "NS",
+                    "short_name": "NS",
+                    "developer_name": "NS"
+                }
+                fixture.scores = None
+            
+            # Save fixture
+            fixture.save()
+            
+            # Update participants
+            # Delete old participants
+            FixtureParticipant.objects.filter(fixture=fixture).delete()
+            
+            # Create new participants
+            FixtureParticipant.objects.create(
+                fixture=fixture,
+                team=home_team,
+                meta_location='home'
+            )
+            
+            FixtureParticipant.objects.create(
+                fixture=fixture,
+                team=away_team,
+                meta_location='away'
+            )
+            
+            messages.success(request, _("Fixture updated successfully"), extra_tags='Fixture')
+            return redirect('sport:AdminMatchList')
+            
+        except Exception as e:
+            messages.error(request, _(f"Error updating fixture: {str(e)}"), extra_tags='Fixture')
+            return redirect('sport:AdminMatchUpdate', slug=slug)
     
+    # GET request - display form
+    # Get dropdown data
     sports = Sport.objects.all()
     leagues = Leagues.objects.all()
     seasons = Season.objects.all()
     venues = Venues.objects.all()
     teams = Teams.objects.all()
-
-    if is_fixture:
-        form = AdminFixturesForm(instance=fixture)
-        context = {
-            'fixture': fixture,
-            'form': form,
-            'is_fixture': True,
-            'sports': sports,
-            'leagues': leagues,
-            'seasons': seasons,
-            'venues': venues,
-            'current_page': _('Update Fixture'),
-            'prev_Page': _('Fixtures'),
-            'prev_Page_link': reverse_lazy('sport:AdminMatchList'),
-        }
-    else:
-        context = {
-            'match': match,
-            'matches_form': AdminMatchForm(instance=match),
-            'is_fixture': False,
-            'teams': teams,
-            'current_page': _('Update Match'),
-            'prev_Page': _('Matches'),
-            'prev_Page_link': reverse_lazy('sport:AdminMatchList'),
-        }
+    
+    # Get current scores if match is finished
+    current_scores = {
+        'home_goals': 0,
+        'away_goals': 0,
+        'is_finished': False
+    }
+    
+    if fixture.state_data and fixture.state_data.get('state') == 'FT':
+        current_scores['is_finished'] = True
+        if fixture.scores:
+            for score_data in fixture.scores:
+                if score_data.get('score', {}).get('meta_location') == 'home':
+                    current_scores['home_goals'] = score_data.get('score', {}).get('goals', 0)
+                elif score_data.get('score', {}).get('meta_location') == 'away':
+                    current_scores['away_goals'] = score_data.get('score', {}).get('goals', 0)
+    
+    context = {
+        'fixture': fixture,
+        'home_team': home_participant.team if home_participant else None,
+        'away_team': away_participant.team if away_participant else None,
+        'current_scores': current_scores,
+        'sports': sports,
+        'leagues': leagues,
+        'seasons': seasons,
+        'venues': venues,
+        'teams': teams,
+        'current_page': _('Update Fixture'),
+        'prev_Page': _('Fixtures'),
+        'prev_Page_link': reverse_lazy('sport:AdminMatchList'),
+    }
     
     return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/update.html', context)
 
