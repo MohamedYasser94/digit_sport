@@ -2462,6 +2462,62 @@ def AdminFixtureAdd(request):
             if details:
                 fixture.details = details
             
+            try:
+                home_team = Teams.objects.get(id=home_team_id)
+                away_team = Teams.objects.get(id=away_team_id)
+            except Teams.DoesNotExist as e:
+                return JsonResponse({
+                    'type': 'Error', 
+                    'message': f'Team not found: {str(e)}'
+                }, status=400)
+            
+            if is_finished:
+                home_goals = request.POST.get('home_goals')
+                away_goals = request.POST.get('away_goals')
+                
+                if home_goals is None or away_goals is None:
+                    return JsonResponse({
+                        'type': 'Error', 
+                        'message': 'Please provide scores for both teams when match is finished.'
+                    }, status=400)
+                
+                try:
+                    home_goals = int(home_goals)
+                    away_goals = int(away_goals)
+                    
+                    if home_goals < 0 or away_goals < 0:
+                        return JsonResponse({
+                            'type': 'Error', 
+                            'message': 'Goals cannot be negative.'
+                        }, status=400)
+                    
+                    fixture.scores = [
+                        {
+                            "id": home_team.id,
+                            "score": {
+                                "goals": home_goals,
+                                "participant_name": home_team.name,
+                                "meta_location": "home"
+                            }
+                        },
+                        {
+                            "id": away_team.id,
+                            "score": {
+                                "goals": away_goals,
+                                "participant_name": away_team.name,
+                                "meta_location": "away"
+                            }
+                        }
+                    ]
+                    
+                except ValueError:
+                    return JsonResponse({
+                        'type': 'Error', 
+                        'message': 'Invalid goal values. Please enter valid numbers.'
+                    }, status=400)
+            else:
+                fixture.scores = None
+
             fixture.save()
             
             if home_team_id:
