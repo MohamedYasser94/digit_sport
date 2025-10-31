@@ -403,16 +403,16 @@ def AdminMonksFixturesGetData(request):
 
 def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
     """
-    Fetches fixtures and intelligently fetches any missing related data.
-    FIXED: Now correctly handles timezone conversion.
+    Fetches fixtures from Sportmonks API only for football.
+    For other sports, returns True (success) to use manually added data.
     """
     includes = "league;season;participants;state;scores;periods;events"
-    next_page_url = base_url + f'{sport}/fixtures/date/{fetch_date_str}?api_token={api_key}&include={includes}'
+    next_page_url = base_url + f'football/fixtures/date/{fetch_date_str}?api_token={api_key}&include={includes}'
 
     try:
-        sport_obj = Sport.objects.get(name__iexact=sport)
+        sport_obj = Sport.objects.get(name__iexact='football')
     except Sport.DoesNotExist:
-        print(f"Sport '{sport}' not found in DB.")
+        print(f"Sport 'football' not found in DB.")
         return False
 
     while next_page_url:
@@ -435,11 +435,18 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                 season_data = fixture_data.get('season')
                 if not season_data: continue
 
-                season_defaults = {'name': season_data.get('name'), 'league': league,
-                                   'is_current': season_data.get('is_current', False),
-                                   'starting_at': season_data.get('starting_at'),
-                                   'ending_at': season_data.get('ending_at')}
-                season, _ = Season.objects.update_or_create(api_id=season_data['id'], defaults=season_defaults)
+                season_defaults = {
+                    'name': season_data.get('name'), 
+                    'league': league,
+                    'is_current': season_data.get('is_current', False),
+                    'starting_at': season_data.get('starting_at'),
+                    'ending_at': season_data.get('ending_at')
+                }
+                season, _ = Season.objects.update_or_create(
+                    api_id=season_data['id'], 
+                    defaults=season_defaults
+                )
+                
                 scores_data = fixture_data.get('scores', [])
                 state_data = fixture_data.get('state', {}) or {}
                 periods_data = fixture_data.get('periods', []) or []
@@ -448,17 +455,23 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                 filtered_events = [
                     event for event in all_events_data 
                     if event.get('type_id') in [20, 21]
-                    ]
-                api_defaults = {'league': league, 'season': season, 'name': fixture_data.get('name'),
-                                'leg': fixture_data.get('leg'), 'result_info': fixture_data.get('result_info'),
-                                'scores': scores_data,
-                                'state': state_data.get('state'),   # short string (e.g. FT)
-                                'state_data': state_data,
-                                'events': filtered_events,
-                                'periods': periods_data}            # full JSON object}
+                ]
+                
+                api_defaults = {
+                    'sport': sport_obj,  # This links the fixture to football sport
+                    'league': league, 
+                    'season': season, 
+                    'name': fixture_data.get('name'),
+                    'leg': fixture_data.get('leg'), 
+                    'result_info': fixture_data.get('result_info'),
+                    'scores': scores_data,
+                    'state': state_data.get('state'),
+                    'state_data': state_data,
+                    'events': filtered_events,
+                    'periods': periods_data
+                }
 
-
-                # <<< FIX: Correctly parse and make datetime timezone-aware >>>
+                # Handle datetime conversion
                 dt_str = fixture_data.get('starting_at')
                 if dt_str:
                     try:
@@ -470,8 +483,12 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                     except (ValueError, TypeError):
                         pass
 
-                fixture_obj, _ = Fixtures.objects.update_or_create(api_id=fixture_data['id'], defaults=api_defaults)
+                fixture_obj, _ = Fixtures.objects.update_or_create(
+                    api_id=fixture_data['id'], 
+                    defaults=api_defaults
+                )
 
+                # Handle participants
                 fixture_obj.participants.all().delete()
                 for participant_data in fixture_data.get('participants', []):
                     team_id = participant_data.get('id')
@@ -480,15 +497,18 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                         team = _fetch_and_store_single_team(team_id, sport_obj)
 
                     if team:
-                        FixtureParticipant.objects.create(fixture=fixture_obj, team=team, api_id=team_id,
-                                                          meta_location=participant_data.get('meta', {}).get(
-                                                              'location'))
+                        FixtureParticipant.objects.create(
+                            fixture=fixture_obj, 
+                            team=team, 
+                            api_id=team_id,
+                            meta_location=participant_data.get('meta', {}).get('location')
+                        )
 
             pagination = data.get('pagination', {})
             next_page_url = f"{pagination.get('next_page')}&api_token={api_key}" if pagination.get('has_more') else None
 
         except Exception as e:
-            print(f"An error occurred during fixture processing: {str(e)}")
+            print(f"An error occurred during football fixture processing: {str(e)}")
             import traceback
             traceback.print_exc()
             return False

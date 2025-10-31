@@ -3,236 +3,427 @@
 {% load static %}
 {% load i18n %}
 
-
 {% block body %}
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <div id="kt_content_container" class="container-fluid">
+        <form id="kt_ecommerce_edit_fixture_form" class="form d-flex flex-column flex-lg-row" 
+              action="{% url 'sport:AdminMatchUpdate' fixture.slug %}"
+              method="post" 
+              @submit="handleSubmit">
+            {% csrf_token %}
 
-    <!--end::Header-->
-    <!--begin::Content-->
-    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Container-->
-        <div id="kt_content_container" class="container-fluid">
-            <!--begin::Form-->
-            <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-                  enctype="multipart/form-data" action="{% url 'sport:AdminMatchUpdate' match.slug %}"
-                  method="post">
-                {% csrf_token %}
-
-                <!--begin::Main column-->
-                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-
-                    <!--begin::Order details-->
-                    <div class="card card-flush py-4">
-                        <!--begin::Card header-->
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2>{% translate 'players' %}</h2>
-                            </div>
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-0">
-                            <!--begin::Billing address-->
-                            <div class="d-flex flex-column gap-5 gap-md-7">
-                                <!--begin::Title-->
-                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
-                                <!--end::Title-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Home Team' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="home_team" aria-label="{% translate 'Home Team' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Home Team' %}"
-
-                                                data-allow-clear="true" required
-
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.home_team.id }}"
-                                                    selected="">{{ match.home_team.name }}</option>
-                                            {% for item in teams %}
-                                                <option value="{{ item.id }}">{{ item.name }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
-                                    </div>
-                                    <div class="flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="form-label">{% translate 'Away Team' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="away_team" aria-label="{% translate 'Away Team' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Away Team' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.away_team.id }}"
-                                                    selected="">{{ match.away_team }}</option>
-                                            {% for item in teams %}
-                                                <option value="{{ item.id }}">{{ item.name }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
-                                    </div>
-                                </div>
-                                <!--end::Input group-->
-
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Venues' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="venues" aria-label="{% translate 'Venues' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Venues' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.venues }}" selected="">{{ match.venues }}</option>
-                                            {% for value, text in matches_form.venues.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
-                                    </div>
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Round' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="round" aria-label="{% translate 'Round' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Round' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.round.id }}" selected="">{{ match.round }}</option>
-                                            {% for value, text in matches_form.round.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-
-
-                                        <!--end::Input-->
-                                    </div>
-                                </div>
-                                <!--end::Input group--> <!--begin::Input group-->
-                                <!--begin::Input group-->
-                                <div class="d-flex flex-column flex-md-row gap-5">
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class="required form-label">{% translate 'Match Played' %}</label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <select name="played" aria-label="{% translate 'Match Played' %}"
-                                                data-control="select2" data-placeholder="{% translate 'Match Played' %}"
-
-                                                data-allow-clear="true" required
-                                                class="form-select form-select-solid fw-bolder">
-                                            <option value="{{ match.played }}" selected="">{{ match.played }}</option>
-                                            {% for value, text in matches_form.played.field.choices %}
-                                                <option value="{{ value }}">{{ text }}</option>
-                                            {% endfor %}
-
-                                        </select>
-                                        <!--end::Input-->
-                                    </div>
-                                    <div class="fv-row flex-row-fluid">
-                                        <!--begin::Label-->
-                                        <label class=" form-label">{% translate 'Start Time' %}{% localtime on %}
-                                            {{ match.start_time }}{% endlocaltime %}||
-
-                                        {% translate 'UTC Time' %}{{  match.start_time|utc }}
-
-
-
-                                        </label>
-                                        <!--end::Label-->
-                                        <!--begin::Input-->
-                                        <input type="datetime-local" class="form-control form-control-solid"
-                                               placeholder="{% translate 'Start Time' %}"
-
-                                               name="start_time"/>
-
-
-                                        <!--end::Input-->
-                                    </div>
-                                </div>
-                                <!--end::Input group--> <!--begin::Input group-->
-
-
-                            </div>
-                            <!--end::Billing address-->
-                        </div>
-                        <!--end::Card body-->
-                        <div class="card-body pt-0">
-                            {% if form_show_errors %}
-                            {% endif %}
-                            {% if matches_form.errors %}
-                                {% for error_field, error_message in matches_form.errors.items %}
-
-                                    <div class="alert alert-danger">
-                                        {{ error_field|striptags }}: {{ error_message|striptags }}
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                {% endfor %}
-
-                            {% endif %}
-
-                            {% for message in messages %}
-                                {% if message.extra_tags == 'Match' %}
-                                    {% if message.tags == 'Match success' %}
-                                        <div class="alert alert-info">
-                                    {% elif message.tags == 'Match danger' %}
-                                        <div class="alert alert-danger">
-                                    {% endif %}
-                                {{ message.extra_tags|striptags }}: {{ message|striptags }}
-
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-                        </div>
-                        <!--end::Order details-->
-                        <div class="d-flex justify-content-end">
-                            <!--begin::Button-->
-                            <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
-                               class="btn btn-light me-5">{% translate 'Cancel' %}</a>
-                            <!--end::Button-->
-                            <!--begin::Button-->
-                            <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                                <span class="indicator-label">{% translate 'Save' %}</span>
-                                <span class="indicator-progress">{% translate 'Please wait...' %}
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                            <!--end::Button-->
+            <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+                <!-- Main Card -->
+                <div class="card card-flush py-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>{% translate 'Update Fixture' %}</h2>
                         </div>
                     </div>
-                    <!--end::Main column-->
-            </form>
-            <!--end::Form-->
-        </div>
-        <!--end::Container-->
+                    
+                    <div class="card-body pt-0">
+                        <div class="d-flex flex-column gap-5 gap-md-7">
+                            
+                            <!-- Basic Information -->
+                            <div>
+                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                    <i class="ki-duotone ki-information-5 fs-2 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    {% translate 'Basic Information' %}
+                                </div>
+                                
+                                <!-- Name & Short Name -->
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <label class="required form-label fw-bold">{% translate 'Fixture Name' %}</label>
+                                        <input type="text" 
+                                               name="name" 
+                                               class="form-control form-control-solid" 
+                                               value="{{ fixture.name }}" 
+                                               placeholder="{% translate 'Enter fixture name' %}"
+                                               required />
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="required form-label fw-bold">{% translate 'Short Name' %}</label>
+                                        <input type="text" 
+                                               name="short_name" 
+                                               class="form-control form-control-solid" 
+                                               value="{{ fixture.short_name }}" 
+                                               placeholder="{% translate 'Enter short name' %}"
+                                               required />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Associations -->
+                            <div>
+                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                    <i class="ki-duotone ki-category fs-2 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                    {% translate 'Associations' %}
+                                </div>
+                                
+                                <!-- Sport & League -->
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'Sport' %}</label>
+                                        <select name="sport" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select Sport' %}</option>
+                                            {% for sport in sports %}
+                                                <option value="{{ sport.id }}" 
+                                                    {% if fixture.sport and fixture.sport.id == sport.id %}selected{% endif %}>
+                                                    {{ sport.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'League' %}</label>
+                                        <select name="league" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select League' %}</option>
+                                            {% for league in leagues %}
+                                                <option value="{{ league.id }}" 
+                                                    {% if fixture.league and fixture.league.id == league.id %}selected{% endif %}>
+                                                    {{ league.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Season & Venue -->
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'Season' %}</label>
+                                        <select name="season" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select Season' %}</option>
+                                            {% for season in seasons %}
+                                                <option value="{{ season.id }}" 
+                                                    {% if fixture.season and fixture.season.id == season.id %}selected{% endif %}>
+                                                    {{ season.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'Venue' %}</label>
+                                        <select name="venue" class="form-select form-select-solid">
+                                            <option value="">{% translate 'Select Venue' %}</option>
+                                            {% for venue in venues %}
+                                                <option value="{{ venue.id }}" 
+                                                    {% if fixture.venue and fixture.venue.id == venue.id %}selected{% endif %}>
+                                                    {{ venue.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Schedule & Details -->
+                            <div>
+                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                    <i class="ki-duotone ki-calendar fs-2 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    {% translate 'Schedule & Details' %}
+                                </div>
+                                
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'Starting At' %}</label>
+                                        <input type="datetime-local" 
+                                               name="starting_at" 
+                                               class="form-control form-control-solid" 
+                                               value="{% if fixture.starting_at %}{{ fixture.starting_at|date:'Y-m-d\TH:i' }}{% endif %}" />
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">{% translate 'Details' %}</label>
+                                        <textarea name="details" 
+                                                  class="form-control form-control-solid" 
+                                                  rows="2" 
+                                                  placeholder="{% translate 'Enter fixture details' %}">{{ fixture.details }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Teams -->
+                            <div>
+                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                    <i class="ki-duotone ki-shield fs-2 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    {% translate 'Teams' %}
+                                </div>
+                                
+                                <div class="row g-5 mb-5">
+                                    <div class="col-md-6">
+                                        <label class="required form-label fw-bold text-primary">
+                                            <i class="ki-duotone ki-home fs-3 me-1">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            {% translate 'Home Team' %}
+                                        </label>
+                                        <select name="home_team" 
+                                                class="form-select form-select-solid" 
+                                                required>
+                                            <option value="">{% translate 'Select Home Team' %}</option>
+                                            {% for team in teams %}
+                                                <option value="{{ team.id }}" 
+                                                    {% if home_team and home_team.id == team.id %}selected{% endif %}>
+                                                    {{ team.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="required form-label fw-bold text-danger">
+                                            <i class="ki-duotone ki-compass fs-3 me-1">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            {% translate 'Away Team' %}
+                                        </label>
+                                        <select name="away_team" 
+                                                class="form-select form-select-solid" 
+                                                required>
+                                            <option value="">{% translate 'Select Away Team' %}</option>
+                                            {% for team in teams %}
+                                                <option value="{{ team.id }}" 
+                                                    {% if away_team and away_team.id == team.id %}selected{% endif %}>
+                                                    {{ team.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Match Status -->
+                            <div>
+                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                    <i class="ki-duotone ki-flag fs-2 me-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    {% translate 'Match Status' %}
+                                </div>
+                                
+                                <div class="mb-5">
+                                    <label class="required form-label fw-bold mb-3">{% translate 'Match Finished?' %}</label>
+                                    <div class="d-flex align-items-center gap-5">
+                                        <label class="form-check form-check-custom form-check-solid">
+                                            <input class="form-check-input" 
+                                                   type="radio" 
+                                                   name="is_finished" 
+                                                   value="true" 
+                                                   id="finished_yes"
+                                                   {% if current_scores.is_finished %}checked{% endif %}
+                                                   onchange="toggleScoresSection(true)">
+                                            <span class="form-check-label fw-bold text-success">
+                                                <i class="ki-duotone ki-check-circle fs-2 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                {% translate 'Yes' %}
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="form-check form-check-custom form-check-solid">
+                                            <input class="form-check-input" 
+                                                   type="radio" 
+                                                   name="is_finished" 
+                                                   value="false" 
+                                                   id="finished_no"
+                                                   {% if not current_scores.is_finished %}checked{% endif %}
+                                                   onchange="toggleScoresSection(false)">
+                                            <span class="form-check-label fw-bold text-muted">
+                                                <i class="ki-duotone ki-cross-circle fs-2 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                {% translate 'No' %}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Scores Section -->
+                                <div id="scores_section" 
+                                     class="border rounded p-5 bg-light-primary" 
+                                     style="display: {% if current_scores.is_finished %}block{% else %}none{% endif %};">
+                                    <h6 class="fw-bold mb-4 text-gray-800">
+                                        <i class="ki-duotone ki-chart-simple fs-2 me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                        </i>
+                                        {% translate 'Final Score' %}
+                                    </h6>
+                                    
+                                    <div class="row g-5 align-items-center">
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-bold text-primary mb-2">
+                                                {% translate 'Home Goals' %}
+                                            </label>
+                                            <input type="number" 
+                                                   name="home_goals" 
+                                                   id="home_goals"
+                                                   class="form-control form-control-solid form-control-lg text-center fs-2 fw-bolder" 
+                                                   min="0" 
+                                                   value="{{ current_scores.home_goals }}"
+                                                   placeholder="0" />
+                                        </div>
+                                        
+                                        <div class="col-md-2 text-center">
+                                            <div class="fs-1 fw-bolder text-gray-600">VS</div>
+                                        </div>
+                                        
+                                        <div class="col-md-5">
+                                            <label class="form-label fw-bold text-danger mb-2">
+                                                {% translate 'Away Goals' %}
+                                            </label>
+                                            <input type="number" 
+                                                   name="away_goals" 
+                                                   id="away_goals"
+                                                   class="form-control form-control-solid form-control-lg text-center fs-2 fw-bolder" 
+                                                   min="0" 
+                                                   value="{{ current_scores.away_goals }}"
+                                                   placeholder="0" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Messages -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} d-flex align-items-center">
+                                        <i class="ki-duotone ki-shield-tick fs-2hx me-4">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        <div class="d-flex flex-column">
+                                            <span>{{ message }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="{{ prev_Page_link }}" class="btn btn-light btn-active-light-primary">
+                        <i class="ki-duotone ki-arrow-left fs-2 me-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                        {% translate 'Cancel' %}
+                    </a>
+                    
+                    <button type="submit" class="btn btn-primary" id="submit_btn">
+                        <span class="indicator-label">
+                            <i class="ki-duotone ki-check fs-2 me-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            {% translate 'Save Changes' %}
+                        </span>
+                        <span class="indicator-progress">
+                            {% translate 'Please wait...' %}
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-    <!--end::Content-->
+</div>
 
+<script>
+function toggleScoresSection(show) {
+    const scoresSection = document.getElementById('scores_section');
+    const homeGoals = document.getElementById('home_goals');
+    const awayGoals = document.getElementById('away_goals');
+    
+    if (show) {
+        scoresSection.style.display = 'block';
+        homeGoals.required = true;
+        awayGoals.required = true;
+    } else {
+        scoresSection.style.display = 'none';
+        homeGoals.required = false;
+        awayGoals.required = false;
+        homeGoals.value = '0';
+        awayGoals.value = '0';
+    }
+}
 
+// Form submission handler
+document.getElementById('kt_ecommerce_edit_fixture_form').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submit_btn');
+    const homeTeam = document.querySelector('select[name="home_team"]').value;
+    const awayTeam = document.querySelector('select[name="away_team"]').value;
+    const isFinished = document.querySelector('input[name="is_finished"]:checked').value === 'true';
+    
+    // Validate teams
+    if (!homeTeam || !awayTeam) {
+        e.preventDefault();
+        alert('{% translate "Please select both Home Team and Away Team" %}');
+        return false;
+    }
+    
+    if (homeTeam === awayTeam) {
+        e.preventDefault();
+        alert('{% translate "Home Team and Away Team cannot be the same" %}');
+        return false;
+    }
+    
+    // Validate scores if match is finished
+    if (isFinished) {
+        const homeGoals = document.getElementById('home_goals').value;
+        const awayGoals = document.getElementById('away_goals').value;
+        
+        if (homeGoals === '' || awayGoals === '') {
+            e.preventDefault();
+            alert('{% translate "Please enter scores for both teams when match is finished" %}');
+            return false;
+        }
+        
+        if (parseInt(homeGoals) < 0 || parseInt(awayGoals) < 0) {
+            e.preventDefault();
+            alert('{% translate "Goals cannot be negative" %}');
+            return false;
+        }
+    }
+    
+    // Show loading state
+    submitBtn.setAttribute('data-kt-indicator', 'on');
+    submitBtn.disabled = true;
+});
 
-
-
-
-
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const isFinished = document.getElementById('finished_yes').checked;
+    toggleScoresSection(isFinished);
+});
+</script>
 {% endblock %}
-{% block custom_js %}
-
-
-
-
-{% endblock custom_js %}
-{% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
-{% block js %} {% include BACKEND_JS %}  {% endblock %}

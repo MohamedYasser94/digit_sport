@@ -129,6 +129,7 @@ urlpatterns = [
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),
+    path('fixture/add/', views.AdminFixtureAdd, name='AdminFixtureAdd'),
 
     path('match/details/<slug:slug>/', views.AdminMatchDetails, name='AdminMatchDetails'),
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),

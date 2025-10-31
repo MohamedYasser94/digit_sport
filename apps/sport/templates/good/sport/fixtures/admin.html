@@ -1,7 +1,6 @@
 {% extends BACKEND_BASE %}
 {% load static %}
 {% load i18n %}
-
 {% block body %}
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid" id="monkfixtures-app"> <div id="kt_app_content" class="app-content flex-column-fluid">
@@ -42,7 +41,31 @@
                                     <td>{{ item.league.name|default:"N/A" }}</td>
                                     <td>{{ item.starting_at|date:"Y-m-d H:i" }}</td>
                                     <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary">Actions</a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light btn-active-light-primary dropdown-toggle" 
+                                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                {% translate 'Actions' %}
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item text-warning" 
+                                                    href="{% url 'sport:AdminMatchUpdate' item.slug %}">
+                                                    <i class="ki-duotone ki-pencil fs-3 me-2"></i>
+                                                    {% translate 'Edit' %}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form method="post" action="{% url 'sport:AdminMatchDelete' item.slug %}" 
+                                                        class="d-inline delete-form" data-item-name="{{ item.name }}">
+                                                        {% csrf_token %}
+                                                        <button type="button" class="dropdown-item text-danger delete-btn">
+                                                            <i class="ki-duotone ki-trash fs-3 me-2"></i>
+                                                            {% translate 'Delete' %}
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -112,7 +135,146 @@
             </div>
         </div>
         <div class="modal fade" id="kt_modal_add_fixture" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered mw-800px">
+            <div class="modal-content rounded-3 shadow-lg">
+            <form id="kt_form_add_fixture" class="form" @submit.prevent="addFixture">
+                {% csrf_token %}
+                <div class="modal-header border-0 pb-0">
+                <h2 class="fw-bold text-primary">{% translate 'Add New Fixture' %}</h2>
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">
+                    <i class="ki-duotone ki-cross fs-2"></i>
+                </button>
+                </div>
+
+                <div class="modal-body px-10 py-5">
+                <!-- Basic Info -->
+                <h5 class="fw-semibold mb-4 text-gray-700">{% translate 'Basic Information' %}</h5>
+                <div class="row g-5">
+                    <div class="col-md-6">
+                    <label class="required fw-bold mb-1">{% translate 'Fixture Name' %}</label>
+                    <input type="text" v-model="fixtureForm.name" class="form-control form-control-solid" placeholder="{% translate 'Enter fixture name' %}" required />
+                    </div>
+                    <div class="col-md-6">
+                    <label class="required fw-bold mb-1">{% translate 'Short Name' %}</label>
+                    <input type="text" v-model="fixtureForm.short_name" class="form-control form-control-solid" placeholder="{% translate 'Enter short name' %}" required />
+                    </div>
+                </div>
+
+                <!-- Associations -->
+                <h5 class="fw-semibold mt-7 mb-4 text-gray-700">{% translate 'Associations' %}</h5>
+                <div class="row g-5">
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'Sport' %}</label>
+                    <select v-model="fixtureForm.sport" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select Sport' %}</option>
+                        <option v-for="sport in sports" :value="sport.id">[[ sport.name ]]</option>
+                    </select>
+                    </div>
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'League' %}</label>
+                    <select v-model="fixtureForm.league" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select League' %}</option>
+                        <option v-for="league in leagues" :value="league.id">[[ league.name ]]</option>
+                    </select>
+                    </div>
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'Season' %}</label>
+                    <select v-model="fixtureForm.season" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select Season' %}</option>
+                        <option v-for="season in seasons" :value="season.id">[[ season.name ]]</option>
+                    </select>
+                    </div>
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'Venue' %}</label>
+                    <select v-model="fixtureForm.venue" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select Venue' %}</option>
+                        <option v-for="venue in venues" :value="venue.id">[[ venue.name ]]</option>
+                    </select>
+                    </div>
+                </div>
+
+                <!-- Timing & Details -->
+                <h5 class="fw-semibold mt-7 mb-4 text-gray-700">{% translate 'Schedule & Details' %}</h5>
+                <div class="row g-5">
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'Starting At' %}</label>
+                    <input type="datetime-local" v-model="fixtureForm.starting_at" class="form-control form-control-solid" />
+                    </div>
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1">{% translate 'Details' %}</label>
+                    <textarea v-model="fixtureForm.details" class="form-control form-control-solid" rows="2" placeholder="{% translate 'Enter fixture details' %}"></textarea>
+                    </div>
+                </div>
+
+                <!-- Teams -->
+                <h5 class="fw-semibold mt-7 mb-4 text-gray-700">{% translate 'Teams' %}</h5>
+                <div class="row g-5">
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1 text-primary">{% translate 'Home Team' %}</label>
+                    <select v-model="fixtureForm.home_team" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select Home Team' %}</option>
+                        <option v-for="team in teams" :value="team.id">[[ team.name ]]</option>
+                    </select>
+                    </div>
+                    <div class="col-md-6">
+                    <label class="fw-bold mb-1 text-danger">{% translate 'Away Team' %}</label>
+                    <select v-model="fixtureForm.away_team" class="form-select form-select-solid">
+                        <option value="">{% translate 'Select Away Team' %}</option>
+                        <option v-for="team in teams" :value="team.id">[[ team.name ]]</option>
+                    </select>
+                    </div>
+                </div>
+
+                <!-- Match Finished -->
+                <div class="mt-7">
+                    <label class="required fw-bold mb-2">{% translate 'Match Finished?' %}</label>
+                    <div class="d-flex align-items-center gap-5">
+                    <label class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="fixtureForm.is_finished" value="true" @change="onFinishedChange">
+                        <span class="form-check-label text-success">{% translate 'Yes' %}</span>
+                    </label>
+                    <label class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" v-model="fixtureForm.is_finished" value="false" @change="onFinishedChange" checked>
+                        <span class="form-check-label text-muted">{% translate 'No' %}</span>
+                    </label>
+                    </div>
+                </div>
+
+                <!-- Scores Section -->
+                <transition name="fade">
+                    <div v-if="fixtureForm.is_finished === 'true'" class="mt-6 border rounded p-5 bg-light">
+                    <h6 class="fw-bold mb-3 text-gray-700">{% translate 'Final Score' %}</h6>
+                    <div class="row g-5 align-items-center">
+                        <div class="col-md-5 text-end">
+                        <span class="fw-bold text-primary">[[ getTeamName(fixtureForm.home_team) || '{% translate "Home Team" %}' ]]</span>
+                        <input type="number" v-model.number="fixtureForm.home_goals" class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" min="0" placeholder="0" />
+                        </div>
+                        <div class="col-md-2 text-center fs-3 fw-bolder">-</div>
+                        <div class="col-md-5">
+                        <span class="fw-bold text-danger">[[ getTeamName(fixtureForm.away_team) || '{% translate "Away Team" %}' ]]</span>
+                        <input type="number" v-model.number="fixtureForm.away_goals" class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                    </div>
+                </transition>
+
+                <!-- Messages -->
+                <div v-if="fixtureMessage" class="alert mt-5" :class="fixtureSuccess ? 'alert-success' : 'alert-danger'">
+                    [[ fixtureMessage ]]
+                </div>
+                </div>
+
+                <div class="modal-footer border-0 justify-content-between px-10 pb-5">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">{% translate 'Cancel' %}</button>
+                <button type="submit" class="btn btn-primary px-5" :disabled="fixtureLoading">
+                    <span v-if="!fixtureLoading">{% translate 'Save Fixture' %}</span>
+                    <span v-else class="indicator-progress">{% translate 'Saving...' %}<span class="spinner-border spinner-border-sm ms-2"></span></span>
+                </button>
+                </div>
+            </form>
             </div>
+        </div>
+        </div>
         </div>
 </div>
 {% endblock %}
@@ -128,9 +290,34 @@
                 statusMessage: '',
                 finalMessage: '',
                 isSuccess: false,
-                fetchDate: new Date().toISOString().slice(0, 10), // Default to today's date
+                fetchDate: new Date().toISOString().slice(0, 10),
+                
+                fixtureLoading: false,
+                fixtureMessage: '',
+                fixtureSuccess: false,
+                fixtureForm: {
+                    name: '',
+                    short_name: '',
+                    sport: '',
+                    league: '',
+                    season: '',
+                    venue: '',
+                    starting_at: '',
+                    details: '',
+                    home_team: '',
+                    away_team: '',
+                    is_finished: 'false',
+                    home_goals: 0,
+                    away_goals: 0,
+                },
+                sports: [],
+                leagues: [],
+                seasons: [],
+                venues: [],
+                teams: [],
             }
         },
+
         methods: {
             getMonkFixturesData: function () {
                 if (!this.fetchDate) {
@@ -142,7 +329,11 @@
                 this.progress = 5;
                 this.statusMessage = 'Fetching fixtures for ' + this.fetchDate + '...';
 
-                let interval = setInterval(() => { if (this.progress < 90) { this.progress += 5; } }, 800);
+                let interval = setInterval(() => { 
+                    if (this.progress < 90) { 
+                        this.progress += 5; 
+                    } 
+                }, 800);
 
                 const url = "{% url 'sport:AdminMonksFixturesGetData' %}";
                 const payload = {
@@ -161,9 +352,7 @@
                         this.isSuccess = data.type === 'Success';
                         this.finalMessage = data.message;
                         this.isLoading = false;
-                        if (this.isSuccess) {
-                           setTimeout(() => location.reload(), 2000);
-                        }
+                        if (this.isSuccess) {setTimeout(() => location.reload(), 2000);}
                     },
                     error: (jqXHR) => {
                         clearInterval(interval);
@@ -173,8 +362,136 @@
                     },
                 });
             },
+
+            getTeamName: function(teamId) {
+                if (!teamId) return '';
+                const team = this.teams.find(t => t.id == teamId);
+                return team ? team.name : '';
+            },
+            validateTeams: function() {
+                if (this.fixtureForm.home_team && this.fixtureForm.away_team && 
+                    this.fixtureForm.home_team === this.fixtureForm.away_team) {
+                    this.teamError = '{% translate "Home Team and Away Team cannot be the same" %}';
+                } else {
+                    this.teamError = '';
+                }
+            },
+            addFixture: function() {
+                if (!this.fixtureForm.name || !this.fixtureForm.short_name) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Name and Short Name are required.';
+                    return;
+                }
+                
+                if (!this.fixtureForm.home_team || !this.fixtureForm.away_team) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Both Home Team and Away Team are required.';
+                    return;
+                }
+                
+                if (this.fixtureForm.home_team === this.fixtureForm.away_team) {
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'Home Team and Away Team cannot be the same.';
+                    return;
+                }
+
+                if (this.fixtureForm.is_finished === 'true') {
+                    if (this.fixtureForm.home_goals === '' || this.fixtureForm.home_goals === null || 
+                        this.fixtureForm.away_goals === '' || this.fixtureForm.away_goals === null) {
+                        this.fixtureSuccess = false;
+                        this.fixtureMessage = 'Please enter scores for both teams when match is finished.';
+                        return;
+                    }
+                    
+                    if (this.fixtureForm.home_goals < 0 || this.fixtureForm.away_goals < 0) {
+                        this.fixtureSuccess = false;
+                        this.fixtureMessage = 'Goals cannot be negative.';
+                        return;
+                    }
+                }
+
+                this.fixtureLoading = true;
+                this.fixtureMessage = '';
+
+                const url = "{% url 'sport:AdminFixtureAdd' %}";
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                formData.append('name', this.fixtureForm.name);
+                formData.append('short_name', this.fixtureForm.short_name);
+                formData.append('is_finished', this.fixtureForm.is_finished);
+                
+                if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
+                if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
+                if (this.fixtureForm.season) formData.append('season', this.fixtureForm.season);
+                if (this.fixtureForm.venue) formData.append('venue', this.fixtureForm.venue);
+                if (this.fixtureForm.starting_at) formData.append('starting_at', this.fixtureForm.starting_at);
+                if (this.fixtureForm.details) formData.append('details', this.fixtureForm.details);
+                
+                formData.append('home_team', this.fixtureForm.home_team);
+                formData.append('away_team', this.fixtureForm.away_team);
+
+                if (this.fixtureForm.is_finished === 'true') {
+                formData.append('home_goals', this.fixtureForm.home_goals);
+                formData.append('away_goals', this.fixtureForm.away_goals);
+            }
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = data.type === 'Success';
+                    this.fixtureMessage = data.message;
+                    
+                    if (this.fixtureSuccess) {
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                })
+                .catch(error => {
+                    this.fixtureLoading = false;
+                    this.fixtureSuccess = false;
+                    this.fixtureMessage = 'An error occurred. Please try again.';
+                    console.error('Error:', error);
+                });
+            },
+            loadDropdownData: function() {
+                try {
+                    this.sports = {{ sports|default:"[]"|safe }};
+                    this.leagues = {{ leagues|default:"[]"|safe }};
+                    this.seasons = {{ seasons|default:"[]"|safe }};
+                    this.venues = {{ venues|default:"[]"|safe }};
+                    this.teams = {{ teams|default:"[]"|safe }};
+                } catch (e) {
+                    console.error('Error loading dropdown data:', e);
+                    this.sports = [];
+                    this.leagues = [];
+                    this.seasons = [];
+                    this.venues = [];
+                    this.teams = [];
+                }
+            },
+            setupDeleteHandlers: function() {
+                const self = this;
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-btn')) {
+                        const form = e.target.closest('.delete-form');
+                        const itemName = form.getAttribute('data-item-name');
+                        
+                        if (confirm(`Are you sure you want to delete "${itemName}"? This action cannot be undone.`)) {
+                            form.submit();
+                        }
+                    }
+                });
+            },
         },
-    })
-    MonkFixturesApp.mount('#monkfixtures-app')
+        mounted() {
+            this.loadDropdownData();
+            this.setupDeleteHandlers();
+        }
+    });
+    
+    MonkFixturesApp.mount('#monkfixtures-app');
 </script>
 {% endblock custom_js %}

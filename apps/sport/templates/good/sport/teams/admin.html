@@ -441,7 +441,23 @@
 
                                                 </div>
                                                 <!--end::Input group-->
-
+                                                <div class="fv-row w-100 flex-md-root">
+                                                <!--begin::Label-->
+                                                <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
+                                                <!--end::Label-->
+                                                <!--begin::Input-->
+                                                <select name="country" aria-label="{% translate 'Country' %}"
+                                                        data-control="select2" data-placeholder="{% translate 'Country' %}"
+                                                        data-dropdown-parent="#kt_modal_add_customer" required
+                                                        data-allow-clear="true"
+                                                        class="form-select form-select-solid fw-bolder">
+                                                    <option value="" selected="">---------</option>
+                                                    {% for value, text in teams_form.country.field.choices %}
+                                                        <option value="{{ value }}">{{ text }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <!--end::Input-->
+                                            </div>
                                                   <!--begin::Input group-->
                                         <div class="fv-row w-100 flex-md-root">
                                             <!--begin::Label-->
