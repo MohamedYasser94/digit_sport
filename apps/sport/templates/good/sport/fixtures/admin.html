@@ -239,25 +239,67 @@
                     </label>
                     </div>
                 </div>
-
                 <!-- Scores Section -->
                 <transition name="fade">
                     <div v-if="fixtureForm.is_finished === 'true'" class="mt-6 border rounded p-5 bg-light">
-                    <h6 class="fw-bold mb-3 text-gray-700">{% translate 'Final Score' %}</h6>
-                    <div class="row g-5 align-items-center">
-                        <div class="col-md-5 text-end">
-                        <span class="fw-bold text-primary">[[ getTeamName(fixtureForm.home_team) || '{% translate "Home Team" %}' ]]</span>
-                        <input type="number" v-model.number="fixtureForm.home_goals" class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" min="0" placeholder="0" />
+                        <h6 class="fw-bold mb-3 text-gray-700">{% translate 'Final Score' %}</h6>
+                        <div v-if="fixtureForm.sport && getPeriodsCount() > 0" class="mb-4">
+                            <h6 class="fw-bold mb-3 text-gray-600">{% translate 'Periods Scores' %}</h6>
+                            <div class="row g-3" v-for="period in getPeriodsCount()" :key="period">
+                                <div class="col-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-3">
+                                            <span class="fw-bold text-muted">[[ getPeriodName(period) ]]</span>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <input type="number" 
+                                                v-model.number="fixtureForm.periods[period-1].home" 
+                                                class="form-control form-control-sm text-center" 
+                                                min="0" 
+                                                placeholder="0" 
+                                                @change="calculateFinalScore" />
+                                        </div>
+                                        <div class="col-1 text-center fw-bold">-</div>
+                                        <div class="col-4">
+                                            <input type="number" 
+                                                v-model.number="fixtureForm.periods[period-1].away" 
+                                                class="form-control form-control-sm text-center" 
+                                                min="0" 
+                                                placeholder="0"
+                                                @change="calculateFinalScore" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-2 text-center fs-3 fw-bolder">-</div>
-                        <div class="col-md-5">
-                        <span class="fw-bold text-danger">[[ getTeamName(fixtureForm.away_team) || '{% translate "Away Team" %}' ]]</span>
-                        <input type="number" v-model.number="fixtureForm.away_goals" class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" min="0" placeholder="0" />
+                        <div class="row g-5 align-items-center">
+                            <div class="col-md-5 text-end">
+                                <span class="fw-bold text-primary">[[ getTeamName(fixtureForm.home_team) || '{% translate "Home Team" %}' ]]</span>
+                                <input type="number" 
+                                    v-model.number="fixtureForm.home_goals" 
+                                    class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" 
+                                    min="0" 
+                                    placeholder="0" 
+                                    readonly />
+                            </div>
+                            <div class="col-md-2 text-center fs-3 fw-bolder">-</div>
+                            <div class="col-md-5">
+                                <span class="fw-bold text-danger">[[ getTeamName(fixtureForm.away_team) || '{% translate "Away Team" %}' ]]</span>
+                                <input type="number" 
+                                    v-model.number="fixtureForm.away_goals" 
+                                    class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" 
+                                    min="0" 
+                                    placeholder="0" 
+                                    readonly />
+                            </div>
                         </div>
-                    </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted" v-if="fixtureForm.sport">
+                                [[ getScoreCalculationMethod() ]]
+                            </small>
+                        </div>
                     </div>
                 </transition>
-
                 <!-- Messages -->
                 <div v-if="fixtureMessage" class="alert mt-5" :class="fixtureSuccess ? 'alert-success' : 'alert-danger'">
                     [[ fixtureMessage ]]
@@ -307,6 +349,7 @@
                     home_team: '',
                     away_team: '',
                     is_finished: 'false',
+                    periods: [],
                     home_goals: 0,
                     away_goals: 0,
                 },
@@ -319,6 +362,88 @@
         },
 
         methods: {
+            getPeriodsCount() {
+                if (!this.fixtureForm.sport) return 0;
+                
+                const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+                if (!sport) return 0;
+                
+                const sportName = sport.name.toLowerCase();
+                if (sportName.includes('volleyball')) return 5;
+                if (sportName.includes('basketball')) return 4;
+                if (sportName.includes('handball')) return 2;
+                return 0;
+            },
+            
+            getPeriodName(periodNumber) {
+                if (!this.fixtureForm.sport) return `Period ${periodNumber}`;
+                
+                const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+                if (sport && sport.name.toLowerCase().includes('volleyball')) {
+                    return `Set ${periodNumber}`;
+                }
+                return `Period ${periodNumber}`;
+            },
+            
+            initializePeriods() {
+                const periodsCount = this.getPeriodsCount();
+                this.fixtureForm.periods = [];
+                
+                for (let i = 0; i < periodsCount; i++) {
+                    this.fixtureForm.periods.push({
+                        home: 0,
+                        away: 0
+                    });
+                }
+                
+                this.calculateFinalScore();
+            },
+            
+            calculateFinalScore() {
+                if (!this.fixtureForm.sport || !this.fixtureForm.periods.length) {
+                    this.fixtureForm.home_goals = 0;
+                    this.fixtureForm.away_goals = 0;
+                    return;
+                }
+                
+                const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+                if (!sport) return;
+                
+                const sportName = sport.name.toLowerCase();
+                let totalHome = 0;
+                let totalAway = 0;
+                
+                if (sportName.includes('volleyball')) {
+                    this.fixtureForm.periods.forEach(period => {
+                        if (period.home > period.away) totalHome++;
+                        else if (period.away > period.home) totalAway++;
+                    });
+                } else {
+                    this.fixtureForm.periods.forEach(period => {
+                        totalHome += parseInt(period.home) || 0;
+                        totalAway += parseInt(period.away) || 0;
+                    });
+                }
+                
+                this.fixtureForm.home_goals = totalHome;
+                this.fixtureForm.away_goals = totalAway;
+            },
+            
+            getScoreCalculationMethod() {
+                if (!this.fixtureForm.sport) return '';
+                
+                const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+                if (!sport) return '';
+                
+                const sportName = sport.name.toLowerCase();
+                if (sportName.includes('volleyball')) {
+                    return '{% translate "Score calculated by sets won" %}';
+                } else if (sportName.includes('basketball') || sportName.includes('handball')) {
+                    return '{% translate "Score calculated by total points" %}';
+                }
+                return '';
+            },
+
             getMonkFixturesData: function () {
                 if (!this.fetchDate) {
                     alert('Please select a date.');
@@ -396,17 +521,22 @@
                 }
 
                 if (this.fixtureForm.is_finished === 'true') {
-                    if (this.fixtureForm.home_goals === '' || this.fixtureForm.home_goals === null || 
-                        this.fixtureForm.away_goals === '' || this.fixtureForm.away_goals === null) {
-                        this.fixtureSuccess = false;
-                        this.fixtureMessage = 'Please enter scores for both teams when match is finished.';
-                        return;
-                    }
-                    
-                    if (this.fixtureForm.home_goals < 0 || this.fixtureForm.away_goals < 0) {
-                        this.fixtureSuccess = false;
-                        this.fixtureMessage = 'Goals cannot be negative.';
-                        return;
+                    if (this.fixtureForm.periods && this.fixtureForm.periods.length > 0) {
+                        for (let i = 0; i < this.fixtureForm.periods.length; i++) {
+                            const period = this.fixtureForm.periods[i];
+                            if (period.home === '' || period.home === null || 
+                                period.away === '' || period.away === null) {
+                                this.fixtureSuccess = false;
+                                this.fixtureMessage = '{% translate "Please enter scores for all periods" %}';
+                                return;
+                            }
+                            
+                            if (period.home < 0 || period.away < 0) {
+                                this.fixtureSuccess = false;
+                                this.fixtureMessage = '{% translate "Goals cannot be negative in any period" %}';
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -433,6 +563,13 @@
                 if (this.fixtureForm.is_finished === 'true') {
                 formData.append('home_goals', this.fixtureForm.home_goals);
                 formData.append('away_goals', this.fixtureForm.away_goals);
+                    if (this.fixtureForm.periods && this.fixtureForm.periods.length > 0) {
+                    this.fixtureForm.periods.forEach((period, index) => {
+                        formData.append(`period_${index + 1}_home`, period.home);
+                        formData.append(`period_${index + 1}_away`, period.away);
+            });
+        }
+
             }
 
                 fetch(url, {
@@ -486,10 +623,26 @@
                 });
             },
         },
+        watch: {
+        'fixtureForm.sport': function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.initializePeriods();
+            }
+        },
+        
+        'fixtureForm.is_finished': function(newVal) {
+            if (newVal === 'true' && this.fixtureForm.sport) {
+                this.initializePeriods();
+            }
+        }
+    },
         mounted() {
             this.loadDropdownData();
             this.setupDeleteHandlers();
+            if (this.fixtureForm.is_finished === 'true' && this.fixtureForm.sport) {
+                this.initializePeriods();
         }
+    }
     });
     
     MonkFixturesApp.mount('#monkfixtures-app');
