@@ -2386,6 +2386,19 @@ def AdminMatchList(request):
     }
     return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/admin.html', context)
 
+def get_periods_count_by_sport(sport_name):
+    periods_config = {
+        'volleyball': 5,
+        'basketball': 4, 
+        'handball': 2,
+        'football' :2,
+    }
+    sport_name_lower = sport_name.lower() if sport_name else ''
+    for sport_key, periods in periods_config.items():
+        if sport_key in sport_name_lower:
+            return periods
+    return 2
+
 @authenticated_staf
 @staff_only
 def AdminFixtureAdd(request):
@@ -2396,6 +2409,7 @@ def AdminFixtureAdd(request):
             short_name = request.POST.get('short_name')
             home_team_id = request.POST.get('home_team')
             away_team_id = request.POST.get('away_team')
+            sport_id = request.POST.get('sport')
             
             if not name or not short_name:
                 return JsonResponse({
@@ -2429,7 +2443,8 @@ def AdminFixtureAdd(request):
             sport_id = request.POST.get('sport')
             if sport_id:
                 try:
-                    fixture.sport = Sport.objects.get(id=sport_id)
+                    sport = Sport.objects.get(id=sport_id)
+                    fixture.sport = sport
                 except Sport.DoesNotExist:
                     pass
             
@@ -2472,57 +2487,74 @@ def AdminFixtureAdd(request):
                 }, status=400)
             
             if is_finished:
-                home_goals = request.POST.get('home_goals')
-                away_goals = request.POST.get('away_goals')
+                periods_data = []
+                total_home_goals = 0
+                total_away_goals = 0
                 
-                if home_goals is None or away_goals is None:
-                    return JsonResponse({
-                        'type': 'Error', 
-                        'message': 'Please provide scores for both teams when match is finished.'
-                    }, status=400)
+                sport_name = fixture.sport.name if fixture.sport else ''
+                periods_count = get_periods_count_by_sport(sport_name)
                 
-                try:
-                    home_goals = int(home_goals)
-                    away_goals = int(away_goals)
+                for i in range(1, periods_count + 1):
+                    home_goals_key = f'period_{i}_home'
+                    away_goals_key = f'period_{i}_away'
                     
-                    if home_goals < 0 or away_goals < 0:
+                    home_goals = request.POST.get(home_goals_key, '0')
+                    away_goals = request.POST.get(away_goals_key, '0')
+                    
+                    try:
+                        home_goals_int = int(home_goals) if home_goals else 0
+                        away_goals_int = int(away_goals) if away_goals else 0
+                        
+                        period_data = {
+                            "period_number": i,
+                            "home_goals": home_goals_int,
+                            "away_goals": away_goals_int,
+                            "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
+                        }
+                        periods_data.append(period_data)
+                        
+                        if sport_name.lower() == 'volleyball':
+                            if home_goals_int > away_goals_int:
+                                total_home_goals += 1
+                            elif away_goals_int > home_goals_int:
+                                total_away_goals += 1
+                        else:
+                            total_home_goals += home_goals_int
+                            total_away_goals += away_goals_int
+                            
+                    except ValueError:
                         return JsonResponse({
                             'type': 'Error', 
-                            'message': 'Goals cannot be negative.'
+                            'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
                         }, status=400)
-                    
-                    fixture.scores = [
-                        {
-                            "id": home_team.id,
-                            "score": {
-                                "goals": home_goals,
-                                "participant_name": home_team.name,
-                                "meta_location": "home"
-                            }
-                        },
-                        {
-                            "id": away_team.id,
-                            "score": {
-                                "goals": away_goals,
-                                "participant_name": away_team.name,
-                                "meta_location": "away"
-                            }
+                
+                fixture.periods = periods_data
+                
+                fixture.scores = [
+                    {
+                        "id": home_team.id,
+                        "score": {
+                            "goals": total_home_goals,
+                            "participant_name": home_team.name,
+                            "meta_location": "home"
                         }
-                    ]
-                    
-                except ValueError:
-                    return JsonResponse({
-                        'type': 'Error', 
-                        'message': 'Invalid goal values. Please enter valid numbers.'
-                    }, status=400)
+                    },
+                    {
+                        "id": away_team.id,
+                        "score": {
+                            "goals": total_away_goals,
+                            "participant_name": away_team.name,
+                            "meta_location": "away"
+                        }
+                    }
+                ]
+                
             else:
                 fixture.scores = None
+                fixture.periods = None
 
-            fixture.save()
-            
             if home_team_id:
                 try:
-                    home_team = Teams.objects.get(id=home_team_id)
                     FixtureParticipant.objects.create(
                         fixture=fixture,
                         team=home_team,
@@ -2533,7 +2565,6 @@ def AdminFixtureAdd(request):
             
             if away_team_id:
                 try:
-                    away_team = Teams.objects.get(id=away_team_id)
                     FixtureParticipant.objects.create(
                         fixture=fixture,
                         team=away_team,
