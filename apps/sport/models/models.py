@@ -471,35 +471,25 @@ class SportState(models.Model):
 class Fixtures(models.Model):
     # This is the most important change. `unique=True` ensures no duplicates.
     api_id = models.CharField(max_length=100, null=True, unique=True, db_index=True)
-
     # Generic Foreign Keys for Sender, Receiver, Owner
-    sender_model = models.ForeignKey(ContentType, related_name='sport_fixture_sender', on_delete=models.CASCADE,
-                                     null=True, blank=True)
+    sender_model = models.ForeignKey(ContentType, related_name='sport_fixture_sender', on_delete=models.CASCADE,null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
-
-    receiver_model = models.ForeignKey(ContentType, related_name='sport_fixture_receiver', on_delete=models.CASCADE,
-                                       null=True, blank=True)
+    receiver_model = models.ForeignKey(ContentType, related_name='sport_fixture_receiver', on_delete=models.CASCADE,null=True, blank=True)
     receiver_id = models.PositiveIntegerField(blank=True, null=True)
     receiver = GenericForeignKey('receiver_model', 'receiver_id')
-
-    owner_model = models.ForeignKey(ContentType, related_name='sport_fixture_owner', on_delete=models.CASCADE,
-                                    null=True, blank=True)
+    owner_model = models.ForeignKey(ContentType, related_name='sport_fixture_owner', on_delete=models.CASCADE,null=True, blank=True)
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
-
     # Foreign Keys to other models
     sport = models.ForeignKey('Sport', on_delete=models.CASCADE, related_name='sport_fixture', null=True, blank=True)
-    league = models.ForeignKey('Leagues', on_delete=models.CASCADE, related_name='league_fixture', null=True,
-                               blank=True)
+    league = models.ForeignKey('Leagues', on_delete=models.CASCADE, related_name='league_fixture', null=True,blank=True)
     season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name='season_fixture', null=True, blank=True)
     stage = models.ForeignKey('Stages', on_delete=models.CASCADE, related_name='stage_fixture', null=True, blank=True)
     group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='group_fixture', null=True, blank=True)
-    aggregate = models.ForeignKey('Aggregate', on_delete=models.CASCADE, related_name='aggregate_fixture', null=True,
-                                  blank=True)
+    aggregate = models.ForeignKey('Aggregate', on_delete=models.CASCADE, related_name='aggregate_fixture', null=True,blank=True)
     round = models.ForeignKey('Round', on_delete=models.CASCADE, related_name='round_fixture', null=True, blank=True)
     venue = models.ForeignKey('Venues', on_delete=models.CASCADE, related_name='venue_fixture', null=True, blank=True)
-
     # Fixture details
     name = models.CharField(max_length=100)
     short_name = models.CharField(max_length=100)
@@ -509,9 +499,22 @@ class Fixtures(models.Model):
     details = models.TextField(null=True, blank=True)
     length = models.IntegerField(null=True, blank=True)
     placeholder = models.CharField(max_length=100, null=True, blank=True)
-    has_odds = models.CharField(max_length=100, choices=[('Yes', 'Yes'), ('No', 'No')], default='Yes', null=True,
-                                blank=True)  # Example choices
+    has_odds = models.CharField(max_length=100, choices=[('Yes', 'Yes'), ('No', 'No')], default='Yes', null=True,blank=True)  # Example choices
     starting_at_timestamp = models.IntegerField(null=True, blank=True)
+    home_team = models.ForeignKey(
+        'Teams', 
+        on_delete=models.CASCADE, 
+        related_name='home_fixtures', 
+        null=True, 
+        blank=True
+    )
+    away_team = models.ForeignKey(
+        'Teams', 
+        on_delete=models.CASCADE, 
+        related_name='away_fixtures', 
+        null=True, 
+        blank=True
+    )
 
     # Live game state
     state = models.CharField(max_length=100, null=True, blank=True)
