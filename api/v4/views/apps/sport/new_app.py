@@ -8,9 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
+from django.shortcuts import get_object_or_404
 
-from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
-from api.v4.serializers.sport.sport import LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSerializer, \
+from api.v4.serializers.sport.sport import FixtureDetailsSerializer, FixtureGoalsSerializer, LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
     TeamWithMatchesSerializer, PlyerSerializer
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
@@ -121,6 +121,57 @@ def FixturesByDateApiList(request, sport, date, lang):
         return Response({"error": f"An unexpected server error occurred.{e}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['GET'])
+def MatchDetailsApi(request, match_id):
+    try:
+        print(f"Looking for fixture with ID: {match_id}")
+        
+        fixture = get_object_or_404(
+            Fixtures.objects.select_related(
+                'league', 'season', 'venue', 'home_team', 'away_team'
+            ), 
+            id=match_id
+        )        
+        goals_data = fixture.events or [] 
+        standing = []
+        
+        if fixture.league:
+            standing = TeamSeasonTable.objects.filter(
+                league_id=fixture.league.id
+            ).select_related('team', 'league').order_by('position')
+        
+
+        fixture_serializer = FixtureDetailsSerializer(fixture, context={'request': request})
+        serialized_data = fixture_serializer.data
+        goals_serializer = FixtureGoalsSerializer(goals_data, many=True, context={'request': request})
+        standing_serializer = TeamSeasonTableSerializer(standing, many=True, context={'request': request})
+        
+        sport_data = {
+            'match': serialized_data,
+            'goals': goals_serializer.data,
+            'standing': standing_serializer.data,
+        }
+
+        return Response({
+            'success': True, 
+            'data': sport_data, 
+            'message': f"Fixture details retrieved successfully"
+        })
+    
+    except Fixtures.DoesNotExist:
+        return Response({
+            'success': False, 
+            'data': {'match': None, 'goals': [], 'standing': []},
+            'message': f"Fixture with id {match_id} not found"
+        }, status=404)
+    
+    except Exception as e:
+        return Response({
+            'success': False, 
+            'data': {'match': None, 'goals': [], 'standing': []},
+            'message': f"Error retrieving fixture details: {str(e)}"
+        }, status=500)
+    
 
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]

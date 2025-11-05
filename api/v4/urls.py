@@ -53,4 +53,5 @@ path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('v4/favorites/toggle/', new_app.favorite_toggle, name='toggle-favorite'),
     path('v4/favorites/list/', new_app.list_user_favorites, name='list-user-favorites'),
 
+    path('v4/match/details/<int:match_id>', new_app.MatchDetailsApi,name='MatchDetailsApi'),
 ]

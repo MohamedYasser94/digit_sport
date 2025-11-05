@@ -2,428 +2,648 @@
 {% load tz %}
 {% load static %}
 {% load i18n %}
-
 {% block body %}
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
     <div id="kt_content_container" class="container-fluid">
-        <form id="kt_ecommerce_edit_fixture_form" class="form d-flex flex-column flex-lg-row" 
-              action="{% url 'sport:AdminMatchUpdate' fixture.slug %}"
-              method="post" 
-              @submit="handleSubmit">
-            {% csrf_token %}
+        <div id="update-fixture-app">
+            <form id="kt_ecommerce_edit_fixture_form" 
+                  class="form d-flex flex-column flex-lg-row" 
+                  @submit.prevent="handleSubmit">
+                {% csrf_token %}
 
-            <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-                <!-- Main Card -->
-                <div class="card card-flush py-4">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2>{% translate 'Update Fixture' %}</h2>
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+                    <!-- Main Card -->
+                    <div class="card card-flush py-4">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>{% translate 'Update Fixture' %}</h2>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="card-body pt-0">
-                        <div class="d-flex flex-column gap-5 gap-md-7">
-                            
-                            <!-- Basic Information -->
-                            <div>
-                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
-                                    <i class="ki-duotone ki-information-5 fs-2 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                    {% translate 'Basic Information' %}
-                                </div>
+                        
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column gap-5 gap-md-7">
                                 
-                                <!-- Name & Short Name -->
-                                <div class="row g-5 mb-5">
-                                    <div class="col-md-6">
-                                        <label class="required form-label fw-bold">{% translate 'Fixture Name' %}</label>
-                                        <input type="text" 
-                                               name="name" 
-                                               class="form-control form-control-solid" 
-                                               value="{{ fixture.name }}" 
-                                               placeholder="{% translate 'Enter fixture name' %}"
-                                               required />
+                                <!-- Basic Information -->
+                                <div>
+                                    <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                        <i class="ki-duotone ki-information-5 fs-2 me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i>
+                                        {% translate 'Basic Information' %}
                                     </div>
                                     
-                                    <div class="col-md-6">
-                                        <label class="required form-label fw-bold">{% translate 'Short Name' %}</label>
-                                        <input type="text" 
-                                               name="short_name" 
-                                               class="form-control form-control-solid" 
-                                               value="{{ fixture.short_name }}" 
-                                               placeholder="{% translate 'Enter short name' %}"
-                                               required />
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Associations -->
-                            <div>
-                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
-                                    <i class="ki-duotone ki-category fs-2 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-                                    {% translate 'Associations' %}
-                                </div>
-                                
-                                <!-- Sport & League -->
-                                <div class="row g-5 mb-5">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'Sport' %}</label>
-                                        <select name="sport" class="form-select form-select-solid">
-                                            <option value="">{% translate 'Select Sport' %}</option>
-                                            {% for sport in sports %}
-                                                <option value="{{ sport.id }}" 
-                                                    {% if fixture.sport and fixture.sport.id == sport.id %}selected{% endif %}>
-                                                    {{ sport.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'League' %}</label>
-                                        <select name="league" class="form-select form-select-solid">
-                                            <option value="">{% translate 'Select League' %}</option>
-                                            {% for league in leagues %}
-                                                <option value="{{ league.id }}" 
-                                                    {% if fixture.league and fixture.league.id == league.id %}selected{% endif %}>
-                                                    {{ league.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <!-- Season & Venue -->
-                                <div class="row g-5 mb-5">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'Season' %}</label>
-                                        <select name="season" class="form-select form-select-solid">
-                                            <option value="">{% translate 'Select Season' %}</option>
-                                            {% for season in seasons %}
-                                                <option value="{{ season.id }}" 
-                                                    {% if fixture.season and fixture.season.id == season.id %}selected{% endif %}>
-                                                    {{ season.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'Venue' %}</label>
-                                        <select name="venue" class="form-select form-select-solid">
-                                            <option value="">{% translate 'Select Venue' %}</option>
-                                            {% for venue in venues %}
-                                                <option value="{{ venue.id }}" 
-                                                    {% if fixture.venue and fixture.venue.id == venue.id %}selected{% endif %}>
-                                                    {{ venue.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Schedule & Details -->
-                            <div>
-                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
-                                    <i class="ki-duotone ki-calendar fs-2 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    {% translate 'Schedule & Details' %}
-                                </div>
-                                
-                                <div class="row g-5 mb-5">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'Starting At' %}</label>
-                                        <input type="datetime-local" 
-                                               name="starting_at" 
-                                               class="form-control form-control-solid" 
-                                               value="{% if fixture.starting_at %}{{ fixture.starting_at|date:'Y-m-d\TH:i' }}{% endif %}" />
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-bold">{% translate 'Details' %}</label>
-                                        <textarea name="details" 
-                                                  class="form-control form-control-solid" 
-                                                  rows="2" 
-                                                  placeholder="{% translate 'Enter fixture details' %}">{{ fixture.details }}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Teams -->
-                            <div>
-                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
-                                    <i class="ki-duotone ki-shield fs-2 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    {% translate 'Teams' %}
-                                </div>
-                                
-                                <div class="row g-5 mb-5">
-                                    <div class="col-md-6">
-                                        <label class="required form-label fw-bold text-primary">
-                                            <i class="ki-duotone ki-home fs-3 me-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            {% translate 'Home Team' %}
-                                        </label>
-                                        <select name="home_team" 
-                                                class="form-select form-select-solid" 
-                                                required>
-                                            <option value="">{% translate 'Select Home Team' %}</option>
-                                            {% for team in teams %}
-                                                <option value="{{ team.id }}" 
-                                                    {% if home_team and home_team.id == team.id %}selected{% endif %}>
-                                                    {{ team.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <label class="required form-label fw-bold text-danger">
-                                            <i class="ki-duotone ki-compass fs-3 me-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            {% translate 'Away Team' %}
-                                        </label>
-                                        <select name="away_team" 
-                                                class="form-select form-select-solid" 
-                                                required>
-                                            <option value="">{% translate 'Select Away Team' %}</option>
-                                            {% for team in teams %}
-                                                <option value="{{ team.id }}" 
-                                                    {% if away_team and away_team.id == team.id %}selected{% endif %}>
-                                                    {{ team.name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Match Status -->
-                            <div>
-                                <div class="fs-3 fw-bolder mb-5 text-gray-800">
-                                    <i class="ki-duotone ki-flag fs-2 me-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    {% translate 'Match Status' %}
-                                </div>
-                                
-                                <div class="mb-5">
-                                    <label class="required form-label fw-bold mb-3">{% translate 'Match Finished?' %}</label>
-                                    <div class="d-flex align-items-center gap-5">
-                                        <label class="form-check form-check-custom form-check-solid">
-                                            <input class="form-check-input" 
-                                                   type="radio" 
-                                                   name="is_finished" 
-                                                   value="true" 
-                                                   id="finished_yes"
-                                                   {% if current_scores.is_finished %}checked{% endif %}
-                                                   onchange="toggleScoresSection(true)">
-                                            <span class="form-check-label fw-bold text-success">
-                                                <i class="ki-duotone ki-check-circle fs-2 me-1">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                {% translate 'Yes' %}
-                                            </span>
-                                        </label>
+                                    <div class="row g-5 mb-5">
+                                        <div class="col-md-6">
+                                            <label class="required form-label fw-bold">{% translate 'Fixture Name' %}</label>
+                                            <input type="text" 
+                                                   v-model="fixtureForm.name"
+                                                   class="form-control form-control-solid" 
+                                                   placeholder="{% translate 'Enter fixture name' %}"
+                                                   required />
+                                        </div>
                                         
-                                        <label class="form-check form-check-custom form-check-solid">
-                                            <input class="form-check-input" 
-                                                   type="radio" 
-                                                   name="is_finished" 
-                                                   value="false" 
-                                                   id="finished_no"
-                                                   {% if not current_scores.is_finished %}checked{% endif %}
-                                                   onchange="toggleScoresSection(false)">
-                                            <span class="form-check-label fw-bold text-muted">
-                                                <i class="ki-duotone ki-cross-circle fs-2 me-1">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                {% translate 'No' %}
-                                            </span>
-                                        </label>
+                                        <div class="col-md-6">
+                                            <label class="required form-label fw-bold">{% translate 'Short Name' %}</label>
+                                            <input type="text" 
+                                                   v-model="fixtureForm.short_name"
+                                                   class="form-control form-control-solid" 
+                                                   placeholder="{% translate 'Enter short name' %}"
+                                                   required />
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Scores Section -->
-                                <div id="scores_section" 
-                                     class="border rounded p-5 bg-light-primary" 
-                                     style="display: {% if current_scores.is_finished %}block{% else %}none{% endif %};">
-                                    <h6 class="fw-bold mb-4 text-gray-800">
-                                        <i class="ki-duotone ki-chart-simple fs-2 me-2">
+                                <!-- Associations -->
+                                <div>
+                                    <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                        <i class="ki-duotone ki-category fs-2 me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                             <span class="path3"></span>
                                             <span class="path4"></span>
                                         </i>
-                                        {% translate 'Final Score' %}
-                                    </h6>
+                                        {% translate 'Associations' %}
+                                    </div>
                                     
-                                    <div class="row g-5 align-items-center">
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-bold text-primary mb-2">
-                                                {% translate 'Home Goals' %}
-                                            </label>
-                                            <input type="number" 
-                                                   name="home_goals" 
-                                                   id="home_goals"
-                                                   class="form-control form-control-solid form-control-lg text-center fs-2 fw-bolder" 
-                                                   min="0" 
-                                                   value="{{ current_scores.home_goals }}"
-                                                   placeholder="0" />
+                                    <div class="row g-5 mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'Sport' %}</label>
+                                            <select v-model="fixtureForm.sport" 
+                                                    class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Sport' %}</option>
+                                                <option v-for="sport in sports" 
+                                                        :value="sport.id" 
+                                                        :key="sport.id">
+                                                    [[ sport.name ]]
+                                                </option>
+                                            </select>
                                         </div>
                                         
-                                        <div class="col-md-2 text-center">
-                                            <div class="fs-1 fw-bolder text-gray-600">VS</div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'League' %}</label>
+                                            <select v-model="fixtureForm.league" 
+                                                    class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select League' %}</option>
+                                                <option v-for="league in leagues" 
+                                                        :value="league.id" 
+                                                        :key="league.id">
+                                                    [[ league.name ]]
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-5 mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'Season' %}</label>
+                                            <select v-model="fixtureForm.season" 
+                                                    class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Season' %}</option>
+                                                <option v-for="season in seasons" 
+                                                        :value="season.id" 
+                                                        :key="season.id">
+                                                    [[ season.name ]]
+                                                </option>
+                                            </select>
                                         </div>
                                         
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-bold text-danger mb-2">
-                                                {% translate 'Away Goals' %}
-                                            </label>
-                                            <input type="number" 
-                                                   name="away_goals" 
-                                                   id="away_goals"
-                                                   class="form-control form-control-solid form-control-lg text-center fs-2 fw-bolder" 
-                                                   min="0" 
-                                                   value="{{ current_scores.away_goals }}"
-                                                   placeholder="0" />
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'Venue' %}</label>
+                                            <select v-model="fixtureForm.venue" 
+                                                    class="form-select form-select-solid">
+                                                <option value="">{% translate 'Select Venue' %}</option>
+                                                <option v-for="venue in venues" 
+                                                        :value="venue.id" 
+                                                        :key="venue.id">
+                                                    [[ venue.name ]]
+                                                </option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Messages -->
-                            {% if messages %}
-                                {% for message in messages %}
-                                    <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} d-flex align-items-center">
-                                        <i class="ki-duotone ki-shield-tick fs-2hx me-4">
+                                
+                                <!-- Schedule & Details -->
+                                <div>
+                                    <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                        <i class="ki-duotone ki-calendar fs-2 me-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
-                                        <div class="d-flex flex-column">
-                                            <span>{{ message }}</span>
+                                        {% translate 'Schedule & Details' %}
+                                    </div>
+                                    
+                                    <div class="row g-5 mb-5">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'Starting At' %}</label>
+                                            <input type="datetime-local" 
+                                                   v-model="fixtureForm.starting_at"
+                                                   class="form-control form-control-solid" />
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">{% translate 'Details' %}</label>
+                                            <textarea v-model="fixtureForm.details"
+                                                      class="form-control form-control-solid" 
+                                                      rows="2" 
+                                                      placeholder="{% translate 'Enter fixture details' %}"></textarea>
                                         </div>
                                     </div>
-                                {% endfor %}
-                            {% endif %}
+                                </div>
+                                
+                                <!-- Teams -->
+                                <div>
+                                    <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                        <i class="ki-duotone ki-shield fs-2 me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        {% translate 'Teams' %}
+                                    </div>
+                                    
+                                    <div class="row g-5 mb-5">
+                                        <div class="col-md-6">
+                                            <label class="required form-label fw-bold text-primary">
+                                                <i class="ki-duotone ki-home fs-3 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                {% translate 'Home Team' %}
+                                            </label>
+                                            <select v-model="fixtureForm.home_team"
+                                                    class="form-select form-select-solid" 
+                                                    required>
+                                                <option value="">{% translate 'Select Home Team' %}</option>
+                                                <option v-for="team in teams" 
+                                                        :value="team.id" 
+                                                        :key="team.id">
+                                                    [[ team.name ]]
+                                                </option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <label class="required form-label fw-bold text-danger">
+                                                <i class="ki-duotone ki-compass fs-3 me-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                {% translate 'Away Team' %}
+                                            </label>
+                                            <select v-model="fixtureForm.away_team"
+                                                    class="form-select form-select-solid" 
+                                                    required>
+                                                <option value="">{% translate 'Select Away Team' %}</option>
+                                                <option v-for="team in teams" 
+                                                        :value="team.id" 
+                                                        :key="team.id">
+                                                    [[ team.name ]]
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Match Status -->
+                                <div>
+                                    <div class="fs-3 fw-bolder mb-5 text-gray-800">
+                                        <i class="ki-duotone ki-flag fs-2 me-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                        {% translate 'Match Status' %}
+                                    </div>
+                                    
+                                    <div class="mb-5">
+                                        <label class="required form-label fw-bold mb-3">{% translate 'Match Finished?' %}</label>
+                                        <div class="d-flex align-items-center gap-5">
+                                            <label class="form-check form-check-custom form-check-solid">
+                                                <input class="form-check-input" 
+                                                       type="radio" 
+                                                       v-model="fixtureForm.is_finished"
+                                                       value="true" 
+                                                       @change="onFinishedChange">
+                                                <span class="form-check-label fw-bold text-success">
+                                                    <i class="ki-duotone ki-check-circle fs-2 me-1">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                    {% translate 'Yes' %}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="form-check form-check-custom form-check-solid">
+                                                <input class="form-check-input" 
+                                                       type="radio" 
+                                                       v-model="fixtureForm.is_finished"
+                                                       value="false" 
+                                                       @change="onFinishedChange">
+                                                <span class="form-check-label fw-bold text-muted">
+                                                    <i class="ki-duotone ki-cross-circle fs-2 me-1">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                    {% translate 'No' %}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Scores Section -->
+                                    <transition name="fade">
+                                        <div v-if="fixtureForm.is_finished === 'true'" 
+                                             class="border rounded p-5 bg-light">
+                                            <h6 class="fw-bold mb-4 text-gray-800">
+                                                <i class="ki-duotone ki-chart-simple fs-2 me-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                    <span class="path4"></span>
+                                                </i>
+                                                {% translate 'Final Score' %}
+                                            </h6>
+                                            
+                                            <!-- Periods Section -->
+                                            <div v-if="fixtureForm.sport && getPeriodsCount() > 0" class="mb-4">
+                                                <h6 class="fw-bold mb-3 text-gray-600">{% translate 'Periods Scores' %}</h6>
+                                                <div class="row g-3" v-for="period in getPeriodsCount()" :key="period">
+                                                    <div class="col-12">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-3">
+                                                                <span class="fw-bold text-muted">[[ getPeriodName(period) ]]</span>
+                                                            </div>
+                                                            <div class="col-4 text-end">
+                                                                <input type="number" 
+                                                                    v-model.number="fixtureForm.periods[period-1].home" 
+                                                                    class="form-control form-control-sm text-center" 
+                                                                    min="0" 
+                                                                    placeholder="0" 
+                                                                    @change="calculateFinalScore" />
+                                                            </div>
+                                                            <div class="col-1 text-center fw-bold">-</div>
+                                                            <div class="col-4">
+                                                                <input type="number" 
+                                                                    v-model.number="fixtureForm.periods[period-1].away" 
+                                                                    class="form-control form-control-sm text-center" 
+                                                                    min="0" 
+                                                                    placeholder="0"
+                                                                    @change="calculateFinalScore" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Final Score Display -->
+                                            <div class="row g-5 align-items-center">
+                                                <div class="col-md-5 text-end">
+                                                    <span class="fw-bold text-primary">
+                                                        [[ getTeamName(fixtureForm.home_team) || '{% translate "Home Team" %}' ]]
+                                                    </span>
+                                                    <input type="number" 
+                                                           v-model.number="fixtureForm.home_goals"
+                                                           class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" 
+                                                           min="0" 
+                                                           placeholder="0"
+                                                           readonly />
+                                                </div>
+                                                
+                                                <div class="col-md-2 text-center fs-3 fw-bolder">-</div>
+                                                
+                                                <div class="col-md-5">
+                                                    <span class="fw-bold text-danger">
+                                                        [[ getTeamName(fixtureForm.away_team) || '{% translate "Away Team" %}' ]]
+                                                    </span>
+                                                    <input type="number" 
+                                                           v-model.number="fixtureForm.away_goals"
+                                                           class="form-control form-control-solid mt-2 text-center fs-4 fw-bolder" 
+                                                           min="0" 
+                                                           placeholder="0"
+                                                           readonly />
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-3 text-center">
+                                                <small class="text-muted" v-if="fixtureForm.sport">
+                                                    [[ getScoreCalculationMethod() ]]
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </transition>
+                                </div>
+                                
+                                <!-- Messages -->
+                                <div v-if="updateMessage" 
+                                     class="alert" 
+                                     :class="updateSuccess ? 'alert-success' : 'alert-danger'">
+                                    [[ updateMessage ]]
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="d-flex justify-content-end gap-3">
-                    <a href="{{ prev_Page_link }}" class="btn btn-light btn-active-light-primary">
-                        <i class="ki-duotone ki-arrow-left fs-2 me-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                        {% translate 'Cancel' %}
-                    </a>
                     
-                    <button type="submit" class="btn btn-primary" id="submit_btn">
-                        <span class="indicator-label">
-                            <i class="ki-duotone ki-check fs-2 me-2">
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="{{ prev_Page_link }}" class="btn btn-light btn-active-light-primary">
+                            <i class="ki-duotone ki-arrow-left fs-2 me-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>
-                            {% translate 'Save Changes' %}
-                        </span>
-                        <span class="indicator-progress">
-                            {% translate 'Please wait...' %}
-                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                        </span>
-                    </button>
+                            {% translate 'Cancel' %}
+                        </a>
+                        
+                        <button type="submit" class="btn btn-primary" :disabled="updateLoading">
+                            <span v-if="!updateLoading" class="indicator-label">
+                                <i class="ki-duotone ki-check fs-2 me-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                {% translate 'Save Changes' %}
+                            </span>
+                            <span v-else class="indicator-progress">
+                                {% translate 'Please wait...' %}
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
-
-<script>
-function toggleScoresSection(show) {
-    const scoresSection = document.getElementById('scores_section');
-    const homeGoals = document.getElementById('home_goals');
-    const awayGoals = document.getElementById('away_goals');
-    
-    if (show) {
-        scoresSection.style.display = 'block';
-        homeGoals.required = true;
-        awayGoals.required = true;
-    } else {
-        scoresSection.style.display = 'none';
-        homeGoals.required = false;
-        awayGoals.required = false;
-        homeGoals.value = '0';
-        awayGoals.value = '0';
-    }
-}
-
-// Form submission handler
-document.getElementById('kt_ecommerce_edit_fixture_form').addEventListener('submit', function(e) {
-    const submitBtn = document.getElementById('submit_btn');
-    const homeTeam = document.querySelector('select[name="home_team"]').value;
-    const awayTeam = document.querySelector('select[name="away_team"]').value;
-    const isFinished = document.querySelector('input[name="is_finished"]:checked').value === 'true';
-    
-    // Validate teams
-    if (!homeTeam || !awayTeam) {
-        e.preventDefault();
-        alert('{% translate "Please select both Home Team and Away Team" %}');
-        return false;
-    }
-    
-    if (homeTeam === awayTeam) {
-        e.preventDefault();
-        alert('{% translate "Home Team and Away Team cannot be the same" %}');
-        return false;
-    }
-    
-    // Validate scores if match is finished
-    if (isFinished) {
-        const homeGoals = document.getElementById('home_goals').value;
-        const awayGoals = document.getElementById('away_goals').value;
-        
-        if (homeGoals === '' || awayGoals === '') {
-            e.preventDefault();
-            alert('{% translate "Please enter scores for both teams when match is finished" %}');
-            return false;
-        }
-        
-        if (parseInt(homeGoals) < 0 || parseInt(awayGoals) < 0) {
-            e.preventDefault();
-            alert('{% translate "Goals cannot be negative" %}');
-            return false;
-        }
-    }
-    
-    // Show loading state
-    submitBtn.setAttribute('data-kt-indicator', 'on');
-    submitBtn.disabled = true;
-});
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const isFinished = document.getElementById('finished_yes').checked;
-    toggleScoresSection(isFinished);
-});
-</script>
 {% endblock %}
+
+{% block custom_js %}
+<script>
+const UpdateFixtureApp = Vue.createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            updateLoading: false,
+            updateMessage: '',
+            updateSuccess: false,
+            fixtureForm: {
+                name: '{{ fixture.name|escapejs }}',
+                short_name: '{{ fixture.short_name|escapejs }}',
+                sport: '{{ fixture.sport.id|default:"" }}',
+                league: '{{ fixture.league.id|default:"" }}',
+                season: '{{ fixture.season.id|default:"" }}',
+                venue: '{{ fixture.venue.id|default:"" }}',
+                starting_at: '{% if fixture.starting_at %}{{ fixture.starting_at|date:"Y-m-d\TH:i" }}{% endif %}',
+                details: '{{ fixture.details|default:""|escapejs }}',
+                home_team: '{{ home_team.id|default:"" }}',
+                away_team: '{{ away_team.id|default:"" }}',
+                is_finished: '{{ current_scores.is_finished|yesno:"true,false" }}',
+                periods: {{ current_periods|default:"[]"|safe }},
+                home_goals: {{ current_scores.home_goals|default:0 }},
+                away_goals: {{ current_scores.away_goals|default:0 }},
+            },
+            sports: [],
+            leagues: [],
+            seasons: [],
+            venues: [],
+            teams: [],
+        }
+    },
+    
+    methods: {
+        getPeriodsCount() {
+            if (!this.fixtureForm.sport) return 0;
+            
+            const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+            if (!sport) return 0;
+            
+            const sportName = sport.name.toLowerCase();
+            if (sportName.includes('volleyball')) return 5;
+            if (sportName.includes('basketball')) return 4;
+            if (sportName.includes('handball')) return 2;
+            return 0;
+        },
+        
+        getPeriodName(periodNumber) {
+            if (!this.fixtureForm.sport) return `Period ${periodNumber}`;
+            
+            const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+            if (sport && sport.name.toLowerCase().includes('volleyball')) {
+                return `Set ${periodNumber}`;
+            }
+            return `Period ${periodNumber}`;
+        },
+        
+        initializePeriods() {
+            const periodsCount = this.getPeriodsCount();
+            
+            // If we already have periods data and count matches, keep it
+            if (this.fixtureForm.periods.length === periodsCount) {
+                return;
+            }
+            
+            // Otherwise, initialize new periods
+            this.fixtureForm.periods = [];
+            for (let i = 0; i < periodsCount; i++) {
+                this.fixtureForm.periods.push({
+                    home: 0,
+                    away: 0
+                });
+            }
+            
+            this.calculateFinalScore();
+        },
+        
+        calculateFinalScore() {
+            if (!this.fixtureForm.sport || !this.fixtureForm.periods.length) {
+                this.fixtureForm.home_goals = 0;
+                this.fixtureForm.away_goals = 0;
+                return;
+            }
+            
+            const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+            if (!sport) return;
+            
+            const sportName = sport.name.toLowerCase();
+            let totalHome = 0;
+            let totalAway = 0;
+            
+            if (sportName.includes('volleyball')) {
+                this.fixtureForm.periods.forEach(period => {
+                    if (period.home > period.away) totalHome++;
+                    else if (period.away > period.home) totalAway++;
+                });
+            } else {
+                this.fixtureForm.periods.forEach(period => {
+                    totalHome += parseInt(period.home) || 0;
+                    totalAway += parseInt(period.away) || 0;
+                });
+            }
+            
+            this.fixtureForm.home_goals = totalHome;
+            this.fixtureForm.away_goals = totalAway;
+        },
+        
+        getScoreCalculationMethod() {
+            if (!this.fixtureForm.sport) return '';
+            
+            const sport = this.sports.find(s => s.id == this.fixtureForm.sport);
+            if (!sport) return '';
+            
+            const sportName = sport.name.toLowerCase();
+            if (sportName.includes('volleyball')) {
+                return '{% translate "Score calculated by sets won" %}';
+            } else if (sportName.includes('basketball') || sportName.includes('handball')) {
+                return '{% translate "Score calculated by total points" %}';
+            }
+            return '';
+        },
+        
+        getTeamName(teamId) {
+            if (!teamId) return '';
+            const team = this.teams.find(t => t.id == teamId);
+            return team ? team.name : '';
+        },
+        
+        onFinishedChange() {
+            if (this.fixtureForm.is_finished === 'true' && this.fixtureForm.sport) {
+                this.initializePeriods();
+            }
+        },
+        
+        handleSubmit() {
+            // Validation
+            if (!this.fixtureForm.name || !this.fixtureForm.short_name) {
+                this.updateSuccess = false;
+                this.updateMessage = '{% translate "Name and Short Name are required." %}';
+                return;
+            }
+            
+            if (!this.fixtureForm.home_team || !this.fixtureForm.away_team) {
+                this.updateSuccess = false;
+                this.updateMessage = '{% translate "Both Home Team and Away Team are required." %}';
+                return;
+            }
+            
+            if (this.fixtureForm.home_team === this.fixtureForm.away_team) {
+                this.updateSuccess = false;
+                this.updateMessage = '{% translate "Home Team and Away Team cannot be the same." %}';
+                return;
+            }
+            
+            if (this.fixtureForm.is_finished === 'true') {
+                if (this.fixtureForm.periods && this.fixtureForm.periods.length > 0) {
+                    for (let i = 0; i < this.fixtureForm.periods.length; i++) {
+                        const period = this.fixtureForm.periods[i];
+                        if (period.home === '' || period.home === null || 
+                            period.away === '' || period.away === null) {
+                            this.updateSuccess = false;
+                            this.updateMessage = '{% translate "Please enter scores for all periods" %}';
+                            return;
+                        }
+                        
+                        if (period.home < 0 || period.away < 0) {
+                            this.updateSuccess = false;
+                            this.updateMessage = '{% translate "Goals cannot be negative in any period" %}';
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            this.updateLoading = true;
+            this.updateMessage = '';
+            
+            const url = "{% url 'sport:AdminMatchUpdate' fixture.slug %}";
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            formData.append('name', this.fixtureForm.name);
+            formData.append('short_name', this.fixtureForm.short_name);
+            formData.append('is_finished', this.fixtureForm.is_finished);
+            
+            if (this.fixtureForm.sport) formData.append('sport', this.fixtureForm.sport);
+            if (this.fixtureForm.league) formData.append('league', this.fixtureForm.league);
+            if (this.fixtureForm.season) formData.append('season', this.fixtureForm.season);
+            if (this.fixtureForm.venue) formData.append('venue', this.fixtureForm.venue);
+            if (this.fixtureForm.starting_at) formData.append('starting_at', this.fixtureForm.starting_at);
+            if (this.fixtureForm.details) formData.append('details', this.fixtureForm.details);
+            
+            formData.append('home_team', this.fixtureForm.home_team);
+            formData.append('away_team', this.fixtureForm.away_team);
+            
+            if (this.fixtureForm.is_finished === 'true') {
+                formData.append('home_goals', this.fixtureForm.home_goals);
+                formData.append('away_goals', this.fixtureForm.away_goals);
+                
+                if (this.fixtureForm.periods && this.fixtureForm.periods.length > 0) {
+                    this.fixtureForm.periods.forEach((period, index) => {
+                        formData.append(`period_${index + 1}_home`, period.home);
+                        formData.append(`period_${index + 1}_away`, period.away);
+                    });
+                }
+            }
+            
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.updateLoading = false;
+                this.updateSuccess = data.type === 'Success';
+                this.updateMessage = data.message;
+                
+                if (this.updateSuccess) {
+                    setTimeout(() => {
+                        window.location.href = "{{ prev_Page_link }}";
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                this.updateLoading = false;
+                this.updateSuccess = false;
+                this.updateMessage = '{% translate "An error occurred. Please try again." %}';
+                console.error('Error:', error);
+            });
+        },
+        
+        loadDropdownData() {
+            try {
+                this.sports = {{ sports|safe }};
+                this.leagues = {{ leagues|safe }};
+                this.seasons = {{ seasons|safe }};
+                this.venues = {{ venues|safe }};
+                this.teams = {{ teams|safe }};
+            } catch (e) {
+                console.error('Error loading dropdown data:', e);
+                this.sports = [];
+                this.leagues = [];
+                this.seasons = [];
+                this.venues = [];
+                this.teams = [];
+            }
+        }
+    },
+    
+    watch: {
+        'fixtureForm.sport': function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.initializePeriods();
+            }
+        },
+        
+        'fixtureForm.is_finished': function(newVal) {
+            if (newVal === 'true' && this.fixtureForm.sport) {
+                this.initializePeriods();
+            }
+        }
+    },
+    
+    mounted() {
+        this.loadDropdownData();
+        if (this.fixtureForm.is_finished === 'true' && this.fixtureForm.sport) {
+            this.initializePeriods();
+        }
+    }
+});
+
+UpdateFixtureApp.mount('#update-fixture-app');
+</script>
+{% endblock custom_js %}

@@ -2553,6 +2553,7 @@ def AdminFixtureAdd(request):
                 fixture.scores = None
                 fixture.periods = None
 
+            fixture.save()
             if home_team_id:
                 try:
                     FixtureParticipant.objects.create(
@@ -2751,19 +2752,25 @@ def AdminMatchUpdate(request, slug):
             away_team_id = request.POST.get('away_team')
             
             if not home_team_id or not away_team_id:
-                messages.error(request, _("Both Home Team and Away Team are required"), extra_tags='Fixture')
-                return redirect('sport:AdminMatchUpdate', slug=slug)
+                return JsonResponse({
+                    'type': 'Error',
+                    'message': _("Both Home Team and Away Team are required")
+                }, status=400)
             
             if home_team_id == away_team_id:
-                messages.error(request, _("Home Team and Away Team cannot be the same"), extra_tags='Fixture')
-                return redirect('sport:AdminMatchUpdate', slug=slug)
+                return JsonResponse({
+                    'type': 'Error',
+                    'message': _("Home Team and Away Team cannot be the same")
+                }, status=400)
             
             try:
                 home_team = Teams.objects.get(id=home_team_id)
                 away_team = Teams.objects.get(id=away_team_id)
             except Teams.DoesNotExist:
-                messages.error(request, _("Selected team not found"), extra_tags='Fixture')
-                return redirect('sport:AdminMatchUpdate', slug=slug)
+                return JsonResponse({
+                    'type': 'Error',
+                    'message': _("Selected team not found")
+                }, status=400)
             
             # Update is_finished state
             is_finished = request.POST.get('is_finished') == 'true'
@@ -2778,45 +2785,105 @@ def AdminMatchUpdate(request, slug):
                     "developer_name": "FT"
                 }
                 
-                # Get and validate goals
-                home_goals = request.POST.get('home_goals')
-                away_goals = request.POST.get('away_goals')
+                # Process periods if exists
+                periods_data = []
+                total_home_goals = 0
+                total_away_goals = 0
                 
-                if home_goals is None or away_goals is None or home_goals == '' or away_goals == '':
-                    messages.error(request, _("Please provide scores for both teams when match is finished"), extra_tags='Fixture')
-                    return redirect('sport:AdminMatchUpdate', slug=slug)
+                sport_name = fixture.sport.name if fixture.sport else ''
+                periods_count = get_periods_count_by_sport(sport_name)
                 
-                try:
-                    home_goals = int(home_goals)
-                    away_goals = int(away_goals)
-                    
-                    if home_goals < 0 or away_goals < 0:
-                        messages.error(request, _("Goals cannot be negative"), extra_tags='Fixture')
-                        return redirect('sport:AdminMatchUpdate', slug=slug)
-                    
-                    # Update scores
-                    fixture.scores = [
-                        {
-                            "id": home_team.id,
-                            "score": {
-                                "goals": home_goals,
-                                "participant_name": home_team.name,
-                                "meta_location": "home"
+                if periods_count > 0:
+                    # Get periods data from POST
+                    for i in range(1, periods_count + 1):
+                        home_goals_key = f'period_{i}_home'
+                        away_goals_key = f'period_{i}_away'
+                        
+                        home_goals = request.POST.get(home_goals_key, '0')
+                        away_goals = request.POST.get(away_goals_key, '0')
+                        
+                        try:
+                            home_goals_int = int(home_goals) if home_goals else 0
+                            away_goals_int = int(away_goals) if away_goals else 0
+                            
+                            if home_goals_int < 0 or away_goals_int < 0:
+                                return JsonResponse({
+                                    'type': 'Error',
+                                    'message': f'Goals cannot be negative in period {i}'
+                                }, status=400)
+                            
+                            period_data = {
+                                "period_number": i,
+                                "home_goals": home_goals_int,
+                                "away_goals": away_goals_int,
+                                "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
                             }
-                        },
-                        {
-                            "id": away_team.id,
-                            "score": {
-                                "goals": away_goals,
-                                "participant_name": away_team.name,
-                                "meta_location": "away"
-                            }
+                            periods_data.append(period_data)
+                            
+                            # Calculate total based on sport type
+                            if sport_name.lower() == 'volleyball':
+                                if home_goals_int > away_goals_int:
+                                    total_home_goals += 1
+                                elif away_goals_int > home_goals_int:
+                                    total_away_goals += 1
+                            else:
+                                total_home_goals += home_goals_int
+                                total_away_goals += away_goals_int
+                                
+                        except ValueError:
+                            return JsonResponse({
+                                'type': 'Error',
+                                'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
+                            }, status=400)
+                    
+                    fixture.periods = periods_data
+                else:
+                    # No periods - use direct goals input
+                    home_goals = request.POST.get('home_goals')
+                    away_goals = request.POST.get('away_goals')
+                    
+                    if home_goals is None or away_goals is None or home_goals == '' or away_goals == '':
+                        return JsonResponse({
+                            'type': 'Error',
+                            'message': _("Please provide scores for both teams when match is finished")
+                        }, status=400)
+                    
+                    try:
+                        total_home_goals = int(home_goals)
+                        total_away_goals = int(away_goals)
+                        
+                        if total_home_goals < 0 or total_away_goals < 0:
+                            return JsonResponse({
+                                'type': 'Error',
+                                'message': _("Goals cannot be negative")
+                            }, status=400)
+                    except ValueError:
+                        return JsonResponse({
+                            'type': 'Error',
+                            'message': _("Invalid goal values. Please enter valid numbers")
+                        }, status=400)
+                    
+                    fixture.periods = None
+                
+                # Update scores
+                fixture.scores = [
+                    {
+                        "id": home_team.id,
+                        "score": {
+                            "goals": total_home_goals,
+                            "participant_name": home_team.name,
+                            "meta_location": "home"
                         }
-                    ]
-                    
-                except ValueError:
-                    messages.error(request, _("Invalid goal values. Please enter valid numbers"), extra_tags='Fixture')
-                    return redirect('sport:AdminMatchUpdate', slug=slug)
+                    },
+                    {
+                        "id": away_team.id,
+                        "score": {
+                            "goals": total_away_goals,
+                            "participant_name": away_team.name,
+                            "meta_location": "away"
+                        }
+                    }
+                ]
             else:
                 # Match not finished - clear scores and set state to Not Started
                 fixture.state_data = {
@@ -2827,6 +2894,7 @@ def AdminMatchUpdate(request, slug):
                     "developer_name": "NS"
                 }
                 fixture.scores = None
+                fixture.periods = None
             
             # Save fixture
             fixture.save()
@@ -2848,12 +2916,16 @@ def AdminMatchUpdate(request, slug):
                 meta_location='away'
             )
             
-            messages.success(request, _("Fixture updated successfully"), extra_tags='Fixture')
-            return redirect('sport:AdminMatchList')
+            return JsonResponse({
+                'type': 'Success',
+                'message': _("Fixture updated successfully")
+            })
             
         except Exception as e:
-            messages.error(request, _(f"Error updating fixture: {str(e)}"), extra_tags='Fixture')
-            return redirect('sport:AdminMatchUpdate', slug=slug)
+            return JsonResponse({
+                'type': 'Error',
+                'message': f"Error updating fixture: {str(e)}"
+            }, status=400)
     
     # GET request - display form
     # Get dropdown data
@@ -2863,32 +2935,52 @@ def AdminMatchUpdate(request, slug):
     venues = Venues.objects.all()
     teams = Teams.objects.all()
     
-    # Get current scores if match is finished
+    # Serialize dropdown data for Vue.js
+    sports_data = [{'id': s.id, 'name': s.name} for s in sports]
+    leagues_data = [{'id': l.id, 'name': l.name} for l in leagues]
+    seasons_data = [{'id': s.id, 'name': s.name} for s in seasons]
+    venues_data = [{'id': v.id, 'name': v.name} for v in venues]
+    teams_data = [{'id': t.id, 'name': t.name} for t in teams]
+    
+    # Get current scores and periods if match is finished
     current_scores = {
         'home_goals': 0,
         'away_goals': 0,
         'is_finished': False
     }
     
+    current_periods = []
+    
     if fixture.state_data and fixture.state_data.get('state') == 'FT':
         current_scores['is_finished'] = True
+        
+        # Get scores
         if fixture.scores:
             for score_data in fixture.scores:
                 if score_data.get('score', {}).get('meta_location') == 'home':
                     current_scores['home_goals'] = score_data.get('score', {}).get('goals', 0)
                 elif score_data.get('score', {}).get('meta_location') == 'away':
                     current_scores['away_goals'] = score_data.get('score', {}).get('goals', 0)
+        
+        # Get periods
+        if fixture.periods:
+            for period in fixture.periods:
+                current_periods.append({
+                    'home': period.get('home_goals', 0),
+                    'away': period.get('away_goals', 0)
+                })
     
     context = {
         'fixture': fixture,
         'home_team': home_participant.team if home_participant else None,
         'away_team': away_participant.team if away_participant else None,
         'current_scores': current_scores,
-        'sports': sports,
-        'leagues': leagues,
-        'seasons': seasons,
-        'venues': venues,
-        'teams': teams,
+        'current_periods': json.dumps(current_periods),
+        'sports': json.dumps(sports_data),
+        'leagues': json.dumps(leagues_data),
+        'seasons': json.dumps(seasons_data),
+        'venues': json.dumps(venues_data),
+        'teams': json.dumps(teams_data),
         'current_page': _('Update Fixture'),
         'prev_Page': _('Fixtures'),
         'prev_Page_link': reverse_lazy('sport:AdminMatchList'),
