@@ -2553,6 +2553,7 @@ def AdminFixtureAdd(request):
                 fixture.scores = None
                 fixture.periods = None
 
+            fixture.save()
             if home_team_id:
                 try:
                     FixtureParticipant.objects.create(
