@@ -128,8 +128,10 @@ def MatchDetailsApi(request, match_id):
         
         fixture = get_object_or_404(
             Fixtures.objects.select_related(
-                'league', 'season', 'venue', 'home_team', 'away_team'
-            ), 
+                'league', 'season', 'venue'
+            ).prefetch_related (
+                'participants__team'
+            ),
             id=match_id
         )        
         goals_data = fixture.events or [] 
