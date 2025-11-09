@@ -1835,13 +1835,15 @@ def AdminMatchTeamPlayerList(request,match_slug, slug):
                 'match': match,
                 'team': team,
                 'team_players': team_players,
-               'match_players': match_players,
+                'match_players': match_players,
                 'players': players,
-               'match_team_player_form': AdminMatchTeamPlayerForm(),
-               'summary_form': AdminMatchSummaryForm(),
-               'static_form': AdminMatchStaticsForm(),
-               'current_page': _('Match Team Players')}
+                'match_team_player_form': AdminMatchTeamPlayerForm(),
+                'summary_form': AdminMatchSummaryForm(),
+                'static_form': AdminMatchStaticsForm(),
+                'current_page': _('Match Team Players')}
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/player.html', context)
+
+
 @authenticated_staf
 @staff_only
 def AdminTeamPlayerMatchAdd(request, slug):
@@ -1965,7 +1967,6 @@ def AdminPlayersList(request):
     teams = Teams.objects.all()
     # GET logic with pagination
     players_list = Players.objects.all().order_by('name')
-    players_list = MultiSourcePlayers.objects.all().order_by('name')
     paginator = Paginator(players_list, 25)  # Show 25 players per page
     page_number = request.GET.get('page')
 
@@ -2037,11 +2038,14 @@ def AdminPlayersList(request):
     else:
         context = {
             'page_obj': page_obj,  # Pass the paginated object
+            'players': page_obj.object_list,
             'players_form': AdminPlayersForm(),
-            'current_page': _('Players')
+            'current_page': _('Players'),
+            'teams': teams,
         }
 
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
+
 
 @authenticated_staf
 @staff_only
@@ -2294,296 +2298,389 @@ def AdminPlayerStaticAdd(request, slug):
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/statics.html', context)
 
 ##########################  Match ################################
+# @authenticated_staf
+# @staff_only
+# def AdminMatchList(request):
+#     # The POST logic for adding a new match remains the same.
+#     if request.method == "POST":
+#         matches_form = AdminMatchForm(request.POST or None, request.FILES or None)
+#         if matches_form.is_valid():  # Added form validation check
+#             home_team_id = request.POST.get('home_team')
+#             away_team_id = request.POST.get('away_team')
+
+#             if home_team_id == away_team_id:
+#                 messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
+#                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+
+#             # Your existing POST logic continues here...
+#             round_id = request.POST.get('round')
+#             venues_id = request.POST.get('venues')
+#             played = request.POST.get('played')
+#             start_time = request.POST.get('start_time')
+
+#             home_team = Teams.objects.get(id=home_team_id)
+#             away_team = Teams.objects.get(id=away_team_id)
+#             round_obj = Round.objects.get(id=round_id)
+
+#             if home_team.sport != round_obj.sport or away_team.sport != round_obj.sport:
+#                 messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"),
+#                                extra_tags='Match')
+#                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+
+#             name = home_team.name + ' vs ' + away_team.name
+#             venues = Venues.objects.get(id=venues_id) if venues_id else None
+
+#             match_object = Match(
+#                 name=name,
+#                 home_team=home_team,
+#                 away_team=away_team,
+#                 round=round_obj,
+#                 group=round_obj.group,
+#                 league=round_obj.league,
+#                 season=round_obj.season,
+#                 sport=round_obj.sport,
+#                 played=played,
+#                 venues=venues,
+#                 start_time=start_time,
+#             )
+#             match_object.save()
+#             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
+#             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
+#         else:
+#             messages.error(request, _("Match Not Add , Please Try Again"), extra_tags='Match')
+
+#     # --- PAGINATION LOGIC FOR GET REQUEST ---
+
+#     # 1. Get the full list of fixtures
+#     fixtures_list = Fixtures.objects.all().order_by('starting_at')
+
+#     # 2. Create a Paginator object (e.g., 25 items per page)
+#     paginator = Paginator(fixtures_list, 25)
+
+#     # 3. Get the page number from the URL query parameter
+#     page_number = request.GET.get('page')
+
+#     # 4. Get the corresponding page object
+#     try:
+#         page_obj = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         # If page is not an integer, deliver first page.
+#         page_obj = paginator.page(1)
+#     except EmptyPage:
+#         # If page is out of range (e.g. 9999), deliver last page of results.
+#         page_obj = paginator.page(paginator.num_pages)
+
+#     # Get dropdown data for Add Fixture modal
+#     sports_data = list(Sport.objects.values('id', 'name'))
+#     leagues_data = list(Leagues.objects.values('id', 'name'))
+#     seasons_data = list(Season.objects.values('id', 'name'))
+#     venues_data = list(Venues.objects.values('id', 'name'))
+#     teams_data = list(Teams.objects.filter(status='Active').values('id', 'name'))
+
+
+#     context = {
+#         'page_obj': page_obj,
+#         'matches_form': AdminMatchForm(),
+#         'current_page': _('Match'),
+#         'sports': json.dumps(sports_data),
+#         'leagues': json.dumps(leagues_data),
+#         'seasons': json.dumps(seasons_data),
+#         'venues': json.dumps(venues_data),
+#         'teams': json.dumps(teams_data),
+#     }
+#     return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/admin.html', context)
+
+
+# def get_periods_count_by_sport(sport_name):
+#     periods_config = {
+#         'volleyball': 5,
+#         'basketball': 4, 
+#         'handball': 2,
+#         'football' :2,
+#     }
+#     sport_name_lower = sport_name.lower() if sport_name else ''
+#     for sport_key, periods in periods_config.items():
+#         if sport_key in sport_name_lower:
+#             return periods
+#     return 2
+
+
 @authenticated_staf
 @staff_only
 def AdminMatchList(request):
-    # The POST logic for adding a new match remains the same.
+    matches = Match.objects.all().order_by('-id')
     if request.method == "POST":
         matches_form = AdminMatchForm(request.POST or None, request.FILES or None)
-        if matches_form.is_valid():  # Added form validation check
-            home_team_id = request.POST.get('home_team')
-            away_team_id = request.POST.get('away_team')
-
-            if home_team_id == away_team_id:
-                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
-                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
-
-            # Your existing POST logic continues here...
-            round_id = request.POST.get('round')
-            venues_id = request.POST.get('venues')
+        if matches_form:
+            home_team = request.POST.get('home_team')
+            away_team = request.POST.get('away_team')
+            round = request.POST.get('round')
+            venues = request.POST.get('venues')
             played = request.POST.get('played')
             start_time = request.POST.get('start_time')
-
-            home_team = Teams.objects.get(id=home_team_id)
-            away_team = Teams.objects.get(id=away_team_id)
-            round_obj = Round.objects.get(id=round_id)
-
-            if home_team.sport != round_obj.sport or away_team.sport != round_obj.sport:
-                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"),
-                               extra_tags='Match')
+            home_team = Teams.objects.get(id=home_team)
+            away_team = Teams.objects.get(id=away_team)
+            round = Round.objects.get(id=round)
+            if home_team == away_team:
+                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
-
+            if home_team.sport != round.sport or away_team.sport != round.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
             name = home_team.name + ' vs ' + away_team.name
-            venues = Venues.objects.get(id=venues_id) if venues_id else None
-
-            match_object = Match(
-                name=name,
-                home_team=home_team,
-                away_team=away_team,
-                round=round_obj,
-                group=round_obj.group,
-                league=round_obj.league,
-                season=round_obj.season,
-                sport=round_obj.sport,
-                played=played,
-                venues=venues,
-                start_time=start_time,
-            )
+            if venues == None or venues == '':
+                venues = None
+            else:
+                venues = Venues.objects.get(id=venues)
+            match_object = Match(name=name,home_team=home_team,away_team=away_team,
+                                    round=round,group=round.group,league=round.league,season=round.season,
+                                    sport=round.sport,played=played,venues=venues,start_time=start_time,)
             match_object.save()
             messages.success(request, _("Match Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
         else:
             messages.error(request, _("Match Not Add , Please Try Again"), extra_tags='Match')
-
-    # --- PAGINATION LOGIC FOR GET REQUEST ---
-
-    # 1. Get the full list of fixtures
-    fixtures_list = Fixtures.objects.all().order_by('starting_at')
-
-    # 2. Create a Paginator object (e.g., 25 items per page)
-    paginator = Paginator(fixtures_list, 25)
-
-    # 3. Get the page number from the URL query parameter
-    page_number = request.GET.get('page')
-
-    # 4. Get the corresponding page object
-    try:
-        page_obj = paginator.page(page_number)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        page_obj = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        page_obj = paginator.page(paginator.num_pages)
-
-    # Get dropdown data for Add Fixture modal
-    sports_data = list(Sport.objects.values('id', 'name'))
-    leagues_data = list(Leagues.objects.values('id', 'name'))
-    seasons_data = list(Season.objects.values('id', 'name'))
-    venues_data = list(Venues.objects.values('id', 'name'))
-    teams_data = list(Teams.objects.filter(status='Active').values('id', 'name'))
-
-
-    context = {
-        'page_obj': page_obj,
-        'matches_form': AdminMatchForm(),
-        'current_page': _('Match'),
-        'sports': json.dumps(sports_data),
-        'leagues': json.dumps(leagues_data),
-        'seasons': json.dumps(seasons_data),
-        'venues': json.dumps(venues_data),
-        'teams': json.dumps(teams_data),
-    }
-    return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/admin.html', context)
-
-def get_periods_count_by_sport(sport_name):
-    periods_config = {
-        'volleyball': 5,
-        'basketball': 4, 
-        'handball': 2,
-        'football' :2,
-    }
-    sport_name_lower = sport_name.lower() if sport_name else ''
-    for sport_key, periods in periods_config.items():
-        if sport_key in sport_name_lower:
-            return periods
-    return 2
+    else:
+        context = {'matches': matches, 'matches_form': AdminMatchForm(), 'current_page': _('Match')}
+        return render(request, f'{BACKEND_TEMPLATES}/sport/match/admin.html', context)
 
 @authenticated_staf
 @staff_only
-def AdminFixtureAdd(request):
-    if request.method == "POST":
-        try:
-            # Get required fields
-            name = request.POST.get('name')
-            short_name = request.POST.get('short_name')
-            home_team_id = request.POST.get('home_team')
-            away_team_id = request.POST.get('away_team')
-            sport_id = request.POST.get('sport')
-            
-            if not name or not short_name:
-                return JsonResponse({
-                    'type': 'Error', 
-                    'message': 'Name and Short Name are required.'
-                }, status=400)
-            
-            # Create fixture object
-            fixture = Fixtures()
-            fixture.name = name
-            fixture.short_name = short_name
-            is_finished = request.POST.get('is_finished') == 'true'
-            
-            if is_finished:
-                fixture.state_data = {
-                    "id": 5,
-                    "name": "Full Time",
-                    "state": "FT",
-                    "short_name": "FT",
-                    "developer_name": "FT"
-                }
-            else:
-                fixture.state_data = {
-                    "id": 1, 
-                    "name": "Not Started",
-                    "state": "NS",
-                    "short_name": "NS",
-                    "developer_name": "NS"
-                }
-            # Optional fields
-            sport_id = request.POST.get('sport')
-            if sport_id:
-                try:
-                    sport = Sport.objects.get(id=sport_id)
-                    fixture.sport = sport
-                except Sport.DoesNotExist:
-                    pass
-            
-            league_id = request.POST.get('league')
-            if league_id:
-                try:
-                    fixture.league = Leagues.objects.get(id=league_id)
-                except Leagues.DoesNotExist:
-                    pass
-            
-            season_id = request.POST.get('season')
-            if season_id:
-                try:
-                    fixture.season = Season.objects.get(id=season_id)
-                except Season.DoesNotExist:
-                    pass
-            
-            venue_id = request.POST.get('venue')
-            if venue_id:
-                try:
-                    fixture.venue = Venues.objects.get(id=venue_id)
-                except Venues.DoesNotExist:
-                    pass
-            
-            starting_at = request.POST.get('starting_at')
-            if starting_at:
-                fixture.starting_at = starting_at
-            
-            details = request.POST.get('details')
-            if details:
-                fixture.details = details
-            
-            try:
-                home_team = Teams.objects.get(id=home_team_id)
-                away_team = Teams.objects.get(id=away_team_id)
-            except Teams.DoesNotExist as e:
-                return JsonResponse({
-                    'type': 'Error', 
-                    'message': f'Team not found: {str(e)}'
-                }, status=400)
-            
-            if is_finished:
-                periods_data = []
-                total_home_goals = 0
-                total_away_goals = 0
-                
-                sport_name = fixture.sport.name if fixture.sport else ''
-                periods_count = get_periods_count_by_sport(sport_name)
-                
-                for i in range(1, periods_count + 1):
-                    home_goals_key = f'period_{i}_home'
-                    away_goals_key = f'period_{i}_away'
-                    
-                    home_goals = request.POST.get(home_goals_key, '0')
-                    away_goals = request.POST.get(away_goals_key, '0')
-                    
-                    try:
-                        home_goals_int = int(home_goals) if home_goals else 0
-                        away_goals_int = int(away_goals) if away_goals else 0
-                        
-                        period_data = {
-                            "period_number": i,
-                            "home_goals": home_goals_int,
-                            "away_goals": away_goals_int,
-                            "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
-                        }
-                        periods_data.append(period_data)
-                        
-                        if sport_name.lower() == 'volleyball':
-                            if home_goals_int > away_goals_int:
-                                total_home_goals += 1
-                            elif away_goals_int > home_goals_int:
-                                total_away_goals += 1
-                        else:
-                            total_home_goals += home_goals_int
-                            total_away_goals += away_goals_int
-                            
-                    except ValueError:
-                        return JsonResponse({
-                            'type': 'Error', 
-                            'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
-                        }, status=400)
-                
-                fixture.periods = periods_data
-                
-                fixture.scores = [
-                    {
-                        "id": home_team.id,
-                        "score": {
-                            "goals": total_home_goals,
-                            "participant_name": home_team.name,
-                            "meta_location": "home"
-                        }
-                    },
-                    {
-                        "id": away_team.id,
-                        "score": {
-                            "goals": total_away_goals,
-                            "participant_name": away_team.name,
-                            "meta_location": "away"
-                        }
-                    }
-                ]
-                
-            else:
-                fixture.scores = None
-                fixture.periods = None
+def AdminMatchUpdate(request, slug):
+    match = Match.objects.get(slug=slug)
 
-            fixture.save()
-            if home_team_id:
-                try:
-                    FixtureParticipant.objects.create(
-                        fixture=fixture,
-                        team=home_team,
-                        meta_location='home'
-                    )
-                except Teams.DoesNotExist:
-                    pass
+    if request.method == "POST":
+        matches_form = AdminMatchForm(request.POST or None, request.FILES or None, instance=match)
+        if matches_form:
+            home_team = request.POST.get('home_team')
+            away_team = request.POST.get('away_team')
+            location = request.POST.get('location')
+            round = request.POST.get('round')
+            played = request.POST.get('played')
+            start_time = request.POST.get('start_time')
+
+            home_team = Teams.objects.get(id=home_team)
+            away_team = Teams.objects.get(id=away_team)
+            round = Round.objects.get(id=round)
+
+            if home_team == away_team:
+                messages.error(request, _("Home Team and Away Team Can't Be Same"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
+            if home_team.sport != round.sport or away_team.sport != round.sport:
+                messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchUpdate', kwargs={'slug': slug}))
+
+            if start_time == None or start_time == '':
+                start_time = match.start_time
+            else:
+                start_time = start_time
+
+
+
+            match_object = Match.objects.get(slug=slug)
+            match_object.home_team = home_team
+            match_object.away_team = away_team
+            match_object.location = location
+            match_object.round = round
+            match_object.played = played
+            match_object.start_time = start_time
+            match_object.save()
+
+            messages.success(request, _("Match Update Successfully"), extra_tags='Match')
+            return redirect(request.META['HTTP_REFERER'])
+        else:
+            messages.error(request, _("Match Not Update , Please Try Again"), extra_tags='Match')
+    context = {'match': match, 'matches_form': AdminMatchForm(instance=match), 'current_page': _('Update'),
+                'prev_Page': _('Match'), }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/match/update.html', context)
+
+
+# @authenticated_staf
+# @staff_only
+# def AdminFixtureAdd(request):
+#     if request.method == "POST":
+#         try:
+#             # Get required fields
+#             name = request.POST.get('name')
+#             short_name = request.POST.get('short_name')
+#             home_team_id = request.POST.get('home_team')
+#             away_team_id = request.POST.get('away_team')
+#             sport_id = request.POST.get('sport')
             
-            if away_team_id:
-                try:
-                    FixtureParticipant.objects.create(
-                        fixture=fixture,
-                        team=away_team,
-                        meta_location='away'
-                    )
-                except Teams.DoesNotExist:
-                    pass
+#             if not name or not short_name:
+#                 return JsonResponse({
+#                     'type': 'Error', 
+#                     'message': 'Name and Short Name are required.'
+#                 }, status=400)
             
-            messages.success(request, _("Fixture Added Successfully"), extra_tags='Fixture')
-            return JsonResponse({'type': 'Success', 'message': 'Fixture Added Successfully'})
+#             # Create fixture object
+#             fixture = Fixtures()
+#             fixture.name = name
+#             fixture.short_name = short_name
+#             is_finished = request.POST.get('is_finished') == 'true'
             
-        except Exception as e:
-            return JsonResponse({
-                'type': 'Error', 
-                'message': f'Error: {str(e)}'
-            }, status=400)
+#             if is_finished:
+#                 fixture.state_data = {
+#                     "id": 5,
+#                     "name": "Full Time",
+#                     "state": "FT",
+#                     "short_name": "FT",
+#                     "developer_name": "FT"
+#                 }
+#             else:
+#                 fixture.state_data = {
+#                     "id": 1, 
+#                     "name": "Not Started",
+#                     "state": "NS",
+#                     "short_name": "NS",
+#                     "developer_name": "NS"
+#                 }
+#             # Optional fields
+#             sport_id = request.POST.get('sport')
+#             if sport_id:
+#                 try:
+#                     sport = Sport.objects.get(id=sport_id)
+#                     fixture.sport = sport
+#                 except Sport.DoesNotExist:
+#                     pass
+            
+#             league_id = request.POST.get('league')
+#             if league_id:
+#                 try:
+#                     fixture.league = Leagues.objects.get(id=league_id)
+#                 except Leagues.DoesNotExist:
+#                     pass
+            
+#             season_id = request.POST.get('season')
+#             if season_id:
+#                 try:
+#                     fixture.season = Season.objects.get(id=season_id)
+#                 except Season.DoesNotExist:
+#                     pass
+            
+#             venue_id = request.POST.get('venue')
+#             if venue_id:
+#                 try:
+#                     fixture.venue = Venues.objects.get(id=venue_id)
+#                 except Venues.DoesNotExist:
+#                     pass
+            
+#             starting_at = request.POST.get('starting_at')
+#             if starting_at:
+#                 fixture.starting_at = starting_at
+            
+#             details = request.POST.get('details')
+#             if details:
+#                 fixture.details = details
+            
+#             try:
+#                 home_team = Teams.objects.get(id=home_team_id)
+#                 away_team = Teams.objects.get(id=away_team_id)
+#             except Teams.DoesNotExist as e:
+#                 return JsonResponse({
+#                     'type': 'Error', 
+#                     'message': f'Team not found: {str(e)}'
+#                 }, status=400)
+            
+#             if is_finished:
+#                 periods_data = []
+#                 total_home_goals = 0
+#                 total_away_goals = 0
+                
+#                 sport_name = fixture.sport.name if fixture.sport else ''
+#                 periods_count = get_periods_count_by_sport(sport_name)
+                
+#                 for i in range(1, periods_count + 1):
+#                     home_goals_key = f'period_{i}_home'
+#                     away_goals_key = f'period_{i}_away'
+                    
+#                     home_goals = request.POST.get(home_goals_key, '0')
+#                     away_goals = request.POST.get(away_goals_key, '0')
+                    
+#                     try:
+#                         home_goals_int = int(home_goals) if home_goals else 0
+#                         away_goals_int = int(away_goals) if away_goals else 0
+                        
+#                         period_data = {
+#                             "period_number": i,
+#                             "home_goals": home_goals_int,
+#                             "away_goals": away_goals_int,
+#                             "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
+#                         }
+#                         periods_data.append(period_data)
+                        
+#                         if sport_name.lower() == 'volleyball':
+#                             if home_goals_int > away_goals_int:
+#                                 total_home_goals += 1
+#                             elif away_goals_int > home_goals_int:
+#                                 total_away_goals += 1
+#                         else:
+#                             total_home_goals += home_goals_int
+#                             total_away_goals += away_goals_int
+                            
+#                     except ValueError:
+#                         return JsonResponse({
+#                             'type': 'Error', 
+#                             'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
+#                         }, status=400)
+                
+#                 fixture.periods = periods_data
+                
+#                 fixture.scores = [
+#                     {
+#                         "id": home_team.id,
+#                         "score": {
+#                             "goals": total_home_goals,
+#                             "participant_name": home_team.name,
+#                             "meta_location": "home"
+#                         }
+#                     },
+#                     {
+#                         "id": away_team.id,
+#                         "score": {
+#                             "goals": total_away_goals,
+#                             "participant_name": away_team.name,
+#                             "meta_location": "away"
+#                         }
+#                     }
+#                 ]
+                
+#             else:
+#                 fixture.scores = None
+#                 fixture.periods = None
+
+#             fixture.save()
+#             if home_team_id:
+#                 try:
+#                     FixtureParticipant.objects.create(
+#                         fixture=fixture,
+#                         team=home_team,
+#                         meta_location='home'
+#                     )
+#                 except Teams.DoesNotExist:
+#                     pass
+            
+#             if away_team_id:
+#                 try:
+#                     FixtureParticipant.objects.create(
+#                         fixture=fixture,
+#                         team=away_team,
+#                         meta_location='away'
+#                     )
+#                 except Teams.DoesNotExist:
+#                     pass
+            
+#             messages.success(request, _("Fixture Added Successfully"), extra_tags='Fixture')
+#             return JsonResponse({'type': 'Success', 'message': 'Fixture Added Successfully'})
+            
+#         except Exception as e:
+#             return JsonResponse({
+#                 'type': 'Error', 
+#                 'message': f'Error: {str(e)}'
+#             }, status=400)
     
-    return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'}, status=400)
+#     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'}, status=400)
+
 
 @authenticated_staf
 @staff_only
@@ -2679,9 +2776,9 @@ def AdminMatchDetails(request, slug):
 
 
 
-@authenticated_staf
-@staff_only
-def AdminMatchUpdate(request, slug):
+# @authenticated_staf
+# @staff_only
+# def AdminMatchUpdate(request, slug):
     try:
         fixture = Fixtures.objects.get(slug=slug)
     except Fixtures.DoesNotExist:
