@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
 
-from api.v4.serializers.sport.sport import FixtureDetailsSerializer, FixtureGoalsSerializer, LeagueSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
+from api.v4.serializers.sport.sport import FixtureDetailsSerializer, FixtureGoalsSerializer, LeagueSerializer, MatchSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
     TeamWithMatchesSerializer, PlyerSerializer
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
@@ -28,27 +28,40 @@ base_url = settings.SPORT_MONKS_URL
 
 
 def _get_serialized_fixtures_for_date(fetch_date, sport_obj):
-    """Queries the DB for a given date and sport, serializes the data, and returns it."""
+    """Queries the DB for a given date and sport, serializes data from both Fixtures and Match models."""
     start_of_day_utc = datetime.combine(fetch_date, time.min, tzinfo=timezone.utc)
     end_of_day_utc = datetime.combine(fetch_date, time.max, tzinfo=timezone.utc)
 
-    fixtures_for_day = Fixtures.objects.filter(
-        starting_at__range=(start_of_day_utc, end_of_day_utc),
-        sport=sport_obj
+    fixtures_for_day = Fixtures.objects.filter(starting_at__range=(start_of_day_utc, end_of_day_utc),sport=sport_obj
     ).select_related('league', 'season').prefetch_related('participants__team').order_by('league__name', 'starting_at')
 
-    leagues_with_fixtures = defaultdict(list)
-    for fixture in fixtures_for_day:
-        if fixture.league:
-            leagues_with_fixtures[fixture.league].append(fixture)
+    matches_for_day = Match.objects.filter(start_time__range=(start_of_day_utc, end_of_day_utc),sport=sport_obj,status='Active'
+    ).select_related('league', 'home_team', 'away_team').order_by('league__name', 'start_time')
 
     leagues_data = []
-    for league, fixtures in leagues_with_fixtures.items():
+    fixtures_by_league = defaultdict(list)
+    for fixture in fixtures_for_day:
+        if fixture.league:
+            fixtures_by_league[fixture.league].append(fixture)
+    matches_by_league = defaultdict(list)
+
+    for match in matches_for_day:
+        if match.league:
+            matches_by_league[match.league].append(match)
+    all_leagues = set(list(fixtures_by_league.keys()) + list(matches_by_league.keys()))
+
+    for league in sorted(all_leagues, key=lambda x: x.name if x else ""):
         league_serializer = SimpleLeagueSerializer(league)
-        fixture_serializer = FixtureSerializer(fixtures, many=True)
+        league_fixtures = fixtures_by_league.get(league, [])
+        fixture_serializer = FixtureSerializer(league_fixtures, many=True)
+        league_matches = matches_by_league.get(league, [])
+        match_serializer = MatchSerializer(league_matches, many=True,context={'request': None}
+        )
+
         leagues_data.append({
             'league': league_serializer.data,
-            'matches': fixture_serializer.data
+            'fixtures': fixture_serializer.data,
+            'matches': match_serializer.data
         })
 
     live_statuses_from_docs = [
@@ -57,12 +70,16 @@ def _get_serialized_fixtures_for_date(fetch_date, sport_obj):
         'SUSPENDED', 'INTERRUPTED'
     ]
 
-    live_count = fixtures_for_day.filter(
+    live_fixtures_count = fixtures_for_day.filter(
         state__in=live_statuses_from_docs
     ).count()
 
+    live_matches_count = matches_for_day.filter(
+        is_live='Yes'
+    ).count()
+
     return {
-        'live_count': live_count,
+        'live_count': live_fixtures_count + live_matches_count,
         'leagues': leagues_data
     }
 
@@ -86,8 +103,7 @@ def FixturesByDateApiList(request, sport, date, lang):
     try:
         sport_obj = Sport.objects.get(name__iexact=sport)
         fetched_record = FetchedDate.objects.filter(date=fetch_date, sport=sport_obj).first()
-        has_fixtures = Fixtures.objects.filter(starting_at__date=fetch_date,
-                                               sport=sport_obj).exists() if fetched_record else False
+        has_fixtures = Fixtures.objects.filter(starting_at__date=fetch_date,sport=sport_obj).exists() if fetched_record else False
 
         if fetched_record and has_fixtures:
             today = django_timezone.now().date()
@@ -100,8 +116,7 @@ def FixturesByDateApiList(request, sport, date, lang):
                     )
                     thread.start()
 
-            # FIX: Pass sport_obj to the function
-            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj)
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
             return Response(response_data, status=status.HTTP_200_OK)
         else:
             success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
@@ -111,8 +126,7 @@ def FixturesByDateApiList(request, sport, date, lang):
             FetchedDate.objects.update_or_create(
                 date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
             )
-            # FIX: Pass sport_obj to the function
-            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj)
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
             return Response(response_data, status=status.HTTP_200_OK)
 
     except Sport.DoesNotExist:
@@ -120,6 +134,70 @@ def FixturesByDateApiList(request, sport, date, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred.{e}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
+    """
+    Modified to return data from both Fixtures and Match models
+    """
+    start_of_day_utc = datetime.combine(fetch_date, time.min, tzinfo=timezone.utc)
+    end_of_day_utc = datetime.combine(fetch_date, time.max, tzinfo=timezone.utc)
+
+    fixtures_for_day = Fixtures.objects.filter(
+        starting_at__range=(start_of_day_utc, end_of_day_utc),
+        sport=sport_obj
+    ).select_related('league', 'season').prefetch_related('participants__team').order_by('league__name', 'starting_at')
+
+    matches_for_day = Match.objects.filter(
+        start_time__range=(start_of_day_utc, end_of_day_utc),
+        sport=sport_obj,
+        status='Active'
+    ).select_related('league', 'home_team', 'away_team').order_by('league__name', 'start_time')
+
+    leagues_data = []
+    
+    fixtures_by_league = defaultdict(list)
+    for fixture in fixtures_for_day:
+        if fixture.league:
+            fixtures_by_league[fixture.league].append(fixture)
+    
+    matches_by_league = defaultdict(list)
+    for match in matches_for_day:
+        if match.league:
+            matches_by_league[match.league].append(match)
+
+    all_leagues = set(list(fixtures_by_league.keys()) + list(matches_by_league.keys()))
+    
+    for league in sorted(all_leagues, key=lambda x: x.name if x else ""):
+        league_serializer = SimpleLeagueSerializer(league)
+        league_fixtures = fixtures_by_league.get(league, [])
+        fixture_serializer = FixtureSerializer(league_fixtures, many=True)
+        league_matches = matches_by_league.get(league, [])
+        match_serializer = MatchSerializer(league_matches, many=True,context={'request': request})
+        
+        leagues_data.append({
+            'league': league_serializer.data,
+            'fixtures': fixture_serializer.data,
+            'matches': match_serializer.data
+        })
+
+    live_statuses_from_docs = [
+        'INPLAY_1ST_HALF', 'HT', 'INPLAY_2ND_HALF', 'BREAK',
+        'INPLAY_ET', 'EXTRA_TIME_BREAK', 'INPLAY_PENALTIES', 'PEN_BREAK',
+        'SUSPENDED', 'INTERRUPTED'
+    ]
+
+    live_fixtures_count = fixtures_for_day.filter(
+        state__in=live_statuses_from_docs
+    ).count()
+    
+    live_matches_count = matches_for_day.filter(
+        is_live='Yes'
+    ).count()
+
+    return {
+        'live_count': live_fixtures_count + live_matches_count,
+        'leagues': leagues_data
+    }
 
 @api_view(['GET'])
 def MatchDetailsApi(request, match_id):

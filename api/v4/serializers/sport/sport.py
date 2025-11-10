@@ -33,7 +33,6 @@ class LeagueSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'api_id', 'name',  'sport',
             'image_path', 'image', 'currentseason', 'name_tr'
-
         ]
 
 class TeamWithMatchesSerializer(serializers.ModelSerializer):
@@ -70,21 +69,59 @@ class TeamSerializer(serializers.ModelSerializer):
             'custom_translation_name', 'custom_image_url'
         ]
 
+class SimpleTeamSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
+    custom_image_url = serializers.SerializerMethodField()
+    custom_translation_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teams
+        fields = [
+            'id', 'name', 'logo_url', 
+            'custom_translation_name', 'custom_image_url'
+        ]
+
+    def get_logo_url(self, obj):
+        if obj.image_path:
+            return obj.image_path
+        elif obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
+    def get_custom_image_url(self, obj):
+        return obj.image_path if obj.image_path else None
+
+    def get_custom_translation_name(self, obj):
+        return None
 
 class MatchSerializer(serializers.ModelSerializer):
-    # Use nested serializers to include full object details
-    league = LeagueSerializer(read_only=True)
-    home_team = TeamSerializer(read_only=True)
-    away_team = TeamSerializer(read_only=True)
+    home_team = SimpleTeamSerializer(read_only=True)
+    away_team = SimpleTeamSerializer(read_only=True)
+    state = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
         fields = [
-            'id',  'status', 'home_score', 'away_score',
-            'league', 'home_team', 'away_team',
-
+            'id', 'status', 'home_score', 'away_score',
+            'home_team', 'away_team', 'state'
         ]
 
+    def get_state(self, obj):
+        state_name = obj.played if obj.played else "Not Started"
+        state_mapping = {
+            'Yes': 'Full Time','No': 'Not Started','Live': 'LIVE',
+            '1st Half': '1H', '2nd Half': '2H','Half Time': 'HT',
+            'Full Time': 'FT', 'Not Started': 'NS'
+        }
+        short_name = state_mapping.get(state_name, 'NS')
+        
+        return {
+            "name": state_name,
+            "short_name": short_name
+        }
 
 # -----------------------------------------------------------------------------
 # API VIEWS (VIEWSETS)
