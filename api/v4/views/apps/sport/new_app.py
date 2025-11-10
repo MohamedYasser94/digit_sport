@@ -213,23 +213,14 @@ def MatchDetailsApi(request, match_id):
             id=match_id
         )        
         goals_data = fixture.events or [] 
-        standing = []
-        
-        if fixture.league:
-            standing = TeamSeasonTable.objects.filter(
-                league_id=fixture.league.id
-            ).select_related('team', 'league').order_by('position')
-        
 
         fixture_serializer = FixtureDetailsSerializer(fixture, context={'request': request})
         serialized_data = fixture_serializer.data
         goals_serializer = FixtureGoalsSerializer(goals_data, many=True, context={'request': request})
-        standing_serializer = TeamSeasonTableSerializer(standing, many=True, context={'request': request})
         
         sport_data = {
             'match': serialized_data,
             'goals': goals_serializer.data,
-            'standing': standing_serializer.data,
         }
 
         return Response({
@@ -251,7 +242,67 @@ def MatchDetailsApi(request, match_id):
             'data': {'match': None, 'goals': [], 'standing': []},
             'message': f"Error retrieving fixture details: {str(e)}"
         }, status=500)
-    
+
+@api_view(['GET'])
+def LeagueStandingsApi(request, match_id):
+    """
+    Get league standings for a specific match
+    """
+    try:
+        print(f"Looking for fixture with ID: {match_id} for standings")
+        
+        fixture = get_object_or_404(
+            Fixtures.objects.select_related('league'),
+            id=match_id
+        )
+        
+        if not fixture.league:
+            return Response({
+                'success': False,
+                'data': {'standings': []},
+                'message': "Fixture does not belong to any league"
+            }, status=404)
+        
+        standings = TeamSeasonTable.objects.filter(
+            league_id=fixture.league.id
+        ).select_related('team', 'league').order_by('position')
+        
+        standings_serializer = TeamSeasonTableSerializer(
+            standings, 
+            many=True, 
+            context={'request': request}
+        )
+        
+        league_data = {
+            'league_id': fixture.league.id,
+            'league_name': fixture.league.name,
+            'match_id': fixture.id,
+            'match_name': fixture.name
+        }
+        
+        return Response({
+            'success': True,
+            'data': {
+                'league_info': league_data,
+                'standings': standings_serializer.data
+            },
+            'message': "League standings retrieved successfully"
+        })
+        
+    except Fixtures.DoesNotExist:
+        return Response({
+            'success': False,
+            'data': {'standings': []},
+            'message': f"Fixture with id {match_id} not found"
+        }, status=404)
+        
+    except Exception as e:
+        print(f"Error retrieving standings: {str(e)}")
+        return Response({
+            'success': False,
+            'data': {'standings': []},
+            'message': f"Error retrieving league standings: {str(e)}"
+        }, status=500)
 
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
