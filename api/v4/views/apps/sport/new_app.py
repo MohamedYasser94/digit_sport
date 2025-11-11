@@ -1,6 +1,7 @@
 import threading
 from collections import defaultdict
 from datetime import timedelta, time
+from django.http import JsonResponse
 from django.utils import timezone as django_timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -10,7 +11,7 @@ from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
 
-from api.v4.serializers.sport.sport import FixtureDetailsSerializer, FixtureGoalsSerializer, LeagueSerializer, MatchSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
+from api.v4.serializers.sport.sport import LeagueSerializer, MatchDetailsSerializer, MatchGoalsSerializer, MatchSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
     TeamWithMatchesSerializer, PlyerSerializer
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
@@ -202,46 +203,25 @@ def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
 @api_view(['GET'])
 def MatchDetailsApi(request, match_id):
     try:
-        print(f"Looking for fixture with ID: {match_id}")
+        match = Match.objects.get(id=match_id)
+        goals = MatchGoals.objects.filter(match=match_id)
+        match_serializer = MatchDetailsSerializer(match, many=False, context={'request': request})
+        goals_serializer = MatchGoalsSerializer(goals, many=True, context={'request': request})
         
-        fixture = get_object_or_404(
-            Fixtures.objects.select_related(
-                'league', 'season', 'venue'
-            ).prefetch_related (
-                'participants__team'
-            ),
-            id=match_id
-        )        
-        goals_data = fixture.events or [] 
-
-        fixture_serializer = FixtureDetailsSerializer(fixture, context={'request': request})
-        serialized_data = fixture_serializer.data
-        goals_serializer = FixtureGoalsSerializer(goals_data, many=True, context={'request': request})
+        sport_data = {'matches': match_serializer.data, 'goals': goals_serializer.data,}
+        success = True
+        message = f"Send From Django API mix {match_id} "
         
-        sport_data = {
-            'match': serialized_data,
-            'goals': goals_serializer.data,
-        }
+        data = {'success': success, 'data': sport_data, 'message': message,}
+        return JsonResponse(data, safe=False)
 
-        return Response({
-            'success': True, 
-            'data': sport_data, 
-            'message': f"Fixture details retrieved successfully"
-        })
-    
-    except Fixtures.DoesNotExist:
-        return Response({
-            'success': False, 
-            'data': {'match': None, 'goals': [], 'standing': []},
-            'message': f"Fixture with id {match_id} not found"
-        }, status=404)
-    
     except Exception as e:
-        return Response({
-            'success': False, 
-            'data': {'match': None, 'goals': [], 'standing': []},
-            'message': f"Error retrieving fixture details: {str(e)}"
-        }, status=500)
+        print(e)
+        success = False
+        message = f"error in get data  match Details {e} "
+        sport_data = {'matches': [],}
+        data = {'success': success, 'data': sport_data, 'message': message,}
+    return JsonResponse(data, safe=False)
 
 @api_view(['GET'])
 def LeagueStandingsApi(request, match_id):
