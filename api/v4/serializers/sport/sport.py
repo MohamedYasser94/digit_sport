@@ -33,7 +33,6 @@ class LeagueSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'api_id', 'name',  'sport',
             'image_path', 'image', 'currentseason', 'name_tr'
-
         ]
 
 class TeamWithMatchesSerializer(serializers.ModelSerializer):
@@ -70,21 +69,59 @@ class TeamSerializer(serializers.ModelSerializer):
             'custom_translation_name', 'custom_image_url'
         ]
 
+class SimpleTeamSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
+    custom_image_url = serializers.SerializerMethodField()
+    custom_translation_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teams
+        fields = [
+            'id', 'name', 'logo_url', 
+            'custom_translation_name', 'custom_image_url'
+        ]
+
+    def get_logo_url(self, obj):
+        if obj.image_path:
+            return obj.image_path
+        elif obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
+    def get_custom_image_url(self, obj):
+        return obj.image_path if obj.image_path else None
+
+    def get_custom_translation_name(self, obj):
+        return None
 
 class MatchSerializer(serializers.ModelSerializer):
-    # Use nested serializers to include full object details
-    league = LeagueSerializer(read_only=True)
-    home_team = TeamSerializer(read_only=True)
-    away_team = TeamSerializer(read_only=True)
+    home_team = SimpleTeamSerializer(read_only=True)
+    away_team = SimpleTeamSerializer(read_only=True)
+    state = serializers.SerializerMethodField()
 
     class Meta:
         model = Match
         fields = [
-            'id',  'status', 'home_score', 'away_score',
-            'league', 'home_team', 'away_team',
-
+            'id', 'status', 'home_score', 'away_score',
+            'home_team', 'away_team', 'state'
         ]
 
+    def get_state(self, obj):
+        state_name = obj.played if obj.played else "Not Started"
+        state_mapping = {
+            'Yes': 'Full Time','No': 'Not Started','Live': 'LIVE',
+            '1st Half': '1H', '2nd Half': '2H','Half Time': 'HT',
+            'Full Time': 'FT', 'Not Started': 'NS'
+        }
+        short_name = state_mapping.get(state_name, 'NS')
+        
+        return {
+            "name": state_name,
+            "short_name": short_name
+        }
 
 # -----------------------------------------------------------------------------
 # API VIEWS (VIEWSETS)
@@ -141,7 +178,6 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
 
 # This serializer will format the team data inside each match
 class ParticipantSerializer(serializers.ModelSerializer):
-    # Using source='team' to get the nested Team object from the FixtureParticipant model
     api_id = serializers.IntegerField(source='team.api_id')
     name = serializers.CharField(source='team.name')
     image_path = serializers.CharField(source='team.image_path')
@@ -206,159 +242,83 @@ class matchSeasonSerializer(serializers.ModelSerializer):
         model = Season
         fields = ['id', 'name', ] 
 
-class FixtureDetailsSerializer(serializers.ModelSerializer):
-    league = matchLeagueSerializer(read_only=True)
-    season = matchSeasonSerializer(read_only=True)
-    venue = matchVenueSerializer(read_only=True)
-    participants = serializers.SerializerMethodField()  
-    match_status = serializers.SerializerMethodField()
-    match_datetime = serializers.SerializerMethodField()
-    
+
+class MatchDetailsSerializer(serializers.ModelSerializer):
+    venues_name = serializers.ReadOnlyField(source='venues.name')
+    league_id = serializers.ReadOnlyField(source='league.id')
+    league_name = serializers.ReadOnlyField(source='league.name')
+    league_image = serializers.SerializerMethodField()
+    sport_name = serializers.ReadOnlyField(source='sport.name')
+    home_team = serializers.SerializerMethodField()
+    away_team = serializers.SerializerMethodField()
+    round_name = serializers.ReadOnlyField(source='round.name')
+    round_id = serializers.ReadOnlyField(source='round.id')
+    match_statistics = serializers.SerializerMethodField()
     class Meta:
-        model = Fixtures
+        model = Match
         fields = [
-            'id', 'name', 'participants',  
-            'match_datetime', 'league', 'season', 'venue', 'result_info', 'state', 
-            'match_status', 'statistics', 'events', 'scores', 'create_at', 'update_at'
+            'id', 'venues_name', 'league_id', 'league_name', 'league_image', 
+            'home_score', 'away_score', 'score', 'start_time', 
+            'home_team', 'away_team', 'sport_name', 'round_name', 'round_id',
+            'match_statistics'
         ]
 
-    def get_participants(self, obj):
-        participants = []
-        request = self.context.get('request') 
-        
-        if obj.home_team:
-            participants.append({
-                "api_id": obj.home_team.api_id or 0,
-                "name": obj.home_team.name,
-                "image_path": self._get_team_image_url(obj.home_team, request),
-                "meta_location": "home"
-            })
-        else:
-            home_name = self._extract_team_from_scores(obj, 'home')
-            participants.append({
-                "api_id": 0,
-                "name": home_name,
-                "image_path": "",
-                "meta_location": "home"
-            })
-        
-        if obj.away_team:
-            participants.append({
-                "api_id": obj.away_team.api_id or 0,
-                "name": obj.away_team.name,
-                "image_path": self._get_team_image_url(obj.away_team, request),
-                "meta_location": "away"
-            })
-        else:
-            away_name = self._extract_team_from_scores(obj, 'away')
-            participants.append({
-                "api_id": 0,
-                "name": away_name,
-                "image_path": "",
-                "meta_location": "away"
-            })
-        
-        return participants
+    def get_league_image(self, obj):
+        try:
+            league_image = 'https://api.jawlasp.com' + str(obj.league.image.url)
+            return league_image
+        except:
+            league_image = None
+            return league_image
 
-    def _get_team_image_url(self, team, request):
-        if team.image_path:
-            return team.image_path
-        
-        if team.image and hasattr(team.image, 'url'):
-            if request:
-                return request.build_absolute_uri(team.image.url)
-            else:
-                return team.image.url
+    def get_home_team(self, obj):
+        request = self.context['request']
+        return TeamForMatchSerializer(
+            Teams.objects.get(id=obj.home_team.id), 
+            many=False,
+            context={'request': request}
+        ).data
+
+    def get_away_team(self, obj):
+        request = self.context['request']
+        return TeamForMatchSerializer(
+            Teams.objects.get(id=obj.away_team.id), 
+            many=False,
+            context={'request': request}
+        ).data
     
-        return ""    
-    def _extract_team_from_scores(self, obj, team_type):
-        if obj.scores and isinstance(obj.scores, list):
-            for score_item in obj.scores:
-                if (isinstance(score_item, dict) and 
-                    score_item.get('score', {}).get('meta_location') == team_type):
-                    team_name = score_item.get('score', {}).get('participant_name', '').strip()
-                    return team_name if team_name else f"{team_type.title()} Team"
-        
-        teams = self._extract_teams_from_name(obj.name)
-        if team_type == 'home':
-            return teams[0] if teams[0] else "Home Team"
-        else:
-            return teams[1] if len(teams) > 1 and teams[1] else "Away Team"
+    def get_match_statistics(self, obj):
+        try:
+            match_statistics = MatchStatics.objects.filter(match=obj, status='Active')
+            return MatchStaticsSerializer(match_statistics, many=True).data
+        except Exception as e:
+            print(f"Error in match statistics: {e}")
+            return []
 
-    def _extract_teams_from_name(self, name):
-        if not name:
-            return ['Home Team', 'Away Team']
-        if name and len(set(name)) == 1:
-            return ['Home Team', 'Away Team']
-        separators = [' vs ', ' - ', ' @ ']
-        for sep in separators:
-            if sep in name:
-                parts = name.split(sep)
-                if len(parts) >= 2:
-                    team1 = parts[0].strip() or 'Home Team'
-                    team2 = parts[1].strip() or 'Away Team'
-                    return [team1, team2]
-        return [name or 'Home Team', 'Away Team']
-
-    def get_match_status(self, obj):
-        if obj.time_status == 'LIVE':
-            return 'live'
-        elif obj.state == 'FT' or obj.state == 'finished':
-            return 'finished'
-        else:
-            return 'upcoming'
-
-    def get_match_datetime(self, obj):
-        if obj.starting_at:
-            return obj.starting_at.strftime('%Y-%m-%d %H:%M')
-        return None
-
-class FixtureGoalsSerializer(serializers.Serializer):
-    id = serializers.IntegerField(required=False)
-    player = serializers.CharField(required=False)
-    team = serializers.CharField(required=False)
-    minute = serializers.IntegerField(required=False)
-    type = serializers.CharField(required=False)
-    set = serializers.CharField(required=False)
     
-    def to_representation(self, instance):
-        if isinstance(instance, dict):
-            return {
-                'id': instance.get('id'),
-                'player': instance.get('player', {}).get('name') if isinstance(instance.get('player'), dict) else instance.get('player'),
-                'team': instance.get('team', {}).get('name') if isinstance(instance.get('team'), dict) else instance.get('team'),
-                'minute': instance.get('minute'),
-                'type': instance.get('type'),
-                'set': instance.get('set', '1stSet')
-            }
-        return instance
+class TeamForMatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teams
+        fields = ['id', 'name', 'image_path', 'image', ]
+
+class MatchStaticsSerializer(serializers.ModelSerializer):
+    type_display = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = MatchStatics
+        fields = ['type', 'type_display', 'home', 'away']
+    
+    def get_type_display(self, obj):
+        return dict(Match_Statics).get(obj.type, obj.type) if obj.type else None
 
 class MatchGoalsSerializer(serializers.ModelSerializer):
-    home_team = MatchTeamSerializer(read_only=True)
-    away_team = MatchTeamSerializer(read_only=True)
-    match = serializers.StringRelatedField()
-    match_info = serializers.SerializerMethodField()
     set_display = serializers.SerializerMethodField()
     
     class Meta:
         model = MatchGoals
         fields = [
-            'id', 'match', 'match_info',
-            'home_team', 'away_team',
-            'home_score', 'away_score', 
-            'set', 'set_display',
-            'create_at', 'update_at'
-        ]
-    
-    def get_match_info(self, obj):
-        if obj.match:
-            return {
-                'id': obj.match.id,
-                'name': obj.match.name,
-                'start_time': obj.match.start_time.strftime('%Y-%m-%d %H:%M') if obj.match.start_time else None,
-                'location': obj.match.location
-            }
-        return None
+            'home_score', 'away_score', 'set', 'set_display'
+        ] 
     
     def get_set_display(self, obj):
         return dict(Set_List).get(obj.set, obj.set) if obj.set else None

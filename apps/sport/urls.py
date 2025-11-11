@@ -102,7 +102,7 @@ urlpatterns = [
     path('venues/update/<slug:slug>/', views.AdminVenuesUpdate, name='AdminVenuesUpdate'),
     path('venues/archive/<slug:slug>/', views.AdminVenuesArchive, name='AdminVenuesArchive'),
     path('venues/delete/<slug:slug>/', views.AdminVenuesDelete, name='AdminVenuesDelete'),
-    # path('monk/venues/api/get/', monks.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
+    path('monk/venues/api/get/', media.AdminMonksVenuesGetData, name='AdminMonksVenuesGetData'),
 
     ##########   Team  #########
     path('team/', views.AdminTeamsList, name='AdminTeamsList'),
@@ -129,7 +129,7 @@ urlpatterns = [
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),
-    path('fixture/add/', views.AdminFixtureAdd, name='AdminFixtureAdd'),
+    # path('fixture/add/', views.AdminFixtureAdd, name='AdminFixtureAdd'),
 
     path('match/details/<slug:slug>/', views.AdminMatchDetails, name='AdminMatchDetails'),
     path('match/update/<slug:slug>/', views.AdminMatchUpdate, name='AdminMatchUpdate'),
@@ -145,10 +145,8 @@ urlpatterns = [
 
 
     ##########   Match By Team #########
-    path('match/team/player/<slug:match_slug>/<slug:slug>/', views.AdminMatchTeamPlayerList,
-         name='AdminMatchTeamPlayerList'),
-    path('match/player/static/add/<slug:match_slug>/<slug:slug>/', views.AdminMatchPlayerStaticAdd,
-            name='AdminMatchPlayerStaticAdd'),
+    path('match/team/player/<slug:match_slug>/<slug:slug>/', views.AdminMatchTeamPlayerList,name='AdminMatchTeamPlayerList'),
+    path('match/player/static/add/<slug:match_slug>/<slug:slug>/', views.AdminMatchPlayerStaticAdd,name='AdminMatchPlayerStaticAdd'),
 
 
     path('match/team/playr/transfer/<slug:slug>/', views.AdminTeamPlayerMatchAdd, name='AdminTeamPlayerMatchAdd'),
