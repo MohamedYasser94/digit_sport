@@ -1270,3 +1270,29 @@ def list_user_favorites(request):
             {"detail": "An unexpected server error occurred while fetching favorites."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def PlayersBySportApiList(request, sport_name, team_id):
+    try:
+        sport = Sport.objects.get(name=sport_name)
+    except Exception as e:
+        sport = Sport.objects.create(name=sport_name)
+    try:
+        team = Teams.objects.get(id=team_id)
+
+        players_list = Players.objects.filter(sport=sport.id, team=team.id).order_by('name')
+
+        success = True
+        message = f"Send From Django API mix "
+        players_serializer = PlyerSerializer(players_list, many=True, context={'request': request})
+        sport_data = {'sport': sport_name, 'players': players_serializer.data, }
+
+        data = {'success': success, 'data': sport_data, 'message': message, }
+
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        success = False
+        message = f"error in get data   {e}  "
+        sport_data = {'sport': sport_name, 'table': [], }
+        data = {'success': success, 'data': sport_data, 'message': message, }
+        return JsonResponse(data, safe=False)
