@@ -777,13 +777,16 @@ Position_List = (('Setter', 'Setter'),('Outside Hitter', 'Outside Hitter'),('Mid
 Tv_Type = (('Satellite', 'Satellite'), ('Cable', 'Cable'), ('IPTV', 'IPTV'), ('Channel', 'Channel'),)
 Half_List = (('1st Half', '1st Half'), ('2nd Half', '2nd Half'), ('Extra Time', 'Extra Time'), ('Penalty', 'Penalty'),)
 Set_List  = (('1stSet', '1st Set'), ('2ndSet', '2nd Set'), ('3rdSet', '3rdSet'), ('4thSet', '4th Set'), ('5thSet', '5th Set'),)
-Match_Statics = (  ('Goal','Goal'),('Messed Shots', 'Messed Shots'), ('Shots On Target', 'Shots On Target'), ('Shots Off Target', 'Shots Off Target'),
-('Possession', 'Possession'), ('Passes', 'Passes'), ('Passes Completed', 'Passes Completed'), ('Passes Failed', 'Passes Failed'),
-('Corner Kicks', 'Corner Kicks'), ('Offsides', 'Offsides'), ('Fouls', 'Fouls'), ('Yellow Cards', 'Yellow Cards'),
-('Red Cards', 'Red Cards'), ('Injuries', 'Injuries'), ('Substitutions', 'Substitutions'), ('Other', 'Other'),
-                   ('Sidelined', 'Sidelined'), ('Own Goal', 'Own Goal'), ('Missed Penalty', 'Missed Penalty'), ('Penalties', 'Penalties'),
-                   ('Set', 'Set'),  ('Serv', 'Serv'),  ('Reception', 'Reception'), ('Shot', 'Shot'),('Block', 'Block'),
-                  ('Attack', 'Attack'),  ('Defense', 'Defense'), ('Spike', 'Spike'), ('Dig', 'Dig'), )
+Match_Statics = (('Goal', 'Goal'),('Messed Shots', 'Messed Shots'),('Shots On Target', 'Shots On Target'),('Shots Off Target', 'Shots Off Target'),
+('Possession', 'Possession'),('Passes', 'Passes'),('Passes Completed', 'Passes Completed'),('Passes Failed', 'Passes Failed'),('Corner Kicks', 'Corner Kicks'),
+('Offsides', 'Offsides'),('Fouls', 'Fouls'),('Yellow Cards', 'Yellow Cards'),('Red Cards', 'Red Cards'),('Injuries', 'Injuries'),('Substitutions', 'Substitutions'),
+('Other', 'Other'),('Sidelined', 'Sidelined'),('Own Goal', 'Own Goal'),('Missed Penalty', 'Missed Penalty'),('Penalties', 'Penalties'),('Set', 'Set'),
+('Serv', 'Serv'),('Reception', 'Reception'),('Shot', 'Shot'),('Block', 'Block'),('Attack', 'Attack'),('Defense', 'Defense'),('Spike', 'Spike'),('Dig', 'Dig'),
+('Points', 'Points'),('Attacks', 'Attacks'),('Serve Points', 'Serve Points'),('Blocks', 'Blocks'),('Opponent Errors', 'Opponent Errors'),('% Attack', '% Attack'),
+('% Reception', '% Reception'),('% Field Goals', '% Field Goals'),('% 3 Pointers', '% 3 Pointers'),('% Free Throws', '% Free Throws'),('Assists', 'Assists'),
+('Rebounds', 'Rebounds'),('Off.Rebounds', 'Off.Rebounds'),('Def.Rebounds', 'Def.Rebounds'),('Steals', 'Steals'),('Turnovers', 'Turnovers'),
+('Fast Break Points', 'Fast Break Points'),('Points Off Turnovers', 'Points Off Turnovers'),('Points In The Paint', 'Points In The Paint'),
+('Personal Fouls', 'Personal Fouls'),('Second Chance Points', 'Second Chance Points'),('Flagrant Fouls', 'Flagrant Fouls'),('Technical Fouls', 'Technical Fouls'),)
 
 Season_Order = (('1st', '1st'), ('2nd', '2nd'), ('3rd', '3rd'), ('4th', '4th'), ('5th', '5th'), ('6th', '6th'), ('7th', '7th'), ('8th', '8th'), ('9th', '9th'), ('10th', '10th'),
 ('11th', '11th'), ('12th', '12th'), ('13th', '13th'), ('14th', '14th'), ('15th', '15th'), ('16th', '16th'), ('17th', '17th'), ('18th', '18th'), ('19th', '19th'), ('20th', '20th'),
