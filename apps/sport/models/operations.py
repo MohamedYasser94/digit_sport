@@ -84,6 +84,7 @@ class MatchPlayerReport(models.Model):
     pf = models.CharField(max_length=30, null=True, blank=True, default='')
     pir = models.CharField(max_length=30, null=True, blank=True, default='')
 
+    is_best_player = models.BooleanField(default=False, verbose_name='Best Player')
     static_type = models.CharField(max_length=30,choices=Statics_Type, default='General',   null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -121,7 +122,7 @@ class MatchPlayerReportSerializer(serializers.ModelSerializer):
             'point_total', 'point_bp', 'point_wl', 'serve_total', 'serve_err',
             'serve_pts', 'reception_total', 'reception_err', 'reception_pos',
             'reception_exc', 'attack_total', 'attack_err', 'attack_pos',
-            'attack_exc', 'block_pts', 'static_type', 'create_at'
+            'attack_exc', 'block_pts', 'static_type', 'create_at', 'is_best_player',
         ]
 
 class PlayerStatics(models.Model):

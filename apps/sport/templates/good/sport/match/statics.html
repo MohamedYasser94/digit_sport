@@ -90,6 +90,27 @@
                                                value="{{ player_statics.score_ball|default:0 }}" required
                                                placeholder="{% translate 'Score' %}"/>
                                         <!--end::Input-->
+                                        <!--begin::Best Player Section-->
+                                        <div class="d-flex flex-column gap-10 gap-md-10 mt-10">
+                                            <!--begin::Title-->
+                                            <div class="fs-3 fw-bolder mb-n2">{% translate 'Player Recognition' %}</div>
+                                            <!--end::Title-->
+                                            <!--begin::Best Player Checkbox-->
+                                            <div class="d-flex flex-column flex-md-row gap-10 gap-md-10 align-items-center">
+                                                <div class="fv-row flex-row-fluid">
+                                                    <div class="form-check form-switch form-check-custom form-check-solid">
+                                                        <input class="form-check-input" type="checkbox" name="is_best_player" 
+                                                            id="is_best_player" {% if player_statics.is_best_player %}checked{% endif %}
+                                                            value="on"/>
+                                                        <label class="form-check-label fs-5 fw-bold text-success" for="is_best_player">
+                                                            {% translate 'Mark as Best Player of the Match' %}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end::Best Player Checkbox-->
+                                        </div>
+                                        <!--end::Best Player Section-->
                                     </div>
                                 </div>
                                 <!--end::Input group-->

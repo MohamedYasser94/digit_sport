@@ -15,6 +15,7 @@ from api.v4.serializers.sport.sport import LeagueSerializer, MatchDetailsSeriali
     TeamWithMatchesSerializer, PlyerSerializer
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
+from apps.sport.models.operations import MatchPlayerReport, MatchPlayerReportSerializer
 from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
 from core.models.blog import BlogArticle, BlogVideo
 
@@ -149,10 +150,13 @@ def MatchDetailsApi(request, match_id):
     try:
         match = Match.objects.get(id=match_id)
         goals = MatchGoals.objects.filter(match=match_id)
+        best_player_report = MatchPlayerReport.objects.filter(match=match_id, is_best_player=True).first()
         match_serializer = MatchDetailsSerializer(match, many=False, context={'request': request})
         goals_serializer = MatchGoalsSerializer(goals, many=True, context={'request': request})
-        
-        sport_data = {'matches': match_serializer.data, 'goals': goals_serializer.data,}
+        best_player_serializer = None
+        if best_player_report:best_player_serializer = MatchPlayerReportSerializer(best_player_report, many=False, context={'request': request}).data
+
+        sport_data = {'matches': match_serializer.data, 'goals': goals_serializer.data,'best_player': best_player_serializer}
         success = True
         message = f"Send From Django API mix {match_id} "
         
@@ -1267,3 +1271,5 @@ def PlayersBySportApiList(request, sport_name, team_id, match_id):
             'message': message,
         }
         return JsonResponse(data, status=500)
+    
+        
