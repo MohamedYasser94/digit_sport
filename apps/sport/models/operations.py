@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from apps.sport.models.models import *
 from helper.modelHelper import *
 
@@ -88,6 +89,25 @@ class MatchPlayerReport(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(MatchPlayerReport, self).save(*args, **kwargs)
+
+
+class MatchPlayerReportSerializer(serializers.ModelSerializer):
+    match_name = serializers.CharField(source='match.name', read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
+    player_name = serializers.CharField(source='player.display_name', read_only=True)
+    
+    class Meta:
+        model = MatchPlayerReport
+        fields = [
+            'id', 'match', 'match_name', 'team', 'team_name', 'player', 'player_name',
+            'position', 'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp',
+            'cut_ball', 'cut_ballp', 'shot_ball', 'shot_ballp', 'score_ball',
+            'score_ballp', 'set1', 'set2', 'set3', 'set4', 'set5', 'vote',
+            'point_total', 'point_bp', 'point_wl', 'serve_total', 'serve_err',
+            'serve_pts', 'reception_total', 'reception_err', 'reception_pos',
+            'reception_exc', 'attack_total', 'attack_err', 'attack_pos',
+            'attack_exc', 'block_pts', 'static_type', 'create_at'
+        ]
 
 class PlayerStatics(models.Model):
     report = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name='static_sets',null=True, blank=True)
