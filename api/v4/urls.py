@@ -54,7 +54,7 @@ path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('v4/favorites/list/', new_app.list_user_favorites, name='list-user-favorites'),
 
     path('v4/match/details/<int:match_id>', new_app.MatchDetailsApi,name='MatchDetailsApi'),
-    path('v4/match/<int:match_id>/standings/', new_app.LeagueStandingsApi, name='league-standings'),
+    path('v4/match/standings/<int:league_id>/<int:season_id>/', new_app.LeagueStandingsApi, name='league-standings'),
     path('v4/sport/player/<str:sport_name>/<int:team_id>/', new_app.PlayersBySportApiList, name='PlayersBySportApiList'),
 
 ]

@@ -101,12 +101,12 @@ class MatchSerializer(serializers.ModelSerializer):
     home_team = SimpleTeamSerializer(read_only=True)
     away_team = SimpleTeamSerializer(read_only=True)
     state = serializers.SerializerMethodField()
-
+    start_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = Match
         fields = [
             'id', 'status', 'home_score', 'away_score',
-            'home_team', 'away_team', 'state'
+            'home_team', 'away_team', 'state', 'start_time'
         ]
 
     def get_state(self, obj):
@@ -254,13 +254,18 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
     round_name = serializers.ReadOnlyField(source='round.name')
     round_id = serializers.ReadOnlyField(source='round.id')
     match_statistics = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
+    season_id = serializers.ReadOnlyField(source='season.id')
+    season_name = serializers.ReadOnlyField(source='season.name')
+
+
     class Meta:
         model = Match
         fields = [
             'id', 'venues_name', 'league_id', 'league_name', 'league_image', 
             'home_score', 'away_score', 'score', 'start_time', 
             'home_team', 'away_team', 'sport_name', 'round_name', 'round_id',
-            'match_statistics'
+            'match_statistics', 'state', 'season_id', 'season_name'
         ]
 
     def get_league_image(self, obj):
@@ -295,7 +300,22 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
             print(f"Error in match statistics: {e}")
             return []
 
-    
+    def get_state(self, obj):
+        if obj.played == 'Yes':
+            state_data = {
+                "name": 'Full Time',
+                "short_name": 'FT',
+            }
+            return state_data
+        
+        else:
+            state_data = {
+                "name": "Not Started",
+                "short_name": "NS",
+            }
+            return state_data    
+
+
 class TeamForMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
