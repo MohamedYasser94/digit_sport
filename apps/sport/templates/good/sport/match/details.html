@@ -1360,7 +1360,7 @@
                                     <!--end::Input group-->
                                 </div>
                                 <!--begin::Input group-->
-                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball'  %}
+                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball' or match.sport.name == 'basketball' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">
@@ -1388,12 +1388,8 @@
                                         <label class="required fs-6 fw-bold mb-2">{% translate 'Total Set Goal' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="number" class="form-control form-control-solid"
-                                               placeholder="{% translate 'Total Set Goal' %}"
-                                               name="event_goal"/>
-                                        <input type="text" hidden class="form-control form-control-solid"
-                                               value="{{ match.home_team.id }}"
-                                               name="event_team"/>
+                                        <input type="number" class="form-control form-control-solid"placeholder="{% translate 'Total Set Goal' %}"name="event_goal"/>
+                                        <input type="text" hidden class="form-control form-control-solid"value="{{ match.home_team.id }}"name="event_team"/>
                                         <!--end::Input-->
                                     </div>
                                     <!--end::Input group-->
@@ -1544,7 +1540,7 @@
                                     <!--end::Input group-->
                                 </div>
                                 <!--begin::Input group-->
-                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball'  %}
+                            {% elif match.sport.name == 'volleyball' or match.sport.name == 'handball' or match.sport.name == 'basketball' %}
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-wrap gap-5">
                                     <div class="fv-row w-100 flex-md-root">
