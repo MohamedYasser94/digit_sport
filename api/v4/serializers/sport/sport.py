@@ -5,6 +5,7 @@ from rest_framework.filters import SearchFilter
 
 from apps.sport.models.models import *
 from apps.sport.models.monks import *
+from apps.sport.models.operations import MatchPlayerReport, MatchPlayerReportSerializer
 from core.models.blog import *
 
 
@@ -101,12 +102,12 @@ class MatchSerializer(serializers.ModelSerializer):
     home_team = SimpleTeamSerializer(read_only=True)
     away_team = SimpleTeamSerializer(read_only=True)
     state = serializers.SerializerMethodField()
-
+    start_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = Match
         fields = [
             'id', 'status', 'home_score', 'away_score',
-            'home_team', 'away_team', 'state'
+            'home_team', 'away_team', 'state', 'start_time'
         ]
 
     def get_state(self, obj):
@@ -209,7 +210,6 @@ class SimpleLeagueSerializer(serializers.ModelSerializer):
         model = Leagues
         fields = ['api_id', 'name', 'image_path', 'country','currentseason']
 
-
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
     league = LeagueSerializer(read_only=True)
@@ -219,8 +219,59 @@ class PlyerSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'api_id', 'common_name', 'display_name', 'first_name', 'last_name',
             'position', 'height', 'weight', 'birthdate', 'nationality', 'image_path',
-            'team', 'league'
-        ]
+            'team', 'league']
+
+class NationalitySerializer(serializers.Serializer):
+    name = serializers.CharField(source='nationality', read_only=True)
+    api_name = serializers.CharField(source='api_nationality', read_only=True)
+    flag = serializers.SerializerMethodField()
+    
+    def get_flag(self, obj):
+        request = self.context.get('request')
+        if obj.country_image:
+            try:
+                if request:
+                    return request.build_absolute_uri(obj.country_image.url)
+                return obj.country_image.url
+            except:
+                return None
+        return None
+
+class PlayerSerializer(serializers.ModelSerializer):
+    nationality = NationalitySerializer(source='*', read_only=True)
+    match_report = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Players
+        fields = ['id', 'api_id', 'common_name', 'display_name', 'first_name', 'last_name','name','position', 'number',
+            'height', 'weight', 'birthdate','age','gender','nationality','image_path','match_report']
+    
+    def get_match_report(self, obj):
+        try:
+            match_id = self.context.get('match_id')
+            if not match_id:
+                return []
+            
+            match_reports = MatchPlayerReport.objects.filter(
+                player_id=obj.id,
+                match_id=match_id
+            ).select_related('match')
+            
+            if not match_reports.exists():
+                return []
+            
+            serializer = MatchPlayerReportSerializer(
+                match_reports,
+                many=True,
+                context=self.context
+            )
+            return serializer.data
+            
+        except Exception as e:
+            print(f"Error in get_match_report for player {obj.id}, match {match_id}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return []
 
 class MatchTeamSerializer(serializers.ModelSerializer):
     class Meta:
@@ -254,13 +305,18 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
     round_name = serializers.ReadOnlyField(source='round.name')
     round_id = serializers.ReadOnlyField(source='round.id')
     match_statistics = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
+    season_id = serializers.ReadOnlyField(source='season.id')
+    season_name = serializers.ReadOnlyField(source='season.name')
+
+
     class Meta:
         model = Match
         fields = [
             'id', 'venues_name', 'league_id', 'league_name', 'league_image', 
             'home_score', 'away_score', 'score', 'start_time', 
             'home_team', 'away_team', 'sport_name', 'round_name', 'round_id',
-            'match_statistics'
+            'match_statistics', 'state', 'season_id', 'season_name'
         ]
 
     def get_league_image(self, obj):
@@ -295,7 +351,22 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
             print(f"Error in match statistics: {e}")
             return []
 
-    
+    def get_state(self, obj):
+        if obj.played == 'Yes':
+            state_data = {
+                "name": 'Full Time',
+                "short_name": 'FT',
+            }
+            return state_data
+        
+        else:
+            state_data = {
+                "name": "Not Started",
+                "short_name": "NS",
+            }
+            return state_data    
+
+
 class TeamForMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams

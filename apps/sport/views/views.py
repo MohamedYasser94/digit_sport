@@ -1889,73 +1889,177 @@ def AdminTeamPlayerMatchAdd(request, slug):
 def AdminMatchPlayerStaticAdd(request, match_slug, slug):
     match = Match.objects.get(slug=match_slug)
     player = Players.objects.get(slug=slug)
+    
     try:
         player_statics = MatchPlayerReport.objects.get(player=player, match=match)
     except:
         player_statics = None
+    
     try:
         total_statics = PlayerStatics.objects.get(player=player)
     except:
         total_statics = None
+    
     if request.method == "POST":
         static_form = AdminPlayerStaticsForm(request.POST or None, request.FILES or None)
         if static_form:
+            set_ball = request.POST.get('set_ball', 0) or 0
+            serve_ball = request.POST.get('serve_ball', 0) or 0
+            cut_ball = request.POST.get('cut_ball', 0) or 0
+            shot_ball = request.POST.get('shot_ball', 0) or 0
+            score_ball = request.POST.get('score_ball', 0) or 0
+            is_best_player = request.POST.get('is_best_player') == 'on'
+            point_total = request.POST.get('point_total', '')
+            serve_total = request.POST.get('serve_total', '')
+            serve_err = request.POST.get('serve_err', '')
+            serve_ace = request.POST.get('serve_ace', '')
+            reception_total = request.POST.get('reception_total', '')
+            reception_err = request.POST.get('reception_err', '')
+            reception_exc = request.POST.get('reception_exc', '')
+            attack_total = request.POST.get('attack_total', '')
+            attack_err = request.POST.get('attack_err', '')
+            attack_pts = request.POST.get('attack_pts', '')
+            attack_att = request.POST.get('attack_att', '')
+            block_pts = request.POST.get('block_pts', '')
+            min_played = request.POST.get('min_played', '')
+            pts = request.POST.get('pts', '')
+            reb = request.POST.get('reb', '')
+            ast = request.POST.get('ast', '')
+            stl = request.POST.get('stl', '')
+            blk = request.POST.get('blk', '')
+            fg = request.POST.get('fg', '')
+            three_pt = request.POST.get('three_pt', '')
+            ft = request.POST.get('ft', '')
+            Offensive_Rebounds = request.POST.get('Offensive_Rebounds', '')
+            dr = request.POST.get('dr', '')
+            to = request.POST.get('to', '')
+            pf = request.POST.get('pf', '')
+            pir = request.POST.get('pir', '')
 
-            set_ball = request.POST.get('set_ball')
-            serve_ball = request.POST.get('serve_ball')
-            cut_ball= request.POST.get('cut_ball')
-            shot_ball = request.POST.get('shot_ball')
-            score_ball = request.POST.get('score_ball')
             try:
-                player_ms_object = MatchPlayerReport.objects.get(player=player.id, match=match)
-                player_ms_object.set_ball = set_ball
-                player_ms_object.serve_ball = serve_ball
-                player_ms_object.cut_ball = cut_ball
-                player_ms_object.shot_ball = shot_ball
-                player_ms_object.score_ball = score_ball
-                player_ms_object.static_type = 'General'
-                player_ms_object.save()
-            except:
+                player_ms_object, created = MatchPlayerReport.objects.get_or_create(
+                    player=player,
+                    match=match,
+                    defaults={
+                        'set_ball': set_ball,'serve_ball': serve_ball,'cut_ball': cut_ball,'shot_ball': shot_ball,'score_ball': score_ball,'is_best_player': is_best_player,
+                        'point_total': point_total,'serve_total': serve_total,'serve_err': serve_err,'serve_ace': serve_ace,'reception_total': reception_total,
+                        'reception_err': reception_err,'reception_exc': reception_exc,'attack_total': attack_total,'attack_err': attack_err,'attack_pts': attack_pts,
+                        'attack_att': attack_att,'block_pts': block_pts,'min_played': min_played,'pts': pts,'reb': reb,'ast': ast,'stl': stl,'blk': blk,
+                        'fg': fg,'three_pt': three_pt,'ft': ft,'Offensive_Rebounds': Offensive_Rebounds,'dr': dr,'to': to,'pf': pf,'pir': pir,
+                        'static_type': 'General'
+                    }
+                )
+                
+                if not created:
+                    player_ms_object.set_ball = set_ball
+                    player_ms_object.serve_ball = serve_ball
+                    player_ms_object.cut_ball = cut_ball
+                    player_ms_object.shot_ball = shot_ball
+                    player_ms_object.score_ball = score_ball
+                    player_ms_object.is_best_player = is_best_player
+                    player_ms_object.point_total = point_total
+                    player_ms_object.serve_total = serve_total
+                    player_ms_object.serve_err = serve_err
+                    player_ms_object.serve_ace = serve_ace
+                    player_ms_object.reception_total = reception_total
+                    player_ms_object.reception_err = reception_err
+                    player_ms_object.reception_exc = reception_exc
+                    player_ms_object.attack_total = attack_total
+                    player_ms_object.attack_err = attack_err
+                    player_ms_object.attack_pts = attack_pts
+                    player_ms_object.attack_att = attack_att
+                    player_ms_object.block_pts = block_pts
+                    player_ms_object.min_played = min_played
+                    player_ms_object.pts = pts
+                    player_ms_object.reb = reb
+                    player_ms_object.ast = ast
+                    player_ms_object.stl = stl
+                    player_ms_object.blk = blk
+                    player_ms_object.fg = fg
+                    player_ms_object.three_pt = three_pt
+                    player_ms_object.ft = ft
+                    player_ms_object.Offensive_Rebounds = Offensive_Rebounds
+                    player_ms_object.dr = dr
+                    player_ms_object.to = to
+                    player_ms_object.pf = pf
+                    player_ms_object.pir = pir
+                    player_ms_object.static_type = 'General'
+                    player_ms_object.save()
 
-                player_ms_object = MatchPlayerReport(player=player,match=match,
-                                                        set_ball=set_ball, serve_ball=serve_ball, cut_ball=cut_ball,
-                                                        shot_ball=shot_ball, score_ball=score_ball,
-                                                      static_type='General')
-                player_ms_object.save()
-            try:
-                player_ts_object = PlayerStatics.objects.get(player=player)
-                player_ts_object.set_ball += int(set_ball)
-                player_ts_object.serve_ball += int(serve_ball)
-                player_ts_object.cut_ball += int(cut_ball)
-                player_ts_object.shot_ball += int(shot_ball)
-                player_ts_object.score_ball += int(score_ball)
-                player_ts_object.save()
+                if is_best_player:
+                    MatchPlayerReport.objects.filter(match=match).exclude(player=player).update(is_best_player=False)
+                    
             except Exception as e:
+                messages.error(request, f"Error saving match report: {str(e)}", extra_tags='Players')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'match_slug': match_slug, 'slug': player.team.slug}))
 
-                player_ts_object = PlayerStatics(player=player, set_ball=set_ball, serve_ball=serve_ball, cut_ball=cut_ball,
-                                              shot_ball=shot_ball, score_ball=score_ball)
-                player_ts_object.save()
-
-
-
+            try:
+                player_ts_object, created = PlayerStatics.objects.get_or_create(
+                    player=player,
+                    defaults={
+                        'set_ball': set_ball,'serve_ball': serve_ball,'cut_ball': cut_ball,'shot_ball': shot_ball,'score_ball': score_ball,'point_total': point_total,
+                        'serve_total': serve_total,'serve_err': serve_err,'serve_ace': serve_ace,'reception_total': reception_total,'reception_err': reception_err,'reception_exc': reception_exc,
+                        'attack_total': attack_total,'attack_err': attack_err,'attack_pts': attack_pts,'attack_att': attack_att,'block_pts': block_pts,'min_played': min_played,
+                        'pts': pts,'reb': reb,'ast': ast,'stl': stl,'blk': blk,'fg': fg,'three_pt': three_pt,'ft': ft,'Offensive_Rebounds': Offensive_Rebounds,
+                        'dr': dr,'to': to,'pf': pf,'pir': pir,
+                        'static_type': 'General'
+                    }
+                )
+                
+                if not created:
+                    player_ts_object.set_ball = set_ball
+                    player_ts_object.serve_ball = serve_ball
+                    player_ts_object.cut_ball = cut_ball
+                    player_ts_object.shot_ball = shot_ball
+                    player_ts_object.score_ball = score_ball
+                    player_ts_object.point_total = point_total
+                    player_ts_object.serve_total = serve_total
+                    player_ts_object.serve_err = serve_err
+                    player_ts_object.serve_ace = serve_ace
+                    player_ts_object.reception_total = reception_total
+                    player_ts_object.reception_err = reception_err
+                    player_ts_object.reception_exc = reception_exc
+                    player_ts_object.attack_total = attack_total
+                    player_ts_object.attack_err = attack_err
+                    player_ts_object.attack_pts = attack_pts
+                    player_ts_object.attack_att = attack_att
+                    player_ts_object.block_pts = block_pts
+                    player_ts_object.min_played = min_played
+                    player_ts_object.pts = pts
+                    player_ts_object.reb = reb
+                    player_ts_object.ast = ast
+                    player_ts_object.stl = stl
+                    player_ts_object.blk = blk
+                    player_ts_object.fg = fg
+                    player_ts_object.three_pt = three_pt
+                    player_ts_object.ft = ft
+                    player_ts_object.Offensive_Rebounds = Offensive_Rebounds
+                    player_ts_object.dr = dr
+                    player_ts_object.to = to
+                    player_ts_object.pf = pf
+                    player_ts_object.pir = pir
+                    
+                    player_ts_object.save()
+                    
+            except Exception as e:
+                messages.error(request, f"Error saving total statics: {str(e)}", extra_tags='Players')
+                return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'match_slug': match_slug, 'slug': player.team.slug}))
 
             messages.success(request, _("Player Statics Add Successfully"), extra_tags='Players')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchTeamPlayerList', kwargs={'match_slug': match_slug, 'slug': player.team.slug}))
         else:
             messages.error(request, _("Player Statics Not Add , Please Try Again"), extra_tags='Players')
 
-    context = {'match': match, 'player': player,
-
-               'player_statics': player_statics,'total_statics': total_statics,
-               'static_form': AdminPlayerStaticsForm(), 'current_page': _('Add Statics'),
-
-                'prev_Page': _('Players'), }
+    context = {
+        'match': match, 
+        'player': player,
+        'player_statics': player_statics,
+        'total_statics': total_statics,
+        'static_form': AdminPlayerStaticsForm(), 
+        'current_page': _('Add Statics'),
+        'prev_Page': _('Players'),
+    }
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics.html', context)
-
-
-
-
-
 
 
 ##########################  Players ################################

@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from apps.sport.models.models import *
 from helper.modelHelper import *
 
@@ -14,11 +15,9 @@ class MatchReport(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         verbose_name = 'match report'
         verbose_name_plural = 'match reports'
-
 
     def __str__(self):
         return f'{self.match} report'
@@ -33,7 +32,7 @@ class MatchReport(models.Model):
 class MatchPlayerReport(models.Model):
     report = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name='report_sets',null=True, blank=True)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='report_math',null=True, blank=True)
-    team = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='report_team',null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='report_team',null=True, blank=True)
     player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='report_player',null=True, blank=True)
     position = models.IntegerField( null=True, blank=True, default=0)
     set_ball = models.IntegerField( null=True, blank=True, default=0)
@@ -52,23 +51,39 @@ class MatchPlayerReport(models.Model):
     set4 = models.CharField(max_length=30,   null=True, blank=True)
     set5 = models.CharField(max_length=30,   null=True, blank=True)
     vote = models.CharField(max_length=30,   null=True, blank=True)
-    point_total = models.CharField(max_length=30,   null=True, blank=True)
-    point_bp = models.CharField(max_length=30,   null=True, blank=True)
-    point_wl = models.CharField(max_length=30,   null=True, blank=True)
-    serve_total = models.CharField(max_length=30,   null=True, blank=True)
-    serve_err = models.CharField(max_length=30,   null=True, blank=True)
-    serve_pts = models.CharField(max_length=30,   null=True, blank=True)
-    reception_total = models.CharField(max_length=30,   null=True, blank=True)
-    reception_err = models.CharField(max_length=30,   null=True, blank=True)
-    reception_pos = models.CharField(max_length=30,   null=True, blank=True)
-    reception_exc = models.CharField(max_length=30,   null=True, blank=True)
-    attack_total = models.CharField(max_length=30,   null=True, blank=True)
-    attack_err = models.CharField(max_length=30,   null=True, blank=True)
-    attack_pos = models.CharField(max_length=30,   null=True, blank=True)
-    attack_exc = models.CharField(max_length=30,   null=True, blank=True)
-    block_pts = models.CharField(max_length=30,   null=True, blank=True)
-    static_type = models.CharField(max_length=30,choices=Statics_Type, default='General',   null=True, blank=True)
 
+    # Volleyball Statistics
+    point_total = models.CharField(max_length=30, null=True, blank=True, default='')
+    serve_total = models.CharField(max_length=30, null=True, blank=True, default='')
+    serve_err = models.CharField(max_length=30, null=True, blank=True, default='')
+    serve_ace = models.CharField(max_length=30, null=True, blank=True, default='')
+    reception_total = models.CharField(max_length=30, null=True, blank=True, default='')
+    reception_err = models.CharField(max_length=30, null=True, blank=True, default='')
+    reception_exc = models.CharField(max_length=30, null=True, blank=True, default='')
+    attack_total = models.CharField(max_length=30, null=True, blank=True, default='')
+    attack_err = models.CharField(max_length=30, null=True, blank=True, default='')
+    attack_pts = models.CharField(max_length=30, null=True, blank=True, default='')
+    attack_att = models.CharField(max_length=30, null=True, blank=True, default='')
+    block_pts = models.CharField(max_length=30, null=True, blank=True, default='')
+
+    # Basketball Statistics
+    min_played = models.CharField(max_length=30, null=True, blank=True, default='')
+    pts = models.CharField(max_length=30, null=True, blank=True, default='')
+    reb = models.CharField(max_length=30, null=True, blank=True, default='')
+    ast = models.CharField(max_length=30, null=True, blank=True, default='')
+    stl = models.CharField(max_length=30, null=True, blank=True, default='')
+    blk = models.CharField(max_length=30, null=True, blank=True, default='')
+    fg = models.CharField(max_length=30, null=True, blank=True, default='')
+    three_pt = models.CharField(max_length=30, null=True, blank=True, default='')
+    ft = models.CharField(max_length=30, null=True, blank=True, default='')
+    Offensive_Rebounds = models.CharField(max_length=30, null=True, blank=True, default='')
+    dr = models.CharField(max_length=30, null=True, blank=True, default='')
+    to = models.CharField(max_length=30, null=True, blank=True, default='')
+    pf = models.CharField(max_length=30, null=True, blank=True, default='')
+    pir = models.CharField(max_length=30, null=True, blank=True, default='')
+
+    is_best_player = models.BooleanField(default=False, verbose_name='Best Player')
+    static_type = models.CharField(max_length=30,choices=Statics_Type, default='General',   null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -88,6 +103,55 @@ class MatchPlayerReport(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(MatchPlayerReport, self).save(*args, **kwargs)
+
+
+class MatchPlayerReportSerializer(serializers.ModelSerializer):
+    match_id = serializers.SerializerMethodField()
+    match_name = serializers.SerializerMethodField()
+    team_id = serializers.SerializerMethodField()
+    team_name = serializers.SerializerMethodField()
+    player_name = serializers.SerializerMethodField()
+    player_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MatchPlayerReport
+        fields = [
+            'id', 'match', 'match_id', 'match_name', 'player', 'player_name', 'player_image',
+            'team', 'team_id', 'team_name', 'position', 'is_best_player', 'static_type',
+            'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp', 'cut_ball', 'cut_ballp', 
+            'shot_ball', 'shot_ballp', 'score_ball', 'score_ballp', 'set1', 'set2', 'set3', 
+            'set4', 'set5', 'vote', 'point_total', 'serve_total', 'serve_err', 'serve_ace',
+            'reception_total', 'reception_err', 'reception_exc', 'attack_total', 'attack_err',
+            'attack_pts', 'attack_att', 'block_pts', 'min_played', 'pts', 'reb', 'ast', 'stl',
+            'blk', 'fg', 'three_pt', 'ft', 'Offensive_Rebounds', 'dr', 'to', 'pf', 'pir'
+        ]
+
+    def get_match_id(self, obj):
+        return obj.match.id if obj.match else None
+
+    def get_match_name(self, obj):
+        return obj.match.name if obj.match else None
+    
+    def get_team_id(self, obj):
+        if obj.team:
+            try:
+                return obj.team.id
+            except:
+                return None
+        return None
+    
+    def get_team_name(self, obj):
+        return obj.team.name if obj.team else None
+
+    def get_player_name(self, obj):
+        return obj.player.name if obj.player else None
+
+    def get_player_image(self, obj):
+        if obj.player and obj.player.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.player.image.url)
+        return None
 
 class PlayerStatics(models.Model):
     report = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name='static_sets',null=True, blank=True)

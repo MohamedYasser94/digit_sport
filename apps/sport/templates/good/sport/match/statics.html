@@ -4,7 +4,6 @@
 
 
 {% block body %}
-
     <!--end::Header-->
     <!--begin::Content-->
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -30,82 +29,312 @@
                         <!--end::Card header-->
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
-                            <!--begin::Billing address-->
+                            
+                            <!--begin::Basic Statistics-->
                             <div class="d-flex flex-column gap-10 gap-md-10">
                                 <!--begin::Title-->
                                 <div class="fs-3 fw-bolder mb-n2">{% translate 'Basic' %}</div>
                                 <!--end::Title-->
                                 <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
-
                                    <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Set' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="set_ball" type="number" min="0"
-                                               value="{{ player_statics.set_ball }}"
+                                               value="{{ player_statics.set_ball|default:0 }}"
                                                placeholder="{% translate 'Set' %}"/>
-
                                         <!--end::Input-->
                                     </div>
-                                      <div class="flex-row-fluid">
+                                    <div class="flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Serve' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                          <input class="form-control" name="serve_ball" type="number" min="0"
-                                               value="{{ player_statics.serve_ball }}" required
+                                               value="{{ player_statics.serve_ball|default:0 }}" required
                                                placeholder="{% translate 'Serve' %}"/>
                                         <!--end::Input-->
                                     </div>
                                 </div>
                                 <!--end::Input group-->
-                            <!--begin::Input group-->
+                                <!--begin::Input group-->
                                 <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
-
-                                   <div class=" fv-row flex-row-fluid">
+                                   <div class="fv-row flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Cut' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                         <input class="form-control" name="cut_ball" type="number" min="0"
-                                               value="{{ player_statics.cut_ball }}" required
+                                               value="{{ player_statics.cut_ball|default:0 }}" required
                                                placeholder="{% translate 'Cut' %}"/>
-
                                         <!--end::Input-->
                                     </div>
-                                      <div class="flex-row-fluid">
+                                    <div class="flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Shot' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                          <input class="form-control" name="shot_ball" type="number" min="0"
-                                               value="{{ player_statics.shot_ball }}" required
+                                               value="{{ player_statics.shot_ball|default:0 }}" required
                                                placeholder="{% translate 'Shot' %}"/>
                                         <!--end::Input-->
                                     </div>
-                                     <div class="flex-row-fluid">
+                                    <div class="flex-row-fluid">
                                         <!--begin::Label-->
                                         <label class="required form-label">{% translate 'Score' %}</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
                                          <input class="form-control" name="score_ball" type="number" min="0"
-                                               value="{{ player_statics.score_ball }}" required
+                                               value="{{ player_statics.score_ball|default:0 }}" required
                                                placeholder="{% translate 'Score' %}"/>
                                         <!--end::Input-->
+                                        <!--begin::Best Player Section-->
+                                        <div class="d-flex flex-column gap-10 gap-md-10 mt-10">
+                                            <!--begin::Title-->
+                                            <div class="fs-3 fw-bolder mb-n2">{% translate 'Player Recognition' %}</div>
+                                            <!--end::Title-->
+                                            <!--begin::Best Player Checkbox-->
+                                            <div class="d-flex flex-column flex-md-row gap-10 gap-md-10 align-items-center">
+                                                <div class="fv-row flex-row-fluid">
+                                                    <div class="form-check form-switch form-check-custom form-check-solid">
+                                                        <input class="form-check-input" type="checkbox" name="is_best_player" 
+                                                            id="is_best_player" {% if player_statics.is_best_player %}checked{% endif %}
+                                                            value="on"/>
+                                                        <label class="form-check-label fs-5 fw-bold text-success" for="is_best_player">
+                                                            {% translate 'Mark as Best Player of the Match' %}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--end::Best Player Checkbox-->
+                                        </div>
+                                        <!--end::Best Player Section-->
                                     </div>
                                 </div>
                                 <!--end::Input group-->
                             </div>
-                            <!--end::Billing address-->
+                            <!--end::Basic Statistics-->
 
-                <!--end::Main column-->
+                            <!--begin::Volleyball Statistics-->
+                            <div class="d-flex flex-column gap-10 gap-md-10 mt-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Volleyball Statistics' %}</div>
+                                <!--end::Title-->
+                                
+                                <!-- Points Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Points Total' %}</label>
+                                        <input class="form-control" name="point_total" type="text"
+                                               value="{{ player_statics.point_total|default:'' }}"
+                                               placeholder="{% translate 'e.g., 30:10' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Serve Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Serve Total' %}</label>
+                                        <input class="form-control" name="serve_total" type="text"
+                                               value="{{ player_statics.serve_total|default:'' }}"
+                                               placeholder="{% translate 'Serve Total' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Serve Errors' %}</label>
+                                        <input class="form-control" name="serve_err" type="text"
+                                               value="{{ player_statics.serve_err|default:'' }}"
+                                               placeholder="{% translate 'Serve Errors' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Serve Aces' %}</label>
+                                        <input class="form-control" name="serve_ace" type="text"
+                                               value="{{ player_statics.serve_ace|default:'' }}"
+                                               placeholder="{% translate 'Serve Aces' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Reception Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Reception Total' %}</label>
+                                        <input class="form-control" name="reception_total" type="text"
+                                               value="{{ player_statics.reception_total|default:'' }}"
+                                               placeholder="{% translate 'Reception Total' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Reception Errors' %}</label>
+                                        <input class="form-control" name="reception_err" type="text"
+                                               value="{{ player_statics.reception_err|default:'' }}"
+                                               placeholder="{% translate 'Reception Errors' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Reception Excellent' %}</label>
+                                        <input class="form-control" name="reception_exc" type="text"
+                                               value="{{ player_statics.reception_exc|default:'' }}"
+                                               placeholder="{% translate 'Reception Excellent' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Attack Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Attack Total' %}</label>
+                                        <input class="form-control" name="attack_total" type="text"
+                                               value="{{ player_statics.attack_total|default:'' }}"
+                                               placeholder="{% translate 'Attack Total' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Attack Errors' %}</label>
+                                        <input class="form-control" name="attack_err" type="text"
+                                               value="{{ player_statics.attack_err|default:'' }}"
+                                               placeholder="{% translate 'Attack Errors' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Attack Points' %}</label>
+                                        <input class="form-control" name="attack_pts" type="text"
+                                               value="{{ player_statics.attack_pts|default:'' }}"
+                                               placeholder="{% translate 'Attack Points' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Attack Attempts' %}</label>
+                                        <input class="form-control" name="attack_att" type="text"
+                                               value="{{ player_statics.attack_att|default:'' }}"
+                                               placeholder="{% translate 'Attack Attempts' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Block Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Block Points' %}</label>
+                                        <input class="form-control" name="block_pts" type="text"
+                                               value="{{ player_statics.block_pts|default:'' }}"
+                                               placeholder="{% translate 'Block Points' %}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Volleyball Statistics-->
+
+                            <!--begin::Basketball Statistics-->
+                            <div class="d-flex flex-column gap-10 gap-md-10 mt-10">
+                                <!--begin::Title-->
+                                <div class="fs-3 fw-bolder mb-n2">{% translate 'Basketball Statistics' %}</div>
+                                <!--end::Title-->
+                                
+                                <!-- Basic Basketball Stats -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Minutes Played' %}</label>
+                                        <input class="form-control" name="min_played" type="text"
+                                               value="{{ player_statics.min_played|default:'' }}"
+                                               placeholder="{% translate 'e.g., 32:15' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Points' %}</label>
+                                        <input class="form-control" name="pts" type="text"
+                                               value="{{ player_statics.pts|default:'' }}"
+                                               placeholder="{% translate 'Points' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Rebounds' %}</label>
+                                        <input class="form-control" name="reb" type="text"
+                                               value="{{ player_statics.reb|default:'' }}"
+                                               placeholder="{% translate 'Rebounds' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Assists & Steals & Blocks -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Assists' %}</label>
+                                        <input class="form-control" name="ast" type="text"
+                                               value="{{ player_statics.ast|default:'' }}"
+                                               placeholder="{% translate 'Assists' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Steals' %}</label>
+                                        <input class="form-control" name="stl" type="text"
+                                               value="{{ player_statics.stl|default:'' }}"
+                                               placeholder="{% translate 'Steals' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Blocks' %}</label>
+                                        <input class="form-control" name="blk" type="text"
+                                               value="{{ player_statics.blk|default:'' }}"
+                                               placeholder="{% translate 'Blocks' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Shooting Statistics -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Field Goals' %}</label>
+                                        <input class="form-control" name="fg" type="text"
+                                               value="{{ player_statics.fg|default:'' }}"
+                                               placeholder="{% translate 'e.g., 7/11' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate '3PT' %}</label>
+                                        <input class="form-control" name="three_pt" type="text"
+                                               value="{{ player_statics.three_pt|default:'' }}"
+                                               placeholder="{% translate 'e.g., 3/5' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Free Throws' %}</label>
+                                        <input class="form-control" name="ft" type="text"
+                                               value="{{ player_statics.ft|default:'' }}"
+                                               placeholder="{% translate 'e.g., 4/4' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Advanced Basketball Stats -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Offensive Rebounds' %}</label>
+                                        <input class="form-control" name="or_" type="text"
+                                               value="{{ player_statics.or_|default:'' }}"
+                                               placeholder="{% translate 'Offensive Rebounds' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Defensive Rebounds' %}</label>
+                                        <input class="form-control" name="dr" type="text"
+                                               value="{{ player_statics.dr|default:'' }}"
+                                               placeholder="{% translate 'Defensive Rebounds' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Turnovers' %}</label>
+                                        <input class="form-control" name="to" type="text"
+                                               value="{{ player_statics.to|default:'' }}"
+                                               placeholder="{% translate 'Turnovers' %}"/>
+                                    </div>
+                                </div>
+
+                                <!-- Fouls & Performance -->
+                                <div class="d-flex flex-column flex-md-row gap-10 gap-md-10">
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'Personal Fouls' %}</label>
+                                        <input class="form-control" name="pf" type="text"
+                                               value="{{ player_statics.pf|default:'' }}"
+                                               placeholder="{% translate 'Personal Fouls' %}"/>
+                                    </div>
+                                    <div class="fv-row flex-row-fluid">
+                                        <label class="form-label">{% translate 'PIR' %}</label>
+                                        <input class="form-control" name="pir" type="text"
+                                               value="{{ player_statics.pir|default:'' }}"
+                                               placeholder="{% translate 'PIR' %}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Basketball Statistics-->
+
                         </div>
                         <!--end::Card body-->
                     </div>
                     <!--end::Order details-->
-                     <div class="d-flex justify-content-end">
+                    
+                    <div class="d-flex justify-content-end">
                         <!--begin::Button-->
                         <a href="{{ prev_Page_link }}" id="kt_ecommerce_edit_order_cancel"
                            class="btn btn-light me-5">{% translate 'Cancel' %}</a>
@@ -114,10 +343,12 @@
                         <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
                             <span class="indicator-label">{% translate 'Save' %}</span>
                             <span class="indicator-progress">{% translate 'Please wait...' %}
-											<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
                         </button>
                         <!--end::Button-->
                     </div>
+                    
                 </div>
             </form>
             <!--end::Form-->
@@ -125,19 +356,9 @@
         <!--end::Container-->
     </div>
     <!--end::Content-->
-
-
-
-
-
-
-
 {% endblock %}
+
 {% block custom_js %}
-
-
-
-
 {% endblock custom_js %}
 {% block foot %} {% include BACKEND_FOOTER %}  {% endblock %}
 {% block js %} {% include BACKEND_JS %}  {% endblock %}

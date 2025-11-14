@@ -11,10 +11,10 @@ from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
 
-from api.v4.serializers.sport.sport import LeagueSerializer, MatchDetailsSerializer, MatchGoalsSerializer, MatchSerializer, SimpleLeagueSerializer, FixtureSerializer, TeamSeasonTableSerializer, TeamSerializer, \
-    TeamWithMatchesSerializer, PlyerSerializer
+from api.v4.serializers.sport.sport import *
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
+from apps.sport.models.operations import MatchPlayerReport, MatchPlayerReportSerializer
 from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
 from core.models.blog import BlogArticle, BlogVideo
 
@@ -26,115 +26,6 @@ base_url = settings.SPORT_MONKS_URL
 
 
 ############# Home Fixtures api urls #############
-
-
-def _get_serialized_fixtures_for_date(fetch_date, sport_obj):
-    """Queries the DB for a given date and sport, serializes data from both Fixtures and Match models."""
-    start_of_day_utc = datetime.combine(fetch_date, time.min, tzinfo=timezone.utc)
-    end_of_day_utc = datetime.combine(fetch_date, time.max, tzinfo=timezone.utc)
-
-    fixtures_for_day = Fixtures.objects.filter(starting_at__range=(start_of_day_utc, end_of_day_utc),sport=sport_obj
-    ).select_related('league', 'season').prefetch_related('participants__team').order_by('league__name', 'starting_at')
-
-    matches_for_day = Match.objects.filter(start_time__range=(start_of_day_utc, end_of_day_utc),sport=sport_obj,status='Active'
-    ).select_related('league', 'home_team', 'away_team').order_by('league__name', 'start_time')
-
-    leagues_data = []
-    fixtures_by_league = defaultdict(list)
-    for fixture in fixtures_for_day:
-        if fixture.league:
-            fixtures_by_league[fixture.league].append(fixture)
-    matches_by_league = defaultdict(list)
-
-    for match in matches_for_day:
-        if match.league:
-            matches_by_league[match.league].append(match)
-    all_leagues = set(list(fixtures_by_league.keys()) + list(matches_by_league.keys()))
-
-    for league in sorted(all_leagues, key=lambda x: x.name if x else ""):
-        league_serializer = SimpleLeagueSerializer(league)
-        league_fixtures = fixtures_by_league.get(league, [])
-        fixture_serializer = FixtureSerializer(league_fixtures, many=True)
-        league_matches = matches_by_league.get(league, [])
-        match_serializer = MatchSerializer(league_matches, many=True,context={'request': None}
-        )
-
-        leagues_data.append({
-            'league': league_serializer.data,
-            'fixtures': fixture_serializer.data,
-            'matches': match_serializer.data
-        })
-
-    live_statuses_from_docs = [
-        'INPLAY_1ST_HALF', 'HT', 'INPLAY_2ND_HALF', 'BREAK',
-        'INPLAY_ET', 'EXTRA_TIME_BREAK', 'INPLAY_PENALTIES', 'PEN_BREAK',
-        'SUSPENDED', 'INTERRUPTED'
-    ]
-
-    live_fixtures_count = fixtures_for_day.filter(
-        state__in=live_statuses_from_docs
-    ).count()
-
-    live_matches_count = matches_for_day.filter(
-        is_live='Yes'
-    ).count()
-
-    return {
-        'live_count': live_fixtures_count + live_matches_count,
-        'leagues': leagues_data
-    }
-
-
-@api_view(['GET'])
-def FixturesByDateApiList(request, sport, date, lang):
-    """
-    High-performance API endpoint for Flutter.
-    1. Always serves from cache instantly if data exists.
-    2. For today's date, it serves stale cache first, then triggers a non-blocking background refresh.
-    """
-    if date.lower() == 'today':
-        fetch_date = django_timezone.now().date()
-    else:
-        try:
-            fetch_date = datetime.strptime(date, '%Y-%m-%d').date()
-        except ValueError:
-            return Response({"error": "Invalid date format. Use YYYY-MM-DD or 'today'."},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        sport_obj = Sport.objects.get(name__iexact=sport)
-        fetched_record = FetchedDate.objects.filter(date=fetch_date, sport=sport_obj).first()
-        has_fixtures = Fixtures.objects.filter(starting_at__date=fetch_date,sport=sport_obj).exists() if fetched_record else False
-
-        if fetched_record and has_fixtures:
-            today = django_timezone.now().date()
-            if fetch_date == today:
-                time_since_last_fetch = django_timezone.now() - fetched_record.fetched_at
-                if time_since_last_fetch > timedelta(minutes=2):
-                    thread = threading.Thread(
-                        target=_fetch_and_store_fixtures_from_source,
-                        args=(sport, fetch_date.strftime('%Y-%m-%d'))
-                    )
-                    thread.start()
-
-            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
-            return Response(response_data, status=status.HTTP_200_OK)
-        else:
-            success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
-            if not success:
-                return Response({"error": "Failed to fetch data from the source API."},
-                                status=status.HTTP_503_SERVICE_UNAVAILABLE)
-            FetchedDate.objects.update_or_create(
-                date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
-            )
-            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
-            return Response(response_data, status=status.HTTP_200_OK)
-
-    except Sport.DoesNotExist:
-        return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": f"An unexpected server error occurred.{e}"},
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
     """
@@ -200,51 +91,131 @@ def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
         'leagues': leagues_data
     }
 
+
+
+@api_view(['GET'])
+def FixturesByDateApiList(request, sport, date, lang):
+    """
+    High-performance API endpoint for Flutter.
+    1. Always serves from cache instantly if data exists.
+    2. For today's date, it serves stale cache first, then triggers a non-blocking background refresh.
+    """
+    if date.lower() == 'today':
+        fetch_date = django_timezone.now().date()
+    else:
+        try:
+            fetch_date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD or 'today'."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        sport_obj = Sport.objects.get(name__iexact=sport)
+        fetched_record = FetchedDate.objects.filter(date=fetch_date, sport=sport_obj).first()
+        has_fixtures = Fixtures.objects.filter(starting_at__date=fetch_date,sport=sport_obj).exists() if fetched_record else False
+
+        if fetched_record and has_fixtures:
+            today = django_timezone.now().date()
+            if fetch_date == today:
+                time_since_last_fetch = django_timezone.now() - fetched_record.fetched_at
+                if time_since_last_fetch > timedelta(minutes=2):
+                    thread = threading.Thread(
+                        target=_fetch_and_store_fixtures_from_source,
+                        args=(sport, fetch_date.strftime('%Y-%m-%d'))
+                    )
+                    thread.start()
+
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
+            return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            success = _fetch_and_store_fixtures_from_source(sport, fetch_date.strftime('%Y-%m-%d'))
+            if not success:
+                return Response({"error": "Failed to fetch data from the source API."},
+                                status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            FetchedDate.objects.update_or_create(
+                date=fetch_date, sport=sport_obj, defaults={'fetched_at': django_timezone.now()}
+            )
+            response_data = _get_serialized_fixtures_for_date(fetch_date, sport_obj, request)
+            return Response(response_data, status=status.HTTP_200_OK)
+
+    except Sport.DoesNotExist:
+        return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": f"An unexpected server error occurred.{e}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['GET'])
 def MatchDetailsApi(request, match_id):
     try:
-        match = Match.objects.get(id=match_id)
+        match = Match.objects.select_related(
+            'home_team', 'away_team', 'league', 'season', 'round', 'venues'
+        ).get(id=match_id)
+        
         goals = MatchGoals.objects.filter(match=match_id)
+        best_player_report = MatchPlayerReport.objects.select_related(
+            'player', 'team'
+        ).filter(
+            match=match_id, 
+            is_best_player=True
+        ).first()
+
         match_serializer = MatchDetailsSerializer(match, many=False, context={'request': request})
         goals_serializer = MatchGoalsSerializer(goals, many=True, context={'request': request})
+        best_player_data = None
+        if best_player_report:
+            best_player_data = MatchPlayerReportSerializer(
+                best_player_report, 
+                many=False, 
+                context={'request': request}
+            ).data
+
+        sport_data = {
+            'match': match_serializer.data,
+            'goals': goals_serializer.data,
+            'best_player': best_player_data
+        }
         
-        sport_data = {'matches': match_serializer.data, 'goals': goals_serializer.data,}
         success = True
-        message = f"Send From Django API mix {match_id} "
+        message = f"Match details retrieved successfully"
         
-        data = {'success': success, 'data': sport_data, 'message': message,}
+        data = {
+            'success': success, 
+            'data': sport_data, 
+            'message': message,
+        }
         return JsonResponse(data, safe=False)
 
-    except Exception as e:
-        print(e)
+    except Match.DoesNotExist:
         success = False
-        message = f"error in get data  match Details {e} "
-        sport_data = {'matches': [],}
-        data = {'success': success, 'data': sport_data, 'message': message,}
-    return JsonResponse(data, safe=False)
+        message = f"Match not found"
+        sport_data = {'match': None, 'goals': [], 'best_player': None}
+        data = {'success': success, 'data': sport_data, 'message': message}
+        return JsonResponse(data, safe=False, status=404)
+        
+    except Exception as e:
+        print(f"Error in MatchDetailsApi: {e}")
+        success = False
+        message = f"Error retrieving match details"
+        sport_data = {'match': None, 'goals': [], 'best_player': None}
+        data = {'success': success, 'data': sport_data, 'message': message}
+        return JsonResponse(data, safe=False, status=500)
 
 @api_view(['GET'])
-def LeagueStandingsApi(request, match_id):
+def LeagueStandingsApi(request, league_id, season_id):
     """
-    Get league standings for a specific match
+    Get league standings for a specific league and season
     """
     try:
-        print(f"Looking for fixture with ID: {match_id} for standings")
+        print(f"Looking for standings - League: {league_id}, Season: {season_id}")
         
-        fixture = get_object_or_404(
-            Fixtures.objects.select_related('league'),
-            id=match_id
+        league_season_table = get_object_or_404(
+            LeagueSeasonTable.objects.select_related('league', 'season'),
+            league_id=league_id,
+            season_id=season_id
         )
         
-        if not fixture.league:
-            return Response({
-                'success': False,
-                'data': {'standings': []},
-                'message': "Fixture does not belong to any league"
-            }, status=404)
-        
         standings = TeamSeasonTable.objects.filter(
-            league_id=fixture.league.id
+            table_id=league_season_table.id
         ).select_related('team', 'league').order_by('position')
         
         standings_serializer = TeamSeasonTableSerializer(
@@ -254,10 +225,11 @@ def LeagueStandingsApi(request, match_id):
         )
         
         league_data = {
-            'league_id': fixture.league.id,
-            'league_name': fixture.league.name,
-            'match_id': fixture.id,
-            'match_name': fixture.name
+            'league_id': league_season_table.league.id,
+            'league_name': league_season_table.league.name,
+            'season_id': league_season_table.season.id,
+            'season_name': league_season_table.season.name if hasattr(league_season_table.season, 'name') else None,
+            'league_season_table_id': league_season_table.id
         }
         
         return Response({
@@ -269,11 +241,11 @@ def LeagueStandingsApi(request, match_id):
             'message': "League standings retrieved successfully"
         })
         
-    except Fixtures.DoesNotExist:
+    except LeagueSeasonTable.DoesNotExist:
         return Response({
             'success': False,
             'data': {'standings': []},
-            'message': f"Fixture with id {match_id} not found"
+            'message': f"League standings not found for league_id {league_id} and season_id {season_id}"
         }, status=404)
         
     except Exception as e:
@@ -283,6 +255,7 @@ def LeagueStandingsApi(request, match_id):
             'data': {'standings': []},
             'message': f"Error retrieving league standings: {str(e)}"
         }, status=500)
+
 
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
@@ -1272,27 +1245,81 @@ def list_user_favorites(request):
         )
 
 @api_view(['GET'])
-def PlayersBySportApiList(request, sport_name, team_id):
+def PlayersReportdetailsApi(request, sport_name, team_id, match_id):
     try:
-        sport = Sport.objects.get(name=sport_name)
-    except Exception as e:
-        sport = Sport.objects.create(name=sport_name)
-    try:
+        try:
+            sport = Sport.objects.get(name=sport_name)
+        except Sport.DoesNotExist:
+            sport = Sport.objects.create(name=sport_name)
+        
         team = Teams.objects.get(id=team_id)
-
-        players_list = Players.objects.filter(sport=sport.id, team=team.id).order_by('name')
-
+        match = Match.objects.get(id=match_id)
+        players_list = Players.objects.filter(
+            sport=sport.id,
+            team=team.id
+        ).select_related('team').order_by('name')
         success = True
-        message = f"Send From Django API mix "
-        players_serializer = PlyerSerializer(players_list, many=True, context={'request': request})
-        sport_data = {'sport': sport_name, 'players': players_serializer.data, }
-
-        data = {'success': success, 'data': sport_data, 'message': message, }
-
+        message = f"Players statistics for match {match_id}"
+        
+        players_serializer = PlayerSerializer(
+            players_list,
+            many=True,
+            context={
+                'request': request,
+                'match_id': match_id
+            }
+        )
+        
+        sport_data = {'sport': sport_name,'team_id': team_id,'team_name': team.name,
+            'match_id': match_id,'match_name': match.name,'players': players_serializer.data,}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
         return JsonResponse(data, safe=False)
+    
+    except Teams.DoesNotExist:
+        success = False
+        message = f"Team with id {team_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'sport': sport_name,
+                'team_id': team_id,
+                'match_id': match_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+    
+    except Match.DoesNotExist:
+        success = False
+        message = f"Match with id {match_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'sport': sport_name,
+                'team_id': team_id,
+                'match_id': match_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+    
     except Exception as e:
         success = False
-        message = f"error in get data   {e}  "
-        sport_data = {'sport': sport_name, 'table': [], }
-        data = {'success': success, 'data': sport_data, 'message': message, }
-        return JsonResponse(data, safe=False)
+        message = f"Error in get data: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'sport': sport_name,
+                'team_id': team_id,
+                'match_id': match_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
+
