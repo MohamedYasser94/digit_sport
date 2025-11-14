@@ -210,49 +210,68 @@ class SimpleLeagueSerializer(serializers.ModelSerializer):
         model = Leagues
         fields = ['api_id', 'name', 'image_path', 'country','currentseason']
 
-
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
     league = LeagueSerializer(read_only=True)
-    match_report = serializers.SerializerMethodField()
 
     class Meta:
         model = Players
         fields = [
             'id', 'api_id', 'common_name', 'display_name', 'first_name', 'last_name',
             'position', 'height', 'weight', 'birthdate', 'nationality', 'image_path',
-            'team', 'league', 'match_report'
-        ]
+            'team', 'league']
+
+class NationalitySerializer(serializers.Serializer):
+    name = serializers.CharField(source='nationality', read_only=True)
+    api_name = serializers.CharField(source='api_nationality', read_only=True)
+    flag = serializers.SerializerMethodField()
+    
+    def get_flag(self, obj):
+        request = self.context.get('request')
+        if obj.country_image:
+            try:
+                if request:
+                    return request.build_absolute_uri(obj.country_image.url)
+                return obj.country_image.url
+            except:
+                return None
+        return None
+
+class PlayerSerializer(serializers.ModelSerializer):
+    nationality = NationalitySerializer(source='*', read_only=True)
+    match_report = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Players
+        fields = ['id', 'api_id', 'common_name', 'display_name', 'first_name', 'last_name','name','position', 'number',
+            'height', 'weight', 'birthdate','age','gender','nationality','image_path','match_report']
     
     def get_match_report(self, obj):
         try:
-            # match_id الآن إجباري من خلال context
             match_id = self.context.get('match_id')
-            
             if not match_id:
-                return None
-                
-            # جلب تقارير اللاعب للمباراة المحددة فقط
-            match_report_query = MatchPlayerReport.objects.filter(
-                player=obj.id,
-                match_id=match_id
-            ).select_related('match', 'team')
-            
-            # إذا لم يكن هناك تقارير، نرجع قائمة فارغة
-            if not match_report_query.exists():
                 return []
             
-            match_report = MatchPlayerReportSerializer(
-                match_report_query, 
-                many=True
-            ).data
+            match_reports = MatchPlayerReport.objects.filter(
+                player_id=obj.id,
+                match_id=match_id
+            ).select_related('match')
             
-            return match_report
+            if not match_reports.exists():
+                return []
+            
+            serializer = MatchPlayerReportSerializer(
+                match_reports,
+                many=True,
+                context=self.context
+            )
+            return serializer.data
             
         except Exception as e:
-            # تسجيل الخطأ لل debugging
-            print(f"Error in get_match_report for player {obj.id}, match {match_id}: {e}")
-            return None
+            print(f"Error in get_match_report for player {obj.id}, match {match_id}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return []
 
 class MatchTeamSerializer(serializers.ModelSerializer):
     class Meta:

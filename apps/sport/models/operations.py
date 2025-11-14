@@ -15,11 +15,9 @@ class MatchReport(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         verbose_name = 'match report'
         verbose_name_plural = 'match reports'
-
 
     def __str__(self):
         return f'{self.match} report'
@@ -108,22 +106,32 @@ class MatchPlayerReport(models.Model):
 
 
 class MatchPlayerReportSerializer(serializers.ModelSerializer):
-    match_name = serializers.CharField(source='match.name', read_only=True)
-    team_name = serializers.CharField(source='team.name', read_only=True)
-    player_name = serializers.CharField(source='player.display_name', read_only=True)
+    match_id = serializers.SerializerMethodField()
+    match_name = serializers.SerializerMethodField()
+    team_id = serializers.SerializerMethodField()
     
     class Meta:
         model = MatchPlayerReport
-        fields = [
-            'id', 'match', 'match_name', 'team', 'team_name', 'player', 'player_name',
-            'position', 'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp',
-            'cut_ball', 'cut_ballp', 'shot_ball', 'shot_ballp', 'score_ball',
-            'score_ballp', 'set1', 'set2', 'set3', 'set4', 'set5', 'vote',
-            'point_total', 'point_bp', 'point_wl', 'serve_total', 'serve_err',
-            'serve_pts', 'reception_total', 'reception_err', 'reception_pos',
-            'reception_exc', 'attack_total', 'attack_err', 'attack_pos',
-            'attack_exc', 'block_pts', 'static_type', 'create_at', 'is_best_player',
+        fields = ['id', 'match', 'match_id', 'match_name','player', 'team','team_id','position',
+            'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp', 'cut_ball', 'cut_ballp', 'shot_ball', 'shot_ballp', 'score_ball', 'score_ballp',
+            'set1', 'set2', 'set3', 'set4', 'set5','vote','point_total','serve_total', 'serve_err', 'serve_ace','reception_total', 'reception_err', 'reception_exc',
+            'attack_total', 'attack_err', 'attack_pts', 'attack_att','block_pts','min_played','pts','reb',
+            'ast','stl','blk','fg','three_pt','ft','Offensive_Rebounds','dr','to','pf','pir','is_best_player','static_type',
         ]
+
+    def get_match_id(self, obj):
+        return obj.match.id if obj.match else None
+
+    def get_match_name(self, obj):
+        return obj.match.name if obj.match else None
+    
+    def get_team_id(self, obj):
+        if obj.team:
+            try:
+                return obj.team.id
+            except:
+                return None
+        return None
 
 class PlayerStatics(models.Model):
     report = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name='static_sets',null=True, blank=True)
