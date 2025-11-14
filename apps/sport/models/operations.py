@@ -32,7 +32,7 @@ class MatchReport(models.Model):
 class MatchPlayerReport(models.Model):
     report = models.ForeignKey(MatchReport, on_delete=models.CASCADE, related_name='report_sets',null=True, blank=True)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='report_math',null=True, blank=True)
-    team = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='report_team',null=True, blank=True)
+    team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='report_team',null=True, blank=True)
     player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='report_player',null=True, blank=True)
     position = models.IntegerField( null=True, blank=True, default=0)
     set_ball = models.IntegerField( null=True, blank=True, default=0)
@@ -109,14 +109,21 @@ class MatchPlayerReportSerializer(serializers.ModelSerializer):
     match_id = serializers.SerializerMethodField()
     match_name = serializers.SerializerMethodField()
     team_id = serializers.SerializerMethodField()
-    
+    team_name = serializers.SerializerMethodField()
+    player_name = serializers.SerializerMethodField()
+    player_image = serializers.SerializerMethodField()
+
     class Meta:
         model = MatchPlayerReport
-        fields = ['id', 'match', 'match_id', 'match_name','player', 'team','team_id','position',
-            'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp', 'cut_ball', 'cut_ballp', 'shot_ball', 'shot_ballp', 'score_ball', 'score_ballp',
-            'set1', 'set2', 'set3', 'set4', 'set5','vote','point_total','serve_total', 'serve_err', 'serve_ace','reception_total', 'reception_err', 'reception_exc',
-            'attack_total', 'attack_err', 'attack_pts', 'attack_att','block_pts','min_played','pts','reb',
-            'ast','stl','blk','fg','three_pt','ft','Offensive_Rebounds','dr','to','pf','pir','is_best_player','static_type',
+        fields = [
+            'id', 'match', 'match_id', 'match_name', 'player', 'player_name', 'player_image',
+            'team', 'team_id', 'team_name', 'position', 'is_best_player', 'static_type',
+            'set_ball', 'set_ballp', 'serve_ball', 'serve_ballp', 'cut_ball', 'cut_ballp', 
+            'shot_ball', 'shot_ballp', 'score_ball', 'score_ballp', 'set1', 'set2', 'set3', 
+            'set4', 'set5', 'vote', 'point_total', 'serve_total', 'serve_err', 'serve_ace',
+            'reception_total', 'reception_err', 'reception_exc', 'attack_total', 'attack_err',
+            'attack_pts', 'attack_att', 'block_pts', 'min_played', 'pts', 'reb', 'ast', 'stl',
+            'blk', 'fg', 'three_pt', 'ft', 'Offensive_Rebounds', 'dr', 'to', 'pf', 'pir'
         ]
 
     def get_match_id(self, obj):
@@ -131,6 +138,19 @@ class MatchPlayerReportSerializer(serializers.ModelSerializer):
                 return obj.team.id
             except:
                 return None
+        return None
+    
+    def get_team_name(self, obj):
+        return obj.team.name if obj.team else None
+
+    def get_player_name(self, obj):
+        return obj.player.name if obj.player else None
+
+    def get_player_image(self, obj):
+        if obj.player and obj.player.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.player.image.url)
         return None
 
 class PlayerStatics(models.Model):

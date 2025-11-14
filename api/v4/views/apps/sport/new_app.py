@@ -147,28 +147,58 @@ def FixturesByDateApiList(request, sport, date, lang):
 @api_view(['GET'])
 def MatchDetailsApi(request, match_id):
     try:
-        match = Match.objects.get(id=match_id)
+        match = Match.objects.select_related(
+            'home_team', 'away_team', 'league', 'season', 'round', 'venues'
+        ).get(id=match_id)
+        
         goals = MatchGoals.objects.filter(match=match_id)
-        best_player_report = MatchPlayerReport.objects.filter(match=match_id, is_best_player=True).first()
+        best_player_report = MatchPlayerReport.objects.select_related(
+            'player', 'team'
+        ).filter(
+            match=match_id, 
+            is_best_player=True
+        ).first()
+
         match_serializer = MatchDetailsSerializer(match, many=False, context={'request': request})
         goals_serializer = MatchGoalsSerializer(goals, many=True, context={'request': request})
-        best_player_serializer = None
-        if best_player_report:best_player_serializer = MatchPlayerReportSerializer(best_player_report, many=False, context={'request': request}).data
+        best_player_data = None
+        if best_player_report:
+            best_player_data = MatchPlayerReportSerializer(
+                best_player_report, 
+                many=False, 
+                context={'request': request}
+            ).data
 
-        sport_data = {'matches': match_serializer.data, 'goals': goals_serializer.data,'best_player': best_player_serializer}
-        success = True
-        message = f"Send From Django API mix {match_id} "
+        sport_data = {
+            'match': match_serializer.data,
+            'goals': goals_serializer.data,
+            'best_player': best_player_data
+        }
         
-        data = {'success': success, 'data': sport_data, 'message': message,}
+        success = True
+        message = f"Match details retrieved successfully"
+        
+        data = {
+            'success': success, 
+            'data': sport_data, 
+            'message': message,
+        }
         return JsonResponse(data, safe=False)
 
-    except Exception as e:
-        print(e)
+    except Match.DoesNotExist:
         success = False
-        message = f"error in get data  match Details {e} "
-        sport_data = {'matches': [],}
-        data = {'success': success, 'data': sport_data, 'message': message,}
-    return JsonResponse(data, safe=False)
+        message = f"Match not found"
+        sport_data = {'match': None, 'goals': [], 'best_player': None}
+        data = {'success': success, 'data': sport_data, 'message': message}
+        return JsonResponse(data, safe=False, status=404)
+        
+    except Exception as e:
+        print(f"Error in MatchDetailsApi: {e}")
+        success = False
+        message = f"Error retrieving match details"
+        sport_data = {'match': None, 'goals': [], 'best_player': None}
+        data = {'success': success, 'data': sport_data, 'message': message}
+        return JsonResponse(data, safe=False, status=500)
 
 @api_view(['GET'])
 def LeagueStandingsApi(request, league_id, season_id):
