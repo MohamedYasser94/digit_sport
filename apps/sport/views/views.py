@@ -3264,8 +3264,6 @@ def AdminMatchSummaryAdd(request, slug):
     home_summary = MatchSummary.objects.filter(match=match, team=home_team)
     away_summary = MatchSummary.objects.filter(match=match, team=away_team)
 
-
-
     if request.method == "POST":
         summary_form = AdminMatchSummaryForm(request.POST or None, request.FILES or None)
         if summary_form:
@@ -3276,8 +3274,6 @@ def AdminMatchSummaryAdd(request, slug):
             event_set = request.POST.get('event_set')
             event_goal = request.POST.get('event_goal')
             event_team = request.POST.get('event_team')
-
-
 
             if match.sport.name == 'football':
                 try:
@@ -3306,54 +3302,52 @@ def AdminMatchSummaryAdd(request, slug):
                 match.score = str(match_goal.home_score) + ' - ' + str(match_goal.away_score)
                 match.save()
 
-            elif match.sport.name == 'volleyball' or match.sport.name == 'handball':
+            elif match.sport.name == 'volleyball' or match.sport.name == 'handball' or match.sport.name == 'basketball':
+                current_event_time = event_time
+                if not current_event_time:
+                    current_event_time = match.current_minute
                 team = None
                 match_goal = None
-                event_team = Teams.objects.get(id=event_team)
+                event_team_obj = Teams.objects.get(id=event_team)
                 event_type = 'Goal'
 
                 try:
                     match_goal = MatchGoals.objects.get(match=match,  set=event_set)
                 except:
-
                     match_goal = MatchGoals(match=match, home_team=home_team,away_team=away_team, home_score=0,
                                             away_score=0, set=event_set)
-
                     match_goal.save()
-                    match_goal = MatchGoals.objects.get(match=match, set=event_set)
-
 
                 try:
-
                     match_summary_object = MatchSummary.objects.get(
-                        match=match,team=event_team,type=event_type,set=event_set)
-                    match_summary_object.save()
+                        match=match,team=event_team_obj,type=event_type,set=event_set)
                 except:
                     match_summary_object = MatchSummary(
-                        match=match, team=event_team, type=event_type, time=event_time, set=event_set)
+                        match=match, 
+                        team=event_team_obj, 
+                        type=event_type, 
+                        time=current_event_time,
+                        set=event_set
+                    )
                     match_summary_object.save()
-                if event_team == home_team:
+                
+                if event_team_obj == home_team:
                     match_goal.home_score = event_goal
                     match_goal.save()
-
                 else:
                     match_goal.away_score = event_goal
                     match_goal.save()
-
-
-
-
-
-
+            
             messages.success(request, _("Match Event Add Successfully"), extra_tags='Match')
             return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails', kwargs={'slug': slug}))
+        
         else:
             messages.error(request, _("Match Event Not Add , Please Try Again"), extra_tags='Match')
-    else:
-        context = {'match': match,'home_team':home_team,'away_team':away_team,'home_players':home_players,'away_players':away_players,
-                     'home_summary':home_summary,'away_summary':away_summary,
-                   'summary_form': AdminMatchSummaryForm(), 'current_page': _('Match Event')}
-        return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
+    
+    context = {'match': match,'home_team':home_team,'away_team':away_team,'home_players':home_players,'away_players':away_players,
+                'home_summary':home_summary,'away_summary':away_summary,
+                'summary_form': AdminMatchSummaryForm(), 'current_page': _('Match Event')}
+    return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
 @authenticated_staf
 @staff_only

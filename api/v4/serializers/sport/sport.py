@@ -273,6 +273,21 @@ class PlayerSerializer(serializers.ModelSerializer):
             traceback.print_exc()
             return []
 
+class PlayerBasicInfoSerializer(serializers.ModelSerializer):
+    shirt_number = serializers.CharField(source='number', read_only=True)
+    date_of_birth = serializers.CharField(source='birthdate', read_only=True)
+    position = serializers.CharField(read_only=True)
+    nationality = serializers.CharField(read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+    
+    class Meta:
+        model = Players
+        fields = [
+            'id','name', 'shirt_number','date_of_birth','age','position','nationality',
+            'team_name','sport_name','image_path','height','weight','gender'
+        ]
+
 class MatchTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
@@ -423,3 +438,44 @@ class TeamSeasonTableSerializer(serializers.ModelSerializer):
         if obj.form:
             return list(obj.form)
         return []
+
+class TeamPlayerSimpleSerializer(serializers.ModelSerializer):
+    shirt_number = serializers.CharField(source='number', read_only=True)
+    
+    class Meta:
+        model = Players
+        fields = [
+            'id','name','shirt_number','position','nationality','image_path','age'
+        ]
+
+class TeamBasicInfoSerializer(serializers.ModelSerializer):
+    stadium_name = serializers.CharField(read_only=True, source='venue.name', allow_null=True)
+    coach_name = serializers.SerializerMethodField()
+    current_players = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Teams
+        fields = [
+            'id','name','founded','country','stadium_name','coach_name','image_path','current_players'
+        ]
+    
+    def get_coach_name(self, obj):
+        return getattr(obj, 'coach', None) or "Not Available"
+    
+    def get_current_players(self, obj):
+        try:
+            current_players = Players.objects.filter(
+                team=obj.id,
+                status='Active',
+            ).select_related('team').order_by('position', 'number')
+            
+            serializer = TeamPlayerSimpleSerializer(
+                current_players,
+                many=True,
+                context=self.context
+            )
+            return serializer.data
+            
+        except Exception as e:
+            print(f"Error getting current players for team {obj.id}: {str(e)}")
+            return []        

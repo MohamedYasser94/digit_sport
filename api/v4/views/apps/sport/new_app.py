@@ -1323,3 +1323,97 @@ def PlayersReportdetailsApi(request, sport_name, team_id, match_id):
         }
         return JsonResponse(data, status=500)
 
+@api_view(['GET'])
+def PlayerBasicDetailsApi(request, player_id):
+    """
+    Get basic player details by player ID
+    """
+    try:
+        player = Players.objects.select_related('team', 'sport').get(id=player_id)
+        
+        success = True
+        message = f"Basic details for player {player.name}"
+        
+        player_serializer = PlayerBasicInfoSerializer(
+            player,
+            context={'request': request}
+        )
+        
+        data = {
+            'success': success,
+            'data': player_serializer.data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+    
+    except Players.DoesNotExist:
+        success = False
+        message = f"Player with id {player_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+    
+    except Exception as e:
+        success = False
+        message = f"Error retrieving player data: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
+
+@api_view(['GET'])
+def TeamDetailsApi(request, team_id):
+    try:
+        team = Teams.objects.select_related(
+            'sport'
+        ).get(id=team_id)
+        
+        success = True
+        message = f"Team details for {team.name}"
+        
+        team_serializer = TeamBasicInfoSerializer(
+            team,
+            context={'request': request}
+        )
+        
+        data = {
+            'success': success,
+            'data': team_serializer.data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+    
+    except Teams.DoesNotExist:
+        success = False
+        message = f"Team with id {team_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'team_id': team_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+    
+    except Exception as e:
+        success = False
+        message = f"Error retrieving team data: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'team_id': team_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
