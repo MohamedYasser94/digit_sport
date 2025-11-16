@@ -273,6 +273,21 @@ class PlayerSerializer(serializers.ModelSerializer):
             traceback.print_exc()
             return []
 
+class PlayerBasicInfoSerializer(serializers.ModelSerializer):
+    shirt_number = serializers.CharField(source='number', read_only=True)
+    date_of_birth = serializers.CharField(source='birthdate', read_only=True)
+    position = serializers.CharField(read_only=True)
+    nationality = serializers.CharField(read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+    
+    class Meta:
+        model = Players
+        fields = [
+            'id','name', 'shirt_number','date_of_birth','age','position','nationality',
+            'team_name','sport_name','image_path','height','weight','gender'
+        ]
+
 class MatchTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
