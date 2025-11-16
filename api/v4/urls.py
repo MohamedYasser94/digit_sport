@@ -48,4 +48,5 @@ urlpatterns = [
     path('v4/match/standings/<int:league_id>/<int:season_id>/', new_app.LeagueStandingsApi, name='league-standings'),
     path('v4/sport/player/<str:sport_name>/team/<int:team_id>/match/<int:match_id>/players/', new_app.PlayersReportdetailsApi, name='PlayersReportdetailsApi'),
     path('players/<int:player_id>/basic/', new_app.PlayerBasicDetailsApi, name='player-basic-details'),
+    path('teams/<int:team_id>/', new_app.TeamDetailsApi, name='team-details'),
 ]
