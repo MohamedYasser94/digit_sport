@@ -50,4 +50,5 @@ urlpatterns = [
     path('players/<int:player_id>/basic/', new_app.PlayerBasicDetailsApi, name='player-basic-details'),
     path('teams/<int:team_id>/', new_app.TeamDetailsApi, name='team-details'),
     path('league/<int:league_id>/matches/', new_app.LeagueMatchesApi, name='league-matches'),
+    path('team/<int:team_id>/matches/', new_app.TeamMatchesApi, name='team-matches'),
 ]

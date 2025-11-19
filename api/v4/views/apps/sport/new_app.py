@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
-
 from api.v4.serializers.sport.sport import *
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *
@@ -292,6 +291,51 @@ def LeagueMatchesApi(request, league_id):
         
         success = False
         message = "Error retrieving league matches"
+        sport_data = {'previous_matches': [], 'upcoming_matches': []}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message
+        }
+        return JsonResponse(data, safe=False, status=500)
+
+@api_view(['GET'])
+def TeamMatchesApi(request, team_id):
+    try:
+        matches_query = Match.objects.filter(
+            Q(home_team_id=team_id) | Q(away_team_id=team_id),
+            status='Active'
+        ).select_related(
+            'home_team', 'away_team', 'league', 'round', 'venues'
+        )
+
+        previous_matches = matches_query.filter(played='Yes').order_by('-start_time')
+        upcoming_matches = matches_query.filter(played='No').order_by('start_time')
+        previous_serializer = MatchDetailsSerializer(previous_matches, many=True, context={'request': request})
+        upcoming_serializer = MatchDetailsSerializer(upcoming_matches, many=True, context={'request': request})
+
+        sport_data = {
+            'previous_matches': previous_serializer.data,
+            'upcoming_matches': upcoming_serializer.data,
+        }
+
+        success = True
+        message = "Team matches retrieved successfully"
+
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Error in TeamMatchesApi: {e}")
+        
+        success = False
+        message = "Error retrieving team matches"
         sport_data = {'previous_matches': [], 'upcoming_matches': []}
         
         data = {
