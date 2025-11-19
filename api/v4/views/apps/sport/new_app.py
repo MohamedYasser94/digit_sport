@@ -345,6 +345,96 @@ def TeamMatchesApi(request, team_id):
         }
         return JsonResponse(data, safe=False, status=500)
 
+@api_view(['GET'])
+def HeadToHeadApi(request, team1_id, team2_id):
+    try:
+        matches_query = Match.objects.filter(
+            (Q(home_team_id=team1_id) & Q(away_team_id=team2_id)) |
+            (Q(home_team_id=team2_id) & Q(away_team_id=team1_id)),
+            played='Yes'
+        ).select_related('home_team', 'away_team', 'league', 'round', 'venues'
+        ).prefetch_related('match_goal').order_by('-start_time')
+
+        team1_wins = 0
+        team2_wins = 0
+        draws = 0
+        team1_total_score = 0 
+        team2_total_score = 0 
+        team1_total_sets_won = 0
+        team2_total_sets_won = 0
+
+        for match in matches_query:
+            h_score = match.home_score if match.home_score is not None else 0
+            a_score = match.away_score if match.away_score is not None else 0
+            if match.home_team_id == team1_id:
+                team1_total_score += h_score
+                team2_total_score += a_score
+                if h_score > a_score: team1_wins += 1
+                elif h_score < a_score: team2_wins += 1
+                else: draws += 1
+            else:
+                team1_total_score += a_score
+                team2_total_score += h_score
+                if a_score > h_score: team1_wins += 1
+                elif a_score < h_score: team2_wins += 1
+                else: draws += 1
+            goals_records = match.match_goal.all()
+
+            for goal_record in goals_records:
+                gs_home = goal_record.home_score if goal_record.home_score is not None else 0
+                gs_away = goal_record.away_score if goal_record.away_score is not None else 0
+                if gs_home == 0 and gs_away == 0:
+                    continue
+                set_winner = None
+                if gs_home > gs_away:
+                    set_winner = 'home'
+                elif gs_away > gs_home:
+                    set_winner = 'away'
+                if set_winner == 'home':
+                    if match.home_team_id == team1_id:
+                        team1_total_sets_won += 1
+                    else:
+                        team2_total_sets_won += 1
+                elif set_winner == 'away':
+                    if match.away_team_id == team1_id:
+                        team1_total_sets_won += 1
+                    else: 
+                        team2_total_sets_won += 1
+        matches_serializer = MatchDetailsSerializer(matches_query, many=True, context={'request': request})
+        stats_data = {
+            'total_matches': matches_query.count(),
+            'team1_id': team1_id,
+            'team1_wins': team1_wins,
+            'team1_total_score': team1_total_score,
+            'team1_total_sets': team1_total_sets_won,
+            'team2_id': team2_id,
+            'team2_wins': team2_wins,
+            'team2_total_score': team2_total_score,
+            'team2_total_sets': team2_total_sets_won,
+            'draws': draws,
+        }
+
+        sport_data = {
+            'stats': stats_data,
+            'history_matches': matches_serializer.data,
+        }
+
+        return JsonResponse({
+            'success': True,
+            'data': sport_data,
+            'message': "Head-to-head statistics retrieved successfully"
+        }, safe=False)
+
+    except Exception as e:
+        import traceback
+        print(f"Error in HeadToHeadApi: {e}")
+        print(traceback.format_exc())
+        
+        return JsonResponse({
+            'success': False, 
+            'message': f"Error retrieving data: {str(e)}"
+        }, safe=False, status=500)
+
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
 
