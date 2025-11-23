@@ -435,6 +435,51 @@ def HeadToHeadApi(request, team1_id, team2_id):
             'message': f"Error retrieving data: {str(e)}"
         }, safe=False, status=500)
 
+@api_view(['GET'])
+def favorite_team(request, team_id):
+    try:
+        matches_query = Match.objects.filter(
+            Q(home_team_id=team_id) | Q(away_team_id=team_id),
+            status='Active'
+        ).select_related(
+            'home_team', 'away_team', 'league', 'round', 'venues'
+        )
+
+        previous_matches = matches_query.filter(played='Yes').order_by('-start_time')[:1]
+        upcoming_matches = matches_query.filter(played='No').order_by('start_time')[:1]
+        previous_serializer = MatchDetailsSerializer(previous_matches, many=True, context={'request': request})
+        upcoming_serializer = MatchDetailsSerializer(upcoming_matches, many=True, context={'request': request})
+
+        sport_data = {
+            'previous_matches': previous_serializer.data,
+            'upcoming_matches': upcoming_serializer.data,
+        }
+
+        success = True
+        message = "Favorite team matches retrieved successfully"
+
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Error in favorite_team: {e}")
+        
+        success = False
+        message = "Error retrieving favorite team matches"
+        sport_data = {'previous_matches': [], 'upcoming_matches': []}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message
+        }
+        return JsonResponse(data, safe=False, status=500)
+
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
 
