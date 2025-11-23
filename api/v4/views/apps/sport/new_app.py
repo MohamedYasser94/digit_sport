@@ -480,6 +480,41 @@ def favorite_team(request, team_id):
         }
         return JsonResponse(data, safe=False, status=500)
 
+@api_view(['GET'])
+def LeagueSeasonsApi(request, league_id):
+    try:
+        seasons_query = Season.objects.filter(
+            league_id=league_id,
+            status='Active'
+        ).order_by('-starting_at')
+        seasons_serializer = SeasonDetailsSerializer(seasons_query, many=True)
+        sport_data = {
+            'seasons': seasons_serializer.data,
+        }
+        success = True
+        message = "League seasons retrieved successfully"
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Error in LeagueSeasonsApi: {e}")
+        
+        success = False
+        message = "Error retrieving league seasons"
+        sport_data = {'seasons': []}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message
+        }
+        return JsonResponse(data, safe=False, status=500)
+
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
 

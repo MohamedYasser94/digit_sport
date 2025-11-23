@@ -53,4 +53,5 @@ urlpatterns = [
     path('team/<int:team_id>/matches/', new_app.TeamMatchesApi, name='team-matches'),
     path('h2h/<int:team1_id>/<int:team2_id>/', new_app.HeadToHeadApi, name='h2h-stats'),
     path('team/<int:team_id>/favorite/', new_app.favorite_team, name='favorite-team'),
+    path('league/<int:league_id>/seasons/', new_app.LeagueSeasonsApi, name='league-seasons'),
 ]

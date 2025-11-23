@@ -308,6 +308,10 @@ class matchSeasonSerializer(serializers.ModelSerializer):
         model = Season
         fields = ['id', 'name', ] 
 
+class SeasonDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Season
+        fields = ['id', 'name', 'starting_at', 'ending_at']
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues_name = serializers.ReadOnlyField(source='venues.name')
