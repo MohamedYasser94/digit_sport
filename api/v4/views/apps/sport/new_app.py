@@ -532,6 +532,51 @@ class FavoriteLeagueToggle(APIView):
             return Response({'status': 'removed'}, status=status.HTTP_200_OK)
         return Response({'status': 'added'}, status=status.HTTP_201_CREATED)
 
+@api_view(['GET'])
+def SearchGeneralApi(request, name, sport):
+    try:
+        search_query = name.strip()
+        sport_name_filter = sport.strip()
+        players_data = []
+        teams_data = []
+        players_qs = Players.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter 
+        ).select_related('team', 'sport')
+        player_serializer = PlayerBasicInfoSerializer(
+            players_qs, 
+            many=True, 
+            context={'request': request}
+        )
+        players_data = player_serializer.data
+        teams_qs = Teams.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter
+        ).select_related('sport')
+        team_serializer = TeamBasicInfoSerializer(
+            teams_qs, 
+            many=True, 
+            context={'request': request}
+        )
+        teams_data = team_serializer.data
+        success = True
+        results_count = len(players_data) + len(teams_data)
+        message = f"Found {results_count} results for '{search_query}' in sport '{sport_name_filter}'"
+        data = {
+            'success': success,
+            'message': message,
+            'data': {
+                'players': players_data,
+                'teams': teams_data,
+            }
+        }
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f"Error during search: {str(e)}",
+            'data': {}
+        }, status=500)
 
 # ... (other code)
 
@@ -1675,3 +1720,4 @@ def TeamDetailsApi(request, team_id):
             'message': message,
         }
         return JsonResponse(data, status=500)
+    
