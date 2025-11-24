@@ -435,6 +435,86 @@ def HeadToHeadApi(request, team1_id, team2_id):
             'message': f"Error retrieving data: {str(e)}"
         }, safe=False, status=500)
 
+@api_view(['GET'])
+def favorite_team(request, team_id):
+    try:
+        matches_query = Match.objects.filter(
+            Q(home_team_id=team_id) | Q(away_team_id=team_id),
+            status='Active'
+        ).select_related(
+            'home_team', 'away_team', 'league', 'round', 'venues'
+        )
+
+        previous_matches = matches_query.filter(played='Yes').order_by('-start_time')[:1]
+        upcoming_matches = matches_query.filter(played='No').order_by('start_time')[:1]
+        previous_serializer = MatchDetailsSerializer(previous_matches, many=True, context={'request': request})
+        upcoming_serializer = MatchDetailsSerializer(upcoming_matches, many=True, context={'request': request})
+
+        sport_data = {
+            'previous_matches': previous_serializer.data,
+            'upcoming_matches': upcoming_serializer.data,
+        }
+
+        success = True
+        message = "Favorite team matches retrieved successfully"
+
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Error in favorite_team: {e}")
+        
+        success = False
+        message = "Error retrieving favorite team matches"
+        sport_data = {'previous_matches': [], 'upcoming_matches': []}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message
+        }
+        return JsonResponse(data, safe=False, status=500)
+
+@api_view(['GET'])
+def LeagueSeasonsApi(request, league_id):
+    try:
+        seasons_query = Season.objects.filter(
+            league_id=league_id,
+            status='Active'
+        ).order_by('-starting_at')
+        seasons_serializer = SeasonDetailsSerializer(seasons_query, many=True)
+        sport_data = {
+            'seasons': seasons_serializer.data,
+        }
+        success = True
+        message = "League seasons retrieved successfully"
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message,
+        }
+        
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Error in LeagueSeasonsApi: {e}")
+        
+        success = False
+        message = "Error retrieving league seasons"
+        sport_data = {'seasons': []}
+        
+        data = {
+            'success': success,
+            'data': sport_data,
+            'message': message
+        }
+        return JsonResponse(data, safe=False, status=500)
+
 class FavoriteLeagueToggle(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -452,6 +532,70 @@ class FavoriteLeagueToggle(APIView):
             return Response({'status': 'removed'}, status=status.HTTP_200_OK)
         return Response({'status': 'added'}, status=status.HTTP_201_CREATED)
 
+@api_view(['GET'])
+def SearchGeneralApi(request, name, sport):
+    try:
+        search_query = name.strip()
+        sport_name_filter = sport.strip()
+        players_qs = Players.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter 
+        ).select_related('team', 'sport')
+
+        player_data = PlayerSearchSerializer(
+            players_qs, 
+            many=True, 
+            context={'request': request} 
+        ).data
+        teams_qs = Teams.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter
+        ).select_related('sport')
+
+        team_data = TeamSearchSerializer(
+            teams_qs, 
+            many=True, 
+            context={'request': request}
+        ).data
+        leagues_qs = Leagues.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter
+        ).select_related('sport')
+
+        league_data = LeagueSearchSerializer(
+            leagues_qs, 
+            many=True, 
+            context={'request': request}
+        ).data
+        total_results = len(player_data) + len(team_data) + len(league_data)
+        success = True
+        
+        if total_results > 0:
+            message = f"Found {total_results} results for '{search_query}' in '{sport_name_filter}'"
+        else:
+            message = f"No results found for '{search_query}' in '{sport_name_filter}'"
+
+        data = {
+            'success': success,
+            'message': message,
+            'data': {
+                'leagues': league_data,
+                'teams': team_data,
+                'players': player_data,
+            }
+        }
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        print(f"Search API Error: {str(e)}")
+        
+        return JsonResponse({
+            'success': False,
+            'message': "An error occurred during the search process.",
+            'error_details': str(e),
+            'data': {}
+        }, status=500)
 
 # ... (other code)
 
@@ -1595,3 +1739,4 @@ def TeamDetailsApi(request, team_id):
             'message': message,
         }
         return JsonResponse(data, status=500)
+    

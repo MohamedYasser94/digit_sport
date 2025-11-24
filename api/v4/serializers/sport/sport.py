@@ -308,6 +308,10 @@ class matchSeasonSerializer(serializers.ModelSerializer):
         model = Season
         fields = ['id', 'name', ] 
 
+class SeasonDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Season
+        fields = ['id', 'name', 'starting_at', 'ending_at']
 
 class MatchDetailsSerializer(serializers.ModelSerializer):
     venues_name = serializers.ReadOnlyField(source='venues.name')
@@ -456,7 +460,7 @@ class TeamBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teams
         fields = [
-            'id','name','founded','country','stadium_name','coach_name','image_path','current_players'
+            'id','name','founded','country','stadium_name','coach_name','image','image_path','current_players'
         ]
     
     def get_coach_name(self, obj):
@@ -479,3 +483,62 @@ class TeamBasicInfoSerializer(serializers.ModelSerializer):
         except Exception as e:
             print(f"Error getting current players for team {obj.id}: {str(e)}")
             return []        
+
+
+class LeagueSearchSerializer(serializers.ModelSerializer):
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Leagues
+        fields = ['id', 'name', 'image', 'sport_name', 'country', 'currentseason']
+
+    def get_image(self, obj):
+        if obj.image:
+            try:
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.image.url)
+                return obj.image.url
+            except:
+                pass
+        return obj.image_path
+
+class TeamSearchSerializer(serializers.ModelSerializer):
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teams
+        fields = ['id', 'name', 'image', 'sport_name', 'country', 'gender']
+
+    def get_image(self, obj):
+        if obj.image:
+            try:
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.image.url)
+                return obj.image.url
+            except:
+                pass
+        return obj.image_path
+
+class PlayerSearchSerializer(serializers.ModelSerializer):
+    team_name = serializers.CharField(source='team.name', read_only=True)
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Players
+        fields = ['id', 'name', 'image', 'position', 'team_name', 'sport_name', 'nationality']
+
+    def get_image(self, obj):
+        if obj.image:
+            try:
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.image.url)
+                return obj.image.url
+            except:
+                pass
+        return obj.image_path
