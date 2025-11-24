@@ -918,7 +918,7 @@ class Schedules(models.Model):
         super(Schedules, self).save(*args, **kwargs)
 
 
-class  Players(models.Model):
+class Players(models.Model):
     api_id = models.IntegerField(null=True, blank=True)
     sender_model = models.ForeignKey(ContentType,related_name='sport_player_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)

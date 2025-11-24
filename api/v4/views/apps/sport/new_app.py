@@ -537,44 +537,63 @@ def SearchGeneralApi(request, name, sport):
     try:
         search_query = name.strip()
         sport_name_filter = sport.strip()
-        players_data = []
-        teams_data = []
         players_qs = Players.objects.filter(
             name__icontains=search_query,
             sport__name__icontains=sport_name_filter 
         ).select_related('team', 'sport')
-        player_serializer = PlayerBasicInfoSerializer(
+
+        player_data = PlayerSearchSerializer(
             players_qs, 
             many=True, 
-            context={'request': request}
-        )
-        players_data = player_serializer.data
+            context={'request': request} 
+        ).data
         teams_qs = Teams.objects.filter(
             name__icontains=search_query,
             sport__name__icontains=sport_name_filter
         ).select_related('sport')
-        team_serializer = TeamBasicInfoSerializer(
+
+        team_data = TeamSearchSerializer(
             teams_qs, 
             many=True, 
             context={'request': request}
-        )
-        teams_data = team_serializer.data
+        ).data
+        leagues_qs = Leagues.objects.filter(
+            name__icontains=search_query,
+            sport__name__icontains=sport_name_filter
+        ).select_related('sport')
+
+        league_data = LeagueSearchSerializer(
+            leagues_qs, 
+            many=True, 
+            context={'request': request}
+        ).data
+        total_results = len(player_data) + len(team_data) + len(league_data)
         success = True
-        results_count = len(players_data) + len(teams_data)
-        message = f"Found {results_count} results for '{search_query}' in sport '{sport_name_filter}'"
+        
+        if total_results > 0:
+            message = f"Found {total_results} results for '{search_query}' in '{sport_name_filter}'"
+        else:
+            message = f"No results found for '{search_query}' in '{sport_name_filter}'"
+
         data = {
             'success': success,
             'message': message,
             'data': {
-                'players': players_data,
-                'teams': teams_data,
+                'leagues': league_data,
+                'teams': team_data,
+                'players': player_data,
             }
         }
+
         return JsonResponse(data, safe=False)
+
     except Exception as e:
+        print(f"Search API Error: {str(e)}")
+        
         return JsonResponse({
             'success': False,
-            'message': f"Error during search: {str(e)}",
+            'message': "An error occurred during the search process.",
+            'error_details': str(e),
             'data': {}
         }, status=500)
 
