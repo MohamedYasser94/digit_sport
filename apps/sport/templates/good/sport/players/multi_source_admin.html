@@ -232,18 +232,17 @@
                                                     </select>
                                                 </div>
                                                 <div class="fv-row w-100 flex-md-root">
-                                                    <label class="required fs-6 fw-bold mb-2">{% translate 'Team' %}</label>
-                                                    <select name="team" aria-label="{% translate 'Team' %}"
-                                                            data-control="select2"
-                                                            data-placeholder="{% translate 'Team' %}"
-                                                            data-dropdown-parent="#kt_modal_add_customer"
-                                                            class="form-select form-select-solid fw-bolder">
-                                                        <option value="" selected="">---------</option>
-                                                        {% for item in teams %}
-                                                            <option value="{{ item.id }}">{{ item.name }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
+                                                <label class="required fs-6 fw-bold mb-2">{% translate 'Team' %}</label>
+                                                <select name="team" aria-label="{% translate 'Team' %}"
+                                                        data-control="select2"
+                                                        data-placeholder="{% translate 'Team' %}"
+                                                        data-dropdown-parent="#kt_modal_add_customer"
+                                                        class="form-select form-select-solid fw-bolder">
+                                                    <option value="" selected="">---------</option>
+                                                    {% for item in teams %}
+                                                        <option value="{{ item.id }}">{{ item.name }} ({{ item.sport }})</option> 
+                                                    {% endfor %}
+                                                </select>                                                </div>
                                             </div>
                                             <!--begin::Input group-->
                                             <div class="d-flex flex-wrap gap-5">
