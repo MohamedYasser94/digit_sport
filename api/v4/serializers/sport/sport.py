@@ -62,13 +62,22 @@ class TeamWithMatchesSerializer(serializers.ModelSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
-
+    logo_url = serializers.SerializerMethodField()
     class Meta:
         model = MonkTeam
         fields = [
             'id', 'name', 'logo_url', 'sport',
-            'custom_translation_name', 'custom_image_url'
         ]
+    def get_logo_url(self, obj):
+        if obj.image_path:
+            return obj.image_path
+        elif obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
 
 class SimpleTeamSerializer(serializers.ModelSerializer):
     logo_url = serializers.SerializerMethodField()
@@ -113,9 +122,14 @@ class MatchSerializer(serializers.ModelSerializer):
     def get_state(self, obj):
         state_name = obj.played if obj.played else "Not Started"
         state_mapping = {
-            'Yes': 'Full Time','No': 'Not Started','Live': 'LIVE',
-            '1st Half': '1H', '2nd Half': '2H','Half Time': 'HT',
-            'Full Time': 'FT', 'Not Started': 'NS'
+            'Yes': 'Full Time',
+            'No': 'Not Started',
+            'Live': 'LIVE',
+            '1st Half': '1H',
+            '2nd Half': '2H',
+            'Half Time': 'HT',
+            'Full Time': 'FT',
+             'Not Started': 'NS'
         }
         short_name = state_mapping.get(state_name, 'NS')
         
