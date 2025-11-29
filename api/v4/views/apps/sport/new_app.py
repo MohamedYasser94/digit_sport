@@ -829,7 +829,7 @@ def LiveStandingsByLeagueApiView(request, league_id):
     """
     Acts as a proxy to fetch live standings for a league from SportMonks.
     """
-    include_params = request.query_params.get('include', 'participant;details;details.type',)
+    include_params = request.query_params.get('include', 'participant;rule.type;details.type;form;stage;league;group',)
     url = f"{base_url}football/standings/live/leagues/{league_id}?api_token={api_key}&include={include_params}"
 
     try:
