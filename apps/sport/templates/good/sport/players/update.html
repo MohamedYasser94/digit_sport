@@ -8,14 +8,13 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
                 
-                <!-- Breadcrumb -->
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mb-5">
                     <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
                         {% translate 'Update Player' %}
                     </h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted">
-                            <a href="{% url 'sport:AdminMultiSourcePlayersList' %}" class="text-muted text-hover-primary">
+                            <a href="{% url 'sport:AdminPlayersList' %}" class="text-muted text-hover-primary">
                                 {% translate 'Players' %}
                             </a>
                         </li>
@@ -23,9 +22,7 @@
                             <span class="bullet bg-gray-400 w-5px h-2px"></span>
                         </li>
                         <li class="breadcrumb-item text-muted">
-                            <a href="{% url 'sport:AdminMultiSourcePlayersDetails' player.slug %}" class="text-muted text-hover-primary">
-                                {{ player.name }}
-                            </a>
+                            {{ player.name }}
                         </li>
                         <li class="breadcrumb-item">
                             <span class="bullet bg-gray-400 w-5px h-2px"></span>
@@ -34,16 +31,15 @@
                     </ul>
                 </div>
 
-                <!-- Main Card -->
                 <div class="card card-flush">
                     <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                         <div class="card-title">
                             <h2>{% translate 'Update Player Information' %}</h2>
                         </div>
                         <div class="card-toolbar">
-                            <a href="{% url 'sport:AdminMultiSourcePlayersDetails' player.slug %}" class="btn btn-light-primary me-2">
+                            <a href="{% url 'sport:AdminPlayersList' %}" class="btn btn-light-primary me-2">
                                 <i class="ki-duotone ki-arrow-left fs-2"></i>
-                                {% translate 'Back to Details' %}
+                                {% translate 'Back to List' %}
                             </a>
                         </div>
                     </div>
@@ -52,133 +48,150 @@
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             
-                            <div class="row g-5">
-                                <!-- Basic Information -->
+                            <div class="row g-5 mb-5">
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Player Name' %}</label>
-                                        <input type="text" name="name" class="form-control form-control-solid" value="{{ player.name }}" required />
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Name' %}</label>
+                                        <input type="text" name="name" class="form-control form-control-solid" value="{{ player.name }}" placeholder="{% translate 'Name' %}" required />
                                     </div>
                                 </div>
-                                
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
-                                        <input type="text" name="position" class="form-control form-control-solid" value="{{ player.position|default:'' }}" />
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
+                                        <input type="text" name="position" class="form-control form-control-solid" value="{{ player.position|default:'' }}" placeholder="{% translate 'Position' %}" />
                                     </div>
                                 </div>
-                                
+                            </div>
+
+                            <div class="row g-5 mb-5">
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
+                                    <div class="fv-row">
                                         <label class="fs-6 fw-bold mb-2">{% translate 'Age' %}</label>
-                                        <input type="number" name="age" class="form-control form-control-solid" value="{{ player.age|default:'' }}" />
+                                        <input type="text" name="age" class="form-control form-control-solid" value="{{ player.age|default:'' }}" placeholder="{% translate 'Age' %}" />
                                     </div>
                                 </div>
-                                
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
+                                    <div class="fv-row">
                                         <label class="fs-6 fw-bold mb-2">{% translate 'Height' %}</label>
-                                        <input type="text" name="height" class="form-control form-control-solid" value="{{ player.height|default:'' }}" placeholder="e.g., 1.85m" />
+                                        <input type="text" name="height" class="form-control form-control-solid" value="{{ player.height|default:'' }}" placeholder="{% translate 'Height' %}" />
                                     </div>
                                 </div>
-                                
+                            </div>
+
+                            <div class="row g-5 mb-5">
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Birth Date' %}</label>
-                                        <input type="date" name="birthdate" class="form-control form-control-solid" value="{% if player.birthdate %}{{ player.birthdate|date:'Y-m-d' }}{% endif %}" />
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
-                                        <input type="text" name="country" class="form-control form-control-solid" value="{{ player.country|default:'' }}" />
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
-                                        <select name="gender" class="form-select form-select-solid">
-                                            <option value="">{% translate 'Select Gender' %}</option>
-                                            <option value="Male" {% if player.gender == 'Male' %}selected{% endif %}>{% translate 'Male' %}</option>
-                                            <option value="Female" {% if player.gender == 'Female' %}selected{% endif %}>{% translate 'Female' %}</option>
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Country' %}</label>
+                                        <select name="country" class="form-select form-select-solid" data-control="select2" data-placeholder="{% translate 'Select Country' %}">
+                                            <option value="">---------</option>
+                                            {% for value, text in players_form.country.field.choices %}
+                                                <option value="{{ value }}" {% if player.country == value %}selected{% endif %}>{{ text }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>
-                                
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Market Value' %}</label>
-                                        <input type="text" name="market_value" class="form-control form-control-solid" value="{{ player.current_market_value|default:'' }}" placeholder="e.g., €50.00m" />
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Team' %}</label>
+                                        <select name="team" class="form-select form-select-solid" data-control="select2" data-placeholder="{% translate 'Select Team' %}">
+                                            <option value="">---------</option>
+                                            {% for item in teams %}
+                                                <option value="{{ item.id }}" {% if player.team.id == item.id %}selected{% endif %}>
+                                                    {{ item.name }} ({{ item.sport }})
+                                                </option> 
+                                            {% endfor %}
+                                        </select>
+                                        <div class="form-text">{% translate 'Current Team' %}</div>
                                     </div>
                                 </div>
-                                
-                                <!-- Image Upload -->
+                            </div>
+
+                            <div class="row g-5 mb-5">
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Player Image' %}</label>
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Sport' %}</label>
+                                        <select name="sport" class="form-select form-select-solid" data-control="select2" data-placeholder="{% translate 'Select Sport' %}">
+                                            <option value="">---------</option>
+                                            {% for value, text in players_form.sport.field.choices %}
+                                                <option value="{{ value }}" {% if player.sport.id|stringformat:"i" == value|stringformat:"i" %}selected{% endif %}>{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fv-row">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'Gender' %}</label>
+                                        <select name="gender" class="form-select form-select-solid" data-control="select2" data-placeholder="{% translate 'Select Gender' %}">
+                                            <option value="">---------</option>
+                                            {% for value, text in players_form.gender.field.choices %}
+                                                <option value="{{ value }}" {% if player.gender == value %}selected{% endif %}>{{ text }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="row g-5 mb-5">
+                                <div class="col-md-6">
+                                    <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Nationality' %}</label>
+                                        <select name="nationality" class="form-select form-select-solid" data-control="select2" data-placeholder="{% translate 'Select Nationality' %}">
+                                            <option value="">---------</option>
+                                            {% if players_form.nationality %}
+                                                {% for value, text in players_form.nationality.field.choices %}
+                                                    <option value="{{ value }}" {% if player.nationality == value %}selected{% endif %}>{{ text }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for value, text in players_form.country.field.choices %}
+                                                    <option value="{{ value }}" {% if player.nationality == value %}selected{% endif %}>{{ text }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="fv-row">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'nationality_flag (URL)' %}</label>
+                                        <input type="url" name="nationality_flag" class="form-control form-control-solid" value="{{ player.nationality_flag|default:'' }}" placeholder="{% translate 'Enter nationality flag' %}" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-5 mb-5">
+                                <div class="col-md-6">
+                                    <div class="fv-row">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'Image (File)' %}</label>
                                         <input type="file" name="image" class="form-control form-control-solid" accept="image/*" />
                                         {% if player.image %}
                                             <div class="mt-2">
-                                                <small class="text-muted">{% translate 'Current image:' %} {{ player.image.name }}</small>
+                                                <small class="text-muted">{% translate 'Current:' %} <a href="{{ player.image.url }}" target="_blank">{{ player.image.name }}</a></small>
                                             </div>
                                         {% endif %}
                                     </div>
                                 </div>
-                                
                                 <div class="col-md-6">
-                                    <div class="fv-row mb-7">
-                                        <label class="fs-6 fw-bold mb-2">{% translate 'Image URL' %}</label>
-                                        <input type="url" name="image_path" class="form-control form-control-solid" value="{{ player.image_path|default:'' }}" placeholder="https://example.com/image.jpg" />
-                                        <div class="form-text">{% translate 'Alternative to file upload' %}</div>
+                                    <div class="fv-row">
+                                        <label class="fs-6 fw-bold mb-2">{% translate 'Image Url' %}</label>
+                                        <input type="url" name="image_path" class="form-control form-control-solid" value="{{ player.image_path|default:'' }}" placeholder="{% translate 'Image Url' %}" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-5 mb-5">
+                                <div class="col-md-12">
+                                    <div class="fv-row">
+                                        <label class="form-label">{% translate 'Keyword' %}</label>
+                                        <textarea class="form-control form-control-solid" name="keyword" rows="3" placeholder="{% translate 'Keyword' %}">{{ player.keyword|default:'' }}</textarea>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Current Data Sources -->
-                            <div class="separator my-10"></div>
-                            <h4 class="fw-bold text-gray-800 mb-5">{% translate 'Current Data Sources' %}</h4>
-                            <div class="row g-3 mb-10">
-                                {% if player.primary_data_source %}
-                                <div class="col-md-4">
-                                    <div class="border border-gray-300 border-dashed rounded p-4">
-                                        <div class="badge badge-light-success mb-2">{% translate 'Primary' %}</div>
-                                        <h5 class="fw-bold">{{ player.primary_data_source.name }}</h5>
-                                        <p class="text-muted fs-7 mb-0">{{ player.primary_data_source.description }}</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                
-                                {% if player.sportmonks_api_id %}
-                                <div class="col-md-4">
-                                    <div class="border border-gray-300 border-dashed rounded p-4">
-                                        <div class="badge badge-light-primary mb-2">{% translate 'API ID' %}</div>
-                                        <h5 class="fw-bold">Sportmonks</h5>
-                                        <p class="text-muted fs-7 mb-0">ID: {{ player.sportmonks_api_id }}</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                
-                                {% if player.transfermarkt_id %}
-                                <div class="col-md-4">
-                                    <div class="border border-gray-300 border-dashed rounded p-4">
-                                        <div class="badge badge-light-warning mb-2">{% translate 'API ID' %}</div>
-                                        <h5 class="fw-bold">Transfer Market</h5>
-                                        <p class="text-muted fs-7 mb-0">ID: {{ player.transfermarkt_id }}</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
-                            
-                            <!-- Actions -->
-                            <div class="d-flex justify-content-end">
-                                <a href="{% url 'sport:AdminMultiSourcePlayersDetails' player.slug %}" class="btn btn-light me-3">
-                                    {% translate 'Cancel' %}
+                            <div class="d-flex justify-content-end pt-10">
+                                <a href="{% url 'sport:AdminPlayersList' %}" class="btn btn-light me-3">
+                                    {% translate 'Discard' %}
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="ki-duotone ki-check fs-2 me-2"></i>
-                                    {% translate 'Update Player' %}
+                                    <span class="indicator-label">{% translate 'Save Changes' %}</span>
                                 </button>
                             </div>
                         </form>
@@ -189,14 +202,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block custom_js %}
-<script>
-jQuery(document).ready(function() {
-    // Initialize form validation if needed
-    if (typeof KTApp !== "undefined") {
-        KTApp.init();
-    }
-});
-</script>
-{% endblock custom_js %}

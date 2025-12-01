@@ -1736,9 +1736,8 @@ def AdminTeamPlayerList(request, slug):
 
             player_object = Players(
                 name=name, position=position, age=age, height=height, country=country,country_image=country_image,
-                team=team, sport=sport,
-                in_team=in_team,
-                gender=gender, keyword=keyword, image=image, image_path=image_path)
+                team=team, sport=sport,in_team=in_team,
+                gender=gender, keyword=keyword, image=image, image_path=image_path,)
             player_object.save()
             team.player_count += 1
             team.save()
@@ -2098,6 +2097,8 @@ def AdminPlayersList(request):
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             keyword = request.POST.get('keyword')
+            nationality = request.POST.get('nationality') 
+            nationality_flag = request.POST.get('nationality_flag') 
 
             if sport == None or sport == '':
                 sport = None
@@ -2118,7 +2119,7 @@ def AdminPlayersList(request):
 
             player_object = Players(
                 name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
-                gender=gender,keyword=keyword,image=image,image_path=image_path)
+                gender=gender,keyword=keyword,image=image,image_path=image_path,nationality=nationality, nationality_flag=nationality_flag,)
             player_object.save()
             for league in leagues:
                 print('league', league, leagues)
@@ -2167,11 +2168,9 @@ def AdminPlayersDetail(request, slug):
 @authenticated_staf
 @staff_only
 def AdminPlayersUpdate(request, slug):
-
-    player = MultiSourcePlayers.objects.get(slug=slug)
+    player = Players.objects.get(slug=slug)
     player_transform = Transfers.objects.filter(player=player)
     teams = Teams.objects.all()
-
 
     if request.method == "POST":
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None, instance=player)
@@ -2184,36 +2183,35 @@ def AdminPlayersUpdate(request, slug):
             birthdate = request.POST.get('birthdate')
             status = request.POST.get('status')
             height = request.POST.get('height')
-            t_team = request.POST.get('t_team')
             position = request.POST.get('position')
             country = request.POST.get('country')
-            team = request.POST.get('team')
             leagues = request.POST.getlist('leagues')
-            sport = request.POST.get('sport')
+            sport_id = request.POST.get('sport')
             gender = request.POST.get('gender')
             nationality = request.POST.get('nationality')
+            nationality_flag = request.POST.get('nationality_flag') 
             image = request.FILES.get('image')
             image_path = request.POST.get('image_path')
             country_image = request.FILES.get('country_image')
             keyword = request.POST.get('keyword')
 
-            if sport == None or sport == '':
-                sport = None
-            else:
-                sport = Sport.objects.get(id=sport)
-            if t_team == None or t_team == '':
-                t_team = None
-                in_team = 'No'
-            else:
-                t_team = Teams.objects.get(id=t_team)
-                in_team = 'Yes'
+            team_id = request.POST.get('team') 
+            
+            t_team = None 
+            in_team = 'No'
 
-            if team == None or team == '':
-                team = None
-            else:
-                team = Teams.objects.get(id=team)
-
-
+            if team_id and team_id != '':
+                try:
+                    t_team = Teams.objects.get(id=team_id)
+                    in_team = 'Yes'
+                except Teams.DoesNotExist:
+                    t_team = None
+            sport_obj = None
+            if sport_id and sport_id != '':
+                try:
+                    sport_obj = Sport.objects.get(id=sport_id)
+                except Sport.DoesNotExist:
+                    sport_obj = None
 
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
@@ -2222,65 +2220,67 @@ def AdminPlayersUpdate(request, slug):
             player_object.status = status
             player_object.age = age
             player_object.height = height
-            player_object.sport = sport
+            player_object.sport = sport_obj
             player_object.country = country
-            player_object.team = team
+            player_object.team = t_team 
+            player_object.in_team = in_team
 
-            player_object.nationality =nationality
-            if image == None or image == '':
-                player_object.image = player.image
-            else:
+            player_object.nationality = nationality
+            player_object.nationality_flag = nationality_flag
+
+            if image:
                 player_object.image = image
-            if country_image == None or country_image == '':
-                player_object.country_image = player.country_image
-            else:
+            if country_image:
                 player_object.country_image = country_image
             player_object.image_path = image_path
             player_object.gender = gender
             player_object.keyword = keyword
-            player_object.team = t_team
-            player_object.in_team = in_team
             player_object.position = position
             player_object.save()
-            date = datetime.now()
-            try:
-                for league_object in player_object.league.all():
-                    player_object.league.remove(league_object)
-                    player_object.save()
-            except:
-                pass
-            for league in leagues:
-                print('league', league ,leagues)
-                #remove old league
 
+            try:
+                player_object.league.clear() 
+                for league_id in leagues:
+                    try:
+                        league_object = Leagues.objects.get(id=league_id)
+                        player_object.league.add(league_object)
+                    except Leagues.DoesNotExist:
+                        pass
+                player_object.save()
+            except Exception as e:
+                print(f"Error updating leagues: {e}")
+
+            if t_team: 
                 try:
-                   league_object = Leagues.objects.get(id=league)
-                   player_object.league.add(league_object)
-                   player_object.save()
-                except:
-                   pass
-
-            try:
-                transfer_object = Transfers(player=player_object, date=date, position=position,
-                                            to_team=t_team)
-                transfer_object.save()
-                t_team.player_count += 1
-                t_team.save()
-            except:
-                pass
-
+                    date = datetime.now()
+                    transfer_object = Transfers(
+                        player=player_object, 
+                        date=date, 
+                        position=position,
+                        to_team=t_team
+                    )
+                    transfer_object.save()
+                    t_team.player_count += 1
+                    t_team.save()
+                except Exception as e:
+                    print(f"Error creating transfer: {e}")
 
             messages.success(request, _("Players Update Successfully"), extra_tags='Players')
             return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
         else:
             messages.error(request, _("Players Not Update , Please Try Again"), extra_tags='Players')
     else:
-        messages.error(request, _("Players Not Update , Please Try Again"), extra_tags='Players')
-    context = {'player': player, 'player_transform': player_transform,'teams': teams,
-               'players_form': AdminPlayersForm(instance=player), 'transfer_form': AdminTransfersForm(),
+        pass
 
-               'current_page': _('Update'),
-                'prev_Page': _('Players'), }
+    context = {
+        'player': player, 
+        'player_transform': player_transform,
+        'teams': teams,
+        'players_form': AdminPlayersForm(instance=player), 
+        'transfer_form': AdminTransfersForm(),
+        'current_page': _('Update'),
+        'prev_Page': _('Players'), 
+    }
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/update.html', context)
 
 
