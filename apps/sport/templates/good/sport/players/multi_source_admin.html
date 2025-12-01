@@ -244,6 +244,33 @@
                                                     {% endfor %}
                                                 </select>                                                </div>
                                             </div>
+                                            <div class="fv-row w-100 flex-md-root">
+                                            <label class="required fs-6 fw-bold mb-2">{% translate 'Nationality' %}</label>
+                                            <select name="nationality" aria-label="{% translate 'Nationality' %}"
+                                                    data-control="select2"
+                                                    data-placeholder="{% translate 'Select Nationality' %}"
+                                                    data-dropdown-parent="#kt_modal_add_customer"
+                                                    class="form-select form-select-solid fw-bolder">
+                                                <option value="" selected="">---------</option>
+
+                                                {% if players_form.nationality %}
+                                                    {% for value, text in players_form.nationality.field.choices %}
+                                                        <option value="{{ value }}">{{ text }}</option>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for value, text in players_form.country.field.choices %}
+                                                        <option value="{{ value }}">{{ text }}</option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+
+                                        <div class="fv-row w-100 flex-md-root">
+                                            <label class="fs-6 fw-bold mb-2">{% translate 'Nationality image' %}</label>
+                                            <input type="text" class="form-control form-control-solid"
+                                                placeholder="{% translate 'Enter flag image URL' %}"
+                                                name="nationality_flag"/>
+                                        </div>
                                             <!--begin::Input group-->
                                             <div class="d-flex flex-wrap gap-5">
                                                 <!--begin::Input group-->

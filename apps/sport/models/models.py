@@ -945,6 +945,7 @@ class Players(models.Model):
     api_country = models.CharField(max_length=100, null=True, blank=True)
     api_nationality = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
+    nationality_flag = models.URLField(blank=True, null=True,)
     city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
     api_city = models.CharField(max_length=100, null=True, blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
