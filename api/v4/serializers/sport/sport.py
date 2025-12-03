@@ -222,7 +222,7 @@ class FixtureSerializer(serializers.ModelSerializer):
 class SimpleLeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
-        fields = ['api_id', 'name', 'image_path', 'country','currentseason']
+        fields = ['id','api_id', 'name', 'image_path', 'country','currentseason']
 
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
