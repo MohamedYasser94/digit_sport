@@ -438,6 +438,15 @@ def HeadToHeadApi(request, team1_id, team2_id):
 @api_view(['GET'])
 def favorite_team(request, team_id):
     try:
+        try:
+            team_obj = Teams.objects.get(id=team_id)
+        except Teams.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': "Team not found",
+                'data': None
+            }, status=404)
+        team_serializer = SimpleTeamSerializer(team_obj, context={'request': request})
         matches_query = Match.objects.filter(
             Q(home_team_id=team_id) | Q(away_team_id=team_id),
             status='Active'
@@ -451,6 +460,7 @@ def favorite_team(request, team_id):
         upcoming_serializer = MatchDetailsSerializer(upcoming_matches, many=True, context={'request': request})
 
         sport_data = {
+            'team_details': team_serializer.data,
             'previous_matches': previous_serializer.data,
             'upcoming_matches': upcoming_serializer.data,
         }
