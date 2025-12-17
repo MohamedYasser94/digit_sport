@@ -59,7 +59,7 @@ def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
     all_leagues = set(list(fixtures_by_league.keys()) + list(matches_by_league.keys()))
     
     for league in sorted(all_leagues, key=lambda x: x.name if x else ""):
-        league_serializer = SimpleLeagueSerializer(league)
+        league_serializer = SimpleLeagueSerializer(league,context={'request': request})
         league_fixtures = fixtures_by_league.get(league, [])
         fixture_serializer = FixtureSerializer(league_fixtures, many=True)
         league_matches = matches_by_league.get(league, [])
@@ -1089,7 +1089,7 @@ def standingsByseasonsApiView(request, season_id):
     
     except requests.exceptions.RequestException as err:
         return Response({"error": f"Network error occurred: {str(err)}"}, 
-                       status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                        status=status.HTTP_503_SERVICE_UNAVAILABLE)
     
     except Exception as e:
         return Response({"error": f"An unexpected error occurred: {str(e)}"},
@@ -1749,4 +1749,71 @@ def TeamDetailsApi(request, team_id):
             'message': message,
         }
         return JsonResponse(data, status=500)
-    
+
+@api_view(['GET'])
+def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
+    """
+    Acts as a proxy to fetch Squads for a specific Team in a specific Season from SportMonks.
+    Target URL: /v3/football/squads/seasons/{season_id}/teams/{team_id}
+    Default Include: player;details.type
+    """
+    try:
+        url = f"{base_url}football/squads/seasons/{season_id}/teams/{team_id}?api_token={api_key}"
+
+        include_param = request.query_params.get('include', 'player;details.type')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        for key, value in request.query_params.items():
+            if key.startswith('filters['):
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch squads from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def PlayerStatisticsBySeasonApiView(request, player_id):
+    """
+    Acts as a proxy to fetch Statistics for a specific Player across seasons from SportMonks.
+    Target URL: /v3/football/statistics/seasons/players/{player_id}
+    Default Include: details.type
+    """
+    try:
+        url = f"{base_url}football/statistics/seasons/players/{player_id}?api_token={api_key}"
+
+        include_param = request.query_params.get('include', 'details.type')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        for key, value in request.query_params.items():
+            if key.startswith('filters['):
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch player stats from source: {err.response.status_code} {err.response.reason}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

@@ -111,7 +111,7 @@ class MatchSerializer(serializers.ModelSerializer):
     home_team = SimpleTeamSerializer(read_only=True)
     away_team = SimpleTeamSerializer(read_only=True)
     state = serializers.SerializerMethodField()
-    start_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    start_time = serializers.DateTimeField()
     class Meta:
         model = Match
         fields = [
@@ -222,7 +222,7 @@ class FixtureSerializer(serializers.ModelSerializer):
 class SimpleLeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leagues
-        fields = ['id','api_id', 'name', 'image_path', 'country','currentseason']
+        fields = ['id','api_id', 'name','name_tr', 'image_path','image','country','currentseason']
 
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
