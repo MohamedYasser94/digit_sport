@@ -2149,13 +2149,13 @@ def AdminPlayersList(request):
             'teams': teams,
         }
 
-        return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
+        return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
 
 
 @authenticated_staf
 @staff_only
-def AdminPlayersDetail(request, slug):
-    player = MultiSourcePlayers.objects.get(slug=slug)
+def AdminPlayersDetails(request, slug):
+    player = Players.objects.get(slug=slug)
 
     teams = Teams.objects.all()
     context = {'player': player, 'teams': teams,

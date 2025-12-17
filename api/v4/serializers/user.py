@@ -231,10 +231,10 @@ class CheckUserExistSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = VerificationFieldValues
 #         fields = '__all__'
-
+#
 # class VerificationRequestSerializer(serializers.ModelSerializer):
 #     verification_field_values = VerificationFieldValuesSerializer(many=True, read_only=True)
-
+#
 #     class Meta:
 #         model = VerificationRequestModel
 #         fields = [

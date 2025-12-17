@@ -10,11 +10,23 @@
                 <div class="card card-flush">
                     <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                         <div class="card-title">
-                            </div>
+                              <div class="d-flex align-items-center position-relative my-1">
+                                    <span class="svg-icon svg-icon-1 position-absolute ms-4">
+														<svg width="24" height="24" viewBox="0 0 24 24" fill="none"xmlns="http://www.w3.org/2000/svg">
+															<rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546"height="2" rx="1"transform="rotate(45 17.0365 15.1223)"fill="currentColor"/>
+															<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"fill="currentColor"/>
+														</svg>
+													</span>
+                                    <input type="text" id="player_search_input" data-kt-player-search="search" class="form-control form-control-solid w-250px ps-14" placeholder="{% translate 'Search by player name' %}"/>
+                                </div>
+                        </div>
                         <div class="card-toolbar">
                              <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#kt_modal_add_player">
                                 {% translate 'Add Player' %}
                             </button>
+                            <a class="btn btn-info me-5" data-bs-toggle="modal" data-bs-target="#kt_modal_update_player_api">
+                                {% translate 'Update Players From Transfermarket' %}
+                            </a>
                             <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#kt_modal_add_player_api">
                                 {% translate 'Fetch Players From API' %}
                             </a>
@@ -36,7 +48,9 @@
                             <tbody class="fw-semibold text-gray-600">
                                 {% for item in page_obj %} <tr>
                                     <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
-                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <a href="{% url 'sport:AdminPlayersDetails' item.slug %}">
+                                        {{ item.name }}</a></td>
                                     <td>{{ item.team.name|default:"N/A" }}</td>
                                     <td>{{ item.sport.name|default:"N/A" }}</td>
                                     <td>
@@ -138,6 +152,70 @@
                 </div>
             </div>
         </div>
+    <div class="modal fade" id="kt_modal_update_player_api" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered mw-650px">
+                <div class="modal-content">
+                    <form class="form" @submit.prevent="getTransferMarketPlayersData">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="fw-bolder">{% translate 'Update Players from TransferMarket' %}</h2>
+                            <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                            </div>
+                        </div>
+                        <div class="modal-body py-10 px-lg-17">
+                            <div v-if="!isLoading" class="fv-row w-100 flex-md-root mb-5">
+                                <label class="required fs-6 fw-bold mb-2">{% translate 'Select Sport' %}</label>
+                                <select v-model="sportType" class="form-select form-select-solid fw-bolder" required>
+                                    <option value="football">{% translate 'Football' %}</option>
+                                    <option value="basketball">{% translate 'Basketball' %}</option>
+                                </select>
+                            </div>
+                            <div v-if="!isLoading" class="alert alert-info">
+                                <div class="d-flex flex-column">
+                                    <h5 class="mb-3">{% translate 'What will be updated?' %}</h5>
+                                    <ul class="mb-2">
+                                        <li>{% translate 'Player names and images from TransferMarket' %}</li>
+                                        <li>{% translate 'Market values and contract information' %}</li>
+                                        <li>{% translate 'Physical attributes (height, weight, age)' %}</li>
+                                        <li>{% translate 'Position and foot preference' %}</li>
+                                    </ul>
+                                    <p class="text-warning mb-0">
+                                        <strong>{% translate 'Note:' %}</strong>
+                                        {% translate 'name_tr field will NOT be updated (manual only)' %}
+                                    </p>
+                                </div>
+                            </div>
+                            <div v-if="isLoading" class="mb-5">
+                                <h4 class="text-center mb-3">[[ statusMessage ]]</h4>
+                                <div class="progress h-20px">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" :style="{width: progress + '%'}"></div>
+                                </div>
+                                <p class="text-muted text-center mt-2">
+                                    {% translate 'Matching players with TransferMarket data... Please wait.' %}
+                                </p>
+                            </div>
+                            <div v-if="!isLoading && finalMessage" class="alert" :class="isSuccess ? 'alert-success' : 'alert-danger'">
+                                [[ finalMessage ]]
+                            </div>
+                        </div>
+                        <div class="modal-footer flex-center">
+                            <button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                                <span v-if="!isLoading" class="indicator-label">
+                                    <i class="ki-duotone ki-cloud-download fs-2"><span class="path1"></span><span class="path2"></span></i>
+                                    {% translate 'Update from TransferMarket' %}
+                                </span>
+                                <span v-if="isLoading" class="indicator-progress">
+                                    {% translate 'Updating...' %}
+                                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         </div>
 </div>
 {% endblock %}
@@ -189,8 +267,182 @@
                     },
                 });
             },
+            getTransferMarketPlayersData: function () {
+                this.isLoading = true;
+                this.finalMessage = '';
+                this.progress = 5;
+                this.statusMessage = 'Loading ' + this.sportType + ' players from database...';
+
+                let interval = setInterval(() => {
+                    if (this.progress < 90) {
+                        this.progress += 3;
+                        if (this.progress < 30) {
+                            this.statusMessage = 'Matching players with TransferMarket data...';
+                        } else if (this.progress < 60) {
+                            this.statusMessage = 'Updating player information...';
+                        } else {
+                            this.statusMessage = 'Saving market values and images...';
+                        }
+                    }
+                }, 1000);
+
+                const url = "{% url 'sport:AdminTransferMarketPlayersGetData' %}";
+                const payload = { "csrfmiddlewaretoken": "{{ csrf_token }}", "sport": this.sportType };
+
+                jQuery.ajax({
+                    type: 'POST',
+                    dataType: "json",
+                    url: url,
+                    data: payload,
+                    success: (data) => {
+                        clearInterval(interval);
+                        this.progress = 100;
+                        this.isSuccess = data.type === 'Success';
+                        this.statusMessage = 'Update completed!';
+
+                        // Enhanced message with statistics
+                        if (data.stats) {
+                            this.finalMessage = data.message +
+                                '\n\nDetails:\n' +
+                                '✓ Total Players: ' + data.stats.total + '\n' +
+                                '✓ Successfully Updated: ' + data.stats.updated + '\n' +
+                                '✓ Matched with TransferMarket: ' + data.stats.matched + '\n' +
+                                (data.stats.failed > 0 ? '⚠ Failed to Match: ' + data.stats.failed : '');
+                        } else {
+                            this.finalMessage = data.message;
+                        }
+
+                        this.isLoading = false;
+                        if (this.isSuccess) {
+                            setTimeout(() => location.reload(), 3000);
+                        }
+                    },
+                    error: (jqXHR) => {
+                        clearInterval(interval);
+                        this.isSuccess = false;
+                        let errorMsg = 'An error occurred while updating players.';
+
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                            errorMsg = jqXHR.responseJSON.message;
+                        } else if (jqXHR.status === 500) {
+                            errorMsg = 'Server error. Please check your TransferMarket data source.';
+                        } else if (jqXHR.status === 403) {
+                            errorMsg = 'Permission denied. Please login again.';
+                        }
+
+                        this.finalMessage = errorMsg;
+                        this.isLoading = false;
+                    },
+                });
+            },
         },
     })
     MonkPlayersApp.mount('#monkplayers-app')
+
+    // ==================== PLAYER SEARCH FUNCTIONALITY ====================
+
+    const searchInput = document.getElementById('player_search_input');
+    const tableBody = document.querySelector('#kt_ecommerce_category_table tbody');
+    const tableRows = tableBody.querySelectorAll('tr');
+    const originalRows = Array.from(tableRows).map(row => row.cloneNode(true));
+
+    let searchTimeout;
+
+    // Listen for input changes
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+
+        // If empty search, show all players
+        if (query.length === 0) {
+            displayAllPlayers();
+            return;
+        }
+
+        // Debounce search (wait 300ms after user stops typing)
+        searchTimeout = setTimeout(function() {
+            if (query.length < 2) {
+                displayAllPlayers();
+                return;
+            }
+            performTableSearch(query);
+        }, 300);
+    });
+
+    function displayAllPlayers() {
+        // Show all original rows
+        tableBody.innerHTML = '';
+        originalRows.forEach(function(row) {
+            tableBody.appendChild(row.cloneNode(true));
+        });
+    }
+
+    function performTableSearch(query) {
+        const url = "{% url 'sport:search_players_api' %}";
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                         jQuery('input[name="csrfmiddlewaretoken"]').val();
+
+        jQuery.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                'q': query,
+                'csrfmiddlewaretoken': csrfToken,
+                'limit': 1000
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.type === 'Success' && data.results.length > 0) {
+                    displaySearchResultsInTable(data.results);
+                } else {
+                    showNoSearchResults();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Search error:', errorThrown);
+                showNoSearchResults();
+            }
+        });
+    }
+
+    function displaySearchResultsInTable(results) {
+        tableBody.innerHTML = '';
+
+        results.forEach(function(player, index) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <a href="/dashboard/sport/player/details/${player.slug}/">
+                        ${player.name}
+                    </a>
+                </td>
+                <td>${player.team}</td>
+                <td>${player.position || 'N/A'}</td>
+                <td>
+                    ${player.image ? `<img src="${player.image}" alt="${player.name}" width="40" height="40" style="object-fit: cover;"/>` : 'N/A'}
+                </td>
+                <td>
+                    <div class="badge badge-light-success">Active</div>
+                </td>
+                <td class="text-end">
+                    <a href="/dashboard/sport/player/details/${player.slug}/" class="btn btn-sm btn-light">View</a>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function showNoSearchResults() {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                    {% translate 'No players found matching your search' %}
+                </td>
+            </tr>
+        `;
+    }
 </script>
 {% endblock custom_js %}

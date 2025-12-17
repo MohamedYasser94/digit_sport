@@ -366,7 +366,10 @@ class Round(models.Model):
     def __str__(self):
         # return f'(R-{self.name})' +  f'(D-{self.starting_at.day})' + self.league.name
 
-        return f'(R-{self.name})' + f'(G-{self.group.name})' + f'(D-{self.starting_at.day})' + self.league.name
+       try:
+           return f'(R-{self.name})' + f'(G-{self.group.name})' + f'(D-{self.starting_at.day})' + self.league.name
+       except:
+           return 'Round Not Exist'
 
     class Meta:
         ordering = ('starting_at',)
@@ -919,7 +922,13 @@ class Schedules(models.Model):
 
 
 class Players(models.Model):
-    api_id = models.IntegerField(null=True, blank=True)
+    # Primary ID - Sportmonks for Flutter app compatibility
+    api_id = models.IntegerField(null=True, blank=True, db_index=True, help_text="Sportmonks API ID - Primary for Flutter")
+
+    # TransferMarket IDs
+    transfermarkt_id = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text="Transfer Market player ID")
+    transfermarkt_url = models.URLField(null=True, blank=True, help_text="Transfer Market profile URL")
+
     sender_model = models.ForeignKey(ContentType,related_name='sport_player_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -936,6 +945,7 @@ class Players(models.Model):
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
+    name_tr = models.CharField(max_length=100, null=True, blank=True, help_text="Turkish name - DO NOT update from scraping")
     display_name = models.CharField(max_length=100, null=True, blank=True)
     short_code = models.CharField(max_length=100, null=True, blank=True)
     keyword = models.TextField(null=True,blank=True)
@@ -946,6 +956,7 @@ class Players(models.Model):
     api_nationality = models.CharField(max_length=100, null=True, blank=True)
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     nationality_flag = models.URLField(blank=True, null=True,)
+    citizenship = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
     city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
     api_city = models.CharField(max_length=100, null=True, blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
@@ -956,17 +967,37 @@ class Players(models.Model):
     api_detailed_position = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100,  null=True, blank=True)
     ratings  = models.CharField(max_length=100,  null=True, blank=True,default='0')
+    foot = models.CharField(max_length=20, null=True, blank=True, help_text="Preferred foot (Left/Right/Both)")
 
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True, help_text="TransferMarket image URL")
     url = models.URLField(blank=True, null=True)
     height = models.CharField(max_length=100, null=True, blank=True)
     age = models.CharField(max_length=100, null=True, blank=True)
     weight = models.CharField(max_length=100, null=True, blank=True)
     birthdate = models.CharField(max_length=100, null=True, blank=True)
     birthplace = models.CharField(max_length=100, null=True, blank=True)
+    place_of_birth_city = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
+    place_of_birth_country = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
     gender = models.CharField(max_length=100, choices=Gander_type, default='Male', null=True, blank=True)
     in_team = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
+
+    # TransferMarket specific fields
+    current_market_value = models.CharField(max_length=100, null=True, blank=True, help_text="Current market value")
+    highest_market_value = models.CharField(max_length=100, null=True, blank=True, help_text="Highest market value")
+    market_value_currency = models.CharField(max_length=10, null=True, blank=True, help_text="Currency (EUR, USD, etc.)")
+    market_value_numeric = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Numeric value")
+    market_value_last_updated = models.DateTimeField(null=True, blank=True)
+
+    # Contract info
+    joined = models.CharField(max_length=100, null=True, blank=True, help_text="Date joined current club")
+    contract_expires = models.CharField(max_length=100, null=True, blank=True)
+
+    # Agent info
+    player_agent_name = models.CharField(max_length=200, null=True, blank=True)
+    outfitter = models.CharField(max_length=100, null=True, blank=True, help_text="Equipment sponsor")
+
     status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(null=True, blank=True, max_length=128, unique=True)
@@ -1511,6 +1542,16 @@ class Match(models.Model):
     class Meta:
         # ordering = ('name',)
         verbose_name = 'match'  # verbose_name_plural = 'categories'
+
+    def get_match_name(self):
+        try:
+            if self.home_team.name and self.away_team.name:
+                return f'{self.home_team.name} vs {self.away_team.name}'
+            else:
+                return self.name
+        except:
+            return 'No Name'
+
 
     def save(self, *args, **kwargs):
         if not self.code and not self.slug:

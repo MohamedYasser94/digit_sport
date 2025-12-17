@@ -8,16 +8,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-
-
-from apps.wallet.models.transaction import OperationTransaction
-from core.forms.people import AdminEmployeeForm
 from core.forms.core import AdminCommonProfileForm, AdminCommonMediaFilesForm
 from core.models.core import CommonProfile, CommonMediaFiles
-from core.models.localization import Governorates
-from core.models.people import Employee, EmployeeMonthlyTimesheet, Branch
 from core.utils.notification import notify_user
-from core.views.core import AdminCommonProfile, AdminCommonMediaHeroFiles
 from core.views.notifications import AdminCommonNotifications
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only

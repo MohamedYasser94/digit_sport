@@ -1,6 +1,7 @@
 from django.urls import path
 
-from apps.sport.views import views, fetch_monks, media,operations
+from apps.sport.views import views, fetch_monks, media, operations, fetch_transfermarket
+from .views.search_players import search_players_api, get_player_by_name
 from .views.multi_source_fetch import (
     AdminMultiSourcePlayersGetData,
     AdminTransfermarktPlayersGetData,
@@ -120,12 +121,16 @@ urlpatterns = [
 
     ##########   Players  #########
     path('player/', views.AdminPlayersList, name='AdminPlayersList'),
-    path('player/details/<slug:slug>/', views.AdminPlayersDetail, name='AdminPlayersDetails'),
+    path('player/details/<slug:slug>/', views.AdminPlayersDetails, name='AdminPlayersDetails'),
     path('player/update/<slug:slug>/', views.AdminPlayersUpdate, name='AdminPlayersUpdate'),
     path('player/archive/<slug:slug>/', views.AdminPlayersArchive, name='AdminPlayersArchive'),
     path('player/delete/<slug:slug>/', views.AdminPlayersDelete, name='AdminPlayersDelete'),
     path('player/static/add/<slug:slug>/', views.AdminPlayerStaticAdd, name='AdminPlayerStaticAdd'),
+    path('player/search/api/', search_players_api, name='search_players_api'),
+    path('player/get/api/', get_player_by_name, name='get_player_by_name'),
     path('monk/players/api/get/', fetch_monks.AdminMonksPlayersGetData, name='AdminMonksPlayersGetData'),
+    path('transfermarket/players/api/get/', fetch_transfermarket.AdminTransferMarketPlayersGetData, name='AdminTransferMarketPlayersGetData'),
+    # path('transfermarket/player/search/', fetch_transfermarket.SearchTransferMarketPlayer, name='SearchTransferMarketPlayer'),
 
     ##########   Match  #########
     path('match/', views.AdminMatchList, name='AdminMatchList'),

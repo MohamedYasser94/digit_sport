@@ -46,7 +46,7 @@ DEBUG = env('DEBUG')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.0.95', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
+ALLOWED_HOSTS: List[str] = ['127.0.0.1', '192.168.5.2', 'aljawlakw.com', 'localhost', 'localhost:8000','jawlasp.com','api.jawlasp.com']
 
 # Application definition
 

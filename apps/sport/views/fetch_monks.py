@@ -242,7 +242,7 @@ def AdminMonksPlayersGetData(request):
         except Sport.DoesNotExist:
             return JsonResponse({'type': 'Error', 'message': f"Sport '{sport}' not found."})
 
-        next_page_url = base_url + f'{sport}/players?api_token={api_key}'
+        next_page_url = base_url + f'{sport}/players?api_token={api_key}&include=teams;country;position;detailedPosition'
 
         while next_page_url:
             try:
@@ -259,6 +259,21 @@ def AdminMonksPlayersGetData(request):
                                 birthdate_obj = datetime.strptime(player_data['date_of_birth'], '%Y-%m-%d').date()
                             except (ValueError, TypeError):
                                 birthdate_obj = None
+
+                        # Determine the current team from the nested 'teams' array returned by SportMonks.
+                        # Prefer the entry where 'end' is None (still active). Fallback to the first entry.
+                        team_obj = None
+                        teams_list = player_data.get('teams') or []
+                        current_team = None
+                        for t in teams_list:
+                            # SportMonks uses 'end' == null for current teams; treat empty string/False as no end too.
+                            if t.get('end') in (None, '', False):
+                                current_team = t
+                                break
+                        if not current_team and teams_list:
+                            current_team = teams_list[0]
+                        if current_team and current_team.get('team_id'):
+                            team_obj = Teams.objects.filter(api_id=current_team.get('team_id')).first()
 
                         defaults = {
                             'sport': sport_id,
@@ -277,6 +292,9 @@ def AdminMonksPlayersGetData(request):
                             'weight': player_data.get('weight'),
                             'birthdate': birthdate_obj,
                             'gender': player_data.get('gender'),
+                            # Assign the Teams instance (if found) using the api_id from the nested teams array
+                            'team': team_obj,
+
                         }
 
                         obj, created = Players.objects.update_or_create(

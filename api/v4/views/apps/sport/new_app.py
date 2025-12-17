@@ -1,6 +1,8 @@
 import threading
 from collections import defaultdict
 from datetime import timedelta, time
+
+from django.db import DatabaseError
 from django.http import JsonResponse
 from django.utils import timezone as django_timezone
 from rest_framework import status
@@ -10,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
+
+from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
 from api.v4.serializers.sport.sport import *
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
 from apps.sport.models.models import *

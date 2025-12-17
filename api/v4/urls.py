@@ -41,6 +41,7 @@ urlpatterns = [
     path('v4/football/statistics/seasons/players/<int:player_id>/', new_app.PlayerStatisticsBySeasonApiView, name='PlayerStatisticsBySeasonApiView'),
     ######################### News api urls #########################
     path('v4/news/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
+path('v4/mini_match/<str:lang>/list/', new_app.NewsApiView, name='NewsApiView'),
     path('v4/football/transfers/', new_app.TransfersApiView, name='TransfersApiView'),
     path('v4/news/detail/<int:news_id>/<str:lang>/', new_app.NewsDetailApiView, name='NewsDetailApiView'),
     path('v4/news/teams/<int:team_id>/<str:lang>/list/', new_app.TeamNewsApiView, name='TeamNewsApiView'),
