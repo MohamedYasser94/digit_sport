@@ -223,26 +223,26 @@ class CheckUserExistSerializer(serializers.ModelSerializer):
 
 
 
-class UserAddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserAddress
-        fields = '__all__'
-class VerificationFieldValuesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VerificationFieldValues
-        fields = '__all__'
+# class UserAddressSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserAddress
+#         fields = '__all__'
+# class VerificationFieldValuesSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = VerificationFieldValues
+#         fields = '__all__'
 
-class VerificationRequestSerializer(serializers.ModelSerializer):
-    verification_field_values = VerificationFieldValuesSerializer(many=True, read_only=True)
+# class VerificationRequestSerializer(serializers.ModelSerializer):
+#     verification_field_values = VerificationFieldValuesSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = VerificationRequestModel
-        fields = [
-            'id',
-            'user_id',
-            'status',
-            'created_at',
-            'updated_at',
-            'rejection_reason',
-            'verification_field_values'
-        ]
+#     class Meta:
+#         model = VerificationRequestModel
+#         fields = [
+#             'id',
+#             'user_id',
+#             'status',
+#             'created_at',
+#             'updated_at',
+#             'rejection_reason',
+#             'verification_field_values'
+#         ]
