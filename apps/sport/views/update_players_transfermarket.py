@@ -793,6 +793,66 @@ def _parse_market_value(value_str):
         return None
 
 
+def format_market_value(value):
+    """
+    Format a numeric market value into a readable string (e.g., €12.00m).
+
+    Args:
+        value: Numeric value in EUR
+
+    Returns:
+        Formatted string like '€12.00m' or '€500k'
+    """
+    if not value:
+        return None
+
+    try:
+        value = float(value)
+        if value >= 1_000_000:
+            return f"€{value / 1_000_000:.2f}m"
+        elif value >= 1_000:
+            return f"€{value / 1_000:.0f}k"
+        else:
+            return f"€{value:.0f}"
+    except (ValueError, TypeError):
+        return str(value) if value else None
+
+
+def parse_date_string(date_str):
+    """
+    Parse various date string formats into a date object.
+
+    Args:
+        date_str: Date string in various formats
+
+    Returns:
+        datetime.date object or None
+    """
+    from datetime import datetime
+
+    if not date_str:
+        return None
+
+    # Common date formats
+    formats = [
+        '%Y-%m-%d',      # 2023-01-01
+        '%d/%m/%Y',      # 01/01/2023
+        '%d.%m.%Y',      # 01.01.2023
+        '%d-%m-%Y',      # 01-01-2023
+        '%b %d, %Y',     # Jan 01, 2023
+        '%B %d, %Y',     # January 01, 2023
+        '%Y',            # 2023 (just year)
+    ]
+
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str.strip(), fmt).date()
+        except (ValueError, AttributeError):
+            continue
+
+    return None
+
+
 def update_player_with_transfermarket_data(player, tm_data):
     """
     Update Player instance with TransferMarket data
@@ -800,6 +860,7 @@ def update_player_with_transfermarket_data(player, tm_data):
     Includes comprehensive error handling for each field
     """
     import logging
+    from datetime import datetime
     logger = logging.getLogger(__name__)
 
     try:
@@ -807,22 +868,52 @@ def update_player_with_transfermarket_data(player, tm_data):
         if tm_data.get('id') and not player.transfermarkt_id:
             player.transfermarkt_id = tm_data['id']
 
+        # Update URL
+        if tm_data.get('url'):
+            player.transfermarkt_url = tm_data['url']
+
         # Update name if empty (prefer existing)
         if not player.name and tm_data.get('name'):
             player.name = tm_data['name']
 
-        # Update image
-        if tm_data.get('image_url') and not player.image_path:
-            player.image_path = tm_data['image_url']
-
-        # Update market value
+        # Update full name
         try:
-            market_value = tm_data.get('current_market_value') or tm_data.get('marketValue', {}).get('value')
+            if tm_data.get('fullName'):
+                player.full_name = tm_data['fullName']
+        except Exception as e:
+            logger.warning(f"Error updating full name for {player.name}: {e}")
+
+        # Update description
+        try:
+            if tm_data.get('description'):
+                player.description = tm_data['description']
+        except Exception as e:
+            logger.warning(f"Error updating description for {player.name}: {e}")
+
+        # Update image
+        if tm_data.get('imageUrl') or tm_data.get('image_url'):
+            image_url = tm_data.get('imageUrl') or tm_data.get('image_url')
+            if not player.image_path:
+                player.image_path = image_url
+            player.image_url = image_url
+
+        # Update market value - handle both numeric and string formats
+        try:
+            market_value = tm_data.get('marketValue')
             if market_value:
-                if isinstance(market_value, str):
-                    market_value = _parse_market_value(market_value)
-                if market_value:
-                    player.current_market_value = market_value
+                if isinstance(market_value, (int, float)):
+                    player.current_market_value_numeric = int(market_value)
+                    player.current_market_value = format_market_value(market_value)
+                elif isinstance(market_value, dict):
+                    val = market_value.get('value')
+                    if val:
+                        player.current_market_value_numeric = int(val) if isinstance(val, (int, float)) else None
+                        player.current_market_value = format_market_value(val)
+                elif isinstance(market_value, str):
+                    parsed = _parse_market_value(market_value)
+                    if parsed:
+                        player.current_market_value = str(parsed)
+                        player.current_market_value_numeric = int(parsed)
         except Exception as e:
             logger.warning(f"Error updating market value for {player.name}: {e}")
 
@@ -835,8 +926,13 @@ def update_player_with_transfermarket_data(player, tm_data):
 
         # Update physical attributes
         try:
-            if tm_data.get('height'):
-                player.height = tm_data['height']
+            height = tm_data.get('height')
+            if height:
+                if isinstance(height, int):
+                    player.height_cm = height
+                    player.height = f"{height} cm"
+                else:
+                    player.height = str(height)
         except Exception as e:
             logger.warning(f"Error updating height for {player.name}: {e}")
 
@@ -848,63 +944,92 @@ def update_player_with_transfermarket_data(player, tm_data):
 
         try:
             if tm_data.get('age'):
-                player.age = tm_data['age']
+                player.age = str(tm_data['age'])
         except Exception as e:
             logger.warning(f"Error updating age for {player.name}: {e}")
 
+        # Update is_retired
+        try:
+            if 'isRetired' in tm_data:
+                player.is_retired = bool(tm_data['isRetired'])
+        except Exception as e:
+            logger.warning(f"Error updating is_retired for {player.name}: {e}")
+
         # Update position with validation
         try:
-            if tm_data.get('position'):
-                new_position = tm_data['position']
+            position_data = tm_data.get('position')
+            if position_data:
+                if isinstance(position_data, dict):
+                    # Handle structured position data
+                    main_pos = position_data.get('main')
+                    other_pos = position_data.get('other', [])
 
-                # Handle position data - it might be a dict or a string
-                if isinstance(new_position, dict):
-                    # If it's a dict, try to get the 'name' or 'label' field
-                    new_position = new_position.get('name') or new_position.get('label') or new_position.get('shortLabel') or str(new_position)
+                    if main_pos:
+                        player.main_position = main_pos
+                        player.position = main_pos
 
-                # Only update if we have a valid string
-                if new_position and isinstance(new_position, str):
-                    # Log the change if position is different
-                    if player.position:
-                        if player.position.lower().strip() != new_position.lower().strip():
-                            logger.info(f"Position change for {player.name}: {player.position} -> {new_position}")
-                    player.position = new_position
+                    if other_pos:
+                        player.other_positions = other_pos
+                elif isinstance(position_data, str):
+                    player.position = position_data
+                    player.main_position = position_data
         except Exception as e:
             logger.warning(f"Error updating position for {player.name}: {e}")
 
+        # Update foot
         try:
             if tm_data.get('foot'):
                 player.foot = tm_data['foot']
         except Exception as e:
             logger.warning(f"Error updating foot for {player.name}: {e}")
 
+        # Update citizenship - handle both string and list formats
         try:
-            if tm_data.get('citizenship'):
-                player.citizenship = tm_data['citizenship']
+            citizenship = tm_data.get('citizenship')
+            if citizenship:
+                if isinstance(citizenship, list):
+                    player.citizenships = citizenship
+                    player.citizenship = citizenship[0] if citizenship else None
+                elif isinstance(citizenship, str):
+                    player.citizenship = citizenship
         except Exception as e:
             logger.warning(f"Error updating citizenship for {player.name}: {e}")
 
-        # Update contract info
+        # Update shirt number
         try:
-            if tm_data.get('joined'):
-                player.joined = tm_data['joined']
+            if tm_data.get('shirtNumber'):
+                player.shirt_number = tm_data['shirtNumber']
+                # Also extract just the number
+                number_str = tm_data['shirtNumber'].replace('#', '').strip()
+                if number_str.isdigit():
+                    player.number = number_str
         except Exception as e:
-            logger.warning(f"Error updating joined date for {player.name}: {e}")
+            logger.warning(f"Error updating shirt number for {player.name}: {e}")
 
+        # Update contract info from club data
         try:
-            if tm_data.get('contract_expires'):
-                player.contract_expires = tm_data['contract_expires']
+            club_data = tm_data.get('club')
+            if isinstance(club_data, dict):
+                if club_data.get('joined'):
+                    player.joined = club_data['joined']
+                    player.joined_date = parse_date_string(club_data['joined'])
+
+                if club_data.get('contractExpires'):
+                    player.contract_expires = club_data['contractExpires']
+                    player.contract_expires_date = parse_date_string(club_data['contractExpires'])
         except Exception as e:
-            logger.warning(f"Error updating contract expiry for {player.name}: {e}")
+            logger.warning(f"Error updating contract info for {player.name}: {e}")
 
         # Update agent info
         try:
-            if tm_data.get('player_agent'):
-                agent_name = tm_data['player_agent']
-                if isinstance(agent_name, dict):
-                    agent_name = agent_name.get('name')
-                if agent_name:
-                    player.player_agent_name = agent_name
+            agent_data = tm_data.get('agent')
+            if agent_data:
+                if isinstance(agent_data, dict):
+                    player.player_agent_name = agent_data.get('name')
+                    if agent_data.get('url'):
+                        player.player_agent_url = f"https://www.transfermarkt.com{agent_data['url']}"
+                elif isinstance(agent_data, str):
+                    player.player_agent_name = agent_data
         except Exception as e:
             logger.warning(f"Error updating player agent for {player.name}: {e}")
 
@@ -913,6 +1038,13 @@ def update_player_with_transfermarket_data(player, tm_data):
                 player.outfitter = tm_data['outfitter']
         except Exception as e:
             logger.warning(f"Error updating outfitter for {player.name}: {e}")
+
+        # Update social media
+        try:
+            if tm_data.get('socialMedia'):
+                player.social_media = tm_data['socialMedia']
+        except Exception as e:
+            logger.warning(f"Error updating social media for {player.name}: {e}")
 
         # Update birth location
         try:
@@ -925,6 +1057,87 @@ def update_player_with_transfermarket_data(player, tm_data):
                         player.place_of_birth_country = place['country']
         except Exception as e:
             logger.warning(f"Error updating birth location for {player.name}: {e}")
+
+        # Update current club from TransferMarket
+        try:
+            current_club = tm_data.get('club') or tm_data.get('current_club') or tm_data.get('currentClub')
+            if current_club:
+                club_name = None
+                if isinstance(current_club, dict):
+                    club_name = current_club.get('name') or current_club.get('clubName')
+                elif isinstance(current_club, str):
+                    club_name = current_club
+
+                if club_name:
+                    # Save club name as team_text (for display without FK relationship)
+                    player.team_text = club_name
+
+                    # Try to match with existing team using fuzzy matching
+                    matched_team = fuzzy_match_team(club_name)
+                    if matched_team:
+                        player.team = matched_team
+                        player.in_team = 'Yes'
+                        logger.info(f"Matched current club '{club_name}' to team: {matched_team.name}")
+                    else:
+                        logger.info(f"Could not match club '{club_name}' to existing team, saved as team_text")
+        except Exception as e:
+            logger.warning(f"Error updating current club for {player.name}: {e}")
+
+        # Update country/nationality from TransferMarket
+        try:
+            # Try different field names for nationality
+            tm_nationality = (
+                tm_data.get('nationality') or
+                tm_data.get('nationalities') or
+                tm_data.get('country') or
+                tm_data.get('citizenship')
+            )
+
+            if tm_nationality:
+                nationality_name = None
+
+                # Handle list of nationalities (take first one)
+                if isinstance(tm_nationality, list) and len(tm_nationality) > 0:
+                    first_nat = tm_nationality[0]
+                    if isinstance(first_nat, dict):
+                        nationality_name = first_nat.get('name') or first_nat.get('nationality')
+                    else:
+                        nationality_name = str(first_nat)
+                elif isinstance(tm_nationality, dict):
+                    nationality_name = tm_nationality.get('name') or tm_nationality.get('nationality')
+                elif isinstance(tm_nationality, str):
+                    nationality_name = tm_nationality
+
+                if nationality_name and isinstance(nationality_name, str):
+                    # Update api_nationality (raw from API)
+                    player.api_nationality = nationality_name
+
+                    # Try to match with Country_List choices
+                    from helper.modelHelper import Country_List
+                    country_choices = [choice[0] for choice in Country_List]
+
+                    # Find best match in country choices
+                    best_match = None
+                    best_score = 0.0
+                    for country in country_choices:
+                        similarity = SequenceMatcher(
+                            None,
+                            nationality_name.lower().strip(),
+                            country.lower().strip()
+                        ).ratio()
+                        if similarity > best_score and similarity >= 0.8:
+                            best_score = similarity
+                            best_match = country
+
+                    if best_match:
+                        player.nationality = best_match
+                        player.country = best_match
+                        logger.info(f"Matched nationality '{nationality_name}' to: {best_match}")
+                    else:
+                        # Just save as-is if no match
+                        logger.info(f"Could not match nationality '{nationality_name}' to choices, keeping original")
+        except Exception as e:
+            logger.warning(f"Error updating nationality for {player.name}: {e}")
 
         # Update timestamp
         player.market_value_last_updated = timezone.now()
@@ -1032,17 +1245,27 @@ def save_player_transfers(player, transfers_data):
             transfer_date = transfer.get('date')
             from_team_name = None
             to_team_name = None
+            from_team_tm_id = None
+            to_team_tm_id = None
             fee = transfer.get('fee', {})
 
-            # Get from team info
-            from_team_data = transfer.get('from', {}) or transfer.get('oldClub', {})
+            # Get from team info - try multiple field names
+            from_team_data = transfer.get('from', {}) or transfer.get('oldClub', {}) or transfer.get('clubFrom', {})
             if from_team_data:
-                from_team_name = from_team_data.get('clubName') or from_team_data.get('name')
+                if isinstance(from_team_data, dict):
+                    from_team_name = from_team_data.get('clubName') or from_team_data.get('name')
+                    from_team_tm_id = from_team_data.get('id') or from_team_data.get('clubId')
+                elif isinstance(from_team_data, str):
+                    from_team_name = from_team_data
 
-            # Get to team info
-            to_team_data = transfer.get('to', {}) or transfer.get('newClub', {})
+            # Get to team info - try multiple field names
+            to_team_data = transfer.get('to', {}) or transfer.get('newClub', {}) or transfer.get('clubTo', {})
             if to_team_data:
-                to_team_name = to_team_data.get('clubName') or to_team_data.get('name')
+                if isinstance(to_team_data, dict):
+                    to_team_name = to_team_data.get('clubName') or to_team_data.get('name')
+                    to_team_tm_id = to_team_data.get('id') or to_team_data.get('clubId')
+                elif isinstance(to_team_data, str):
+                    to_team_name = to_team_data
 
             # Try to match teams with existing teams in database using fuzzy matching
             from_team_obj = None
@@ -1050,36 +1273,77 @@ def save_player_transfers(player, transfers_data):
 
             if from_team_name:
                 from_team_obj = fuzzy_match_team(from_team_name)
+                logger.info(f"From team '{from_team_name}' matched: {from_team_obj.name if from_team_obj else 'NOT FOUND - saved as text'}")
 
             if to_team_name:
                 to_team_obj = fuzzy_match_team(to_team_name)
+                logger.info(f"To team '{to_team_name}' matched: {to_team_obj.name if to_team_obj else 'NOT FOUND - saved as text'}")
 
-            # Parse fee
+            # Parse fee - handle multiple formats
             fee_value = None
-            fee_currency = None
+            fee_numeric = None
+            fee_currency = 'EUR'
+
             if isinstance(fee, dict):
                 fee_value = fee.get('value') or fee.get('fee')
                 fee_currency = fee.get('currency', 'EUR')
+            elif isinstance(fee, (int, float)):
+                fee_numeric = int(fee)
+                fee_value = format_market_value(fee)
             elif isinstance(fee, str):
                 fee_value = fee
 
+            # Also check for direct fee field
+            if not fee_value and transfer.get('fee'):
+                raw_fee = transfer.get('fee')
+                if isinstance(raw_fee, (int, float)):
+                    fee_numeric = int(raw_fee)
+                    fee_value = format_market_value(raw_fee)
+                else:
+                    fee_value = str(raw_fee)
+
             # Parse market value at transfer time
             market_value = transfer.get('marketValue')
+            market_value_numeric = None
             if isinstance(market_value, dict):
                 market_value = market_value.get('value')
+            if isinstance(market_value, (int, float)):
+                market_value_numeric = int(market_value)
+                market_value = format_market_value(market_value)
+            elif market_value:
+                market_value = str(market_value)
+
+            # Get season
+            season = transfer.get('season')
 
             # Determine transfer type
-            is_free = fee_value in [None, 0, 'free', 'Free', '-', 'loan', 'Loan']
+            is_free = fee_value in [None, 0, 'free', 'Free', '-', 'loan', 'Loan', '0', 'ablösefrei']
+            is_loan = 'loan' in str(fee_value).lower() if fee_value else False
+            is_upcoming = transfer.get('upcoming', False)
 
-            # Create or update transfer record
+            # Get TransferMarket transfer ID
+            tm_transfer_id = transfer.get('id') or transfer.get('transferId')
+
+            # Create or update transfer record - ALWAYS save team names as text
             defaults = {
                 'player': player,
                 'from_team': from_team_obj,
                 'to_team': to_team_obj,
-                'fee': str(fee_value) if fee_value else None,
-                'market_value': str(market_value) if market_value else None,
-                'market_value_currency': fee_currency or 'EUR',
+                'from_team_name': from_team_name,  # Always save text name
+                'to_team_name': to_team_name,      # Always save text name
+                'from_team_tm_id': str(from_team_tm_id) if from_team_tm_id else None,
+                'to_team_tm_id': str(to_team_tm_id) if to_team_tm_id else None,
+                'fee': fee_value,
+                'fee_numeric': fee_numeric,
+                'fee_currency': fee_currency,
+                'market_value': market_value,
+                'market_value_numeric': market_value_numeric,
+                'market_value_currency': 'EUR',
+                'season': season,
                 'free_transfer': 'Yes' if is_free else 'No',
+                'is_loan': is_loan,
+                'is_upcoming': is_upcoming,
+                'transfermarkt_transfer_id': str(tm_transfer_id) if tm_transfer_id else None,
                 'status': 'Active',
             }
 
@@ -1089,22 +1353,37 @@ def save_player_transfers(player, transfers_data):
                 try:
                     if isinstance(transfer_date, str):
                         # Try different date formats
-                        for fmt in ['%Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y', '%b %d, %Y']:
+                        for fmt in ['%Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y', '%b %d, %Y', '%Y-%m-%dT%H:%M:%S']:
                             try:
-                                defaults['date'] = datetime.strptime(transfer_date, fmt).date()
+                                defaults['date'] = datetime.strptime(transfer_date.split('T')[0], fmt.split('T')[0]).date()
                                 break
                             except ValueError:
                                 continue
                 except Exception as e:
                     logger.warning(f"Could not parse transfer date: {transfer_date}")
 
-            # Look for existing transfer with same player, date, from_team, to_team
-            existing = Transfers.objects.filter(
-                player=player,
-                date=defaults.get('date'),
-                from_team=from_team_obj,
-                to_team=to_team_obj
-            ).first()
+            # Look for existing transfer - by TM ID first, then by player/date/teams
+            existing = None
+            if tm_transfer_id:
+                existing = Transfers.objects.filter(
+                    transfermarkt_transfer_id=str(tm_transfer_id)
+                ).first()
+
+            if not existing:
+                existing = Transfers.objects.filter(
+                    player=player,
+                    date=defaults.get('date'),
+                    from_team_name=from_team_name,
+                    to_team_name=to_team_name
+                ).first()
+
+            if not existing and from_team_obj and to_team_obj:
+                existing = Transfers.objects.filter(
+                    player=player,
+                    date=defaults.get('date'),
+                    from_team=from_team_obj,
+                    to_team=to_team_obj
+                ).first()
 
             if existing:
                 # Update existing transfer
@@ -1347,21 +1626,31 @@ def fetch_and_update_player_complete_data(player, force_refresh=False):
                 # Step 3: Fetch market value history
                 mv_history = fetch_player_market_value_history(player.transfermarkt_id)
                 if mv_history:
+                    # Save to PlayerMarketValueHistory model
+                    mv_added, mv_updated = save_player_market_value_history(player, mv_history)
                     results['market_value_history']['success'] = True
-                    results['market_value_history']['count'] = len(mv_history)
-                    results['market_value_history']['message'] = f'Found {len(mv_history)} entries'
-                    # Store in player's keyword field as JSON for now (or create separate model)
-                    import json
-                    try:
-                        existing_keyword = json.loads(player.keyword) if player.keyword else {}
-                    except:
-                        existing_keyword = {}
+                    results['market_value_history']['count'] = mv_added + mv_updated
+                    results['market_value_history']['message'] = f'Added: {mv_added}, Updated: {mv_updated}'
 
-                    existing_keyword['market_value_history'] = mv_history
-                    player.keyword = json.dumps(existing_keyword, default=str)
-                    player.save(update_fields=['keyword'])
+                    # Also update highest market value if we have history
+                    if mv_history:
+                        max_value = max(mv_history, key=lambda x: x.get('marketValue', 0) if isinstance(x.get('marketValue'), (int, float)) else 0, default=None)
+                        if max_value:
+                            player.highest_market_value_numeric = max_value.get('marketValue')
+                            player.highest_market_value = format_market_value(max_value.get('marketValue'))
+                            if max_value.get('date'):
+                                player.highest_market_value_date = parse_date_string(max_value.get('date'))
+                            player.save(update_fields=['highest_market_value', 'highest_market_value_numeric', 'highest_market_value_date'])
                 else:
                     results['market_value_history']['message'] = 'No market value history found'
+
+                # Step 4: Fetch and save detailed stats
+                stats = fetch_player_stats(player.transfermarkt_id)
+                if stats:
+                    stats_added, stats_updated = save_player_season_stats(player, stats)
+
+                    # Calculate career totals
+                    update_player_career_totals(player)
         else:
             results['profile']['message'] = 'No TransferMarket data found'
 
@@ -1372,4 +1661,498 @@ def fetch_and_update_player_complete_data(player, force_refresh=False):
         results['profile']['message'] = f'Error: {str(e)}'
 
     return results
+
+
+def save_player_market_value_history(player, mv_history):
+    """
+    Save player market value history to the PlayerMarketValueHistory model.
+
+    Args:
+        player: Players model instance
+        mv_history: List of market value history dictionaries
+
+    Returns:
+        Tuple of (added, updated) counts
+    """
+    from ..models import PlayerMarketValueHistory, Teams
+    import logging
+    logger = logging.getLogger(__name__)
+
+    added, updated = 0, 0
+
+    for entry in mv_history:
+        try:
+            date = parse_date_string(entry.get('date'))
+            market_value = entry.get('marketValue')
+
+            if not date or not market_value:
+                continue
+
+            # Try to match club
+            club_name = entry.get('clubName')
+            club_tm_id = entry.get('clubId')
+            club = None
+
+            if club_name:
+                club = fuzzy_match_team(club_name)
+
+            defaults = {
+                'age': entry.get('age'),
+                'market_value': int(market_value) if isinstance(market_value, (int, float)) else None,
+                'market_value_formatted': format_market_value(market_value),
+                'club_name': club_name,
+                'club_tm_id': str(club_tm_id) if club_tm_id else None,
+                'club': club,
+            }
+
+            obj, created = PlayerMarketValueHistory.objects.update_or_create(
+                player=player,
+                date=date,
+                market_value=defaults['market_value'],
+                defaults=defaults
+            )
+
+            if created:
+                added += 1
+            else:
+                updated += 1
+
+        except Exception as e:
+            logger.warning(f"Error saving market value history entry for {player.name}: {e}")
+            continue
+
+    logger.info(f"Market value history save results for {player.name}: Added={added}, Updated={updated}")
+    return added, updated
+
+
+def fetch_player_stats(player_id):
+    """
+    Fetch player detailed statistics from TransferMarket API.
+
+    Args:
+        player_id: TransferMarket player ID
+
+    Returns:
+        List of stats dictionaries or empty list on failure
+    """
+    from core.utils.api_client import get_api_client
+    import logging
+    logger = logging.getLogger(__name__)
+
+    if not player_id:
+        return []
+
+    api_client = get_api_client()
+    stats_url = f"{TM_API_BASE_URL}/players/{player_id}/stats"
+
+    try:
+        data = api_client.get(stats_url, timeout=15)
+        if data is None:
+            logger.warning(f"No stats returned for player ID: {player_id}")
+            return []
+
+        stats = data.get('stats', [])
+        logger.info(f"Found {len(stats)} stat entries for player ID: {player_id}")
+        return stats
+    except Exception as e:
+        logger.error(f"Error fetching stats for player ID {player_id}: {e}")
+        return []
+
+
+def save_player_season_stats(player, stats_data):
+    """
+    Save player season statistics to the PlayerSeasonStats model.
+
+    Args:
+        player: Players model instance
+        stats_data: List of stats dictionaries from TransferMarket API
+
+    Returns:
+        Tuple of (added, updated) counts
+    """
+    from ..models import PlayerSeasonStats, Teams, Leagues
+    import logging
+    logger = logging.getLogger(__name__)
+
+    added, updated = 0, 0
+
+    for stat in stats_data:
+        try:
+            season = stat.get('seasonId') or stat.get('season')
+            competition_tm_id = stat.get('competitionId')
+            club_tm_id = stat.get('clubId')
+
+            if not season:
+                continue
+
+            # Try to match club
+            club_name = stat.get('clubName')
+            club = None
+            if club_name:
+                club = fuzzy_match_team(club_name)
+
+            # Try to match competition
+            competition_name = stat.get('competitionName')
+            competition = None
+            if competition_name:
+                competition = Leagues.objects.filter(name__icontains=competition_name).first()
+
+            defaults = {
+                'competition_tm_id': competition_tm_id,
+                'competition_name': competition_name,
+                'competition': competition,
+                'club_name': club_name,
+                'club': club,
+                'appearances': stat.get('appearances', 0) or 0,
+                'goals': stat.get('goals', 0) or 0,
+                'assists': stat.get('assists', 0) or 0,
+                'yellow_cards': stat.get('yellowCards', 0) or 0,
+                'red_cards': stat.get('redCards', 0) or 0,
+                'minutes_played': stat.get('minutesPlayed', 0) or 0,
+            }
+
+            obj, created = PlayerSeasonStats.objects.update_or_create(
+                player=player,
+                season=season,
+                competition_tm_id=competition_tm_id,
+                club_tm_id=str(club_tm_id) if club_tm_id else None,
+                defaults=defaults
+            )
+
+            if created:
+                added += 1
+            else:
+                updated += 1
+
+        except Exception as e:
+            logger.warning(f"Error saving season stats entry for {player.name}: {e}")
+            continue
+
+    logger.info(f"Season stats save results for {player.name}: Added={added}, Updated={updated}")
+    return added, updated
+
+
+def update_player_career_totals(player):
+    """
+    Calculate and update player career totals from season stats.
+
+    Args:
+        player: Players model instance
+    """
+    from django.db.models import Sum
+    from ..models import PlayerSeasonStats
+    import logging
+    logger = logging.getLogger(__name__)
+
+    try:
+        totals = PlayerSeasonStats.objects.filter(player=player).aggregate(
+            total_appearances=Sum('appearances'),
+            total_goals=Sum('goals'),
+            total_assists=Sum('assists'),
+            total_yellow_cards=Sum('yellow_cards'),
+            total_red_cards=Sum('red_cards'),
+            total_minutes_played=Sum('minutes_played'),
+        )
+
+        player.total_appearances = totals['total_appearances'] or 0
+        player.total_goals = totals['total_goals'] or 0
+        player.total_assists = totals['total_assists'] or 0
+        player.total_yellow_cards = totals['total_yellow_cards'] or 0
+        player.total_red_cards = totals['total_red_cards'] or 0
+        player.total_minutes_played = totals['total_minutes_played'] or 0
+
+        player.save(update_fields=[
+            'total_appearances', 'total_goals', 'total_assists',
+            'total_yellow_cards', 'total_red_cards', 'total_minutes_played'
+        ])
+
+        logger.info(f"Updated career totals for {player.name}: Apps={player.total_appearances}, Goals={player.total_goals}, Assists={player.total_assists}")
+
+    except Exception as e:
+        logger.error(f"Error updating career totals for {player.name}: {e}")
+
+
+def save_player_relatives(player, relatives_data):
+    """
+    Save player relatives to the PlayerRelative model.
+
+    Args:
+        player: Players model instance
+        relatives_data: List of relative dictionaries from TransferMarket API
+
+    Returns:
+        Number of relatives saved
+    """
+    from ..models import PlayerRelative, Players
+    import logging
+    logger = logging.getLogger(__name__)
+
+    saved = 0
+
+    for relative in relatives_data:
+        try:
+            relative_tm_id = relative.get('id')
+            relative_name = relative.get('name')
+
+            if not relative_name:
+                continue
+
+            # Try to find relative in our players database
+            relative_player = None
+            if relative_tm_id:
+                relative_player = Players.objects.filter(transfermarkt_id=str(relative_tm_id)).first()
+
+            defaults = {
+                'relative_name': relative_name,
+                'relative_url': relative.get('url'),
+                'profile_type': relative.get('profileType'),
+                'relative_player': relative_player,
+            }
+
+            obj, created = PlayerRelative.objects.update_or_create(
+                player=player,
+                relative_tm_id=str(relative_tm_id) if relative_tm_id else None,
+                defaults=defaults
+            )
+
+            if created:
+                saved += 1
+
+        except Exception as e:
+            logger.warning(f"Error saving relative for {player.name}: {e}")
+            continue
+
+    logger.info(f"Saved {saved} relatives for {player.name}")
+    return saved
+
+
+def fetch_player_achievements(player_id):
+    """
+    Fetch player achievements/trophies from TransferMarket API.
+
+    Args:
+        player_id: TransferMarket player ID
+
+    Returns:
+        List of achievement dictionaries or empty list on failure
+    """
+    from core.utils.api_client import get_api_client
+    import logging
+    logger = logging.getLogger(__name__)
+
+    if not player_id:
+        return []
+
+    api_client = get_api_client()
+    achievements_url = f"{TM_API_BASE_URL}/players/{player_id}/achievements"
+
+    try:
+        data = api_client.get(achievements_url, timeout=15)
+        if data is None:
+            logger.warning(f"No achievements returned for player ID: {player_id}")
+            return []
+
+        achievements = data.get('achievements', []) or data.get('titles', []) or data.get('trophies', [])
+        logger.info(f"Found {len(achievements)} achievements for player ID: {player_id}")
+        return achievements
+    except Exception as e:
+        logger.error(f"Error fetching achievements for player ID {player_id}: {e}")
+        return []
+
+
+def save_player_achievements(player, achievements_data):
+    """
+    Save player achievements/trophies to the PlayerAchievement model.
+
+    Args:
+        player: Players model instance
+        achievements_data: List of achievement dictionaries from TransferMarket API
+
+    Returns:
+        Tuple of (added, updated) counts
+    """
+    from ..models import PlayerAchievement, Teams, Leagues
+    import logging
+    logger = logging.getLogger(__name__)
+
+    added, updated = 0, 0
+
+    for achievement in achievements_data:
+        try:
+            name = achievement.get('title') or achievement.get('name') or achievement.get('competition')
+            if not name:
+                continue
+
+            # Determine achievement type
+            achievement_type = 'trophy'
+            name_lower = name.lower()
+            if any(x in name_lower for x in ['ballon', 'fifa best', 'golden boot', 'golden ball', 'player of']):
+                achievement_type = 'individual_award'
+            elif any(x in name_lower for x in ['world cup', 'euro', 'copa america', 'nations league']):
+                achievement_type = 'international'
+            elif any(x in name_lower for x in ['league', 'liga', 'serie', 'bundesliga', 'ligue', 'premier']):
+                achievement_type = 'league'
+            elif any(x in name_lower for x in ['cup', 'copa', 'pokal', 'coupe']):
+                achievement_type = 'cup'
+            elif any(x in name_lower for x in ['champions', 'europa league', 'conference']):
+                achievement_type = 'club'
+
+            # Extract year/season
+            season = achievement.get('season')
+            year = achievement.get('year')
+            if not year and season:
+                # Try to extract year from season like "2023/24"
+                try:
+                    year = int(season.split('/')[0]) if '/' in str(season) else int(season)
+                except (ValueError, AttributeError):
+                    pass
+
+            # Try to match club
+            club_name = achievement.get('club') or achievement.get('clubName')
+            club_tm_id = achievement.get('clubId')
+            club = None
+            if club_name:
+                club = fuzzy_match_team(club_name)
+
+            # Try to match competition
+            competition_name = achievement.get('competition') or achievement.get('competitionName')
+            competition_tm_id = achievement.get('competitionId')
+            competition = None
+            if competition_name:
+                competition = Leagues.objects.filter(name__icontains=competition_name).first()
+
+            # Check if international
+            is_international = achievement.get('isInternational', False)
+            if not is_international:
+                is_international = any(x in name_lower for x in ['world cup', 'euro', 'copa america', 'nations league', 'national team'])
+
+            defaults = {
+                'achievement_type': achievement_type,
+                'competition': competition,
+                'competition_name': competition_name,
+                'competition_tm_id': str(competition_tm_id) if competition_tm_id else None,
+                'club': club,
+                'club_name': club_name,
+                'club_tm_id': str(club_tm_id) if club_tm_id else None,
+                'season': season,
+                'year': year,
+                'count': achievement.get('count', 1) or 1,
+                'description': achievement.get('description'),
+                'image_url': achievement.get('imageUrl') or achievement.get('image'),
+                'is_international': is_international,
+                'national_team': achievement.get('nationalTeam'),
+            }
+
+            # Try to find existing by name, player, and year/season
+            obj, created = PlayerAchievement.objects.update_or_create(
+                player=player,
+                name=name,
+                year=year,
+                season=season,
+                defaults=defaults
+            )
+
+            if created:
+                added += 1
+            else:
+                updated += 1
+
+        except Exception as e:
+            logger.warning(f"Error saving achievement for {player.name}: {e}")
+            continue
+
+    logger.info(f"Achievement save results for {player.name}: Added={added}, Updated={updated}")
+    return added, updated
+
+
+def save_player_awards(player, awards_data):
+    """
+    Save player individual awards to the PlayerAward model.
+
+    Args:
+        player: Players model instance
+        awards_data: List of award dictionaries from TransferMarket API
+
+    Returns:
+        Tuple of (added, updated) counts
+    """
+    from ..models import PlayerAward, Leagues
+    import logging
+    logger = logging.getLogger(__name__)
+
+    added, updated = 0, 0
+
+    for award in awards_data:
+        try:
+            name = award.get('title') or award.get('name') or award.get('award')
+            if not name:
+                continue
+
+            # Determine award category
+            category = 'other'
+            name_lower = name.lower()
+            if 'ballon' in name_lower:
+                category = 'ballon_dor'
+            elif 'fifa best' in name_lower or 'fifa player' in name_lower:
+                category = 'fifa_best'
+            elif 'golden boot' in name_lower or 'top scorer' in name_lower:
+                category = 'golden_boot'
+            elif 'golden ball' in name_lower:
+                category = 'golden_ball'
+            elif 'player of the month' in name_lower:
+                category = 'player_of_month'
+            elif 'player of the year' in name_lower or 'player of year' in name_lower:
+                category = 'player_of_year'
+            elif 'mvp' in name_lower or 'most valuable' in name_lower:
+                category = 'mvp'
+            elif 'best player' in name_lower:
+                category = 'best_player'
+
+            # Extract year/season
+            season = award.get('season')
+            year = award.get('year')
+            if not year and season:
+                try:
+                    year = int(season.split('/')[0]) if '/' in str(season) else int(season)
+                except (ValueError, AttributeError):
+                    pass
+
+            # Try to match competition
+            competition_name = award.get('competition') or award.get('competitionName')
+            competition = None
+            if competition_name:
+                competition = Leagues.objects.filter(name__icontains=competition_name).first()
+
+            defaults = {
+                'category': category,
+                'competition': competition,
+                'competition_name': competition_name,
+                'season': season,
+                'ranking': award.get('ranking', 1) or 1,
+                'goals': award.get('goals'),
+                'assists': award.get('assists'),
+                'appearances': award.get('appearances'),
+                'description': award.get('description'),
+                'image_url': award.get('imageUrl') or award.get('image'),
+            }
+
+            obj, created = PlayerAward.objects.update_or_create(
+                player=player,
+                name=name,
+                year=year,
+                season=season,
+                defaults=defaults
+            )
+
+            if created:
+                added += 1
+            else:
+                updated += 1
+
+        except Exception as e:
+            logger.warning(f"Error saving award for {player.name}: {e}")
+            continue
+
+    logger.info(f"Award save results for {player.name}: Added={added}, Updated={updated}")
+    return added, updated
 

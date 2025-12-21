@@ -946,9 +946,11 @@ class Players(models.Model):
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
+    full_name = models.CharField(max_length=255, null=True, blank=True, help_text="Full official name from TransferMarket")
     name_tr = models.CharField(max_length=100, null=True, blank=True, help_text="Turkish name - DO NOT update from scraping")
     display_name = models.CharField(max_length=100, null=True, blank=True)
     short_code = models.CharField(max_length=100, null=True, blank=True)
+    description = models.TextField(null=True, blank=True, help_text="TransferMarket player description")
     keyword = models.TextField(null=True,blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_player', null=True, blank=True)
     country = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
@@ -958,10 +960,14 @@ class Players(models.Model):
     nationality = models.CharField(max_length=100, choices=Country_List, default='Egypt', null=True, blank=True)
     nationality_flag = models.URLField(blank=True, null=True,)
     citizenship = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
+    citizenships = models.JSONField(null=True, blank=True, help_text="List of citizenships from TransferMarket")
     city = models.CharField(max_length=100, choices=Governorates_List, default='Cairo', null=True, blank=True)
     api_city = models.CharField(max_length=100, null=True, blank=True)
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
+    main_position = models.CharField(max_length=100, null=True, blank=True, help_text="Main position from TransferMarket")
+    other_positions = models.JSONField(null=True, blank=True, help_text="Other positions from TransferMarket")
     number =  models.CharField(max_length=100, null=True, blank=True)
+    shirt_number = models.CharField(max_length=20, null=True, blank=True, help_text="Shirt number with # symbol")
     api_position = models.CharField(max_length=100, null=True, blank=True)
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
@@ -969,15 +975,18 @@ class Players(models.Model):
     type = models.CharField(max_length=100,  null=True, blank=True)
     ratings  = models.CharField(max_length=100,  null=True, blank=True,default='0')
     foot = models.CharField(max_length=20, null=True, blank=True, help_text="Preferred foot (Left/Right/Both)")
+    is_retired = models.BooleanField(default=False, help_text="Is player retired")
 
     image = models.ImageField(blank=True, null=True, upload_to=get_file_path)
     image_path = models.URLField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=True, help_text="TransferMarket image URL")
     url = models.URLField(blank=True, null=True)
     height = models.CharField(max_length=100, null=True, blank=True)
+    height_cm = models.IntegerField(null=True, blank=True, help_text="Height in centimeters")
     age = models.CharField(max_length=100, null=True, blank=True)
     weight = models.CharField(max_length=100, null=True, blank=True)
     birthdate = models.CharField(max_length=100, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True, help_text="Date of birth as date object")
     birthplace = models.CharField(max_length=100, null=True, blank=True)
     place_of_birth_city = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
     place_of_birth_country = models.CharField(max_length=100, null=True, blank=True, help_text="From TransferMarket")
@@ -986,18 +995,36 @@ class Players(models.Model):
 
     # TransferMarket specific fields
     current_market_value = models.CharField(max_length=100, null=True, blank=True, help_text="Current market value")
+    current_market_value_numeric = models.BigIntegerField(null=True, blank=True, help_text="Current market value as number")
     highest_market_value = models.CharField(max_length=100, null=True, blank=True, help_text="Highest market value")
+    highest_market_value_numeric = models.BigIntegerField(null=True, blank=True, help_text="Highest market value as number")
+    highest_market_value_date = models.DateField(null=True, blank=True, help_text="Date of highest market value")
     market_value_currency = models.CharField(max_length=10, null=True, blank=True, help_text="Currency (EUR, USD, etc.)")
     market_value_numeric = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Numeric value")
     market_value_last_updated = models.DateTimeField(null=True, blank=True)
     transfer_url = models.TextField(null=True, blank=True)
+
     # Contract info
     joined = models.CharField(max_length=100, null=True, blank=True, help_text="Date joined current club")
+    joined_date = models.DateField(null=True, blank=True, help_text="Date joined current club as date object")
     contract_expires = models.CharField(max_length=100, null=True, blank=True)
+    contract_expires_date = models.DateField(null=True, blank=True, help_text="Contract expiry as date object")
 
     # Agent info
     player_agent_name = models.CharField(max_length=200, null=True, blank=True)
+    player_agent_url = models.URLField(null=True, blank=True, help_text="Agent profile URL")
     outfitter = models.CharField(max_length=100, null=True, blank=True, help_text="Equipment sponsor")
+
+    # Social media
+    social_media = models.JSONField(null=True, blank=True, help_text="Social media links list")
+
+    # Career statistics totals
+    total_appearances = models.IntegerField(null=True, blank=True, help_text="Total career appearances")
+    total_goals = models.IntegerField(null=True, blank=True, help_text="Total career goals")
+    total_assists = models.IntegerField(null=True, blank=True, help_text="Total career assists")
+    total_yellow_cards = models.IntegerField(null=True, blank=True, help_text="Total career yellow cards")
+    total_red_cards = models.IntegerField(null=True, blank=True, help_text="Total career red cards")
+    total_minutes_played = models.IntegerField(null=True, blank=True, help_text="Total career minutes played")
 
     status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
     code = models.CharField(max_length=100, null=True, blank=True)
@@ -1308,6 +1335,9 @@ class Referees(models.Model):
 
 
 class Transfers(models.Model):
+    # TransferMarket unique ID
+    transfermarkt_transfer_id = models.CharField(max_length=100, null=True, blank=True, db_index=True, help_text="TransferMarket unique transfer ID")
+
     sender_model = models.ForeignKey(ContentType,related_name='sport_transfer_sender', on_delete=models.CASCADE, null=True, blank=True)
     sender_id = models.PositiveIntegerField(blank=True, null=True)
     sender = GenericForeignKey('sender_model', 'sender_id')
@@ -1320,17 +1350,35 @@ class Transfers(models.Model):
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, related_name='sport_transfer', null=True, blank=True)
     player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='player_transfer', null=True, blank=True)
     type = models.CharField(max_length=100, choices=Sport_Stat_Type, default='Id', null=True, blank=True)
+
+    # Team relationships
     from_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='from_team_transfer', null=True, blank=True)
     to_team = models.ForeignKey(Teams, on_delete=models.CASCADE, related_name='to_team_transfer', null=True, blank=True)
+    from_team_name = models.CharField(max_length=200, null=True, blank=True, help_text="From team name when not found in DB")
+    to_team_name = models.CharField(max_length=200, null=True, blank=True, help_text="To team name when not found in DB")
+    from_team_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket from team ID")
+    to_team_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket to team ID")
+
     position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True, blank=True)
     detailed_position = models.CharField(max_length=100, choices=Position_List, default='Goalkeeper', null=True,
                                          blank=True)
     date = models.DateField(null=True, blank=True)
+    season = models.CharField(max_length=20, null=True, blank=True, help_text="Season string (e.g., 22/23)")
     career_ended = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
     free_transfer = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
+    is_loan = models.BooleanField(default=False, help_text="Is this a loan transfer")
+    is_loan_end = models.BooleanField(default=False, help_text="Is this an end of loan")
+    is_upcoming = models.BooleanField(default=False, help_text="Is this an upcoming transfer")
+
     market_value = models.CharField(max_length=100, null=True, blank=True)
+    market_value_numeric = models.BigIntegerField(null=True, blank=True, help_text="Market value as number at time of transfer")
     market_value_currency = models.CharField(max_length=100, null=True, blank=True)
     fee = models.CharField(max_length=100, null=True, blank=True)
+    fee_numeric = models.BigIntegerField(null=True, blank=True, help_text="Transfer fee as number")
+    fee_currency = models.CharField(max_length=10, null=True, blank=True, default='EUR')
+    loan_fee = models.CharField(max_length=100, null=True, blank=True, help_text="Loan fee if applicable")
+    loan_fee_numeric = models.BigIntegerField(null=True, blank=True, help_text="Loan fee as number")
+
     completed = models.CharField(max_length=100, choices=Public_Status, default='No', null=True, blank=True)
     amount = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=100, choices=Active_Status, default='Active', null=True, blank=True)
@@ -1349,6 +1397,225 @@ class Transfers(models.Model):
             self.code = code
             self.slug = slugify(code)
         super(Transfers, self).save(*args, **kwargs)
+
+
+class PlayerMarketValueHistory(models.Model):
+    """
+    Stores market value history for players from TransferMarket.
+    Each record represents a market value at a specific point in time.
+    """
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='market_value_history')
+    date = models.DateField(null=True, blank=True, help_text="Date of market value")
+    age = models.IntegerField(null=True, blank=True, help_text="Player age at this date")
+    market_value = models.BigIntegerField(null=True, blank=True, help_text="Market value in EUR")
+    market_value_formatted = models.CharField(max_length=50, null=True, blank=True, help_text="Formatted value (e.g., €120M)")
+    club_name = models.CharField(max_length=200, null=True, blank=True, help_text="Club name at this time")
+    club_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket club ID")
+    club = models.ForeignKey(Teams, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_mv_history')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'player_market_value_history'
+        verbose_name_plural = 'player_market_value_histories'
+        ordering = ['-date']
+        unique_together = ['player', 'date', 'market_value']
+
+    def __str__(self):
+        return f"{self.player.name if self.player else 'Unknown'} - {self.date} - {self.market_value_formatted or self.market_value}"
+
+
+class PlayerSeasonStats(models.Model):
+    """
+    Stores detailed season statistics for players from TransferMarket.
+    Each record represents stats for a specific season and competition.
+    """
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='season_stats')
+    season = models.CharField(max_length=20, null=True, blank=True, help_text="Season (e.g., 24/25)")
+    competition_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket competition ID")
+    competition_name = models.CharField(max_length=200, null=True, blank=True, help_text="Competition name")
+    competition = models.ForeignKey(Leagues, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_season_stats')
+    club_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket club ID")
+    club_name = models.CharField(max_length=200, null=True, blank=True, help_text="Club name")
+    club = models.ForeignKey(Teams, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_season_stats')
+
+    # Performance stats
+    appearances = models.IntegerField(default=0, null=True, blank=True)
+    goals = models.IntegerField(default=0, null=True, blank=True)
+    assists = models.IntegerField(default=0, null=True, blank=True)
+    yellow_cards = models.IntegerField(default=0, null=True, blank=True)
+    second_yellow_cards = models.IntegerField(default=0, null=True, blank=True)
+    red_cards = models.IntegerField(default=0, null=True, blank=True)
+    minutes_played = models.IntegerField(default=0, null=True, blank=True)
+
+    # Additional stats
+    goals_conceded = models.IntegerField(default=0, null=True, blank=True, help_text="For goalkeepers")
+    clean_sheets = models.IntegerField(default=0, null=True, blank=True, help_text="For goalkeepers")
+    penalty_goals = models.IntegerField(default=0, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'player_season_stats'
+        verbose_name_plural = 'player_season_stats'
+        ordering = ['-season', 'competition_name']
+        unique_together = ['player', 'season', 'competition_tm_id', 'club_tm_id']
+
+    def __str__(self):
+        return f"{self.player.name if self.player else 'Unknown'} - {self.season} - {self.competition_name}"
+
+
+class PlayerRelative(models.Model):
+    """
+    Stores player relatives (e.g., Cristiano Jr. for Cristiano Ronaldo).
+    """
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='relatives')
+    relative_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket relative player ID")
+    relative_name = models.CharField(max_length=200, null=True, blank=True, help_text="Relative name")
+    relative_url = models.URLField(null=True, blank=True, help_text="TransferMarket profile URL")
+    profile_type = models.CharField(max_length=50, null=True, blank=True, help_text="Type: player, manager, etc.")
+    relationship = models.CharField(max_length=100, null=True, blank=True, help_text="Relationship type: son, brother, etc.")
+    relative_player = models.ForeignKey(Players, on_delete=models.SET_NULL, null=True, blank=True, related_name='relative_of', help_text="Linked player if exists in DB")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'player_relative'
+        verbose_name_plural = 'player_relatives'
+
+    def __str__(self):
+        return f"{self.player.name if self.player else 'Unknown'} -> {self.relative_name}"
+
+
+class PlayerAchievement(models.Model):
+    """
+    Stores player's career achievements, trophies and awards.
+    Examples: Champions League, Ballon d'Or, League titles, etc.
+    """
+    ACHIEVEMENT_TYPE_CHOICES = [
+        ('trophy', 'Trophy/Title'),
+        ('individual_award', 'Individual Award'),
+        ('record', 'Record'),
+        ('milestone', 'Milestone'),
+        ('international', 'International Trophy'),
+        ('club', 'Club Trophy'),
+        ('league', 'League Title'),
+        ('cup', 'Cup Title'),
+        ('other', 'Other'),
+    ]
+
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='achievements')
+
+    # Achievement details
+    name = models.CharField(max_length=255, help_text="Achievement/Trophy name")
+    name_tr = models.CharField(max_length=255, null=True, blank=True, help_text="Turkish name")
+    achievement_type = models.CharField(max_length=50, choices=ACHIEVEMENT_TYPE_CHOICES, default='trophy')
+
+    # Competition/Context
+    competition = models.ForeignKey(Leagues, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_achievements')
+    competition_name = models.CharField(max_length=200, null=True, blank=True, help_text="Competition name if not in DB")
+    competition_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket competition ID")
+
+    # Club context
+    club = models.ForeignKey(Teams, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_achievements')
+    club_name = models.CharField(max_length=200, null=True, blank=True, help_text="Club name if not in DB")
+    club_tm_id = models.CharField(max_length=50, null=True, blank=True, help_text="TransferMarket club ID")
+
+    # When
+    season = models.CharField(max_length=20, null=True, blank=True, help_text="Season (e.g., 2023/24)")
+    year = models.IntegerField(null=True, blank=True, help_text="Year won")
+    date_achieved = models.DateField(null=True, blank=True, help_text="Date achieved")
+
+    # Count (for multiple wins)
+    count = models.IntegerField(default=1, help_text="Number of times won (for summary)")
+
+    # Additional info
+    description = models.TextField(null=True, blank=True, help_text="Additional details")
+    image_url = models.URLField(null=True, blank=True, help_text="Trophy/Award image URL")
+
+    # For individual awards
+    ranking = models.IntegerField(null=True, blank=True, help_text="Ranking (1st, 2nd, 3rd place)")
+
+    # TransferMarket reference
+    tm_achievement_id = models.CharField(max_length=100, null=True, blank=True, help_text="TransferMarket achievement ID")
+
+    # International (national team) context
+    is_international = models.BooleanField(default=False, help_text="Is this an international/national team achievement")
+    national_team = models.CharField(max_length=100, null=True, blank=True, help_text="National team name")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'player_achievement'
+        verbose_name_plural = 'player_achievements'
+        ordering = ['-year', '-season', 'name']
+
+    def __str__(self):
+        club_info = f" ({self.club_name or self.club})" if self.club_name or self.club else ""
+        year_info = f" {self.year}" if self.year else (f" {self.season}" if self.season else "")
+        return f"{self.player.name if self.player else 'Unknown'} - {self.name}{club_info}{year_info}"
+
+
+class PlayerAward(models.Model):
+    """
+    Stores player's individual awards like Ballon d'Or, FIFA Best, Golden Boot, etc.
+    """
+    AWARD_CATEGORY_CHOICES = [
+        ('ballon_dor', "Ballon d'Or"),
+        ('fifa_best', 'FIFA Best'),
+        ('golden_boot', 'Golden Boot'),
+        ('golden_ball', 'Golden Ball'),
+        ('player_of_month', 'Player of the Month'),
+        ('player_of_year', 'Player of the Year'),
+        ('top_scorer', 'Top Scorer'),
+        ('best_player', 'Best Player'),
+        ('mvp', 'Most Valuable Player'),
+        ('other', 'Other'),
+    ]
+
+    player = models.ForeignKey(Players, on_delete=models.CASCADE, related_name='awards')
+
+    # Award details
+    name = models.CharField(max_length=255, help_text="Award name")
+    name_tr = models.CharField(max_length=255, null=True, blank=True, help_text="Turkish name")
+    category = models.CharField(max_length=50, choices=AWARD_CATEGORY_CHOICES, default='other')
+
+    # Competition/Context
+    competition = models.ForeignKey(Leagues, on_delete=models.SET_NULL, null=True, blank=True, related_name='player_awards')
+    competition_name = models.CharField(max_length=200, null=True, blank=True)
+
+    # When
+    season = models.CharField(max_length=20, null=True, blank=True, help_text="Season (e.g., 2023/24)")
+    year = models.IntegerField(null=True, blank=True)
+    date_awarded = models.DateField(null=True, blank=True)
+
+    # Ranking
+    ranking = models.IntegerField(default=1, help_text="1=Winner, 2=Runner-up, 3=Third place, etc.")
+
+    # Stats when awarded
+    goals = models.IntegerField(null=True, blank=True, help_text="Goals scored (for top scorer awards)")
+    assists = models.IntegerField(null=True, blank=True)
+    appearances = models.IntegerField(null=True, blank=True)
+
+    # Additional info
+    description = models.TextField(null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'player_award'
+        verbose_name_plural = 'player_awards'
+        ordering = ['-year', 'ranking', 'name']
+
+    def __str__(self):
+        rank_str = f" (#{self.ranking})" if self.ranking > 1 else ""
+        return f"{self.player.name if self.player else 'Unknown'} - {self.name} {self.year or self.season}{rank_str}"
 
 
 class PreMatchOdds(models.Model):

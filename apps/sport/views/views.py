@@ -2289,7 +2289,18 @@ def AdminPlayersDetails(request, slug):
                 fetch_tm_message = f"✗ Error fetching transfers: {str(e)}"
 
     # Get player transfers for display (Transfers is already imported via models.models import)
-    player_transfers = Transfers.objects.filter(player=player).order_by('-date')[:10]
+    player_transfers = Transfers.objects.filter(player=player).select_related('from_team', 'to_team').order_by('-date')[:20]
+
+    # Parse market value history from player keyword if available
+    market_value_history = []
+    try:
+        import json
+        if player.keyword:
+            keyword_data = json.loads(player.keyword)
+            if isinstance(keyword_data, dict) and 'market_value_history' in keyword_data:
+                market_value_history = keyword_data['market_value_history']
+    except (json.JSONDecodeError, TypeError):
+        pass
 
     teams = Teams.objects.all()
     context = {
@@ -2305,6 +2316,7 @@ def AdminPlayersDetails(request, slug):
         'has_transfermarket_id': bool(player.transfermarkt_id),
         'transfermarket_url': tm_url,
         'player_transfers': player_transfers,
+        'market_value_history': market_value_history,
     }
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/details.html', context)
 
