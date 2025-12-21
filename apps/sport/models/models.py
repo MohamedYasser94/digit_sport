@@ -939,6 +939,7 @@ class Players(models.Model):
     owner_id = models.PositiveIntegerField(blank=True, null=True)
     owner = GenericForeignKey('owner_model', 'owner_id')
     team = models.ForeignKey(Teams , on_delete=models.CASCADE, null=True, blank=True)
+    team_text = models.CharField(max_length=100, null=True, blank=True, help_text="Team name as text - DO NOT update from scraping")
     league = models.ManyToManyField(Leagues, related_name='league_player', blank=True)
     common_name = models.CharField(max_length=100, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
@@ -989,7 +990,7 @@ class Players(models.Model):
     market_value_currency = models.CharField(max_length=10, null=True, blank=True, help_text="Currency (EUR, USD, etc.)")
     market_value_numeric = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Numeric value")
     market_value_last_updated = models.DateTimeField(null=True, blank=True)
-
+    transfer_url = models.TextField(null=True, blank=True)
     # Contract info
     joined = models.CharField(max_length=100, null=True, blank=True, help_text="Date joined current club")
     contract_expires = models.CharField(max_length=100, null=True, blank=True)

@@ -295,12 +295,158 @@ class PlayerBasicInfoSerializer(serializers.ModelSerializer):
     team_name = serializers.CharField(source='team.name', read_only=True)
     sport_name = serializers.CharField(source='sport.name', read_only=True)
     
+    # TransferMarket fields
+    market_value = serializers.CharField(source='current_market_value', read_only=True)
+    highest_market_value = serializers.CharField(read_only=True)
+    preferred_foot = serializers.CharField(source='foot', read_only=True)
+    citizenship = serializers.CharField(read_only=True)
+    contract_expires = serializers.CharField(read_only=True)
+    joined = serializers.CharField(read_only=True)
+    player_agent = serializers.CharField(source='player_agent_name', read_only=True)
+    outfitter = serializers.CharField(read_only=True)
+    place_of_birth_city = serializers.CharField(read_only=True)
+    place_of_birth_country = serializers.CharField(read_only=True)
+    transfermarkt_id = serializers.CharField(read_only=True)
+    transfermarkt_url = serializers.CharField(read_only=True)
+    market_value_last_updated = serializers.DateTimeField(read_only=True)
+
     class Meta:
         model = Players
         fields = [
-            'id','name', 'shirt_number','date_of_birth','age','position','nationality',
-            'team_name','sport_name','image_path','height','weight','gender'
+            'id', 'name', 'shirt_number', 'date_of_birth', 'age', 'position', 'nationality',
+            'team_name', 'sport_name', 'image_path', 'height', 'weight', 'gender',
+            # TransferMarket fields
+            'market_value', 'highest_market_value', 'preferred_foot', 'citizenship',
+            'contract_expires', 'joined', 'player_agent', 'outfitter',
+            'place_of_birth_city', 'place_of_birth_country',
+            'transfermarkt_id', 'transfermarkt_url', 'market_value_last_updated'
         ]
+
+
+class PlayerTransferSerializer(serializers.ModelSerializer):
+    """
+    Serializer for player transfer history.
+    Returns transfer details including from/to teams, fee, and date.
+    """
+    from_team_id = serializers.IntegerField(source='from_team.id', read_only=True, allow_null=True)
+    from_team_name = serializers.CharField(source='from_team.name', read_only=True, allow_null=True)
+    from_team_logo = serializers.SerializerMethodField()
+
+    to_team_id = serializers.IntegerField(source='to_team.id', read_only=True, allow_null=True)
+    to_team_name = serializers.CharField(source='to_team.name', read_only=True, allow_null=True)
+    to_team_logo = serializers.SerializerMethodField()
+
+    transfer_date = serializers.DateField(source='date', read_only=True)
+    transfer_fee = serializers.CharField(source='fee', read_only=True)
+    is_free_transfer = serializers.SerializerMethodField()
+    market_value_at_transfer = serializers.CharField(source='market_value', read_only=True)
+    currency = serializers.CharField(source='market_value_currency', read_only=True)
+
+    class Meta:
+        model = Transfers
+        fields = [
+            'id', 'transfer_date',
+            'from_team_id', 'from_team_name', 'from_team_logo',
+            'to_team_id', 'to_team_name', 'to_team_logo',
+            'transfer_fee', 'is_free_transfer',
+            'market_value_at_transfer', 'currency',
+            'position'
+        ]
+
+    def get_from_team_logo(self, obj):
+        if obj.from_team:
+            if obj.from_team.image_path:
+                return obj.from_team.image_path
+            elif obj.from_team.image and hasattr(obj.from_team.image, 'url'):
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.from_team.image.url)
+                return obj.from_team.image.url
+        return None
+
+    def get_to_team_logo(self, obj):
+        if obj.to_team:
+            if obj.to_team.image_path:
+                return obj.to_team.image_path
+            elif obj.to_team.image and hasattr(obj.to_team.image, 'url'):
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.to_team.image.url)
+                return obj.to_team.image.url
+        return None
+
+    def get_is_free_transfer(self, obj):
+        return obj.free_transfer == 'Yes'
+
+
+class PlayerWithTransfersSerializer(serializers.ModelSerializer):
+    """
+    Extended player serializer that includes transfer history.
+    Use this when you need both player details and their transfers.
+    """
+    shirt_number = serializers.CharField(source='number', read_only=True)
+    date_of_birth = serializers.CharField(source='birthdate', read_only=True)
+    position = serializers.CharField(read_only=True)
+    nationality = serializers.CharField(read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
+    team_logo = serializers.SerializerMethodField()
+    sport_name = serializers.CharField(source='sport.name', read_only=True)
+
+    # TransferMarket fields
+    market_value = serializers.CharField(source='current_market_value', read_only=True)
+    highest_market_value = serializers.CharField(read_only=True)
+    preferred_foot = serializers.CharField(source='foot', read_only=True)
+    citizenship = serializers.CharField(read_only=True)
+    contract_expires = serializers.CharField(read_only=True)
+    joined = serializers.CharField(read_only=True)
+    player_agent = serializers.CharField(source='player_agent_name', read_only=True)
+    outfitter = serializers.CharField(read_only=True)
+    place_of_birth_city = serializers.CharField(read_only=True)
+    place_of_birth_country = serializers.CharField(read_only=True)
+    transfermarkt_id = serializers.CharField(read_only=True)
+    transfermarkt_url = serializers.CharField(read_only=True)
+    market_value_last_updated = serializers.DateTimeField(read_only=True)
+
+    # Transfer history
+    transfers = serializers.SerializerMethodField()
+    transfer_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Players
+        fields = [
+            'id', 'name', 'shirt_number', 'date_of_birth', 'age', 'position', 'nationality',
+            'team_name', 'team_logo', 'sport_name', 'image_path', 'height', 'weight', 'gender',
+            # TransferMarket fields
+            'market_value', 'highest_market_value', 'preferred_foot', 'citizenship',
+            'contract_expires', 'joined', 'player_agent', 'outfitter',
+            'place_of_birth_city', 'place_of_birth_country',
+            'transfermarkt_id', 'transfermarkt_url', 'market_value_last_updated',
+            # Transfer history
+            'transfers', 'transfer_count'
+        ]
+
+    def get_team_logo(self, obj):
+        if obj.team:
+            if obj.team.image_path:
+                return obj.team.image_path
+            elif obj.team.image and hasattr(obj.team.image, 'url'):
+                request = self.context.get('request')
+                if request:
+                    return request.build_absolute_uri(obj.team.image.url)
+                return obj.team.image.url
+        return None
+
+    def get_transfers(self, obj):
+        """Get player's transfer history, ordered by date (most recent first)"""
+        transfers = Transfers.objects.filter(player=obj).select_related(
+            'from_team', 'to_team'
+        ).order_by('-date')[:20]  # Limit to last 20 transfers
+        return PlayerTransferSerializer(transfers, many=True, context=self.context).data
+
+    def get_transfer_count(self, obj):
+        """Get total number of transfers for this player"""
+        return Transfers.objects.filter(player=obj).count()
+
 
 class MatchTeamSerializer(serializers.ModelSerializer):
     class Meta:

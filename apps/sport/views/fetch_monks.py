@@ -35,16 +35,31 @@ def AdminMonksLeaguesGetData(request):
 
     if request.method == "POST":
         next_page_url = base_url + f'football/leagues?api_token={api_key}&include=country;currentSeason'
-        processed, added, updated = 0, 0, 0
+        processed, added, updated, failed = 0, 0, 0, 0
+        errors = []
 
-        while next_page_url:
+        # Import the robust API client
+        from core.utils.api_client import get_api_client
+        api_client = get_api_client()
+
+        page_count = 0
+        max_pages = 50  # Safety limit
+
+        while next_page_url and page_count < max_pages:
+            page_count += 1
             try:
-                response = requests.get(next_page_url)
-                if response.status_code == 200:
-                    data = response.json()
-                    data_to_db = data.get('data', [])
+                # Use robust API client with timeout and retry logic
+                data = api_client.get(next_page_url, timeout=20)
 
-                    for item in data_to_db:
+                if data is None:
+                    error_msg = f'Failed to fetch page {page_count}'
+                    errors.append(error_msg)
+                    break
+
+                data_to_db = data.get('data', [])
+
+                for item in data_to_db:
+                    try:
                         last_played_aware = None
                         if item.get('last_played_at'):
                             try:
@@ -81,21 +96,37 @@ def AdminMonksLeaguesGetData(request):
                             added += 1
                         else:
                             updated += 1
+                    except Exception as e:
+                        failed += 1
+                        errors.append(f"Error processing league {item.get('id')}: {str(e)}")
+                        continue
 
-                    pagination = data.get('pagination', {})
-                    if pagination.get('has_more') and pagination.get('next_page'):
-                        next_page_url = f"{pagination.get('next_page')}&api_token={api_key}"
-                    else:
-                        next_page_url = None
+                pagination = data.get('pagination', {})
+                if pagination.get('has_more') and pagination.get('next_page'):
+                    next_page_url = f"{pagination.get('next_page')}&api_token={api_key}"
                 else:
-                    error_message = f'API request failed with status code {response.status_code} on page {next_page_url}'
-                    return JsonResponse({'type': 'Error', 'message': error_message})
-
+                    next_page_url = None
             except Exception as e:
-                return JsonResponse({'type': 'Error', 'message': f'An error occurred: {str(e)}'})
+                failed += 1
+                error_msg = f'Error on page {page_count}: {str(e)}'
+                errors.append(error_msg)
+                break
 
-        success_message = f'Data fetched successfully. Processed: {processed}, Added: {added}, Updated: {updated}.'
-        return JsonResponse({'type': 'Success', 'message': success_message})
+        success_message = f'Data fetched successfully. Processed: {processed}, Added: {added}, Updated: {updated}, Failed: {failed}.'
+        response_data = {
+            'type': 'Success' if processed > 0 else 'Warning',
+            'message': success_message,
+            'stats': {
+                'processed': processed,
+                'added': added,
+                'updated': updated,
+                'failed': failed
+            }
+        }
+        if errors:
+            response_data['errors'] = errors[:5]
+
+        return JsonResponse(response_data)
 
     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'})
 
@@ -229,29 +260,47 @@ def AdminMonksTeamsGetData(request):
 def AdminMonksPlayersGetData(request):
     """
     Handles fetching players from the Sportmonks API with automatic pagination.
+    Now uses robust API client with timeout, retries, and error handling.
     """
     if not request.user.is_authenticated:
         return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == "POST":
         sport = request.POST.get('sport', 'football')
-        processed, added, updated = 0, 0, 0
+        processed, added, updated, failed = 0, 0, 0, 0
+        errors = []
 
         try:
             sport_id = Sport.objects.get(name=sport)
         except Sport.DoesNotExist:
             return JsonResponse({'type': 'Error', 'message': f"Sport '{sport}' not found."})
 
+        # Import the API client
+        from core.utils.api_client import get_api_client
+        api_client = get_api_client()
+
         next_page_url = base_url + f'{sport}/players?api_token={api_key}&include=teams;country;position;detailedPosition'
+        page_count = 0
+        max_pages = 100  # Safety limit to prevent infinite loops
 
-        while next_page_url:
+        while next_page_url and page_count < max_pages:
+            page_count += 1
             try:
-                response = requests.get(next_page_url)
-                if response.status_code == 200:
-                    data = response.json()
-                    data_to_db = data.get('data', [])
+                # Use the robust API client with timeout and retry logic
+                data = api_client.get(next_page_url, timeout=30)  # Bulk operation timeout
 
-                    for player_data in data_to_db:
+                if data is None:
+                    error_msg = f'Failed to fetch page {page_count} from {next_page_url}'
+                    errors.append(error_msg)
+                    break
+
+                data_to_db = data.get('data', [])
+
+                if not data_to_db:
+                    break
+
+                for player_data in data_to_db:
+                    try:
                         birthdate_obj = None
                         if player_data.get('date_of_birth'):
                             try:
@@ -260,13 +309,11 @@ def AdminMonksPlayersGetData(request):
                             except (ValueError, TypeError):
                                 birthdate_obj = None
 
-                        # Determine the current team from the nested 'teams' array returned by SportMonks.
-                        # Prefer the entry where 'end' is None (still active). Fallback to the first entry.
+                        # Determine the current team from the nested 'teams' array
                         team_obj = None
                         teams_list = player_data.get('teams') or []
                         current_team = None
                         for t in teams_list:
-                            # SportMonks uses 'end' == null for current teams; treat empty string/False as no end too.
                             if t.get('end') in (None, '', False):
                                 current_team = t
                                 break
@@ -286,15 +333,13 @@ def AdminMonksPlayersGetData(request):
                             'common_name': player_data.get('common_name'),
                             'first_name': player_data.get('firstname'),
                             'last_name': player_data.get('lastname'),
-                            'name': player_data.get('display_name'), # Use display_name as primary name
+                            'name': player_data.get('display_name'),
                             'image_path': player_data.get('image_path'),
                             'height': player_data.get('height'),
                             'weight': player_data.get('weight'),
                             'birthdate': birthdate_obj,
                             'gender': player_data.get('gender'),
-                            # Assign the Teams instance (if found) using the api_id from the nested teams array
                             'team': team_obj,
-
                         }
 
                         obj, created = Players.objects.update_or_create(
@@ -302,21 +347,48 @@ def AdminMonksPlayersGetData(request):
                             defaults=defaults
                         )
                         processed += 1
-                        if created: added += 1
-                        else: updated += 1
+                        if created:
+                            added += 1
+                        else:
+                            updated += 1
 
-                    pagination = data.get('pagination', {})
-                    if pagination.get('has_more') and pagination.get('next_page'):
-                        next_page_url = f"{pagination.get('next_page')}&api_token={api_key}"
-                    else:
-                        next_page_url = None
+                    except Exception as e:
+                        failed += 1
+                        errors.append(f"Error processing player {player_data.get('id')}: {str(e)}")
+                        continue  # Continue with next player instead of failing entire batch
+
+                # Handle pagination
+                pagination = data.get('pagination', {})
+                if pagination.get('has_more') and pagination.get('next_page'):
+                    next_page_url = f"{pagination.get('next_page')}&api_token={api_key}"
                 else:
-                    return JsonResponse({'type': 'Error', 'message': f'API request failed: {response.status_code}'})
-            except Exception as e:
-                return JsonResponse({'type': 'Error', 'message': f'An error occurred: {str(e)}'})
+                    next_page_url = None
 
-        success_message = f'Data fetched successfully. Processed: {processed}, Added: {added}, Updated: {updated}.'
-        return JsonResponse({'type': 'Success', 'message': success_message})
+            except Exception as e:
+                failed += 1
+                error_msg = f'Error on page {page_count}: {str(e)}'
+                errors.append(error_msg)
+                # Continue to next page instead of failing completely
+                break
+
+        # Prepare response
+        success_message = f'Data fetched successfully. Processed: {processed}, Added: {added}, Updated: {updated}, Failed: {failed}.'
+        response_data = {
+            'type': 'Success' if processed > 0 else 'Warning',
+            'message': success_message,
+            'stats': {
+                'processed': processed,
+                'added': added,
+                'updated': updated,
+                'failed': failed,
+                'pages': page_count
+            }
+        }
+
+        if errors:
+            response_data['errors'] = errors[:10]  # Limit error list
+
+        return JsonResponse(response_data)
 
     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'})
 

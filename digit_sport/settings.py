@@ -321,6 +321,11 @@ SPORT_MONKS_KEY = env('SPORT_MONKS_KEY')
 SPORT_MONKS_URL = env('SPORT_MONKS_URL')
 SPORT_MONKS_TOKEN = env('SPORT_MONKS_TOKEN')
 
+# API Timeout and Retry Configuration
+API_REQUEST_TIMEOUT = 15  # seconds for normal requests
+API_REQUEST_RETRIES = 3   # number of retry attempts with exponential backoff
+API_BULK_OPERATION_TIMEOUT = 30  # seconds for bulk operations
+
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHANNEL_ID = env("TELEGRAM_CHAT_ID")
 WHATSAPP_GROUP_ID = env("WHATSAPP_GROUP_ID")

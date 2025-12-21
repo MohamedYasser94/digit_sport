@@ -2155,14 +2155,157 @@ def AdminPlayersList(request):
 @authenticated_staf
 @staff_only
 def AdminPlayersDetails(request, slug):
+    """
+    Display player details and optionally fetch TransferMarket data for single player.
+    This allows recovery if bulk fetch failed, by fetching data on-demand when viewing player.
+    Supports:
+    - Fetching basic TransferMarket data
+    - Updating TransferMarket URL manually
+    - Fetching complete data (profile + transfers + market value history)
+    """
     player = Players.objects.get(slug=slug)
+    fetch_tm_message = None
+    fetch_tm_success = False
+    transfers_data = None
+    tm_url = None
+
+    # Import the update functions
+    from .update_players_transfermarket import (
+        get_transfermarket_data_for_player,
+        update_player_with_transfermarket_data,
+        update_player_transfermarket_url,
+        fetch_and_update_player_complete_data,
+        get_transfermarket_url_for_player,
+        fetch_player_transfers,
+        save_player_transfers,
+    )
+
+    # Generate TransferMarket URL for display
+    tm_url = get_transfermarket_url_for_player(player)
+
+    # Handle POST requests
+    if request.method == "POST":
+        action = request.POST.get('action')
+
+        # Action 1: Fetch basic TransferMarket data
+        if action == 'fetch_transfermarket':
+            try:
+                # Fetch TransferMarket data for this single player
+                tm_data = get_transfermarket_data_for_player(player)
+
+                if tm_data:
+                    # Update player with TransferMarket data
+                    update_player_with_transfermarket_data(player, tm_data)
+                    fetch_tm_success = True
+                    fetch_tm_message = f"✓ TransferMarket data updated successfully for {player.name}"
+                    # Refresh player from database to get updated data
+                    player.refresh_from_db()
+                    # Regenerate URL
+                    tm_url = get_transfermarket_url_for_player(player)
+                else:
+                    fetch_tm_message = f"⚠ No TransferMarket data found for {player.name}. Try updating the TransferMarket URL manually below."
+
+            except Exception as e:
+                fetch_tm_message = f"✗ Error fetching TransferMarket data: {str(e)}"
+                import traceback
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error fetching TM data for player {player.id}: {traceback.format_exc()}")
+
+        # Action 2: Update TransferMarket URL manually
+        elif action == 'update_tm_url':
+            new_tm_url = request.POST.get('transfermarket_url', '').strip()
+            new_tm_id = request.POST.get('transfermarket_id', '').strip()
+
+            if new_tm_url or new_tm_id:
+                try:
+                    success, message = update_player_transfermarket_url(
+                        player,
+                        transfermarkt_url=new_tm_url if new_tm_url else None,
+                        transfermarkt_id=new_tm_id if new_tm_id else None
+                    )
+                    if success:
+                        fetch_tm_success = True
+                        fetch_tm_message = f"✓ {message}"
+                        # Refresh player and regenerate URL
+                        player.refresh_from_db()
+                        tm_url = get_transfermarket_url_for_player(player)
+                    else:
+                        fetch_tm_message = f"⚠ {message}"
+                except Exception as e:
+                    fetch_tm_message = f"✗ Error updating TransferMarket URL: {str(e)}"
+            else:
+                fetch_tm_message = "⚠ Please provide either a TransferMarket URL or ID"
+
+        # Action 3: Fetch complete data (profile + transfers + market value)
+        elif action == 'fetch_complete_data':
+            try:
+                results = fetch_and_update_player_complete_data(player, force_refresh=True)
+
+                messages_list = []
+                if results['profile']['success']:
+                    messages_list.append(f"Profile: ✓ {results['profile']['message']}")
+                else:
+                    messages_list.append(f"Profile: ⚠ {results['profile']['message']}")
+
+                if results['transfers']['success']:
+                    messages_list.append(f"Transfers: ✓ {results['transfers']['message']}")
+                else:
+                    messages_list.append(f"Transfers: ⚠ {results['transfers']['message']}")
+
+                if results['market_value_history']['success']:
+                    messages_list.append(f"Market Value History: ✓ {results['market_value_history']['message']}")
+                else:
+                    messages_list.append(f"Market Value History: ⚠ {results['market_value_history']['message']}")
+
+                fetch_tm_success = results['profile']['success']
+                fetch_tm_message = " | ".join(messages_list)
+
+                # Refresh player from database
+                player.refresh_from_db()
+                tm_url = get_transfermarket_url_for_player(player)
+
+            except Exception as e:
+                fetch_tm_message = f"✗ Error fetching complete data: {str(e)}"
+                import traceback
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error fetching complete TM data for player {player.id}: {traceback.format_exc()}")
+
+        # Action 4: Fetch transfers only
+        elif action == 'fetch_transfers':
+            try:
+                if player.transfermarkt_id:
+                    transfers = fetch_player_transfers(player.transfermarkt_id)
+                    if transfers:
+                        added, updated, failed = save_player_transfers(player, transfers)
+                        fetch_tm_success = True
+                        fetch_tm_message = f"✓ Transfers updated: Added={added}, Updated={updated}, Failed={failed}"
+                    else:
+                        fetch_tm_message = "⚠ No transfers found for this player"
+                else:
+                    fetch_tm_message = "⚠ Player has no TransferMarket ID. Please fetch TransferMarket data first."
+            except Exception as e:
+                fetch_tm_message = f"✗ Error fetching transfers: {str(e)}"
+
+    # Get player transfers for display (Transfers is already imported via models.models import)
+    player_transfers = Transfers.objects.filter(player=player).order_by('-date')[:10]
 
     teams = Teams.objects.all()
-    context = {'player': player, 'teams': teams,
-               'players_form': AdminPlayersForm(instance=player), 'transfer_form': AdminTransfersForm(),
-
-               'current_page': _('Detail'),
-                'prev_Page': _('Players'), }
+    context = {
+        'player': player,
+        'teams': teams,
+        'players_form': AdminPlayersForm(instance=player),
+        'transfer_form': AdminTransfersForm(),
+        'current_page': _('Detail'),
+        'prev_Page': _('Players'),
+        # TransferMarket fetch status
+        'fetch_tm_message': fetch_tm_message,
+        'fetch_tm_success': fetch_tm_success,
+        'has_transfermarket_id': bool(player.transfermarkt_id),
+        'transfermarket_url': tm_url,
+        'player_transfers': player_transfers,
+    }
     return render(request, f'{BACKEND_TEMPLATES}/sport/players/details.html', context)
 
 @authenticated_staf

@@ -1,0 +1,133 @@
+<!--
+TEMPLATE ADDITION: Add this to your player details template
+File: core/templates/backend/sport/players/details.html
+
+This button allows fetching TransferMarket data for a single player when bulk fetch fails.
+Place this in the player details page where the user can trigger manual fetch.
+-->
+
+<!-- Add this inside your player details template, near the form buttons -->
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h5>TransferMarket Data</h5>
+    </div>
+    <div class="card-body">
+        <!-- Display TransferMarket fetch status if available -->
+        {% if fetch_tm_message %}
+            <div class="alert alert-{% if fetch_tm_success %}success{% else %}warning{% endif %} alert-dismissible fade show" role="alert">
+                {{ fetch_tm_message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <!-- Button to fetch TransferMarket data for this player -->
+        <form method="POST" class="d-inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="fetch_transfermarket">
+            <button type="submit" class="btn btn-primary"
+                    title="Fetch latest data from TransferMarket for this player">
+                <i class="fas fa-cloud-download-alt"></i>
+                Fetch TransferMarket Data
+            </button>
+        </form>
+
+        <!-- Display current TransferMarket status -->
+        <div class="mt-3">
+            {% if has_transfermarket_id %}
+                <p class="text-muted">
+                    <i class="fas fa-check-circle text-success"></i>
+                    TransferMarket ID: <code>{{ player.transfermarkt_id }}</code>
+                </p>
+            {% else %}
+                <p class="text-muted">
+                    <i class="fas fa-exclamation-circle text-warning"></i>
+                    No TransferMarket ID linked yet. Click above to search and link.
+                </p>
+            {% endif %}
+
+            <!-- Display TransferMarket related data if available -->
+            {% if player.current_market_value %}
+                <p class="text-muted">
+                    <i class="fas fa-euro-sign"></i>
+                    Current Market Value: <strong>{{ player.current_market_value }}</strong>
+                </p>
+            {% endif %}
+
+            {% if player.position %}
+                <p class="text-muted">
+                    <i class="fas fa-futbol"></i>
+                    Position: <strong>{{ player.position }}</strong>
+                </p>
+            {% endif %}
+
+            {% if player.foot %}
+                <p class="text-muted">
+                    <i class="fas fa-shoe-prints"></i>
+                    Foot: <strong>{{ player.foot }}</strong>
+                </p>
+            {% endif %}
+
+            {% if player.citizenship %}
+                <p class="text-muted">
+                    <i class="fas fa-flag"></i>
+                    Citizenship: <strong>{{ player.citizenship }}</strong>
+                </p>
+            {% endif %}
+
+            {% if player.contract_expires %}
+                <p class="text-muted">
+                    <i class="fas fa-calendar-times"></i>
+                    Contract Expires: <strong>{{ player.contract_expires }}</strong>
+                </p>
+            {% endif %}
+
+            {% if player.age %}
+                <p class="text-muted">
+                    <i class="fas fa-birthday-cake"></i>
+                    Age: <strong>{{ player.age }}</strong>
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- Help text -->
+        <div class="alert alert-info mt-3" role="alert">
+            <small>
+                <i class="fas fa-info-circle"></i>
+                <strong>Tip:</strong> If the bulk player fetch failed, you can fetch TransferMarket data for this
+                player individually. This is useful for catching individual players that had issues during the
+                bulk operation.
+            </small>
+        </div>
+    </div>
+</div>
+
+<!--
+USAGE IN VIEWS:
+==============
+
+When the user clicks the button:
+1. POST request is sent with action='fetch_transfermarket'
+2. AdminPlayersDetails view processes the request
+3. Fetches TransferMarket data for the single player
+4. Updates player model with new data
+5. Displays success/error message
+6. Refreshes page with updated information
+
+This works even if:
+- The bulk fetch failed for this player
+- The bulk fetch timed out
+- The bulk fetch was never run
+- The player info needs to be updated with latest TransferMarket data
+
+BENEFITS:
+=========
+✓ Recover from bulk fetch failures
+✓ Update individual player data on-demand
+✓ User-friendly error messages
+✓ No need to re-run entire bulk operation
+✓ Real-time data update capability
+✓ Works with existing player detail page
+✓ Seamless integration with TransferMarket API client
+-->
+

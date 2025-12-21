@@ -1662,14 +1662,70 @@ def PlayersReportdetailsApi(request, sport_name, team_id, match_id):
 @api_view(['GET'])
 def PlayerBasicDetailsApi(request, player_id):
     """
-    Get basic player details by player ID
+    Get basic player details by player ID.
+
+    This API automatically fetches TransferMarket data in the background if:
+    - market_value_last_updated is None (never fetched)
+    - OR market_value_last_updated is older than 30 days
+
+    The response is returned immediately with current data, and the update happens asynchronously.
     """
     try:
         player = Players.objects.select_related('team', 'sport').get(id=player_id)
         
+        # Check if we need to fetch TransferMarket data
+        should_fetch_tm_data = False
+
+        if player.market_value_last_updated is None:
+            # Never fetched before
+            should_fetch_tm_data = True
+        else:
+            # Check if last update was more than 30 days ago
+            days_since_update = (django_timezone.now() - player.market_value_last_updated).days
+            if days_since_update >= 30:
+                should_fetch_tm_data = True
+
+        # Fetch TransferMarket data in background thread if needed
+        if should_fetch_tm_data:
+            def fetch_tm_data_async(player_pk):
+                """Background task to fetch TransferMarket data"""
+                try:
+                    from apps.sport.views.update_players_transfermarket import (
+                        get_transfermarket_data_for_player,
+                        update_player_with_transfermarket_data
+                    )
+
+                    # Re-fetch the player in this thread to avoid cross-thread issues
+                    player_obj = Players.objects.select_related('team').get(pk=player_pk)
+
+                    # Get TransferMarket data
+                    tm_data = get_transfermarket_data_for_player(player_obj)
+
+                    if tm_data:
+                        # Update player with TransferMarket data
+                        update_player_with_transfermarket_data(player_obj, tm_data)
+                        print(f"[TM API] Successfully updated player {player_obj.name} (ID: {player_pk})")
+                    else:
+                        print(f"[TM API] No TransferMarket data found for player {player_obj.name} (ID: {player_pk})")
+
+                except Exception as e:
+                    print(f"[TM API] Error fetching TransferMarket data for player ID {player_pk}: {e}")
+
+            # Start background thread for TransferMarket data fetch
+            thread = threading.Thread(
+                target=fetch_tm_data_async,
+                args=(player.pk,),
+                daemon=True  # Thread will be killed when main program exits
+            )
+            thread.start()
+
         success = True
         message = f"Basic details for player {player.name}"
         
+        # Add info about whether TM data is being fetched
+        if should_fetch_tm_data:
+            message += " (TransferMarket data update in progress)"
+
         player_serializer = PlayerBasicInfoSerializer(
             player,
             context={'request': request}
@@ -1679,6 +1735,7 @@ def PlayerBasicDetailsApi(request, player_id):
             'success': success,
             'data': player_serializer.data,
             'message': message,
+            'tm_data_updating': should_fetch_tm_data,  # Let the app know if update is in progress
         }
         
         return JsonResponse(data, safe=False)
@@ -1706,6 +1763,268 @@ def PlayerBasicDetailsApi(request, player_id):
             'message': message,
         }
         return JsonResponse(data, status=500)
+
+
+@api_view(['POST'])
+def PlayerRefreshTransfermarketApi(request, player_id):
+    """
+    Force refresh TransferMarket data for a player.
+
+    This endpoint fetches the latest TransferMarket data regardless of when it was last updated.
+    Useful when the user explicitly wants to update the player data.
+
+    POST /api/v4/players/{player_id}/refresh-transfermarket/
+    """
+    try:
+        player = Players.objects.select_related('team', 'sport').get(id=player_id)
+
+        # Import the TransferMarket functions
+        from apps.sport.views.update_players_transfermarket import (
+            get_transfermarket_data_for_player,
+            update_player_with_transfermarket_data
+        )
+
+        # Fetch TransferMarket data
+        tm_data = get_transfermarket_data_for_player(player)
+
+        if tm_data:
+            # Update player with TransferMarket data
+            update_player_with_transfermarket_data(player, tm_data)
+
+            # Refresh from database to get updated data
+            player.refresh_from_db()
+
+            success = True
+            message = f"TransferMarket data updated successfully for {player.name}"
+
+            player_serializer = PlayerBasicInfoSerializer(
+                player,
+                context={'request': request}
+            )
+
+            data = {
+                'success': success,
+                'data': player_serializer.data,
+                'message': message,
+            }
+
+            return JsonResponse(data, safe=False)
+        else:
+            success = False
+            message = f"No TransferMarket data found for {player.name}"
+
+            player_serializer = PlayerBasicInfoSerializer(
+                player,
+                context={'request': request}
+            )
+
+            data = {
+                'success': success,
+                'data': player_serializer.data,
+                'message': message,
+            }
+
+            return JsonResponse(data, safe=False)
+
+    except Players.DoesNotExist:
+        success = False
+        message = f"Player with id {player_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+
+    except Exception as e:
+        success = False
+        message = f"Error refreshing TransferMarket data: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
+
+
+@api_view(['GET'])
+def PlayerTransfersApi(request, player_id):
+    """
+    Get player transfer history.
+
+    GET /api/v4/players/{player_id}/transfers/
+
+    Returns a list of all transfers for the specified player,
+    ordered by date (most recent first).
+    """
+    try:
+        player = Players.objects.get(id=player_id)
+
+        # Get all transfers for this player
+        transfers = Transfers.objects.filter(player=player).select_related(
+            'from_team', 'to_team'
+        ).order_by('-date')
+
+        from api.v4.serializers.sport.sport import PlayerTransferSerializer
+
+        transfers_serializer = PlayerTransferSerializer(
+            transfers,
+            many=True,
+            context={'request': request}
+        )
+
+        success = True
+        message = f"Transfer history for {player.name}"
+
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id,
+                'player_name': player.name,
+                'transfer_count': transfers.count(),
+                'transfers': transfers_serializer.data
+            },
+            'message': message,
+        }
+
+        return JsonResponse(data, safe=False)
+
+    except Players.DoesNotExist:
+        success = False
+        message = f"Player with id {player_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+
+    except Exception as e:
+        success = False
+        message = f"Error retrieving transfer history: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
+
+
+@api_view(['GET'])
+def PlayerFullDetailsApi(request, player_id):
+    """
+    Get full player details including transfer history.
+
+    GET /api/v4/players/{player_id}/full/
+
+    This endpoint returns complete player information including:
+    - Basic info (name, position, nationality, etc.)
+    - TransferMarket data (market value, contract, agent, etc.)
+    - Transfer history
+
+    Also triggers TransferMarket data refresh if data is stale (>30 days old).
+    """
+    try:
+        player = Players.objects.select_related('team', 'sport').get(id=player_id)
+
+        # Check if we need to fetch TransferMarket data
+        should_fetch_tm_data = False
+
+        if player.market_value_last_updated is None:
+            should_fetch_tm_data = True
+        else:
+            days_since_update = (django_timezone.now() - player.market_value_last_updated).days
+            if days_since_update >= 30:
+                should_fetch_tm_data = True
+
+        # Fetch TransferMarket data in background thread if needed
+        if should_fetch_tm_data:
+            def fetch_tm_data_async(player_pk):
+                try:
+                    from apps.sport.views.update_players_transfermarket import (
+                        get_transfermarket_data_for_player,
+                        update_player_with_transfermarket_data,
+                        fetch_player_transfers,
+                        save_player_transfers
+                    )
+
+                    player_obj = Players.objects.select_related('team').get(pk=player_pk)
+                    tm_data = get_transfermarket_data_for_player(player_obj)
+
+                    if tm_data:
+                        update_player_with_transfermarket_data(player_obj, tm_data)
+
+                        # Also fetch and save transfers
+                        if player_obj.transfermarkt_id:
+                            transfers = fetch_player_transfers(player_obj.transfermarkt_id)
+                            if transfers:
+                                save_player_transfers(player_obj, transfers)
+
+                        print(f"[TM API Full] Successfully updated player {player_obj.name} (ID: {player_pk})")
+                except Exception as e:
+                    print(f"[TM API Full] Error fetching data for player ID {player_pk}: {e}")
+
+            thread = threading.Thread(
+                target=fetch_tm_data_async,
+                args=(player.pk,),
+                daemon=True
+            )
+            thread.start()
+
+        from api.v4.serializers.sport.sport import PlayerWithTransfersSerializer
+
+        success = True
+        message = f"Full details for player {player.name}"
+
+        if should_fetch_tm_data:
+            message += " (TransferMarket data update in progress)"
+
+        player_serializer = PlayerWithTransfersSerializer(
+            player,
+            context={'request': request}
+        )
+
+        data = {
+            'success': success,
+            'data': player_serializer.data,
+            'message': message,
+            'tm_data_updating': should_fetch_tm_data,
+        }
+
+        return JsonResponse(data, safe=False)
+
+    except Players.DoesNotExist:
+        success = False
+        message = f"Player with id {player_id} does not exist"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=404)
+
+    except Exception as e:
+        success = False
+        message = f"Error retrieving player data: {str(e)}"
+        data = {
+            'success': success,
+            'data': {
+                'player_id': player_id
+            },
+            'message': message,
+        }
+        return JsonResponse(data, status=500)
+
 
 @api_view(['GET'])
 def TeamDetailsApi(request, team_id):

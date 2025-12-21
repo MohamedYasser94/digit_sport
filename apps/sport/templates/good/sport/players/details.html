@@ -352,6 +352,352 @@
                         </div>
                         {% endif %}
                         
+                        <!-- TransferMarket Data Section -->
+                        <div class="card card-flush mb-6">
+                            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                                <div class="card-title">
+                                    <h2>
+                                        <i class="fas fa-exchange-alt me-2"></i>
+                                        {% translate 'TransferMarket Data' %}
+                                    </h2>
+                                    <span class="text-muted fs-7">{% translate 'Fetch and manage TransferMarket player information' %}</span>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0">
+                                <!-- Status Messages -->
+                                {% if fetch_tm_message %}
+                                    <div class="alert alert-{% if fetch_tm_success %}success{% else %}warning{% endif %} alert-dismissible fade show mb-5" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            {% if fetch_tm_success %}
+                                                <i class="fas fa-check-circle text-success me-3 fs-2x"></i>
+                                                <div>
+                                                    <strong>{% translate 'Success' %}</strong><br>
+                                                    {{ fetch_tm_message }}
+                                                </div>
+                                            {% else %}
+                                                <i class="fas fa-exclamation-triangle text-warning me-3 fs-2x"></i>
+                                                <div>
+                                                    <strong>{% translate 'Status' %}</strong><br>
+                                                    {{ fetch_tm_message }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Action Buttons Row -->
+                                <div class="d-flex flex-wrap gap-3 mb-5">
+                                    <!-- Fetch Basic Data Button -->
+                                    <form method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="fetch_transfermarket">
+                                        <button type="submit" class="btn btn-primary" title="{% translate 'Fetch basic TransferMarket data' %}">
+                                            <i class="fas fa-cloud-download-alt me-2"></i>
+                                            {% translate 'Fetch Basic Data' %}
+                                        </button>
+                                    </form>
+
+                                    <!-- Fetch Complete Data Button -->
+                                    <form method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="fetch_complete_data">
+                                        <button type="submit" class="btn btn-success" title="{% translate 'Fetch complete data including transfers and market value history' %}">
+                                            <i class="fas fa-sync-alt me-2"></i>
+                                            {% translate 'Fetch Complete Data' %}
+                                        </button>
+                                    </form>
+
+                                    <!-- Fetch Transfers Only Button -->
+                                    {% if has_transfermarket_id %}
+                                    <form method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="fetch_transfers">
+                                        <button type="submit" class="btn btn-info" title="{% translate 'Fetch only transfer history' %}">
+                                            <i class="fas fa-exchange-alt me-2"></i>
+                                            {% translate 'Fetch Transfers' %}
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Current TransferMarket Status -->
+                                <div class="row g-5 mb-5">
+                                    <!-- Status Column -->
+                                    <div class="col-md-6">
+                                        <div class="border border-gray-300 border-dashed rounded-2 p-5">
+                                            <h6 class="fw-bold text-gray-900 mb-3">
+                                                <i class="fas fa-link me-2 text-info"></i>
+                                                {% translate 'Linking Status' %}
+                                            </h6>
+                                            {% if has_transfermarket_id %}
+                                                <div class="mb-3">
+                                                    <span class="badge bg-success px-3 py-2 fs-8">
+                                                        <i class="fas fa-check-circle me-1"></i>
+                                                        {% translate 'Linked' %}
+                                                    </span>
+                                                </div>
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div>
+                                                        <small class="text-muted">{% translate 'TransferMarket ID' %}:</small>
+                                                        <div>
+                                                            <code class="bg-light px-2 py-1 rounded fs-8">{{ player.transfermarkt_id }}</code>
+                                                        </div>
+                                                    </div>
+                                                    {% if transfermarket_url %}
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">{% translate 'TransferMarket URL' %}:</small>
+                                                        <div>
+                                                            <a href="{{ transfermarket_url }}" target="_blank" class="text-primary fs-8">
+                                                                <i class="fas fa-external-link-alt me-1"></i>
+                                                                {% translate 'View on TransferMarket' %}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <div class="mb-3">
+                                                    <span class="badge bg-warning px-3 py-2 fs-8">
+                                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                                        {% translate 'Not Linked' %}
+                                                    </span>
+                                                </div>
+                                                <p class="text-muted mb-0">
+                                                    {% translate 'Click the Fetch button above to search and link TransferMarket ID.' %}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- TransferMarket Data Display -->
+                                    <div class="col-md-6">
+                                        <div class="border border-gray-300 border-dashed rounded-2 p-5">
+                                            <h6 class="fw-bold text-gray-900 mb-3">
+                                                <i class="fas fa-database me-2 text-primary"></i>
+                                                {% translate 'Player Information' %}
+                                            </h6>
+                                            <div class="d-flex flex-column gap-3">
+                                                {% if player.current_market_value %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-euro-sign text-success me-2"></i>
+                                                            {% translate 'Market Value' %}:
+                                                        </span>
+                                                        <span class="fw-bold text-success fs-6">{{ player.current_market_value }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if player.position %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-futbol text-info me-2"></i>
+                                                            {% translate 'Position' %}:
+                                                        </span>
+                                                        <span class="fw-bold">{{ player.position }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if player.age %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-birthday-cake text-warning me-2"></i>
+                                                            {% translate 'Age' %}:
+                                                        </span>
+                                                        <span class="fw-bold">{{ player.age }} {% translate 'years' %}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if player.foot %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-shoe-prints text-secondary me-2"></i>
+                                                            {% translate 'Preferred Foot' %}:
+                                                        </span>
+                                                        <span class="fw-bold">{{ player.foot|title }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if player.citizenship %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-flag text-danger me-2"></i>
+                                                            {% translate 'Citizenship' %}:
+                                                        </span>
+                                                        <span class="fw-bold">{{ player.citizenship }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if player.contract_expires %}
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted fw-semibold">
+                                                            <i class="fas fa-calendar-times text-danger me-2"></i>
+                                                            {% translate 'Contract Expires' %}:
+                                                        </span>
+                                                        <span class="fw-bold">{{ player.contract_expires }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Manual URL Update Section -->
+                                <div class="separator my-5"></div>
+                                <div class="border border-gray-300 border-dashed rounded-2 p-5 mb-5">
+                                    <h6 class="fw-bold text-gray-900 mb-3">
+                                        <i class="fas fa-edit me-2 text-warning"></i>
+                                        {% translate 'Update TransferMarket Link Manually' %}
+                                    </h6>
+                                    <p class="text-muted mb-3">
+                                        {% translate 'If the automatic search found the wrong player, you can manually update the TransferMarket ID or URL.' %}
+                                    </p>
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="update_tm_url">
+                                        <div class="row g-3">
+                                            <div class="col-md-8">
+                                                <label class="form-label fw-semibold">{% translate 'TransferMarket URL' %}</label>
+                                                <input type="text" class="form-control form-control-solid" name="transfermarket_url"
+                                                       placeholder="https://www.transfermarkt.com/player-name/profil/spieler/12345"
+                                                       value="{{ player.transfermarkt_url|default:'' }}">
+                                                <div class="form-text">
+                                                    {% translate 'Example: https://www.transfermarkt.com/mohamed-salah/profil/spieler/148455' %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">{% translate 'OR TransferMarket ID' %}</label>
+                                                <input type="text" class="form-control form-control-solid" name="transfermarket_id"
+                                                       placeholder="148455"
+                                                       value="{{ player.transfermarkt_id|default:'' }}">
+                                                <div class="form-text">{% translate 'Just the numeric ID' %}</div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="fas fa-save me-2"></i>
+                                                {% translate 'Update TransferMarket Link' %}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Player Transfers Section -->
+                                {% if player_transfers %}
+                                <div class="separator my-5"></div>
+                                <h6 class="fw-bold text-gray-900 mb-3">
+                                    <i class="fas fa-exchange-alt me-2 text-primary"></i>
+                                    {% translate 'Transfer History' %}
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table table-row-bordered gy-5">
+                                        <thead>
+                                            <tr class="fw-semibold fs-6 text-muted">
+                                                <th>{% translate 'Date' %}</th>
+                                                <th>{% translate 'From' %}</th>
+                                                <th>{% translate 'To' %}</th>
+                                                <th>{% translate 'Fee' %}</th>
+                                                <th>{% translate 'Market Value' %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for transfer in player_transfers %}
+                                            <tr>
+                                                <td>{{ transfer.date|date:"M d, Y"|default:"-" }}</td>
+                                                <td>{{ transfer.from_team.name|default:"-" }}</td>
+                                                <td>{{ transfer.to_team.name|default:"-" }}</td>
+                                                <td>
+                                                    {% if transfer.free_transfer == 'Yes' %}
+                                                        <span class="badge bg-success">{% translate 'Free' %}</span>
+                                                    {% else %}
+                                                        {{ transfer.fee|default:"-" }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ transfer.market_value|default:"-" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% endif %}
+
+                                <!-- Additional TransferMarket Details -->
+                                {% if player.highest_market_value or player.player_agent_name or player.place_of_birth_city or player.place_of_birth_country %}
+                                <div class="separator my-5"></div>
+                                <h6 class="fw-bold text-gray-900 mb-3">
+                                    <i class="fas fa-info-circle me-2 text-info"></i>
+                                    {% translate 'Additional Details' %}
+                                </h6>
+                                <div class="row g-3">
+                                    {% if player.highest_market_value %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column p-3 bg-light rounded">
+                                            <small class="text-muted fw-semibold mb-1">
+                                                <i class="fas fa-chart-line me-1"></i>
+                                                {% translate 'Highest Market Value' %}
+                                            </small>
+                                            <span class="fw-bold text-warning fs-6">{{ player.highest_market_value }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if player.player_agent_name %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column p-3 bg-light rounded">
+                                            <small class="text-muted fw-semibold mb-1">
+                                                <i class="fas fa-user-tie me-1"></i>
+                                                {% translate 'Player Agent' %}
+                                            </small>
+                                            <span class="fw-bold">{{ player.player_agent_name }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if player.place_of_birth_city %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column p-3 bg-light rounded">
+                                            <small class="text-muted fw-semibold mb-1">
+                                                <i class="fas fa-city me-1"></i>
+                                                {% translate 'Place of Birth - City' %}
+                                            </small>
+                                            <span class="fw-bold">{{ player.place_of_birth_city }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if player.place_of_birth_country %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex flex-column p-3 bg-light rounded">
+                                            <small class="text-muted fw-semibold mb-1">
+                                                <i class="fas fa-globe me-1"></i>
+                                                {% translate 'Place of Birth - Country' %}
+                                            </small>
+                                            <span class="fw-bold">{{ player.place_of_birth_country }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <!-- Help Text -->
+                                <div class="alert alert-info mt-5 mb-0" role="alert">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-lightbulb me-3 mt-1"></i>
+                                        <div>
+                                            <strong>{% translate 'Helpful Tips' %}:</strong>
+                                            <ul class="mb-0 mt-2 ps-3">
+                                                <li>{% translate 'Use "Fetch Basic Data" to get player profile information.' %}</li>
+                                                <li>{% translate 'Use "Fetch Complete Data" to get profile, transfer history, and market value history.' %}</li>
+                                                <li>{% translate 'If the automatic search finds the wrong player, use the manual URL update section below.' %}</li>
+                                                <li>{% translate 'You can copy the correct TransferMarket URL from the website and paste it here.' %}</li>
+                                                <li><strong>{% translate 'For Mohamed Salah' %}:</strong> https://www.transfermarkt.com/mohamed-salah/profil/spieler/148455</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Additional Information -->
                         <div class="card card-flush">
                             <div class="card-header align-items-center py-5">
@@ -405,10 +751,16 @@
                                                 <td class="fw-bold">{{ player.contract_expires }}</td>
                                             </tr>
                                             {% endif %}
-                                            {% if player.agent %}
+                                            {% if player.player_agent_name %}
                                             <tr>
-                                                <td class="text-muted">{% translate 'Agent' %}</td>
-                                                <td class="fw-bold">{{ player.agent }}</td>
+                                                <td class="text-muted">{% translate 'Player Agent' %}</td>
+                                                <td class="fw-bold">{{ player.player_agent_name }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if player.outfitter %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Outfitter/Brand' %}</td>
+                                                <td class="fw-bold">{{ player.outfitter }}</td>
                                             </tr>
                                             {% endif %}
                                             <tr>
@@ -419,6 +771,12 @@
                                                 <td class="text-muted">{% translate 'Last Updated' %}</td>
                                                 <td class="fw-bold">{{ player.updated_at|date:"F d, Y H:i" }}</td>
                                             </tr>
+                                            {% if player.market_value_last_updated %}
+                                            <tr>
+                                                <td class="text-muted">{% translate 'Market Value Last Updated' %}</td>
+                                                <td class="fw-bold">{{ player.market_value_last_updated|date:"F d, Y H:i" }}</td>
+                                            </tr>
+                                            {% endif %}
                                         </tbody>
                                     </table>
                                 </div>
