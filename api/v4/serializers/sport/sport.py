@@ -327,31 +327,48 @@ class PlayerTransferSerializer(serializers.ModelSerializer):
     """
     Serializer for player transfer history.
     Returns transfer details including from/to teams, fee, and date.
+    Falls back to text team names when FK is null.
     """
     from_team_id = serializers.IntegerField(source='from_team.id', read_only=True, allow_null=True)
-    from_team_name = serializers.CharField(source='from_team.name', read_only=True, allow_null=True)
+    from_team_name = serializers.SerializerMethodField()
     from_team_logo = serializers.SerializerMethodField()
 
     to_team_id = serializers.IntegerField(source='to_team.id', read_only=True, allow_null=True)
-    to_team_name = serializers.CharField(source='to_team.name', read_only=True, allow_null=True)
+    to_team_name = serializers.SerializerMethodField()
     to_team_logo = serializers.SerializerMethodField()
 
     transfer_date = serializers.DateField(source='date', read_only=True)
     transfer_fee = serializers.CharField(source='fee', read_only=True)
+    transfer_fee_numeric = serializers.IntegerField(source='fee_numeric', read_only=True)
     is_free_transfer = serializers.SerializerMethodField()
+    is_loan = serializers.BooleanField(read_only=True)
     market_value_at_transfer = serializers.CharField(source='market_value', read_only=True)
+    market_value_numeric = serializers.IntegerField(source='market_value_numeric', read_only=True)
     currency = serializers.CharField(source='market_value_currency', read_only=True)
+    season = serializers.CharField(read_only=True)
 
     class Meta:
         model = Transfers
         fields = [
-            'id', 'transfer_date',
+            'id', 'transfer_date', 'season',
             'from_team_id', 'from_team_name', 'from_team_logo',
             'to_team_id', 'to_team_name', 'to_team_logo',
-            'transfer_fee', 'is_free_transfer',
-            'market_value_at_transfer', 'currency',
+            'transfer_fee', 'transfer_fee_numeric', 'is_free_transfer', 'is_loan',
+            'market_value_at_transfer', 'market_value_numeric', 'currency',
             'position'
         ]
+
+    def get_from_team_name(self, obj):
+        """Get from team name - prefer FK, fallback to text field"""
+        if obj.from_team:
+            return obj.from_team.name
+        return getattr(obj, 'from_team_name', None)
+
+    def get_to_team_name(self, obj):
+        """Get to team name - prefer FK, fallback to text field"""
+        if obj.to_team:
+            return obj.to_team.name
+        return getattr(obj, 'to_team_name', None)
 
     def get_from_team_logo(self, obj):
         if obj.from_team:
@@ -379,51 +396,138 @@ class PlayerTransferSerializer(serializers.ModelSerializer):
         return obj.free_transfer == 'Yes'
 
 
+class PlayerMarketValueHistorySerializer(serializers.Serializer):
+    """Serializer for player market value history"""
+    date = serializers.DateField()
+    age = serializers.IntegerField()
+    market_value = serializers.IntegerField()
+    market_value_formatted = serializers.CharField()
+    club_name = serializers.CharField()
+    club_tm_id = serializers.CharField()
+
+
+class PlayerSeasonStatsSerializer(serializers.Serializer):
+    """Serializer for player season stats"""
+    season = serializers.CharField()
+    competition_name = serializers.CharField()
+    club_name = serializers.CharField()
+    appearances = serializers.IntegerField()
+    goals = serializers.IntegerField()
+    assists = serializers.IntegerField()
+    yellow_cards = serializers.IntegerField()
+    red_cards = serializers.IntegerField()
+    minutes_played = serializers.IntegerField()
+
+
+class PlayerAchievementSerializer(serializers.Serializer):
+    """Serializer for player achievements/trophies"""
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    achievement_type = serializers.CharField()
+    competition_name = serializers.CharField()
+    club_name = serializers.CharField()
+    season = serializers.CharField()
+    year = serializers.IntegerField()
+    count = serializers.IntegerField()
+    is_international = serializers.BooleanField()
+
+
 class PlayerWithTransfersSerializer(serializers.ModelSerializer):
     """
-    Extended player serializer that includes transfer history.
-    Use this when you need both player details and their transfers.
+    Extended player serializer that includes transfer history, market value history,
+    season stats, and achievements. Use this for full player details.
     """
     shirt_number = serializers.CharField(source='number', read_only=True)
     date_of_birth = serializers.CharField(source='birthdate', read_only=True)
     position = serializers.CharField(read_only=True)
+    main_position = serializers.CharField(read_only=True)
+    other_positions = serializers.JSONField(read_only=True)
     nationality = serializers.CharField(read_only=True)
-    team_name = serializers.CharField(source='team.name', read_only=True)
+    team_id = serializers.IntegerField(source='team.id', read_only=True)
+    team_name = serializers.SerializerMethodField()
     team_logo = serializers.SerializerMethodField()
     sport_name = serializers.CharField(source='sport.name', read_only=True)
 
+    # Basic info
+    full_name = serializers.CharField(read_only=True)
+    display_name = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+
     # TransferMarket fields
     market_value = serializers.CharField(source='current_market_value', read_only=True)
+    market_value_numeric = serializers.IntegerField(source='current_market_value_numeric', read_only=True)
     highest_market_value = serializers.CharField(read_only=True)
+    highest_market_value_numeric = serializers.IntegerField(read_only=True)
+    highest_market_value_date = serializers.DateField(read_only=True)
     preferred_foot = serializers.CharField(source='foot', read_only=True)
     citizenship = serializers.CharField(read_only=True)
+    citizenships = serializers.JSONField(read_only=True)
     contract_expires = serializers.CharField(read_only=True)
+    contract_expires_date = serializers.DateField(read_only=True)
     joined = serializers.CharField(read_only=True)
+    joined_date = serializers.DateField(read_only=True)
     player_agent = serializers.CharField(source='player_agent_name', read_only=True)
+    player_agent_url = serializers.CharField(read_only=True)
     outfitter = serializers.CharField(read_only=True)
     place_of_birth_city = serializers.CharField(read_only=True)
     place_of_birth_country = serializers.CharField(read_only=True)
     transfermarkt_id = serializers.CharField(read_only=True)
     transfermarkt_url = serializers.CharField(read_only=True)
     market_value_last_updated = serializers.DateTimeField(read_only=True)
+    is_retired = serializers.BooleanField(read_only=True)
+
+    # Social media
+    social_media = serializers.JSONField(read_only=True)
+
+    # Career totals
+    total_appearances = serializers.IntegerField(read_only=True)
+    total_goals = serializers.IntegerField(read_only=True)
+    total_assists = serializers.IntegerField(read_only=True)
+    total_yellow_cards = serializers.IntegerField(read_only=True)
+    total_red_cards = serializers.IntegerField(read_only=True)
+    total_minutes_played = serializers.IntegerField(read_only=True)
 
     # Transfer history
     transfers = serializers.SerializerMethodField()
     transfer_count = serializers.SerializerMethodField()
 
+    # Market value history
+    market_value_history = serializers.SerializerMethodField()
+
+    # Season stats
+    season_stats = serializers.SerializerMethodField()
+
+    # Achievements
+    achievements = serializers.SerializerMethodField()
+
     class Meta:
         model = Players
         fields = [
-            'id', 'name', 'shirt_number', 'date_of_birth', 'age', 'position', 'nationality',
-            'team_name', 'team_logo', 'sport_name', 'image_path', 'height', 'weight', 'gender',
+            'id', 'api_id', 'name', 'full_name', 'display_name', 'description',
+            'shirt_number', 'date_of_birth', 'age', 'position', 'main_position', 'other_positions',
+            'nationality', 'team_id', 'team_name', 'team_logo', 'sport_name',
+            'image_path', 'image_url', 'height', 'weight', 'gender',
             # TransferMarket fields
-            'market_value', 'highest_market_value', 'preferred_foot', 'citizenship',
-            'contract_expires', 'joined', 'player_agent', 'outfitter',
+            'market_value', 'market_value_numeric', 'highest_market_value',
+            'highest_market_value_numeric', 'highest_market_value_date',
+            'preferred_foot', 'citizenship', 'citizenships',
+            'contract_expires', 'contract_expires_date', 'joined', 'joined_date',
+            'player_agent', 'player_agent_url', 'outfitter',
             'place_of_birth_city', 'place_of_birth_country',
             'transfermarkt_id', 'transfermarkt_url', 'market_value_last_updated',
-            # Transfer history
-            'transfers', 'transfer_count'
+            'is_retired', 'social_media',
+            # Career totals
+            'total_appearances', 'total_goals', 'total_assists',
+            'total_yellow_cards', 'total_red_cards', 'total_minutes_played',
+            # Related data
+            'transfers', 'transfer_count', 'market_value_history', 'season_stats', 'achievements'
         ]
+
+    def get_team_name(self, obj):
+        """Get team name - prefer FK, fallback to text field"""
+        if obj.team:
+            return obj.team.name
+        return obj.team_text
 
     def get_team_logo(self, obj):
         if obj.team:
@@ -446,6 +550,33 @@ class PlayerWithTransfersSerializer(serializers.ModelSerializer):
     def get_transfer_count(self, obj):
         """Get total number of transfers for this player"""
         return Transfers.objects.filter(player=obj).count()
+
+    def get_market_value_history(self, obj):
+        """Get player's market value history"""
+        try:
+            from apps.sport.models.models import PlayerMarketValueHistory
+            history = PlayerMarketValueHistory.objects.filter(player=obj).order_by('-date')[:50]
+            return PlayerMarketValueHistorySerializer(history, many=True).data
+        except Exception:
+            return []
+
+    def get_season_stats(self, obj):
+        """Get player's season statistics"""
+        try:
+            from apps.sport.models.models import PlayerSeasonStats
+            stats = PlayerSeasonStats.objects.filter(player=obj).order_by('-season')[:30]
+            return PlayerSeasonStatsSerializer(stats, many=True).data
+        except Exception:
+            return []
+
+    def get_achievements(self, obj):
+        """Get player's achievements/trophies"""
+        try:
+            from apps.sport.models.models import PlayerAchievement
+            achievements = PlayerAchievement.objects.filter(player=obj).order_by('-year', '-season')
+            return PlayerAchievementSerializer(achievements, many=True).data
+        except Exception:
+            return []
 
 
 class MatchTeamSerializer(serializers.ModelSerializer):

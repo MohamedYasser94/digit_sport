@@ -2026,6 +2026,139 @@ def PlayerFullDetailsApi(request, player_id):
         return JsonResponse(data, status=500)
 
 
+@api_view(['POST', 'GET'])
+def PlayerRefreshTransfermarketApi(request, player_id):
+    """
+    Force refresh TransferMarket data for a specific player.
+
+    POST /api/v4/players/{player_id}/refresh-transfermarket/
+    GET /api/v4/players/{player_id}/refresh-transfermarket/
+
+    This endpoint forces a full refresh of TransferMarket data including:
+    - Player profile (market value, position, contract, etc.)
+    - Transfer history
+    - Market value history
+    - Season statistics
+    - Achievements
+
+    Returns the updated player data.
+    """
+    try:
+        player = Players.objects.select_related('team', 'sport').get(id=player_id)
+
+        from apps.sport.views.update_players_transfermarket import (
+            get_transfermarket_data_for_player,
+            update_player_with_transfermarket_data,
+            fetch_player_transfers,
+            save_player_transfers,
+            fetch_player_market_value_history,
+            save_player_market_value_history,
+            fetch_player_stats,
+            save_player_season_stats,
+            update_player_career_totals,
+            fetch_player_achievements,
+            save_player_achievements,
+        )
+
+        results = {
+            'profile': {'success': False, 'message': ''},
+            'transfers': {'success': False, 'count': 0, 'message': ''},
+            'market_value_history': {'success': False, 'count': 0, 'message': ''},
+            'season_stats': {'success': False, 'count': 0, 'message': ''},
+            'achievements': {'success': False, 'count': 0, 'message': ''},
+        }
+
+        # Step 1: Fetch and update player profile
+        tm_data = get_transfermarket_data_for_player(player)
+        if tm_data:
+            update_player_with_transfermarket_data(player, tm_data)
+            results['profile']['success'] = True
+            results['profile']['message'] = 'Profile updated successfully'
+            player.refresh_from_db()
+        else:
+            results['profile']['message'] = 'Could not fetch TransferMarket data'
+
+        # Step 2: Fetch transfers if we have TM ID
+        if player.transfermarkt_id:
+            transfers = fetch_player_transfers(player.transfermarkt_id)
+            if transfers:
+                added, updated, failed = save_player_transfers(player, transfers)
+                results['transfers']['success'] = True
+                results['transfers']['count'] = added + updated
+                results['transfers']['message'] = f'Added: {added}, Updated: {updated}, Failed: {failed}'
+            else:
+                results['transfers']['message'] = 'No transfers found'
+
+            # Step 3: Fetch market value history
+            mv_history = fetch_player_market_value_history(player.transfermarkt_id)
+            if mv_history:
+                mv_added, mv_updated = save_player_market_value_history(player, mv_history)
+                results['market_value_history']['success'] = True
+                results['market_value_history']['count'] = mv_added + mv_updated
+                results['market_value_history']['message'] = f'Added: {mv_added}, Updated: {mv_updated}'
+            else:
+                results['market_value_history']['message'] = 'No market value history found'
+
+            # Step 4: Fetch season stats
+            stats = fetch_player_stats(player.transfermarkt_id)
+            if stats:
+                stats_added, stats_updated = save_player_season_stats(player, stats)
+                results['season_stats']['success'] = True
+                results['season_stats']['count'] = stats_added + stats_updated
+                results['season_stats']['message'] = f'Added: {stats_added}, Updated: {stats_updated}'
+                update_player_career_totals(player)
+            else:
+                results['season_stats']['message'] = 'No season stats found'
+
+            # Step 5: Fetch achievements
+            try:
+                achievements = fetch_player_achievements(player.transfermarkt_id)
+                if achievements:
+                    ach_added, ach_updated = save_player_achievements(player, achievements)
+                    results['achievements']['success'] = True
+                    results['achievements']['count'] = ach_added + ach_updated
+                    results['achievements']['message'] = f'Added: {ach_added}, Updated: {ach_updated}'
+                else:
+                    results['achievements']['message'] = 'No achievements found'
+            except Exception as e:
+                results['achievements']['message'] = f'Error: {str(e)}'
+
+        # Refresh player from DB to get updated data
+        player.refresh_from_db()
+
+        # Return updated player data
+        from api.v4.serializers.sport.sport import PlayerWithTransfersSerializer
+        player_serializer = PlayerWithTransfersSerializer(player, context={'request': request})
+
+        overall_success = results['profile']['success']
+        message = "TransferMarket data refresh completed"
+
+        data = {
+            'success': overall_success,
+            'data': player_serializer.data,
+            'message': message,
+            'refresh_results': results,
+        }
+
+        return JsonResponse(data, safe=False)
+
+    except Players.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'data': {'player_id': player_id},
+            'message': f"Player with id {player_id} does not exist",
+        }, status=404)
+
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'success': False,
+            'data': {'player_id': player_id},
+            'message': f"Error refreshing TransferMarket data: {str(e)}",
+            'traceback': traceback.format_exc()[:500]
+        }, status=500)
+
+
 @api_view(['GET'])
 def TeamDetailsApi(request, team_id):
     try:
