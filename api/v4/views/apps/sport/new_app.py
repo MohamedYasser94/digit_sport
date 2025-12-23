@@ -1,7 +1,6 @@
 import threading
 from collections import defaultdict
 from datetime import timedelta, time
-
 from django.db import DatabaseError
 from django.http import JsonResponse
 from django.utils import timezone as django_timezone
@@ -12,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
 from django.shortcuts import get_object_or_404
-
 from api.v4.serializers.blog import BlogArticleSerializer, BlogVideoSerializer
 from api.v4.serializers.sport.sport import *
 from api.v4.serializers.sport.favorite import FavoriteToggleSerializer
@@ -20,13 +18,11 @@ from apps.sport.models.models import *
 from apps.sport.models.operations import MatchPlayerReport, MatchPlayerReportSerializer
 from apps.sport.views.fetch_monks import _fetch_and_store_fixtures_from_source
 from core.models.blog import BlogArticle, BlogVideo
-
 from digit_sport import settings
 from datetime import datetime, time, timezone
 
 api_key = settings.SPORT_MONKS_TOKEN
 base_url = settings.SPORT_MONKS_URL
-
 
 ############# Home Fixtures api urls #############
 
@@ -2242,15 +2238,9 @@ def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
 
 @api_view(['GET'])
 def PlayerStatisticsBySeasonApiView(request, player_id):
-    """
-    Acts as a proxy to fetch Statistics for a specific Player across seasons from SportMonks.
-    Target URL: /v3/football/statistics/seasons/players/{player_id}
-    Default Include: details.type
-    """
     try:
-        url = f"{base_url}football/statistics/seasons/players/{player_id}?api_token={api_key}"
-
-        include_param = request.query_params.get('include', 'details.type')
+        url = f"{base_url}football/players/{player_id}?api_token={api_key}"
+        include_param = request.query_params.get('include', 'statistics.details.type')
         url += f"&include={include_param.replace(',', ';')}"
 
         for key, value in request.query_params.items():
@@ -2260,12 +2250,48 @@ def PlayerStatisticsBySeasonApiView(request, player_id):
 
         response = requests.get(url)
         response.raise_for_status()
-        
+        data = response.json()
+
+        if 'data' in data and 'statistics' in data['data']:
+            stats_list = data['data']['statistics']
+
+            if isinstance(stats_list, list) and len(stats_list) > 0:
+                stats_list.sort(key=lambda x: x.get('season_id', 0), reverse=True)
+
+                data['data']['statistics'] = stats_list[:4]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    except requests.exceptions.HTTPError as err:
+        return Response(
+            {"error": f"Failed to fetch player stats: {err.response.status_code}"},
+            status=err.response.status_code
+        )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def SeasonDetailsApiView(request, season_id):
+    try:
+        url = f"{base_url}football/seasons/{season_id}?api_token={api_key}"
+        include_param = request.query_params.get('include', 'league')
+        url += f"&include={include_param.replace(',', ';')}"
+
+        for key, value in request.query_params.items():
+            if key.startswith('filters['):
+                filter_key = key.split('[')[1].split(']')[0]
+                url += f"&filters={filter_key}:{value}"
+
+        response = requests.get(url)
+        response.raise_for_status()
         return Response(response.json(), status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
-            {"error": f"Failed to fetch player stats from source: {err.response.status_code} {err.response.reason}"},
+            {"error": f"Failed to fetch season details: {err.response.status_code} {err.response.reason}"},
             status=err.response.status_code
         )
     except Exception as e:
