@@ -2240,7 +2240,7 @@ def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
 def PlayerStatisticsBySeasonApiView(request, player_id):
     try:
         url = f"{base_url}football/players/{player_id}?api_token={api_key}"
-        include_param = request.query_params.get('include', 'statistics.details.type')
+        include_param = request.query_params.get('include', 'statistics.details.type&filters=playerstatisticdetailTypes:79,52,85,83')
         url += f"&include={include_param.replace(',', ';')}"
 
         for key, value in request.query_params.items():
