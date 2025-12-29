@@ -2149,7 +2149,8 @@ def AdminPlayersList(request):
             'teams': teams,
         }
 
-        return render(request, f'{BACKEND_TEMPLATES}/sport/players/admin.html', context)
+        return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
+    
 
 
 @authenticated_staf

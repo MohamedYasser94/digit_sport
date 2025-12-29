@@ -2240,13 +2240,13 @@ def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
 def PlayerStatisticsBySeasonApiView(request, player_id):
     try:
         url = f"{base_url}football/players/{player_id}?api_token={api_key}"
-        include_param = request.query_params.get('include', 'statistics.details.type&filters=playerstatisticdetailTypes:79,52,85,83')
+        include_param = request.query_params.get('include', 'statistics.details.type&filters=playerstatisticdetailTypes:79,52')
         url += f"&include={include_param.replace(',', ';')}"
 
-        for key, value in request.query_params.items():
-            if key.startswith('filters['):
-                filter_key = key.split('[')[1].split(']')[0]
-                url += f"&filters={filter_key}:{value}"
+        # for key, value in request.query_params.items():
+        #     if key.startswith('filters['):
+        #         filter_key = key.split('[')[1].split(']')[0]
+        #         url += f"&filters={filter_key}:{value}"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -2258,7 +2258,7 @@ def PlayerStatisticsBySeasonApiView(request, player_id):
             if isinstance(stats_list, list) and len(stats_list) > 0:
                 stats_list.sort(key=lambda x: x.get('season_id', 0), reverse=True)
 
-                data['data']['statistics'] = stats_list[:4]
+                # data['data']['statistics'] = stats_list[:4]
 
         return Response(data, status=status.HTTP_200_OK)
 
