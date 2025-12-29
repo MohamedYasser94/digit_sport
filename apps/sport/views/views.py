@@ -2,12 +2,12 @@ from datetime import timezone, datetime
 import json
 from OpenSSL.rand import status
 from django.contrib import messages
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage,EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-
+from django.db.models import Q
 from apps.sport.forms.forms import *
 from apps.sport.forms.operations import *
 from apps.sport.models.models import *
@@ -15,7 +15,6 @@ from core.models.core import CommonTranslate
 from core.views.notifications import AdminFcmNotifications
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
-
 User = get_user_model()
 
 
@@ -2065,12 +2064,31 @@ def AdminMatchPlayerStaticAdd(request, match_slug, slug):
 @authenticated_staf
 @staff_only
 def AdminPlayersList(request):
-    sport_list = [ 'basketball', 'volleyball']
-    players = Players.objects.all()
     teams = Teams.objects.all()
-    # GET logic with pagination
-    players_list = Players.objects.all().order_by('name')
-    paginator = Paginator(players_list, 25)  # Show 25 players per page
+    players_list = Players.objects.all()
+
+    query = request.GET.get('q')
+    if query:
+        players_list = players_list.filter(
+            Q(name__icontains=query) | 
+            Q(code__icontains=query)
+        )
+
+    sort_by = request.GET.get('sort')
+    
+    if sort_by == 'code':
+        players_list = players_list.order_by('code')
+    elif sort_by == '-code':
+        players_list = players_list.order_by('-code')
+
+    elif sort_by == 'sport':
+        players_list = players_list.order_by('sport__name') 
+    elif sort_by == '-sport':
+        players_list = players_list.order_by('-sport__name')
+
+    else:
+        players_list = players_list.order_by('-id')
+    paginator = Paginator(players_list, 25) 
     page_number = request.GET.get('page')
 
     try:
@@ -2112,17 +2130,12 @@ def AdminPlayersList(request):
                 team = Teams.objects.get(id=team)
                 in_team = 'Yes'
 
-            # if league == None or league == '':
-            #     league = None
-            # else:
-            #     league = Leagues.objects.get(id=league)
-
             player_object = Players(
                 name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
                 gender=gender,keyword=keyword,image=image,image_path=image_path,nationality=nationality, nationality_flag=nationality_flag,)
             player_object.save()
+            
             for league in leagues:
-                print('league', league, leagues)
                 try:
                     league_object = Leagues.objects.get(id=league)
                     player_object.league.add(league_object)
@@ -2134,15 +2147,15 @@ def AdminPlayersList(request):
                team.save()
             except:
                pass
-            # match_team_player_object = MatchTeamPlayer( team=team, player=player_object)
-            # match_team_player_object.save()
+
             messages.success(request, _("Players Add Successfully"), extra_tags='Players')
             return HttpResponseRedirect(reverse_lazy('sport:AdminPlayersList'))
         else:
             messages.error(request, _("Players Not Add , Please Try Again"), extra_tags='Players')
+    
     else:
         context = {
-            'page_obj': page_obj,  # Pass the paginated object
+            'page_obj': page_obj, 
             'players': page_obj.object_list,
             'players_form': AdminPlayersForm(),
             'current_page': _('Players'),
@@ -2151,7 +2164,6 @@ def AdminPlayersList(request):
 
         return render(request, f'{BACKEND_TEMPLATES}/sport/players/multi_source_admin.html', context)
     
-
 
 @authenticated_staf
 @staff_only
