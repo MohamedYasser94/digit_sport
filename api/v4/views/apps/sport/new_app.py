@@ -2245,10 +2245,10 @@ def PlayerStatisticsBySeasonApiView(request, player_id):
                                                  'statistics.details.type')
         url += f"&include={include_param.replace(',', ';')}"
 
-        for key, value in request.query_params.items():
-            if key.startswith('filters['):
-                filter_key = key.split('[')[1].split(']')[0]
-                url += f"&filters={filter_key}:{value}"
+        # for key, value in request.query_params.items():
+        #     if key.startswith('filters['):
+        #         filter_key = key.split('[')[1].split(']')[0]
+        #         url += f"&filters={filter_key}:{value}"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -2260,7 +2260,7 @@ def PlayerStatisticsBySeasonApiView(request, player_id):
             if isinstance(stats_list, list) and len(stats_list) > 0:
                 stats_list.sort(key=lambda x: x.get('season_id', 0), reverse=True)
 
-                data['data']['statistics'] = stats_list[:4]
+                # data['data']['statistics'] = stats_list[:4]
 
         return Response(data, status=status.HTTP_200_OK)
 
