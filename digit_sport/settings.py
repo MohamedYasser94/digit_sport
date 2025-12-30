@@ -104,10 +104,10 @@ MIDDLEWARE = [
 ORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com","https://www.jawlasp.com",
-                        "https://api.jawlasp.com",  "https://www.api.jawlasp.com",
+                        "https://jawlasp.com",  "https://www.api.jawlasp.com",
                          ]
 ACCESS_CONTROL_ALLOW_ORIGIN = ["http://localhost:8000", "http://127.0.0.1:8000", "https://jawlasp.com","https://www.jawlasp.com",
-                        "https://api.jawlasp.com",  "https://www.api.jawlasp.com",
+                        "https://jawlasp.com",  "https://www.api.jawlasp.com",
                          ]
 
 CORS_ALLOW_METHODS = (

@@ -631,7 +631,7 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
 
     def get_league_image(self, obj):
         try:
-            league_image = 'https://api.jawlasp.com' + str(obj.league.image.url)
+            league_image = 'https://jawlasp.com' + str(obj.league.image.url)
             return league_image
         except:
             league_image = None

@@ -1590,8 +1590,9 @@ def PlayersReportdetailsApi(request, sport_name, team_id, match_id):
             sport=sport.id,
             team=team.id
         ).select_related('team').order_by('name')
+        player_count= players_list.count()
         success = True
-        message = f"Players statistics for match {match_id}"
+        message = f"Players statistics for match {match.slug}//{player_count}"
         
         players_serializer = PlayerSerializer(
             players_list,

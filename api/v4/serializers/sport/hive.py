@@ -54,7 +54,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
 
     def get_league_image(self, obj):
         try:
-            league_image = 'https://api.jawlasp.com' + str(obj.league.image.url)
+            league_image = 'https://jawlasp.com' + str(obj.league.image.url)
             return league_image
         except:
             league_image = None
@@ -70,7 +70,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
 
     def get_home_team_image(self, obj):
         try:
-            home_team_image = 'https://api.jawlasp.com' + str(obj.home_team.image.url)
+            home_team_image = 'https://jawlasp.com' + str(obj.home_team.image.url)
             return home_team_image
         except:
             home_team_image = None
@@ -78,7 +78,7 @@ class HiveMatchDetailsSerializer(serializers.ModelSerializer):
 
     def get_away_team_image(self, obj):
         try:
-            away_team_image = 'https://api.jawlasp.com' + str(obj.away_team.image.url)
+            away_team_image = 'https://jawlasp.com' + str(obj.away_team.image.url)
             return away_team_image
         except:
             away_team_image = None
@@ -105,7 +105,7 @@ class HiveTeamSeasonTableSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
        try:
-           team_image = 'https://api.jawlasp.com' + str(obj.team.image.url)
+           team_image = 'https://jawlasp.com' + str(obj.team.image.url)
            return team_image
        except:
         team_image = None
