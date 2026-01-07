@@ -656,7 +656,7 @@ def FixtureDetailApiView(request, fixture_id, lang):
             
         if data.get('data'):
             data['data']['man_of_the_match'] = best_player
-            #Time conversion to UTC+3
+            _enrich_fixture_detail_with_name_tr(data['data'])
             if 'starting_at' in data['data'] and isinstance(data['data']['starting_at'], str):
                 try:
                     utc_time = datetime.strptime(data['data']['starting_at'], '%Y-%m-%d %H:%M:%S')
@@ -675,6 +675,112 @@ def FixtureDetailApiView(request, fixture_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def _enrich_fixture_detail_with_name_tr(fixture_data):
+    """
+    Enrich fixture detail data with name_tr from local database
+    Inserts name_tr immediately after name field for better readability
+    """
+    if fixture_data.get('league'):
+        league_api_id = fixture_data['league'].get('id')
+        name_tr_value = None
+        if league_api_id:
+            try:
+                league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                if league:
+                    name_tr_value = league['name_tr']
+            except Exception:
+                pass
+        _insert_after_key(fixture_data['league'], 'name', 'name_tr', name_tr_value)
+
+    if fixture_data.get('participants'):
+        team_ids = [p.get('id') for p in fixture_data['participants'] if p.get('id')]
+        teams_dict = {}
+        if team_ids:
+            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr')
+            teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+
+        for participant in fixture_data['participants']:
+            participant_id = participant.get('id')
+            name_tr_value = teams_dict.get(participant_id) if participant_id else None
+            _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+
+    if fixture_data.get('events'):
+        player_ids = set()
+        for event in fixture_data['events']:
+            if event.get('player_id'):
+                player_ids.add(event['player_id'])
+            if event.get('related_player_id'):
+                player_ids.add(event['related_player_id'])
+
+        players_dict = {}
+        if player_ids:
+            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr')
+            players_dict = {p['api_id']: p['name_tr'] for p in players}
+
+        for event in fixture_data['events']:
+            if event.get('player'):
+                player_id = event['player'].get('id')
+                name_tr_value = players_dict.get(player_id) if player_id else None
+                if 'display_name' in event['player']:
+                    _insert_after_key(event['player'], 'display_name', 'name_tr', name_tr_value)
+                elif 'name' in event['player']:
+                    _insert_after_key(event['player'], 'name', 'name_tr', name_tr_value)
+
+            if event.get('relatedplayer'):
+                related_player_id = event['relatedplayer'].get('id')
+                name_tr_value = players_dict.get(related_player_id) if related_player_id else None
+                if 'display_name' in event['relatedplayer']:
+                    _insert_after_key(event['relatedplayer'], 'display_name', 'name_tr', name_tr_value)
+                elif 'name' in event['relatedplayer']:
+                    _insert_after_key(event['relatedplayer'], 'name', 'name_tr', name_tr_value)
+
+    if fixture_data.get('lineups'):
+        lineup_player_ids = [l.get('player_id') for l in fixture_data['lineups'] if l.get('player_id')]
+        lineup_players_dict = {}
+        if lineup_player_ids:
+            players = Players.objects.filter(api_id__in=lineup_player_ids).values('api_id', 'name_tr')
+            lineup_players_dict = {p['api_id']: p['name_tr'] for p in players}
+
+        for lineup in fixture_data['lineups']:
+            if lineup.get('player'):
+                player_id = lineup['player'].get('id')
+                name_tr_value = lineup_players_dict.get(player_id) if player_id else None
+                if 'display_name' in lineup['player']:
+                    _insert_after_key(lineup['player'], 'display_name', 'name_tr', name_tr_value)
+                elif 'name' in lineup['player']:
+                    _insert_after_key(lineup['player'], 'name', 'name_tr', name_tr_value)
+
+    if fixture_data.get('man_of_the_match'):
+        motm_player_id = fixture_data['man_of_the_match'].get('player_id')
+        name_tr_value = None
+        if motm_player_id:
+            try:
+                player = Players.objects.filter(api_id=motm_player_id).values('name_tr').first()
+                if player:
+                    name_tr_value = player['name_tr']
+            except Exception:
+                pass
+        _insert_after_key(fixture_data['man_of_the_match'], 'player_name', 'player_name_tr', name_tr_value)
+
+def _insert_after_key(data_dict, after_key, new_key, new_value):
+    """
+    Insert a new key-value pair immediately after a specified key in a dictionary.
+    Preserves the order of other keys.
+    """
+    if after_key not in data_dict:
+        data_dict[new_key] = new_value
+        return
+
+    items = list(data_dict.items())
+    new_items = []
+    
+    for key, value in items:
+        new_items.append((key, value))
+        if key == after_key:
+            new_items.append((new_key, new_value))
+    data_dict.clear()
+    data_dict.update(new_items)
 
 ######################### team Screen api urls #########################
 @api_view(['GET'])
@@ -746,7 +852,10 @@ def TeamDetailApiView(request, team_id, lang):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        if data.get('data'):
+            _enrich_team_detail_with_name_tr(data['data'])
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -756,6 +865,102 @@ def TeamDetailApiView(request, team_id, lang):
     except Exception as e:
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def _enrich_team_detail_with_name_tr(team_data):
+    """
+    Enrich team detail data with name_tr from local database
+    Inserts name_tr immediately after name field for better readability
+    """
+    team_api_id = team_data.get('id')
+    team_name_tr = None
+    if team_api_id:
+        try:
+            team = Teams.objects.filter(api_id=team_api_id).values('name_tr').first()
+            if team:
+                team_name_tr = team['name_tr']
+        except Exception:
+            pass
+    _insert_after_key(team_data, 'name', 'name_tr', team_name_tr)
+    if team_data.get('players'):
+        player_ids = [p['player'].get('id') for p in team_data['players'] if p.get('player') and p['player'].get('id')]
+        players_dict = {}
+        if player_ids:
+            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr')
+            players_dict = {p['api_id']: p['name_tr'] for p in players}
+
+        for squad_player in team_data['players']:
+            if squad_player.get('player'):
+                player_id = squad_player['player'].get('id')
+                name_tr_value = players_dict.get(player_id) if player_id else None
+                if 'display_name' in squad_player['player']:
+                    _insert_after_key(squad_player['player'], 'display_name', 'name_tr', name_tr_value)
+                elif 'name' in squad_player['player']:
+                    _insert_after_key(squad_player['player'], 'name', 'name_tr', name_tr_value)
+    
+    if team_data.get('latest'):
+        for match in team_data['latest']:
+            if match.get('league'):
+                league_api_id = match['league'].get('id')
+                league_name_tr = None
+                if league_api_id:
+                    try:
+                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                        if league:
+                            league_name_tr = league['name_tr']
+                    except Exception:
+                        pass
+                _insert_after_key(match['league'], 'name', 'name_tr', league_name_tr)
+
+            if match.get('participants'):
+                participant_ids = [p.get('id') for p in match['participants'] if p.get('id')]
+                teams_dict = {}
+                if participant_ids:
+                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr')
+                    teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+
+                for participant in match['participants']:
+                    participant_id = participant.get('id')
+                    name_tr_value = teams_dict.get(participant_id) if participant_id else None
+                    _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+
+    if team_data.get('upcoming'):
+        for match in team_data['upcoming']:
+            if match.get('league'):
+                league_api_id = match['league'].get('id')
+                league_name_tr = None
+                if league_api_id:
+                    try:
+                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                        if league:
+                            league_name_tr = league['name_tr']
+                    except Exception:
+                        pass
+                _insert_after_key(match['league'], 'name', 'name_tr', league_name_tr)
+
+            if match.get('participants'):
+                participant_ids = [p.get('id') for p in match['participants'] if p.get('id')]
+                teams_dict = {}
+                if participant_ids:
+                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr')
+                    teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+
+                for participant in match['participants']:
+                    participant_id = participant.get('id')
+                    name_tr_value = teams_dict.get(participant_id) if participant_id else None
+                    _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+    
+    if team_data.get('activeseasons'):
+        league_ids = [s['league'].get('id') for s in team_data['activeseasons'] if s.get('league') and s['league'].get('id')]
+        leagues_dict = {}
+        if league_ids:
+            leagues = Leagues.objects.filter(api_id__in=league_ids).values('api_id', 'name_tr')
+            leagues_dict = {l['api_id']: l['name_tr'] for l in leagues}
+
+        for season in team_data['activeseasons']:
+            if season.get('league'):
+                league_id = season['league'].get('id')
+                name_tr_value = leagues_dict.get(league_id) if league_id else None
+                _insert_after_key(season['league'], 'name', 'name_tr', name_tr_value)
 
 
 @api_view(['GET'])
@@ -801,7 +1006,7 @@ def LeaguesApiView(request, sport, lang):
     try:
         sport_obj = Sport.objects.get(name__iexact=sport)
         leagues = Leagues.objects.filter(sport=sport_obj).order_by('name')
-        serializer = LeagueSerializer(leagues, many=True)
+        serializer = LeagueSerializer(leagues, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Sport.DoesNotExist:
         return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -835,12 +1040,12 @@ def LeagueDetailApiView(request, league_id, lang):
 
 # --- NEW VIEW FOR LIVE STANDINGS ---
 @api_view(['GET'])
-def LiveStandingsByLeagueApiView(request, league_id):
+def LiveStandingsByLeagueApiView(request, league_id, lang='en'):
     """
     Acts as a proxy to fetch live standings for a league from SportMonks.
     """
     include_params = request.query_params.get('include', 'participant;rule.type;details.type;form;stage;league;group',)
-    url = f"{base_url}football/standings/live/leagues/{league_id}?api_token={api_key}&include={include_params}"
+    url = f"{base_url}football/standings/live/leagues/{league_id}?api_token={api_key}&include={include_params}&locale={lang}"
 
     try:
         response = requests.get(url)
@@ -858,14 +1063,14 @@ def LiveStandingsByLeagueApiView(request, league_id):
 
 # --- CORRECTED VIEW FOR TOP SCORERS ---
 @api_view(['GET'])
-def TopScorersBySeasonApiView(request, season_id):
+def TopScorersBySeasonApiView(request, season_id, lang='en'):
     """
     Acts as a proxy to fetch top scorers for a season from SportMonks.
     This version correctly constructs the URL with multiple separate 'filters' parameters.
     """
     try:
         # Start with the base URL and API token
-        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
+        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}&locale={lang}"
 
         # Append the 'include' parameter
         include_param = request.query_params.get('include', 'player;player.nationality;player.position;participant;type;&filters=seasonTopscorerTypes:208')
@@ -904,14 +1109,14 @@ def TopScorersBySeasonApiView(request, season_id):
     
 # --- NEW VIEW FOR TOP ASSISTS ---
 @api_view(['GET'])
-def TopAssistsBySeasonApiView(request, season_id):
+def TopAssistsBySeasonApiView(request, season_id, lang='en'):
     """
     Acts as a proxy to fetch top scorers for a season from SportMonks.
     This version correctly constructs the URL with multiple separate 'filters' parameters.
     """
     try:
         # Start with the base URL and API token
-        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}"
+        url = f"{base_url}football/topscorers/seasons/{season_id}?api_token={api_key}&locale={lang}"
 
         # Append the 'include' parameter
         include_param = request.query_params.get('include', 'player;player.nationality;player.position;participant;type;&filters=seasonTopscorerTypes:209')
@@ -940,13 +1145,13 @@ def TopAssistsBySeasonApiView(request, season_id):
     
 # --- NEW VIEW FOR HEAD-TO-HEAD PREVIOUS MATCHES (CURRENT SCORES ONLY) ---
 @api_view(['GET'])
-def PreviousMatchesApiView(request, team1_id, team2_id):
+def PreviousMatchesApiView(request, team1_id, team2_id, lang='en'):
     """
     Fetch previous matches between two teams (head-to-head) from SportMonks,
     including only scores with description = 'CURRENT' and league details.
     """
     try:
-        url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;league"
+        url = f"{base_url}football/fixtures/head-to-head/{team1_id}/{team2_id}?api_token={api_key}&include=scores;league&locale={lang}"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -1003,12 +1208,12 @@ def PreviousMatchesApiView(request, team1_id, team2_id):
         )
 
 @api_view(['GET'])
-def TeamLatestUpcomingApiView(request, team_id):
+def TeamLatestUpcomingApiView(request, team_id, lang='en'):
     """
     Fetch a single team's latest match (with only CURRENT scores) and first upcoming match.
     """
     try:
-        url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include=latest;latest.participants;latest.league;latest.scores;upcoming;upcoming.league;upcoming.participants"
+        url = f"{base_url}football/teams/{team_id}?api_token={api_key}&include=latest;latest.participants;latest.league;latest.scores;upcoming;upcoming.league;upcoming.participants&locale={lang}"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -1046,14 +1251,14 @@ def TeamLatestUpcomingApiView(request, team_id):
         )
 
 @api_view(['GET'])
-def standingsByseasonsApiView(request, season_id):
+def standingsByseasonsApiView(request, season_id, lang='en'):
     """
     Acts as a proxy to fetch season details from SportMonks.
     Includes fixtures, teams, sport, league, stages, groups, statistics, etc.
     """
     try:
         # Start with the base URL and API token
-        url = f"{base_url}football/standings/seasons/{season_id}?api_token={api_key}"
+        url = f"{base_url}football/standings/seasons/{season_id}?api_token={api_key}&locale={lang}"
 
         # Handle include parameters
         include_param = request.query_params.get('include', 'participant;rule.type;details.type;form;stage;league;group')
@@ -1097,13 +1302,13 @@ def standingsByseasonsApiView(request, season_id):
     
 
 @api_view(['GET'])
-def LeagueInformationApiView(request, league_id):
+def LeagueInformationApiView(request, league_id, lang='en'):
     """
     Acts as a proxy to fetch league details (seasons, latest, upcoming, currentSeason, stages)
     from SportMonks API for the given league_id.
     """
     try:
-        url = f"{base_url}football/leagues/{league_id}?api_token={api_key}"
+        url = f"{base_url}football/leagues/{league_id}?api_token={api_key}&locale={lang}"
 
         include_param = request.query_params.get("include","seasons;currentSeason;stages;")
         url += f"&include={include_param.replace(',', ';')}"
@@ -1129,13 +1334,13 @@ def LeagueInformationApiView(request, league_id):
 
 
 @api_view(['GET'])
-def SeasonSchedulesApiView(request, season_id):
+def SeasonSchedulesApiView(request, season_id, lang='en'):
     """
     Proxy to fetch schedules for a given season from SportMonks API.
     Supports dynamic 'include' and 'filters'.
     """
     try:
-        url = f"{base_url}football/schedules/seasons/{season_id}?api_token={api_key}"
+        url = f"{base_url}football/schedules/seasons/{season_id}?api_token={api_key}&locale={lang}"
 
         include_param = request.query_params.get("include", "")
         if include_param:
@@ -1293,7 +1498,9 @@ def PlayerDetailApiView(request, player_id, lang):
         if 'data' in data and 'transfers' in data['data']:
             clubs_timeline = process_transfers_to_clubs_timeline(data['data']['transfers'])
             data['data']['clubs_played_for'] = clubs_timeline
-        
+
+        if data.get('data'):
+            _enrich_player_detail_with_name_tr(data['data'])
         return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
@@ -1305,6 +1512,74 @@ def PlayerDetailApiView(request, player_id, lang):
         return Response({"error": f"An unexpected server error occurred: {str(e)}"},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+def _enrich_player_detail_with_name_tr(player_data):
+    """
+    Enrich player detail data with name_tr from local database
+    Inserts name_tr immediately after name/display_name field for better readability
+    """
+    player_api_id = player_data.get('id')
+    player_name_tr = None
+    if player_api_id:
+        try:
+            player = Players.objects.filter(api_id=player_api_id).values('name_tr').first()
+            if player:
+                player_name_tr = player['name_tr']
+        except Exception:
+            pass
+
+    if 'display_name' in player_data:
+        _insert_after_key(player_data, 'display_name', 'name_tr', player_name_tr)
+    elif 'name' in player_data:
+        _insert_after_key(player_data, 'name', 'name_tr', player_name_tr)
+
+    if player_data.get('teams'):
+        team_ids = [t['team'].get('id') for t in player_data['teams'] if t.get('team') and t['team'].get('id')]
+        teams_dict = {}
+        if team_ids:
+            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr')
+            teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+
+        for player_team in player_data['teams']:
+            if player_team.get('team'):
+                team_id = player_team['team'].get('id')
+                name_tr_value = teams_dict.get(team_id) if team_id else None
+                _insert_after_key(player_team['team'], 'name', 'name_tr', name_tr_value)
+
+    if player_data.get('transfers'):
+        transfer_team_ids = set()
+        for transfer in player_data['transfers']:
+            if transfer.get('fromteam') and transfer['fromteam'].get('id'):
+                transfer_team_ids.add(transfer['fromteam']['id'])
+            if transfer.get('toteam') and transfer['toteam'].get('id'):
+                transfer_team_ids.add(transfer['toteam']['id'])
+
+        transfer_teams_dict = {}
+        if transfer_team_ids:
+            teams = Teams.objects.filter(api_id__in=transfer_team_ids).values('api_id', 'name_tr')
+            transfer_teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+
+        for transfer in player_data['transfers']:
+            if transfer.get('fromteam'):
+                from_team_id = transfer['fromteam'].get('id')
+                name_tr_value = transfer_teams_dict.get(from_team_id) if from_team_id else None
+                _insert_after_key(transfer['fromteam'], 'name', 'name_tr', name_tr_value)
+
+            if transfer.get('toteam'):
+                to_team_id = transfer['toteam'].get('id')
+                name_tr_value = transfer_teams_dict.get(to_team_id) if to_team_id else None
+                _insert_after_key(transfer['toteam'], 'name', 'name_tr', name_tr_value)
+
+    if player_data.get('clubs_played_for'):
+        club_ids = [c.get('id') for c in player_data['clubs_played_for'] if c.get('id')]
+        clubs_dict = {}
+        if club_ids:
+            clubs = Teams.objects.filter(api_id__in=club_ids).values('api_id', 'name_tr')
+            clubs_dict = {c['api_id']: c['name_tr'] for c in clubs}
+
+        for club in player_data['clubs_played_for']:
+            club_id = club.get('id')
+            name_tr_value = clubs_dict.get(club_id) if club_id else None
+            _insert_after_key(club, 'name', 'name_tr', name_tr_value)
 
 def process_transfers_to_clubs_timeline(transfers):
     """
@@ -1394,15 +1669,44 @@ def NewsApiView(request, lang):
 def TransfersApiView(request):
     """
     Acts as a proxy to fetch the latest football transfers from SportMonks.
+    Fetches transfers from the last 3 months and combines them into a single response.
     """
     try:
-        # Construct the URL with includes for player and team details
-        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam;type;"
+        today = datetime.now().date()
+        all_transfers = []
+        date_ranges = []
+        month1_end = today
+        month1_start = today - timedelta(days=30)
+        date_ranges.append((month1_start, month1_end))
+        month2_end = today - timedelta(days=31)
+        month2_start = today - timedelta(days=61)
+        date_ranges.append((month2_start, month2_end))
+        month3_end = today - timedelta(days=62)
+        month3_start = today - timedelta(days=92)
+        date_ranges.append((month3_start, month3_end))
 
-        response = requests.get(url)
-        response.raise_for_status()  # Raises an exception for 4xx/5xx errors
+        for start_date, end_date in date_ranges:
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+            url = f"{base_url}football/transfers/between/{start_date_str}/{end_date_str}?api_token={api_key}&include=player;fromTeam;toTeam;type;"
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+
+            if 'data' in data and isinstance(data['data'], list):
+                all_transfers.extend(data['data'])
+
+        combined_response = {
+            'data': all_transfers,
+            'total_transfers': len(all_transfers),
+            'date_range': {
+                'from': month3_start.strftime('%Y-%m-%d'),
+                'to': today.strftime('%Y-%m-%d')
+            }
+        }
+
+        return Response(combined_response, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -2204,14 +2508,14 @@ def TeamDetailsApi(request, team_id):
         return JsonResponse(data, status=500)
 
 @api_view(['GET'])
-def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
+def SquadsBySeasonAndTeamApiView(request, season_id, team_id, lang='en'):
     """
     Acts as a proxy to fetch Squads for a specific Team in a specific Season from SportMonks.
     Target URL: /v3/football/squads/seasons/{season_id}/teams/{team_id}
     Default Include: player;details.type
     """
     try:
-        url = f"{base_url}football/squads/seasons/{season_id}/teams/{team_id}?api_token={api_key}"
+        url = f"{base_url}football/squads/seasons/{season_id}/teams/{team_id}?api_token={api_key}&locale={lang}"
 
         include_param = request.query_params.get('include', 'player;details.type')
         url += f"&include={include_param.replace(',', ';')}"
@@ -2238,12 +2542,11 @@ def SquadsBySeasonAndTeamApiView(request, season_id, team_id):
         )
 
 @api_view(['GET'])
-def PlayerStatisticsBySeasonApiView(request, player_id):
+def PlayerStatisticsBySeasonApiView(request, player_id, lang='en'):
     try:
-        url = f"{base_url}football/players/{player_id}?api_token={api_key}"
+        url = f"{base_url}football/players/{player_id}?api_token={api_key}&locale={lang}"
         # include_param = request.query_params.get('include', 'statistics.details.type&filters=playerstatisticdetailTypes:79,52,85,83')
-        include_param = request.query_params.get('include',
-                                                 'statistics.details.type')
+        include_param = request.query_params.get('include','statistics.details.type')
         url += f"&include={include_param.replace(',', ';')}"
 
         # for key, value in request.query_params.items():
@@ -2277,9 +2580,9 @@ def PlayerStatisticsBySeasonApiView(request, player_id):
         )
 
 @api_view(['GET'])
-def SeasonDetailsApiView(request, season_id):
+def SeasonDetailsApiView(request, season_id, lang='en'):
     try:
-        url = f"{base_url}football/seasons/{season_id}?api_token={api_key}"
+        url = f"{base_url}football/seasons/{season_id}?api_token={api_key}&locale={lang}"
         include_param = request.query_params.get('include', 'league')
         url += f"&include={include_param.replace(',', ';')}"
 

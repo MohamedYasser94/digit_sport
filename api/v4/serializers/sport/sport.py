@@ -28,6 +28,7 @@ class SportSerializer(serializers.ModelSerializer):
 
 class LeagueSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Leagues
@@ -35,6 +36,15 @@ class LeagueSerializer(serializers.ModelSerializer):
             'id', 'api_id', 'name',  'sport',
             'image_path', 'image', 'currentseason', 'name_tr'
         ]
+    
+    def get_image(self, obj):
+        """Return full URL for image field"""
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class TeamWithMatchesSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
@@ -195,11 +205,12 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
 class ParticipantSerializer(serializers.ModelSerializer):
     api_id = serializers.IntegerField(source='team.api_id')
     name = serializers.CharField(source='team.name')
+    name_tr = serializers.CharField(source='team.name_tr', allow_null=True)
     image_path = serializers.CharField(source='team.image_path')
 
     class Meta:
         model = FixtureParticipant
-        fields = ['api_id', 'name', 'image_path', 'meta_location']
+        fields = ['api_id', 'name', 'name_tr', 'image_path', 'meta_location']
 
 
 # This serializer will format each individual match (fixture)
@@ -209,20 +220,54 @@ class FixtureSerializer(serializers.ModelSerializer):
     scores = serializers.JSONField(required=False, allow_null=True)
     state = serializers.JSONField(source='state_data', required=False, allow_null=True)
     periods = serializers.JSONField(required=False, allow_null=True)
-    events = serializers.JSONField(required=False, allow_null=True)  
+    events = serializers.SerializerMethodField()
+    
     class Meta:
         model = Fixtures
         fields = [
             'api_id', 'name', 'starting_at', 'result_info', 'leg', 'details', 'length',
-            'statistics', 'events', 'lineups', 'participants', 'scores', 'state', 'periods', 'events'
+            'statistics', 'events', 'lineups', 'participants', 'scores', 'state', 'periods'
         ]
+    
+    def get_events(self, obj):
+        """Enrich events with player name_tr from Players model based on api_id"""
+        events = obj.events
+        if not events or not isinstance(events, list):
+            return events
+        player_ids = [event.get('player_id') for event in events if event.get('player_id')]
+        players_dict = {}
+        if player_ids:
+            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr')
+            players_dict = {p['api_id']: p['name_tr'] for p in players}
+
+        enriched_events = []
+        for event in events:
+            event_copy = event.copy()
+            player_id = event.get('player_id')
+            if player_id and player_id in players_dict:
+                event_copy['player_name_tr'] = players_dict[player_id]
+            else:
+                event_copy['player_name_tr'] = None
+            enriched_events.append(event_copy)
+        return enriched_events
 
 
 # This serializer is for the top-level league information
 class SimpleLeagueSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = Leagues
         fields = ['id','api_id', 'name','name_tr', 'image_path','image','country','currentseason']
+    
+    def get_image(self, obj):
+        """Return full URL for image field"""
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)

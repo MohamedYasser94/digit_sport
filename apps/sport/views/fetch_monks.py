@@ -544,7 +544,7 @@ def _fetch_and_store_fixtures_from_source(sport: str, fetch_date_str: str):
                 all_events_data = fixture_data.get('events', [])
                 filtered_events = [
                     event for event in all_events_data 
-                    if event.get('type_id') in [20, 21]
+                    if event.get('type_id') in [20, 21,1697]
                 ]
                 
                 api_defaults = {
