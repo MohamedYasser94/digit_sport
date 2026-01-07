@@ -28,6 +28,7 @@ class SportSerializer(serializers.ModelSerializer):
 
 class LeagueSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Leagues
@@ -35,6 +36,15 @@ class LeagueSerializer(serializers.ModelSerializer):
             'id', 'api_id', 'name',  'sport',
             'image_path', 'image', 'currentseason', 'name_tr'
         ]
+    
+    def get_image(self, obj):
+        """Return full URL for image field"""
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class TeamWithMatchesSerializer(serializers.ModelSerializer):
     sport = SportSerializer(read_only=True)
@@ -244,9 +254,20 @@ class FixtureSerializer(serializers.ModelSerializer):
 
 # This serializer is for the top-level league information
 class SimpleLeagueSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    
     class Meta:
         model = Leagues
         fields = ['id','api_id', 'name','name_tr', 'image_path','image','country','currentseason']
+    
+    def get_image(self, obj):
+        """Return full URL for image field"""
+        if obj.image and hasattr(obj.image, 'url'):
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)

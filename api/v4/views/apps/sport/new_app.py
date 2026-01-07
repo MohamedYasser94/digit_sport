@@ -1006,7 +1006,7 @@ def LeaguesApiView(request, sport, lang):
     try:
         sport_obj = Sport.objects.get(name__iexact=sport)
         leagues = Leagues.objects.filter(sport=sport_obj).order_by('name')
-        serializer = LeagueSerializer(leagues, many=True)
+        serializer = LeagueSerializer(leagues, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Sport.DoesNotExist:
         return Response({"error": f"Sport '{sport}' not found."}, status=status.HTTP_404_NOT_FOUND)
