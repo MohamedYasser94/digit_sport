@@ -1669,15 +1669,44 @@ def NewsApiView(request, lang):
 def TransfersApiView(request):
     """
     Acts as a proxy to fetch the latest football transfers from SportMonks.
+    Fetches transfers from the last 3 months and combines them into a single response.
     """
     try:
-        # Construct the URL with includes for player and team details
-        url = f"{base_url}football/transfers?api_token={api_key}&include=player;fromTeam;toTeam;type;"
+        today = datetime.now().date()
+        all_transfers = []
+        date_ranges = []
+        month1_end = today
+        month1_start = today - timedelta(days=30)
+        date_ranges.append((month1_start, month1_end))
+        month2_end = today - timedelta(days=31)
+        month2_start = today - timedelta(days=61)
+        date_ranges.append((month2_start, month2_end))
+        month3_end = today - timedelta(days=62)
+        month3_start = today - timedelta(days=92)
+        date_ranges.append((month3_start, month3_end))
 
-        response = requests.get(url)
-        response.raise_for_status()  # Raises an exception for 4xx/5xx errors
+        for start_date, end_date in date_ranges:
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+            url = f"{base_url}football/transfers/between/{start_date_str}/{end_date_str}?api_token={api_key}&include=player;fromTeam;toTeam;type;"
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+
+            if 'data' in data and isinstance(data['data'], list):
+                all_transfers.extend(data['data'])
+
+        combined_response = {
+            'data': all_transfers,
+            'total_transfers': len(all_transfers),
+            'date_range': {
+                'from': month3_start.strftime('%Y-%m-%d'),
+                'to': today.strftime('%Y-%m-%d')
+            }
+        }
+
+        return Response(combined_response, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
