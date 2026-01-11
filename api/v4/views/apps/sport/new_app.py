@@ -1369,14 +1369,14 @@ def SeasonSchedulesApiView(request, season_id, lang='en'):
     
 
 @api_view(['GET'])
-def LeagueSearchApiView(request, name):
+def LeagueSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search leagues by name using SportMonks API.
     Example: /v4/football/leagues/search/Premier/
     """
     try:
         # Base URL for searching leagues
-        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default currentseason)
         include_param = request.query_params.get('include', 'currentSeason')
@@ -1404,14 +1404,14 @@ def LeagueSearchApiView(request, name):
 
 
 @api_view(['GET'])
-def TeamSearchApiView(request, name):
+def TeamSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search teams by name using SportMonks API.
     Example: /v4/football/teams/search/man/
     """
     try:
         # Base URL for searching teams
-        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default none, but user can pass their own)
         include_param = request.query_params.get('include', '')
@@ -1441,14 +1441,14 @@ def TeamSearchApiView(request, name):
         )
 
 @api_view(['GET'])
-def PlayerSearchApiView(request, name):
+def PlayerSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search teams by name using SportMonks API.
     Example: /v4/football/teams/search/man/
     """
     try:
         # Base URL for searching teams
-        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default none, but user can pass their own)
         include_param = request.query_params.get('include', '')
