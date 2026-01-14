@@ -78,7 +78,7 @@ class DeviceInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,null=True, blank=True)
     device_id = models.CharField(max_length=100, null=True, blank=True)
     device_type = models.CharField(max_length=100, null=True, blank=True)
-    device_token = models.CharField(max_length=100, null=True, blank=True)
+    device_token = models.CharField(max_length=500, null=True, blank=True)
     device_info = models.TextField(null=True, blank=True)
     version_securitypatch = models.CharField(max_length=100, null=True, blank=True)
     version_sdk = models.CharField(max_length=100, null=True, blank=True)

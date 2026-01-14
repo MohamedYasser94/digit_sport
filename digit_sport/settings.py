@@ -19,18 +19,24 @@ from typing import List
 
 import environ
 import firebase_admin
+from firebase_admin import initialize_app, credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from django.contrib import messages
 from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
-from firebase_admin import initialize_app, credentials
 from google.auth import load_credentials_from_file
 import pymysql
 pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Ensure Firebase default app is initialized for server-side FCM usage
+if not firebase_admin._apps:
+    firebase_credentials_path = os.path.join(BASE_DIR, 'credentials.json')
+    firebase_cred = credentials.Certificate(firebase_credentials_path)
+    initialize_app(firebase_cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from fcm_django.models import FCMDevice
@@ -8,7 +9,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.status import *
 
-from api.v3.serializers.notification import *
+
+
+from api.v4.serializers.notification import AdminNotificationSerializer, DeviceInfoSerializer
 from core.models.notifications import *
 from core.views.notifications import AdminFcmNotifications
 
@@ -74,44 +77,70 @@ class AdminDeviceInfoFromApp(viewsets.ViewSet):
 def DeviceFcmAdd(request):
 
     if request.method == 'POST':
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError as e:
+            print(f'JSON parsing error: {e}')
+            return JsonResponse({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
+
         device_token = data.get('device_token')
         device_type = data.get('device_type')
         device_info = data.get('device_info')
+
+        # Validate required fields
+        if not device_token:
+            print('Missing device_token')
+            return JsonResponse({'error': 'device_token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            try:
-                fcm_object = FCMDevice.objects.get(registration_id=device_token )
+            # Check if FCM device already exists
+            fcm_object = FCMDevice.objects.get(registration_id=device_token)
+            if device_type:
                 fcm_object.type = device_type
-                # device_object = DeviceInfo.objects.get( device_token=device_token )
-                # device_object.device_type = device_type
-                # device_object.save()
+                fcm_object.save()
 
-                return JsonResponse(data, status=status.HTTP_200_OK)
+            return JsonResponse({'status': 'success', 'message': 'Device token already registered'}, status=status.HTTP_200_OK)
 
-            except Exception as e:
-
+        except FCMDevice.DoesNotExist:
+            try:
+                # Create new device info
                 device_object = DeviceInfo(
                     device_token=device_token,
                     device_type=device_type,
                     device_info=device_info
                 )
                 device_object.save()
-                fcm_object = FCMDevice(device_id=device_object.id, registration_id=device_token, type=device_type, )
+
+                # Create FCM device
+                fcm_object = FCMDevice(
+                    device_id=device_object.id,
+                    registration_id=device_token,
+                    type=device_type
+                )
                 fcm_object.save()
                 AdminFcmNotifications(request)
-                data = {
+
+                data_response = {
                     'status': 'success',
                     'message': 'Device Info saved successfully',
                     'device_token': device_token,
                     'device_code': device_object.device_code,
                 }
-                return JsonResponse(data, status=status.HTTP_201_CREATED)
+                return JsonResponse(data_response, status=status.HTTP_201_CREATED)
+
+            except Exception as e:
+                print(f'Error creating device: {str(e)}')
+                import traceback
+                traceback.print_exc()
+                return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print(e)
-            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+            print(f'Unexpected error: {str(e)}')
+            import traceback
+            traceback.print_exc()
+            return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'error': 'Method not allowed'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt

@@ -177,16 +177,25 @@ def fetch_transfermarkt_player_profile(player_id):
 def get_transfermarket_data_for_player(player):
     """
     Get TransferMarket data for a specific player.
-    PRIORITY 1: Match by existing transfermarkt_id (using live API if possible)
-    PRIORITY 2: Live search by full name and fuzzy match with team
-    PRIORITY 3: Live search by name only (if team doesn't help)
-    PRIORITY 4: Try alternative names (first_name, display_name, common_name)
-    PRIORITY 5: Fallback to cached data (original logic)
+    PRIORITY 1: Check cache (if market value updated <30 days ago, skip API)
+    PRIORITY 2: Match by existing transfermarkt_id (using live API if possible)
+    PRIORITY 3: Live search by full name and fuzzy match with team
+    PRIORITY 4: Live search by name only (if team doesn't help)
+    PRIORITY 5: Try alternative names (first_name, display_name, common_name)
+    PRIORITY 6: Fallback to cached data (original logic)
 
     Returns TransferMarket data dict or None if not found
     """
     import logging
+    from datetime import timedelta
     logger = logging.getLogger(__name__)
+
+    # --- PRIORITY 1: Check cache (30-day rule) ---
+    if player.market_value_last_updated:
+        age = timezone.now() - player.market_value_last_updated
+        if age < timedelta(days=30):
+            logger.info(f"Cache hit for {player.name}: market value updated {age.days} days ago (within 30 days), skipping API fetch")
+            return None  # Return None to skip update (cache is fresh)
 
     tm_data = None
 
@@ -433,8 +442,19 @@ def fuzzy_match_live_results(player_name, team_name, search_results, player_obj=
             'bonus': bonus_score
         })
 
-        # Track best match (threshold 0.70)
-        if final_score > best_score and combined_score >= 0.70:
+        # Track best match
+        # Use dynamic threshold: lower for exact name matches, higher for partial matches
+        threshold = 0.65  # Default threshold
+
+        # Special case: if name similarity is very high (>0.90), accept even with lower combined score
+        if name_similarity >= 0.90:
+            threshold = 0.60
+
+        # Special case: if name similarity is >0.95, accept with just name alone
+        if name_similarity >= 0.95:
+            threshold = 0.50
+
+        if final_score > best_score and final_score >= threshold:
             best_score = final_score
             best_match = tm_player
 
@@ -559,9 +579,25 @@ def fuzzy_match_by_name_only(player_name, search_results, player_obj=None):
             'market_value': tm_market_value if isinstance(tm_market_value, (int, float)) else 0
         })
 
-        # Use 65% threshold for name similarity (lowered for famous players with high market value)
-        threshold = 0.65 if tm_market_value > 20000000 else 0.75
-        if final_score > best_score and name_similarity >= threshold:
+        # Use dynamic threshold based on name similarity and market value
+        # High name similarity = lower threshold (famous players with exact names)
+        # High market value = lower threshold (prioritize famous players)
+        threshold = 0.75  # Default threshold
+
+        if name_similarity >= 0.95:
+            threshold = 0.50  # Very high name match - accept with lower score
+        elif name_similarity >= 0.85:
+            threshold = 0.60  # High name match
+        elif name_similarity >= 0.75:
+            threshold = 0.65
+
+        # Reduce threshold for famous players
+        if tm_market_value > 50000000:  # Superstars (Messi, Ronaldo, Salah level)
+            threshold = max(0.50, threshold - 0.15)
+        elif tm_market_value > 20000000:  # Stars (50M+)
+            threshold = max(0.55, threshold - 0.10)
+
+        if final_score > best_score and final_score >= threshold:
             best_score = final_score
             best_match = tm_player
 
@@ -955,31 +991,52 @@ def update_player_with_transfermarket_data(player, tm_data):
         except Exception as e:
             logger.warning(f"Error updating is_retired for {player.name}: {e}")
 
-        # Update position with validation
+        # Update position with validation - handle dict, string, and list formats
         try:
             position_data = tm_data.get('position')
             if position_data:
                 if isinstance(position_data, dict):
                     # Handle structured position data
-                    main_pos = position_data.get('main')
+                    main_pos = position_data.get('main') or position_data.get('name') or position_data.get('position')
+                    if isinstance(main_pos, dict):
+                        main_pos = main_pos.get('name') or str(main_pos)
+
                     other_pos = position_data.get('other', [])
 
                     if main_pos:
-                        player.main_position = main_pos
-                        player.position = main_pos
+                        player.main_position = str(main_pos)
+                        player.position = str(main_pos)
 
                     if other_pos:
                         player.other_positions = other_pos
+                elif isinstance(position_data, (list, tuple)) and len(position_data) > 0:
+                    # Handle list of positions
+                    first_pos = position_data[0]
+                    if isinstance(first_pos, dict):
+                        first_pos = first_pos.get('name') or first_pos.get('position') or str(first_pos)
+                    player.position = str(first_pos)
+                    player.main_position = str(first_pos)
+                    player.other_positions = position_data
                 elif isinstance(position_data, str):
                     player.position = position_data
                     player.main_position = position_data
+                else:
+                    # Fallback for any other type
+                    player.position = str(position_data) if position_data else None
         except Exception as e:
             logger.warning(f"Error updating position for {player.name}: {e}")
 
-        # Update foot
+        # Update foot - handle dict and string formats
         try:
-            if tm_data.get('foot'):
-                player.foot = tm_data['foot']
+            foot_data = tm_data.get('foot')
+            if foot_data:
+                if isinstance(foot_data, dict):
+                    foot_value = foot_data.get('name') or foot_data.get('value') or foot_data.get('foot')
+                    player.foot = str(foot_value) if foot_value else None
+                elif isinstance(foot_data, str):
+                    player.foot = foot_data
+                else:
+                    player.foot = str(foot_data) if foot_data else None
         except Exception as e:
             logger.warning(f"Error updating foot for {player.name}: {e}")
 

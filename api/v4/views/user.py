@@ -1,8 +1,9 @@
 import os
+import json
 
 import jwt
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponsePermanentRedirect, HttpResponse, JsonResponse
@@ -13,10 +14,11 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status, views, permissions
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken, Token
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.v4.renderers import *
 from api.v4.serializers.user import *
@@ -138,7 +140,7 @@ def UserLogin(request):
         # ▲▲▲ END OF CORRECTED LOGIC ▲▲▲
 
         refresh = RefreshToken.for_user(user)
-        total_posts = user.classified_ads.count()  # Make sure this relation exists
+
 
         user_data = {
             'id': user.id,
@@ -149,7 +151,7 @@ def UserLogin(request):
             'slug': user.slug,
             'profile': user.image.url if user.image else None,
             'mobile': user.phone,
-            'customer_total_post': total_posts
+
         }
 
         response_data = {
@@ -308,4 +310,71 @@ def ApiCheckUserDataExist(request, data):
             return JsonResponse(user_exist, safe=False)
 
 
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def ContactUs(request):
+    """
+    Handles contact us / support requests from the mobile app.
+    Accepts: name, email, phone, subject, message
+    """
+    try:
+        name = request.data.get('name', '')
+        email = request.data.get('email', '')
+        phone = request.data.get('phone', '')
+        subject = request.data.get('subject', '')
+        message = request.data.get('message', '')
 
+        # Validate required fields
+        if not all([name, email, message]):
+            return Response({
+                'error': True,
+                'message': 'Name, email, and message are required fields.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Here you can add logic to:
+        # 1. Save to database (create a ContactMessage model)
+        # 2. Send email notification to admin
+        # 3. Send confirmation email to user
+
+        # For now, just log and return success
+        print(f'Contact Us Request - Name: {name}, Email: {email}, Subject: {subject}')
+        print(f'Message: {message}')
+
+        # Optional: Send email to admin
+        try:
+            from api.v4.utils import Util
+            email_data = {
+                'email_subject': f'Contact Us: {subject}' if subject else 'Contact Us Request',
+                'email_body': f'''
+New contact request received:
+
+Name: {name}
+Email: {email}
+Phone: {phone if phone else 'Not provided'}
+Subject: {subject if subject else 'No subject'}
+
+Message:
+{message}
+                ''',
+                'to_email': settings.RECIPIENT_ADDRESS if hasattr(settings, 'RECIPIENT_ADDRESS') else 'support@example.com'
+            }
+            Util.send_email(email_data)
+        except Exception as email_error:
+            # Don't fail the request if email fails
+            print(f'Email notification failed: {str(email_error)}')
+
+        return Response({
+            'error': False,
+            'message': 'Thank you for contacting us. We will get back to you soon.',
+            'status': 'success'
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(f'Contact Us Error: {str(e)}')
+        import traceback
+        traceback.print_exc()
+        return Response({
+            'error': True,
+            'message': f'An error occurred while processing your request: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
