@@ -782,6 +782,282 @@ def _insert_after_key(data_dict, after_key, new_key, new_value):
     data_dict.clear()
     data_dict.update(new_items)
 
+def _enrich_standings_data(standings_data):
+    """
+    Enrich standings data with name_tr and image_path from local database.
+    Works with LiveStandingsByLeagueApiView and standingsByseasonsApiView responses.
+    """
+    if not standings_data or 'data' not in standings_data:
+        return
+    
+    data_list = standings_data['data']
+    if not isinstance(data_list, list):
+        return
+    
+    # Collect all team and league IDs
+    team_ids = set()
+    league_ids = set()
+    
+    for item in data_list:
+        if item.get('participant') and item['participant'].get('id'):
+            team_ids.add(item['participant']['id'])
+        if item.get('league') and item['league'].get('id'):
+            league_ids.add(item['league']['id'])
+    
+    # Fetch teams from local database
+    teams_dict = {}
+    if team_ids:
+        teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr', 'image_path')
+        teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
+    
+    # Fetch leagues from local database
+    leagues_dict = {}
+    if league_ids:
+        leagues = Leagues.objects.filter(api_id__in=league_ids).values('api_id', 'name_tr', 'image_path')
+        leagues_dict = {l['api_id']: {'name_tr': l['name_tr'], 'image_path': l['image_path']} for l in leagues}
+    
+    # Enrich each standing
+    for item in data_list:
+        if item.get('participant'):
+            team_id = item['participant'].get('id')
+            team_data = teams_dict.get(team_id) if team_id else None
+            if team_data:
+                _insert_after_key(item['participant'], 'name', 'name_tr', team_data['name_tr'])
+                if team_data['image_path']:
+                    item['participant']['image_path'] = team_data['image_path']
+        
+        if item.get('league'):
+            league_id = item['league'].get('id')
+            league_data = leagues_dict.get(league_id) if league_id else None
+            if league_data:
+                _insert_after_key(item['league'], 'name', 'name_tr', league_data['name_tr'])
+                if league_data['image_path']:
+                    item['league']['image_path'] = league_data['image_path']
+
+def _enrich_topscorers_data(topscorers_data):
+    """
+    Enrich top scorers/assists data with name_tr and image_path from local database.
+    """
+    if not topscorers_data or 'data' not in topscorers_data:
+        return
+    
+    data_list = topscorers_data['data']
+    if not isinstance(data_list, list):
+        return
+    
+    # Collect all player and team IDs
+    player_ids = set()
+    team_ids = set()
+    
+    for item in data_list:
+        if item.get('player') and item['player'].get('id'):
+            player_ids.add(item['player']['id'])
+        if item.get('participant') and item['participant'].get('id'):
+            team_ids.add(item['participant']['id'])
+    
+    # Fetch players from local database
+    players_dict = {}
+    if player_ids:
+        players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr', 'image_path')
+        players_dict = {p['api_id']: {'name_tr': p['name_tr'], 'image_path': p['image_path']} for p in players}
+    
+    # Fetch teams from local database
+    teams_dict = {}
+    if team_ids:
+        teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr', 'image_path')
+        teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
+    
+    # Enrich each top scorer
+    for item in data_list:
+        if item.get('player'):
+            player_id = item['player'].get('id')
+            player_data = players_dict.get(player_id) if player_id else None
+            if player_data:
+                if 'display_name' in item['player']:
+                    _insert_after_key(item['player'], 'display_name', 'name_tr', player_data['name_tr'])
+                elif 'name' in item['player']:
+                    _insert_after_key(item['player'], 'name', 'name_tr', player_data['name_tr'])
+                if player_data['image_path']:
+                    item['player']['image_path'] = player_data['image_path']
+        
+        if item.get('participant'):
+            team_id = item['participant'].get('id')
+            team_data = teams_dict.get(team_id) if team_id else None
+            if team_data:
+                _insert_after_key(item['participant'], 'name', 'name_tr', team_data['name_tr'])
+                if team_data['image_path']:
+                    item['participant']['image_path'] = team_data['image_path']
+
+def _enrich_fixtures_list_data(fixtures_list):
+    """
+    Enrich a list of fixtures with name_tr and image_path from local database.
+    Used by PreviousMatchesApiView and similar endpoints.
+    """
+    if not fixtures_list or not isinstance(fixtures_list, list):
+        return
+    
+    # Collect all league IDs
+    league_ids = set()
+    for fixture in fixtures_list:
+        if fixture.get('league') and fixture['league'].get('id'):
+            league_ids.add(fixture['league']['id'])
+    
+    # Fetch leagues from local database
+    leagues_dict = {}
+    if league_ids:
+        leagues = Leagues.objects.filter(api_id__in=league_ids).values('api_id', 'name_tr', 'image_path')
+        leagues_dict = {l['api_id']: {'name_tr': l['name_tr'], 'image_path': l['image_path']} for l in leagues}
+    
+    # Enrich each fixture
+    for fixture in fixtures_list:
+        if fixture.get('league'):
+            league_id = fixture['league'].get('id')
+            league_data = leagues_dict.get(league_id) if league_id else None
+            if league_data:
+                _insert_after_key(fixture['league'], 'name', 'name_tr', league_data['name_tr'])
+                if league_data['image_path']:
+                    fixture['league']['image_path'] = league_data['image_path']
+
+def _enrich_search_results(search_data, entity_type='team'):
+    """
+    Enrich search results with name_tr and image_path from local database.
+    entity_type can be 'team', 'league', or 'player'
+    """
+    if not search_data or 'data' not in search_data:
+        return
+    
+    data_list = search_data['data']
+    if not isinstance(data_list, list):
+        return
+    
+    # Collect all IDs
+    entity_ids = set()
+    for item in data_list:
+        if item.get('id'):
+            entity_ids.add(item['id'])
+    
+    if not entity_ids:
+        return
+    
+    # Fetch from local database based on entity type
+    entities_dict = {}
+    if entity_type == 'team':
+        entities = Teams.objects.filter(api_id__in=entity_ids).values('api_id', 'name_tr', 'image_path')
+        entities_dict = {e['api_id']: {'name_tr': e['name_tr'], 'image_path': e['image_path']} for e in entities}
+    elif entity_type == 'league':
+        entities = Leagues.objects.filter(api_id__in=entity_ids).values('api_id', 'name_tr', 'image_path')
+        entities_dict = {e['api_id']: {'name_tr': e['name_tr'], 'image_path': e['image_path']} for e in entities}
+    elif entity_type == 'player':
+        entities = Players.objects.filter(api_id__in=entity_ids).values('api_id', 'name_tr', 'image_path')
+        entities_dict = {e['api_id']: {'name_tr': e['name_tr'], 'image_path': e['image_path']} for e in entities}
+    
+    # Enrich each result
+    for item in data_list:
+        entity_id = item.get('id')
+        entity_data = entities_dict.get(entity_id) if entity_id else None
+        if entity_data:
+            if 'display_name' in item:
+                _insert_after_key(item, 'display_name', 'name_tr', entity_data['name_tr'])
+            elif 'name' in item:
+                _insert_after_key(item, 'name', 'name_tr', entity_data['name_tr'])
+            if entity_data['image_path']:
+                item['image_path'] = entity_data['image_path']
+
+def _enrich_league_data(league_data):
+    """
+    Enrich league data with name_tr and image_path from local database.
+    """
+    if not league_data or 'data' not in league_data:
+        return
+    
+    data = league_data['data']
+    if not isinstance(data, dict):
+        return
+    
+    league_id = data.get('id')
+    if league_id:
+        try:
+            league = Leagues.objects.filter(api_id=league_id).values('name_tr', 'image_path').first()
+            if league:
+                _insert_after_key(data, 'name', 'name_tr', league['name_tr'])
+                if league['image_path']:
+                    data['image_path'] = league['image_path']
+        except Exception:
+            pass
+    
+    # Enrich seasons if present
+    if data.get('seasons') and isinstance(data['seasons'], list):
+        for season in data['seasons']:
+            if season.get('league') and season['league'].get('id'):
+                league_id = season['league']['id']
+                try:
+                    league = Leagues.objects.filter(api_id=league_id).values('name_tr', 'image_path').first()
+                    if league:
+                        _insert_after_key(season['league'], 'name', 'name_tr', league['name_tr'])
+                        if league['image_path']:
+                            season['league']['image_path'] = league['image_path']
+                except Exception:
+                    pass
+
+def _enrich_squads_data(squads_data):
+    """
+    Enrich squads data with name_tr and image_path from local database.
+    """
+    if not squads_data or 'data' not in squads_data:
+        return
+    
+    data_list = squads_data['data']
+    if not isinstance(data_list, list):
+        return
+    
+    # Collect all player IDs
+    player_ids = set()
+    for item in data_list:
+        if item.get('player') and item['player'].get('id'):
+            player_ids.add(item['player']['id'])
+    
+    # Fetch players from local database
+    players_dict = {}
+    if player_ids:
+        players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr', 'image_path')
+        players_dict = {p['api_id']: {'name_tr': p['name_tr'], 'image_path': p['image_path']} for p in players}
+    
+    # Enrich each squad member
+    for item in data_list:
+        if item.get('player'):
+            player_id = item['player'].get('id')
+            player_data = players_dict.get(player_id) if player_id else None
+            if player_data:
+                if 'display_name' in item['player']:
+                    _insert_after_key(item['player'], 'display_name', 'name_tr', player_data['name_tr'])
+                elif 'name' in item['player']:
+                    _insert_after_key(item['player'], 'name', 'name_tr', player_data['name_tr'])
+                if player_data['image_path']:
+                    item['player']['image_path'] = player_data['image_path']
+
+def _enrich_season_data(season_data):
+    """
+    Enrich season data with name_tr and image_path from local database.
+    """
+    if not season_data or 'data' not in season_data:
+        return
+    
+    data = season_data['data']
+    if not isinstance(data, dict):
+        return
+    
+    # Enrich league if present
+    if data.get('league') and data['league'].get('id'):
+        league_id = data['league']['id']
+        try:
+            league = Leagues.objects.filter(api_id=league_id).values('name_tr', 'image_path').first()
+            if league:
+                _insert_after_key(data['league'], 'name', 'name_tr', league['name_tr'])
+                if league['image_path']:
+                    data['league']['image_path'] = league['image_path']
+        except Exception:
+            pass
+
 ######################### team Screen api urls #########################
 @api_view(['GET'])
 def TeamScreenApiView(request, sport, lang):
@@ -868,99 +1144,129 @@ def TeamDetailApiView(request, team_id, lang):
 
 def _enrich_team_detail_with_name_tr(team_data):
     """
-    Enrich team detail data with name_tr from local database
+    Enrich team detail data with name_tr and image_path from local database
     Inserts name_tr immediately after name field for better readability
+    Overrides image_path with local database value if available
     """
     team_api_id = team_data.get('id')
     team_name_tr = None
+    team_image_path = None
     if team_api_id:
         try:
-            team = Teams.objects.filter(api_id=team_api_id).values('name_tr').first()
+            team = Teams.objects.filter(api_id=team_api_id).values('name_tr', 'image_path').first()
             if team:
                 team_name_tr = team['name_tr']
+                team_image_path = team['image_path']
         except Exception:
             pass
     _insert_after_key(team_data, 'name', 'name_tr', team_name_tr)
+    if team_image_path:
+        team_data['image_path'] = team_image_path
+    
     if team_data.get('players'):
         player_ids = [p['player'].get('id') for p in team_data['players'] if p.get('player') and p['player'].get('id')]
         players_dict = {}
         if player_ids:
-            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr')
-            players_dict = {p['api_id']: p['name_tr'] for p in players}
+            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr', 'image_path')
+            players_dict = {p['api_id']: {'name_tr': p['name_tr'], 'image_path': p['image_path']} for p in players}
 
         for squad_player in team_data['players']:
             if squad_player.get('player'):
                 player_id = squad_player['player'].get('id')
-                name_tr_value = players_dict.get(player_id) if player_id else None
+                player_data = players_dict.get(player_id) if player_id else None
+                name_tr_value = player_data['name_tr'] if player_data else None
+                image_path_value = player_data['image_path'] if player_data else None
                 if 'display_name' in squad_player['player']:
                     _insert_after_key(squad_player['player'], 'display_name', 'name_tr', name_tr_value)
                 elif 'name' in squad_player['player']:
                     _insert_after_key(squad_player['player'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    squad_player['player']['image_path'] = image_path_value
     
     if team_data.get('latest'):
         for match in team_data['latest']:
             if match.get('league'):
                 league_api_id = match['league'].get('id')
                 league_name_tr = None
+                league_image_path = None
                 if league_api_id:
                     try:
-                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr', 'image_path').first()
                         if league:
                             league_name_tr = league['name_tr']
+                            league_image_path = league['image_path']
                     except Exception:
                         pass
                 _insert_after_key(match['league'], 'name', 'name_tr', league_name_tr)
+                if league_image_path:
+                    match['league']['image_path'] = league_image_path
 
             if match.get('participants'):
                 participant_ids = [p.get('id') for p in match['participants'] if p.get('id')]
                 teams_dict = {}
                 if participant_ids:
-                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr')
-                    teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr', 'image_path')
+                    teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
 
                 for participant in match['participants']:
                     participant_id = participant.get('id')
-                    name_tr_value = teams_dict.get(participant_id) if participant_id else None
+                    team_data_local = teams_dict.get(participant_id) if participant_id else None
+                    name_tr_value = team_data_local['name_tr'] if team_data_local else None
+                    image_path_value = team_data_local['image_path'] if team_data_local else None
                     _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+                    if image_path_value:
+                        participant['image_path'] = image_path_value
 
     if team_data.get('upcoming'):
         for match in team_data['upcoming']:
             if match.get('league'):
                 league_api_id = match['league'].get('id')
                 league_name_tr = None
+                league_image_path = None
                 if league_api_id:
                     try:
-                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                        league = Leagues.objects.filter(api_id=league_api_id).values('name_tr', 'image_path').first()
                         if league:
                             league_name_tr = league['name_tr']
+                            league_image_path = league['image_path']
                     except Exception:
                         pass
                 _insert_after_key(match['league'], 'name', 'name_tr', league_name_tr)
+                if league_image_path:
+                    match['league']['image_path'] = league_image_path
 
             if match.get('participants'):
                 participant_ids = [p.get('id') for p in match['participants'] if p.get('id')]
                 teams_dict = {}
                 if participant_ids:
-                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr')
-                    teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+                    teams = Teams.objects.filter(api_id__in=participant_ids).values('api_id', 'name_tr', 'image_path')
+                    teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
 
                 for participant in match['participants']:
                     participant_id = participant.get('id')
-                    name_tr_value = teams_dict.get(participant_id) if participant_id else None
+                    team_data_local = teams_dict.get(participant_id) if participant_id else None
+                    name_tr_value = team_data_local['name_tr'] if team_data_local else None
+                    image_path_value = team_data_local['image_path'] if team_data_local else None
                     _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+                    if image_path_value:
+                        participant['image_path'] = image_path_value
     
     if team_data.get('activeseasons'):
         league_ids = [s['league'].get('id') for s in team_data['activeseasons'] if s.get('league') and s['league'].get('id')]
         leagues_dict = {}
         if league_ids:
-            leagues = Leagues.objects.filter(api_id__in=league_ids).values('api_id', 'name_tr')
-            leagues_dict = {l['api_id']: l['name_tr'] for l in leagues}
+            leagues = Leagues.objects.filter(api_id__in=league_ids).values('api_id', 'name_tr', 'image_path')
+            leagues_dict = {l['api_id']: {'name_tr': l['name_tr'], 'image_path': l['image_path']} for l in leagues}
 
         for season in team_data['activeseasons']:
             if season.get('league'):
                 league_id = season['league'].get('id')
-                name_tr_value = leagues_dict.get(league_id) if league_id else None
+                league_data = leagues_dict.get(league_id) if league_id else None
+                name_tr_value = league_data['name_tr'] if league_data else None
+                image_path_value = league_data['image_path'] if league_data else None
                 _insert_after_key(season['league'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    season['league']['image_path'] = image_path_value
 
 
 @api_view(['GET'])
@@ -981,6 +1287,8 @@ def TopTeamsApiView(request):
             team_response = response.json()
             
             if 'data' in team_response and isinstance(team_response['data'], dict):
+                # Enrich team data with name_tr and image_path from local database
+                _enrich_team_detail_with_name_tr(team_response['data'])
                 team_data = {
                     "data": team_response['data']
                 }
@@ -1050,7 +1358,9 @@ def LiveStandingsByLeagueApiView(request, league_id, lang='en'):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_standings_data(data)
+        return Response(data, status=status.HTTP_200_OK)
     except requests.exceptions.HTTPError as err:
         return Response(
             {"error": f"Failed to fetch standings from source: {err.response.status_code} {err.response.reason}"},
@@ -1096,7 +1406,9 @@ def TopScorersBySeasonApiView(request, season_id, lang='en'):
         # Make the request with the fully constructed URL
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_topscorers_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1132,7 +1444,9 @@ def TopAssistsBySeasonApiView(request, season_id, lang='en'):
         # Make the request with the fully constructed URL
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_topscorers_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1194,6 +1508,7 @@ def PreviousMatchesApiView(request, team1_id, team2_id, lang='en'):
             }
             filtered_fixtures.append(filtered_fixture)
 
+        _enrich_fixtures_list_data(filtered_fixtures)
         return Response(filtered_fixtures, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
@@ -1237,6 +1552,8 @@ def TeamLatestUpcomingApiView(request, team_id, lang='en'):
         upcoming_match = upcoming_matches[0] if upcoming_matches else None
         data["upcoming"] = [upcoming_match] if upcoming_match else []
 
+        # Enrich with local database data
+        _enrich_team_detail_with_name_tr(data)
         return Response({"data": data}, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
@@ -1284,7 +1601,9 @@ def standingsByseasonsApiView(request, season_id, lang='en'):
         response = requests.get(url)
         response.raise_for_status()
         
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_standings_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         error_msg = f"Failed to fetch season data from source: {err.response.status_code} {err.response.reason}"
@@ -1321,7 +1640,9 @@ def LeagueInformationApiView(request, league_id, lang='en'):
         response = requests.get(url)
         response.raise_for_status()
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_league_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1354,7 +1675,9 @@ def SeasonSchedulesApiView(request, season_id, lang='en'):
         response = requests.get(url)
         response.raise_for_status()
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_season_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1369,14 +1692,14 @@ def SeasonSchedulesApiView(request, season_id, lang='en'):
     
 
 @api_view(['GET'])
-def LeagueSearchApiView(request, name):
+def LeagueSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search leagues by name using SportMonks API.
     Example: /v4/football/leagues/search/Premier/
     """
     try:
         # Base URL for searching leagues
-        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default currentseason)
         include_param = request.query_params.get('include', 'currentSeason')
@@ -1391,7 +1714,9 @@ def LeagueSearchApiView(request, name):
         response = requests.get(url)
         response.raise_for_status()
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_search_results(data, entity_type='league')
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1404,14 +1729,14 @@ def LeagueSearchApiView(request, name):
 
 
 @api_view(['GET'])
-def TeamSearchApiView(request, name):
+def TeamSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search teams by name using SportMonks API.
     Example: /v4/football/teams/search/man/
     """
     try:
         # Base URL for searching teams
-        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default none, but user can pass their own)
         include_param = request.query_params.get('include', '')
@@ -1427,7 +1752,9 @@ def TeamSearchApiView(request, name):
         response = requests.get(url)
         response.raise_for_status()
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_search_results(data, entity_type='team')
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1441,14 +1768,14 @@ def TeamSearchApiView(request, name):
         )
 
 @api_view(['GET'])
-def PlayerSearchApiView(request, name):
+def PlayerSearchApiView(request, name,lang='en'):
     """
     Proxy endpoint to search teams by name using SportMonks API.
     Example: /v4/football/teams/search/man/
     """
     try:
         # Base URL for searching teams
-        url = f"{base_url}football/teams/search/{name}?api_token={api_key}"
+        url = f"{base_url}football/teams/search/{name}?api_token={api_key}&locale={lang}"
 
         # Append the include param (default none, but user can pass their own)
         include_param = request.query_params.get('include', '')
@@ -1464,7 +1791,9 @@ def PlayerSearchApiView(request, name):
         response = requests.get(url)
         response.raise_for_status()
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_search_results(data, entity_type='player')
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -1514,16 +1843,19 @@ def PlayerDetailApiView(request, player_id, lang):
 
 def _enrich_player_detail_with_name_tr(player_data):
     """
-    Enrich player detail data with name_tr from local database
+    Enrich player detail data with name_tr and image_path from local database
     Inserts name_tr immediately after name/display_name field for better readability
+    Overrides image_path with local database value if available
     """
     player_api_id = player_data.get('id')
     player_name_tr = None
+    player_image_path = None
     if player_api_id:
         try:
-            player = Players.objects.filter(api_id=player_api_id).values('name_tr').first()
+            player = Players.objects.filter(api_id=player_api_id).values('name_tr', 'image_path').first()
             if player:
                 player_name_tr = player['name_tr']
+                player_image_path = player['image_path']
         except Exception:
             pass
 
@@ -1531,19 +1863,25 @@ def _enrich_player_detail_with_name_tr(player_data):
         _insert_after_key(player_data, 'display_name', 'name_tr', player_name_tr)
     elif 'name' in player_data:
         _insert_after_key(player_data, 'name', 'name_tr', player_name_tr)
+    if player_image_path:
+        player_data['image_path'] = player_image_path
 
     if player_data.get('teams'):
         team_ids = [t['team'].get('id') for t in player_data['teams'] if t.get('team') and t['team'].get('id')]
         teams_dict = {}
         if team_ids:
-            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr')
-            teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr', 'image_path')
+            teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
 
         for player_team in player_data['teams']:
             if player_team.get('team'):
                 team_id = player_team['team'].get('id')
-                name_tr_value = teams_dict.get(team_id) if team_id else None
+                team_data = teams_dict.get(team_id) if team_id else None
+                name_tr_value = team_data['name_tr'] if team_data else None
+                image_path_value = team_data['image_path'] if team_data else None
                 _insert_after_key(player_team['team'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    player_team['team']['image_path'] = image_path_value
 
     if player_data.get('transfers'):
         transfer_team_ids = set()
@@ -1555,31 +1893,43 @@ def _enrich_player_detail_with_name_tr(player_data):
 
         transfer_teams_dict = {}
         if transfer_team_ids:
-            teams = Teams.objects.filter(api_id__in=transfer_team_ids).values('api_id', 'name_tr')
-            transfer_teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+            teams = Teams.objects.filter(api_id__in=transfer_team_ids).values('api_id', 'name_tr', 'image_path')
+            transfer_teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
 
         for transfer in player_data['transfers']:
             if transfer.get('fromteam'):
                 from_team_id = transfer['fromteam'].get('id')
-                name_tr_value = transfer_teams_dict.get(from_team_id) if from_team_id else None
+                team_data = transfer_teams_dict.get(from_team_id) if from_team_id else None
+                name_tr_value = team_data['name_tr'] if team_data else None
+                image_path_value = team_data['image_path'] if team_data else None
                 _insert_after_key(transfer['fromteam'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    transfer['fromteam']['image_path'] = image_path_value
 
             if transfer.get('toteam'):
                 to_team_id = transfer['toteam'].get('id')
-                name_tr_value = transfer_teams_dict.get(to_team_id) if to_team_id else None
+                team_data = transfer_teams_dict.get(to_team_id) if to_team_id else None
+                name_tr_value = team_data['name_tr'] if team_data else None
+                image_path_value = team_data['image_path'] if team_data else None
                 _insert_after_key(transfer['toteam'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    transfer['toteam']['image_path'] = image_path_value
 
     if player_data.get('clubs_played_for'):
         club_ids = [c.get('id') for c in player_data['clubs_played_for'] if c.get('id')]
         clubs_dict = {}
         if club_ids:
-            clubs = Teams.objects.filter(api_id__in=club_ids).values('api_id', 'name_tr')
-            clubs_dict = {c['api_id']: c['name_tr'] for c in clubs}
+            clubs = Teams.objects.filter(api_id__in=club_ids).values('api_id', 'name_tr', 'image_path')
+            clubs_dict = {c['api_id']: {'name_tr': c['name_tr'], 'image_path': c['image_path']} for c in clubs}
 
         for club in player_data['clubs_played_for']:
             club_id = club.get('id')
-            name_tr_value = clubs_dict.get(club_id) if club_id else None
+            club_data = clubs_dict.get(club_id) if club_id else None
+            name_tr_value = club_data['name_tr'] if club_data else None
+            image_path_value = club_data['image_path'] if club_data else None
             _insert_after_key(club, 'name', 'name_tr', name_tr_value)
+            if image_path_value:
+                club['image_path'] = image_path_value
 
 def process_transfers_to_clubs_timeline(transfers):
     """
@@ -2528,7 +2878,9 @@ def SquadsBySeasonAndTeamApiView(request, season_id, team_id, lang='en'):
         response = requests.get(url)
         response.raise_for_status()
         
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_squads_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(
@@ -2566,6 +2918,7 @@ def PlayerStatisticsBySeasonApiView(request, player_id, lang='en'):
 
                 # data['data']['statistics'] = stats_list[:4]
 
+        _enrich_player_detail_with_name_tr(data.get('data', {}))
         return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
@@ -2593,7 +2946,9 @@ def SeasonDetailsApiView(request, season_id, lang='en'):
 
         response = requests.get(url)
         response.raise_for_status()
-        return Response(response.json(), status=status.HTTP_200_OK)
+        data = response.json()
+        _enrich_season_data(data)
+        return Response(data, status=status.HTTP_200_OK)
 
     except requests.exceptions.HTTPError as err:
         return Response(

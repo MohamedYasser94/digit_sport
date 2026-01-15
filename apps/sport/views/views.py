@@ -1589,7 +1589,9 @@ def AdminTeamsCreate(request,slug):
 def AdminTeamSearch(request):
     if request.method == "POST":
         search = request.POST.get('search')
-        teams = Teams.objects.filter(name__icontains=search)
+        teams = Teams.objects.filter(
+            Q(name__icontains=search) | Q(country__icontains=search)
+        )
 
         context = {'page_obj': teams, 'current_page': _('Teams')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/teams/monks.html', context)
