@@ -678,32 +678,41 @@ def FixtureDetailApiView(request, fixture_id, lang):
 
 def _enrich_fixture_detail_with_name_tr(fixture_data):
     """
-    Enrich fixture detail data with name_tr from local database
+    Enrich fixture detail data with name_tr and image_path from local database
     Inserts name_tr immediately after name field for better readability
+    Overrides image_path with local database value if available
     """
     if fixture_data.get('league'):
         league_api_id = fixture_data['league'].get('id')
         name_tr_value = None
+        image_path_value = None
         if league_api_id:
             try:
-                league = Leagues.objects.filter(api_id=league_api_id).values('name_tr').first()
+                league = Leagues.objects.filter(api_id=league_api_id).values('name_tr', 'image_path').first()
                 if league:
                     name_tr_value = league['name_tr']
+                    image_path_value = league['image_path']
             except Exception:
                 pass
         _insert_after_key(fixture_data['league'], 'name', 'name_tr', name_tr_value)
+        if image_path_value:
+            fixture_data['league']['image_path'] = image_path_value
 
     if fixture_data.get('participants'):
         team_ids = [p.get('id') for p in fixture_data['participants'] if p.get('id')]
         teams_dict = {}
         if team_ids:
-            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr')
-            teams_dict = {t['api_id']: t['name_tr'] for t in teams}
+            teams = Teams.objects.filter(api_id__in=team_ids).values('api_id', 'name_tr', 'image_path')
+            teams_dict = {t['api_id']: {'name_tr': t['name_tr'], 'image_path': t['image_path']} for t in teams}
 
         for participant in fixture_data['participants']:
             participant_id = participant.get('id')
-            name_tr_value = teams_dict.get(participant_id) if participant_id else None
+            team_data = teams_dict.get(participant_id) if participant_id else None
+            name_tr_value = team_data['name_tr'] if team_data else None
+            image_path_value = team_data['image_path'] if team_data else None
             _insert_after_key(participant, 'name', 'name_tr', name_tr_value)
+            if image_path_value:
+                participant['image_path'] = image_path_value
 
     if fixture_data.get('events'):
         player_ids = set()
@@ -715,53 +724,69 @@ def _enrich_fixture_detail_with_name_tr(fixture_data):
 
         players_dict = {}
         if player_ids:
-            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr')
-            players_dict = {p['api_id']: p['name_tr'] for p in players}
+            players = Players.objects.filter(api_id__in=player_ids).values('api_id', 'name_tr', 'image_path')
+            players_dict = {p['api_id']: {'name_tr': p['name_tr'], 'image_path': p['image_path']} for p in players}
 
         for event in fixture_data['events']:
             if event.get('player'):
                 player_id = event['player'].get('id')
-                name_tr_value = players_dict.get(player_id) if player_id else None
+                player_data = players_dict.get(player_id) if player_id else None
+                name_tr_value = player_data['name_tr'] if player_data else None
+                image_path_value = player_data['image_path'] if player_data else None
                 if 'display_name' in event['player']:
                     _insert_after_key(event['player'], 'display_name', 'name_tr', name_tr_value)
                 elif 'name' in event['player']:
                     _insert_after_key(event['player'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    event['player']['image_path'] = image_path_value
 
             if event.get('relatedplayer'):
                 related_player_id = event['relatedplayer'].get('id')
-                name_tr_value = players_dict.get(related_player_id) if related_player_id else None
+                player_data = players_dict.get(related_player_id) if related_player_id else None
+                name_tr_value = player_data['name_tr'] if player_data else None
+                image_path_value = player_data['image_path'] if player_data else None
                 if 'display_name' in event['relatedplayer']:
                     _insert_after_key(event['relatedplayer'], 'display_name', 'name_tr', name_tr_value)
                 elif 'name' in event['relatedplayer']:
                     _insert_after_key(event['relatedplayer'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    event['relatedplayer']['image_path'] = image_path_value
 
     if fixture_data.get('lineups'):
         lineup_player_ids = [l.get('player_id') for l in fixture_data['lineups'] if l.get('player_id')]
         lineup_players_dict = {}
         if lineup_player_ids:
-            players = Players.objects.filter(api_id__in=lineup_player_ids).values('api_id', 'name_tr')
-            lineup_players_dict = {p['api_id']: p['name_tr'] for p in players}
+            players = Players.objects.filter(api_id__in=lineup_player_ids).values('api_id', 'name_tr', 'image_path')
+            lineup_players_dict = {p['api_id']: {'name_tr': p['name_tr'], 'image_path': p['image_path']} for p in players}
 
         for lineup in fixture_data['lineups']:
             if lineup.get('player'):
                 player_id = lineup['player'].get('id')
-                name_tr_value = lineup_players_dict.get(player_id) if player_id else None
+                player_data = lineup_players_dict.get(player_id) if player_id else None
+                name_tr_value = player_data['name_tr'] if player_data else None
+                image_path_value = player_data['image_path'] if player_data else None
                 if 'display_name' in lineup['player']:
                     _insert_after_key(lineup['player'], 'display_name', 'name_tr', name_tr_value)
                 elif 'name' in lineup['player']:
                     _insert_after_key(lineup['player'], 'name', 'name_tr', name_tr_value)
+                if image_path_value:
+                    lineup['player']['image_path'] = image_path_value
 
     if fixture_data.get('man_of_the_match'):
         motm_player_id = fixture_data['man_of_the_match'].get('player_id')
         name_tr_value = None
+        image_path_value = None
         if motm_player_id:
             try:
-                player = Players.objects.filter(api_id=motm_player_id).values('name_tr').first()
+                player = Players.objects.filter(api_id=motm_player_id).values('name_tr', 'image_path').first()
                 if player:
                     name_tr_value = player['name_tr']
+                    image_path_value = player['image_path']
             except Exception:
                 pass
         _insert_after_key(fixture_data['man_of_the_match'], 'player_name', 'player_name_tr', name_tr_value)
+        if image_path_value:
+            fixture_data['man_of_the_match']['image_path'] = image_path_value
 
 def _insert_after_key(data_dict, after_key, new_key, new_value):
     """
