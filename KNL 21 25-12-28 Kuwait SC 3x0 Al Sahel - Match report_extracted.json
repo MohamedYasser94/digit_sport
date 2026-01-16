@@ -1,0 +1,200 @@
+{
+  "file": "KNL 21 25-12-28 Kuwait SC 3x0 Al Sahel - Match report.pdf",
+  "teams": [
+    {
+      "name": "Kuwait SC",
+      "players": [
+        {
+          "player_number": "4",
+          "player_name": "Hoag Nicholas",
+          "team": "Kuwait SC",
+          "is_libero": false,
+          "stats": {
+            "pts": 16,
+            "serve_total": 16,
+            "serve_err": 41,
+            "serve_ace": 11,
+            "reception_total": 1,
+            "reception_err": 55,
+            "reception_exc": 1,
+            "attack_total": 15,
+            "attack_err": 60,
+            "attack_blo": 0,
+            "attack_pts": 0,
+            "block_pts": 0
+          },
+          "raw_numbers": [
+            44463,
+            16,
+            4,
+            10,
+            16,
+            41,
+            11,
+            1,
+            55,
+            36,
+            25,
+            1,
+            15,
+            60
+          ]
+        },
+        {
+          "player_number": "8",
+          "player_name": "Almuwainea Abdullah",
+          "team": "Kuwait SC",
+          "is_libero": false,
+          "stats": {
+            "pts": 10,
+            "serve_total": 2,
+            "serve_err": 56,
+            "serve_ace": 31,
+            "reception_total": 6,
+            "reception_err": 2,
+            "reception_exc": 315,
+            "attack_total": 66671,
+            "attack_err": 12,
+            "attack_blo": 3,
+            "attack_pts": 11,
+            "block_pts": 1
+          },
+          "raw_numbers": [
+            11159,
+            5,
+            3,
+            -2,
+            10,
+            1,
+            16,
+            2,
+            56,
+            31,
+            6,
+            2,
+            22,
+            33,
+            315
+          ]
+        },
+        {
+          "player_number": "5",
+          "player_name": "Bouftain Abdullah",
+          "team": "Kuwait SC",
+          "is_libero": false,
+          "stats": {
+            "pts": 0,
+            "serve_total": 0,
+            "serve_err": 0,
+            "serve_ace": 0,
+            "reception_total": 0,
+            "reception_err": 0,
+            "reception_exc": 0,
+            "attack_total": 0,
+            "attack_err": 0,
+            "attack_blo": 0,
+            "attack_pts": 0,
+            "block_pts": 0
+          },
+          "raw_numbers": [
+            363,
+            1,
+            1,
+            1,
+            4
+          ]
+        }
+      ],
+      "page": 1
+    },
+    {
+      "name": "Al Sahel",
+      "players": [
+        {
+          "player_number": "1",
+          "player_name": "Almisry Hussain",
+          "team": "Al Sahel",
+          "is_libero": false,
+          "stats": {
+            "pts": 12,
+            "serve_total": 54,
+            "serve_err": 23,
+            "serve_ace": 17,
+            "reception_total": 0,
+            "reception_err": 0,
+            "reception_exc": 0,
+            "attack_total": 0,
+            "attack_err": 0,
+            "attack_blo": 0,
+            "attack_pts": 0,
+            "block_pts": 0
+          },
+          "raw_numbers": [
+            65655,
+            7,
+            3,
+            1,
+            8,
+            12,
+            13,
+            1,
+            54,
+            23,
+            17
+          ]
+        },
+        {
+          "player_number": "6",
+          "player_name": "Alshammari Mohamme",
+          "team": "Al Sahel",
+          "is_libero": false,
+          "stats": {
+            "pts": 10,
+            "serve_total": 0,
+            "serve_err": 0,
+            "serve_ace": 0,
+            "reception_total": 0,
+            "reception_err": 0,
+            "reception_exc": 0,
+            "attack_total": 0,
+            "attack_err": 0,
+            "attack_blo": 0,
+            "attack_pts": 0,
+            "block_pts": 0
+          },
+          "raw_numbers": [
+            21261,
+            3,
+            2,
+            1,
+            10,
+            11
+          ]
+        }
+      ],
+      "page": 1
+    }
+  ],
+  "total_players": 5,
+  "extraction_status": "success",
+  "log": [
+    "[INFO] Starting enhanced extraction from: C:\\Users\\mhitl\\PycharmProjects\\digit_sport\\KNL 21 25-12-28 Kuwait SC 3x0 Al Sahel - Match report.pdf",
+    "[INFO] Opened PDF with 1 pages",
+    "[INFO] Page 1: Extracted text",
+    "[INFO] Found team: Kuwait SC",
+    "[DEBUG] Player #4 Hoag Nicholas: Found 14 numbers",
+    "[INFO] ✓ Player #4 Hoag Nicholas - Pts: 16",
+    "[DEBUG] Player #8 Almuwainea Abdullah: Found 21 numbers",
+    "[INFO] ✓ Player #8 Almuwainea Abdullah - Pts: 10",
+    "[DEBUG] Player #5 Bouftain Abdullah: Found 5 numbers",
+    "[INFO] ✓ Player #5 Bouftain Abdullah - Pts: 0",
+    "[INFO] Found team: Al Sahel",
+    "[DEBUG] Player #1 Almisry Hussain: Found 11 numbers",
+    "[INFO] ✓ Player #1 Almisry Hussain - Pts: 12",
+    "[DEBUG] Player #6 Alshammari Mohamme: Found 6 numbers",
+    "[INFO] ✓ Player #6 Alshammari Mohamme - Pts: 10",
+    "[INFO] \n=== EXTRACTION COMPLETE ===",
+    "[INFO] Teams found: 2",
+    "[INFO] Total players: 5"
+  ]
+}

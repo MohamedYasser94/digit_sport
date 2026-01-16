@@ -1240,7 +1240,7 @@ def AdminSeasonTeamTableUpdate(request, slug):
             tam_table_object.played = played
             tam_table_object.win = win
             tam_table_object.draw = draw
-            tam_table_object.lose = lose
+            tam_table_object.lose = request.POST.get('lose')
             tam_table_object.remaining = remaining
             tam_table_object.goals_for = goals_for
             tam_table_object.goals_against = goals_against
@@ -1332,9 +1332,9 @@ def AdminClubsUpdate(request, slug):
         clubs_object.keyword = keyword
 
         clubs_object.country = country
+        clubs_object.founded = founded
         if country_image:
             clubs_object.country_image = country_image
-        clubs_object.founded = founded
         if image:
             clubs_object.image = image
         clubs_object.image_path = image_path
@@ -1685,7 +1685,7 @@ def AdminTeamsUpdate(request, slug):
         else:
                 messages.error(request, _("Teams Not Update , Please Try Again"), extra_tags='Teams')
     context = {'team': team, 'teams_form': AdminTeamsForm(instance=team), 'current_page': _('Update'),
-                'prev_Page': _('Teams'), }
+               'prev_Page': _('Teams'), }
     return render(request, f'{BACKEND_TEMPLATES}/sport/teams/update.html', context)
 
 
@@ -2078,15 +2078,215 @@ def AdminMatchPlayerStaticAdd(request, match_slug, slug):
 @staff_only
 def AdminMatchPlayerStaticPdfUpload(request, match_slug):
     """
-    New view to upload a PDF and automatically update all player statistics for a match.
-    Provides detailed progress tracking and error reporting.
+    Enhanced view to upload PDF, extract to JSON, preview data, and update player statistics.
+    Features:
+    - Shows JSON preview before saving
+    - Real-time extraction progress
+    - Detailed error reporting
+    - Validation of data before database save
     """
-    match = get_object_or_404(Match, slug=match_slug)
+    try:
+        match = get_object_or_404(Match, slug=match_slug)
+    except Match.DoesNotExist:
+        messages.error(request, _("Match not found"), extra_tags='Players')
+        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
 
-    if request.method == "POST" and request.FILES.get('pdf_file'):
+    extraction_data = None
+    json_preview = None
+
+    # Check if we're in the save step (confirm_save=true)
+    confirm_save = request.POST.get('confirm_save', False)
+
+    if confirm_save and 'pdf_extraction_data' in request.session:
+        # Second step: Load extraction data from session for saving
+        extraction_data = request.session.get('pdf_extraction_data')
+        json_preview = json.dumps(extraction_data, indent=2, ensure_ascii=False)
+
+        # Proceed with saving data to database
+        from django.db import transaction
+        import logging
+        logger = logging.getLogger(__name__)
+
+        updated_count = 0
+        skipped_players = []
+        errors = []
+
+        # Log match info
+        logger.info(f"Saving stats for match: {match}")
+        logger.info(f"Home team: {match.home_team} (ID: {match.home_team.id if match.home_team else 'None'})")
+        logger.info(f"Away team: {match.away_team} (ID: {match.away_team.id if match.away_team else 'None'})")
+
+        with transaction.atomic():
+            for team_data in extraction_data['teams']:
+                for player_data in team_data['players']:
+                    try:
+                        player_name = player_data.get('player_name', '').strip()
+                        player_number = player_data.get('player_number', '').strip()
+                        stats = player_data.get('stats', {})
+
+                        if not player_name:
+                            continue
+
+                        logger.debug(f"Processing player: {player_name} (#{player_number})")
+
+                        # Strategy 1: Search by exact name match in match teams (case-insensitive)
+                        player = Players.objects.filter(
+                            name__iexact=player_name,
+                            team__in=[match.home_team, match.away_team]
+                        ).first()
+                        if player:
+                            logger.debug(f"  Found via exact name match: {player}")
+
+                        # Strategy 2: Search by partial name match in match teams
+                        if not player:
+                            player = Players.objects.filter(
+                                name__icontains=player_name,
+                                team__in=[match.home_team, match.away_team]
+                            ).first()
+                            if player:
+                                logger.debug(f"  Found via partial name match: {player}")
+
+                        # Strategy 3: Try matching by number (in match teams)
+                        if not player and player_number:
+                            try:
+                                # Try exact number match first
+                                player = Players.objects.filter(
+                                    number=player_number,
+                                    team__in=[match.home_team, match.away_team]
+                                ).first()
+                                if player:
+                                    logger.debug(f"  Found via number match (string): {player}")
+
+                                # If not found, try as integer
+                                if not player and player_number.isdigit():
+                                    player = Players.objects.filter(
+                                        number=int(player_number),
+                                        team__in=[match.home_team, match.away_team]
+                                    ).first()
+                                    if player:
+                                        logger.debug(f"  Found via number match (int): {player}")
+                            except (ValueError, TypeError):
+                                pass
+
+                        # Strategy 4: Try last name matching in match teams
+                        if not player and ' ' in player_name:
+                            last_name = player_name.split()[-1]
+                            player = Players.objects.filter(
+                                name__icontains=last_name,
+                                team__in=[match.home_team, match.away_team]
+                            ).first()
+                            if player:
+                                logger.debug(f"  Found via last name match: {player}")
+
+                        # Strategy 5: Fallback - search across all players (not just match teams)
+                        if not player:
+                            player = Players.objects.filter(
+                                name__icontains=player_name
+                            ).first()
+                            if player:
+                                logger.warning(f"  Found outside match teams: {player} (team: {player.team})")
+
+                        if not player:
+                            logger.warning(f"  NOT FOUND: {player_name} (#{player_number})")
+                            skipped_players.append({
+                                'name': player_name,
+                                'number': player_number,
+                                'reason': 'Player not found in database or not in match teams'
+                            })
+                            continue
+
+                        # Prepare stats for database - convert to strings (model uses CharField)
+                        defaults = {
+                            'point_total': str(stats.get('pts', 0)),
+                            'serve_total': str(stats.get('serve_total', 0)),
+                            'serve_err': str(stats.get('serve_err', 0)),
+                            'serve_pts': str(stats.get('serve_ace', 0)),  # serve_pts is the correct field name
+                            'reception_total': str(stats.get('reception_total', 0)),
+                            'reception_err': str(stats.get('reception_err', 0)),
+                            'reception_exc': str(stats.get('reception_exc', 0)),
+                            'attack_total': str(stats.get('attack_total', 0)),
+                            'attack_err': str(stats.get('attack_err', 0)),
+                            'attack_exc': str(stats.get('attack_pts', 0)),  # attack_exc is the correct field name
+                            'block_pts': str(stats.get('block_pts', 0)),
+                            'static_type': 'General'
+                        }
+
+                        logger.debug(f"  Saving stats: {defaults}")
+
+                        # Update MatchPlayerReport
+                        mpr, created = MatchPlayerReport.objects.update_or_create(
+                            player=player,
+                            match=match,
+                            defaults=defaults
+                        )
+                        logger.info(f"  MatchPlayerReport {'created' if created else 'updated'}: {player.name}")
+
+                        # Update PlayerStatics (overall cumulative stats)
+                        ps, created = PlayerStatics.objects.update_or_create(
+                            player=player,
+                            defaults=defaults
+                        )
+                        logger.info(f"  PlayerStatics {'created' if created else 'updated'}: {player.name}")
+
+                        updated_count += 1
+
+                    except Exception as e:
+                        logger.error(f"Error saving {player_name}: {str(e)}", exc_info=True)
+                        errors.append({
+                            'player': player_name,
+                            'error': str(e)
+                        })
+                        continue
+
+        # Build result message
+        msg = _(f"✓ Successfully updated statistics for {updated_count} players")
+
+        if skipped_players:
+            msg += _(f"\n⚠ Skipped {len(skipped_players)} players not found in database:")
+            for p in skipped_players[:5]:
+                msg += f"\n  • {p['name']} (#{p['number']})"
+            if len(skipped_players) > 5:
+                msg += f"\n  ... and {len(skipped_players) - 5} more"
+
+        if errors:
+            msg += _(f"\n✕ {len(errors)} errors during processing")
+            for e in errors[:3]:
+                msg += f"\n  • {e['player']}: {e['error']}"
+
+        if updated_count > 0:
+            messages.success(request, msg, extra_tags='Players')
+        else:
+            messages.warning(request, msg, extra_tags='Players')
+
+        # Clear cached extraction data once save attempt finished
+        if 'pdf_extraction_data' in request.session:
+            try:
+                del request.session['pdf_extraction_data']
+                request.session.modified = True
+            except Exception:
+                pass
+
+        # Render the same page with save results so the user can see what happened
+        context = {
+            'match': match,
+            'current_page': _('Upload PDF Statistics'),
+            'extraction_data': extraction_data,
+            'json_preview': json_preview,
+            'teams_count': len(extraction_data['teams']) if extraction_data else 0,
+            'players_count': extraction_data.get('total_players', 0) if extraction_data else 0,
+            'log': extraction_data.get('log', []) if extraction_data else [],
+            'save_results': {
+                'updated_count': updated_count,
+                'skipped_players': skipped_players,
+                'errors': errors,
+            }
+        }
+        return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
+
+    elif request.method == "POST" and request.FILES.get('pdf_file'):
         pdf_file = request.FILES['pdf_file']
 
-        # Save file temporarily to parse it
+        # Create temporary file
         import tempfile
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(temp_dir, pdf_file.name)
@@ -2097,168 +2297,74 @@ def AdminMatchPlayerStaticPdfUpload(request, match_slug):
                 for chunk in pdf_file.chunks():
                     destination.write(chunk)
 
-            # Parse the PDF
-            parsed_stats = parse_match_report(temp_path)
+            # Import and use improved PDF extractor
+            from apps.sport.utils.pdf_extractor_final import VolleyballPDFExtractor
 
-            if not parsed_stats:
-                # Auto-run diagnostic to help user understand the issue
-                from apps.sport.utils.pdf_diagnostic_report import (
-                    generate_pdf_diagnostic_report,
-                    format_diagnostic_for_display
+            # Extract data from PDF to JSON
+            extractor = VolleyballPDFExtractor()
+            extraction_data = extractor.extract(temp_path)
+
+            # Check for extraction errors
+            if 'error' in extraction_data:
+                messages.error(
+                    request,
+                    _("PDF Extraction Error: ") + extraction_data['error'],
+                    extra_tags='Players'
                 )
+                context = {
+                    'match': match,
+                    'current_page': _('Upload PDF Statistics'),
+                    'error': extraction_data['error'],
+                    'log': extraction_data.get('log', [])
+                }
+                return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
 
-                diagnostic = generate_pdf_diagnostic_report(temp_path)
-                diagnostic_report = format_diagnostic_for_display(diagnostic)
-
-                # Build error message with diagnostic info
-                error_msg = (
-                    "❌ No statistics found in the PDF.\n\n"
-                    "AUTOMATED DIAGNOSTIC REPORT:\n"
-                    "───────────────────────────────────────────────────────────────\n" +
-                    diagnostic_report + "\n"
-                    "───────────────────────────────────────────────────────────────\n\n"
-                    "WHAT TO DO:\n"
-                    "1. Read the diagnostic report above\n"
-                    "2. Check if PDF has team headers (Kuwait SC, Al Sahel, etc.)\n"
-                    "3. Check if player numbers and names are visible\n"
-                    "4. If text is blurry, get a higher quality PDF\n"
-                    "5. If no text extracted, use a digital PDF instead of scanned image\n\n"
-                    "📖 See: TROUBLESHOOTING_NO_STATS.md for more help"
+            # Check if data was extracted
+            if not extraction_data.get('teams'):
+                messages.warning(
+                    request,
+                    _("No players found in PDF. Please verify the PDF format and try again."),
+                    extra_tags='Players'
                 )
-                messages.error(request, error_msg, extra_tags='Players')
-                return HttpResponseRedirect(request.path)
+                context = {
+                    'match': match,
+                    'current_page': _('Upload PDF Statistics'),
+                    'error': 'No data extracted',
+                    'log': extraction_data.get('log', [])
+                }
+                return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
 
-            # Process results tracking
-            updated_count = 0
-            skipped_players = []
-            error_details = []
+            # Generate JSON preview
+            json_preview = json.dumps(extraction_data, indent=2, ensure_ascii=False)
 
-            for idx, stat in enumerate(parsed_stats, 1):
-                try:
-                    player_name = stat.get('player_name', '').strip()
-                    player_number = stat.get('player_number', '')
+            # Save to session for the second form submission (save confirmation)
+            request.session['pdf_extraction_data'] = extraction_data
+            request.session.modified = True
 
-                    if not player_name:
-                        error_details.append(f"Row {idx}: Missing player name")
-                        continue
-
-                    # Search for player by name or number
-                    player = Players.objects.filter(
-                        name__icontains=player_name
-                    ).first()
-
-                    if not player and player_number:
-                        # Try matching by number within the match's teams
-                        player = Players.objects.filter(
-                            number=int(player_number) if player_number.isdigit() else player_number,
-                            team__in=[match.team1, match.team2]
-                        ).first()
-
-                    if not player:
-                        skipped_players.append({
-                            'name': player_name,
-                            'number': player_number,
-                            'reason': 'Player not found in database'
-                        })
-                        continue
-
-                    # Clean numeric data
-                    def clean_num(val):
-                        if not val: return 0
-                        cleaned = re.sub(r'[^\d]', '', str(val))
-                        return int(cleaned) if cleaned else 0
-
-                    # Map stats with proper field names based on MatchPlayerReport model
-                    defaults = {
-                        'point_total': str(clean_num(stat.get('pts', 0))),
-                        'serve_total': str(clean_num(stat.get('serve_total', 0))),
-                        'serve_err': str(clean_num(stat.get('serve_err', 0))),
-                        'serve_ace': str(clean_num(stat.get('serve_ace', 0))),
-                        'reception_total': str(clean_num(stat.get('reception_total', 0))),
-                        'reception_err': str(clean_num(stat.get('reception_err', 0))),
-                        'reception_exc': str(clean_num(stat.get('reception_exc', 0))),
-                        'attack_total': str(clean_num(stat.get('attack_total', 0))),
-                        'attack_err': str(clean_num(stat.get('attack_err', 0))),
-                        'attack_att': str(clean_num(stat.get('attack_att', 0))),
-                        'attack_pts': str(clean_num(stat.get('attack_pts', 0))),
-                        'block_pts': str(clean_num(stat.get('block_pts', 0))),
-                        'static_type': 'General'
-                    }
-
-                    # Update or Create MatchPlayerReport
-                    report, created = MatchPlayerReport.objects.update_or_create(
-                        player=player,
-                        match=match,
-                        defaults=defaults
-                    )
-
-                    # Update or Create PlayerStatics (Total Stats) - use similar mapping
-                    statics_defaults = {
-                        'point_total': str(clean_num(stat.get('pts', 0))),
-                        'serve_total': str(clean_num(stat.get('serve_total', 0))),
-                        'serve_err': str(clean_num(stat.get('serve_err', 0))),
-                        'serve_pts': str(clean_num(stat.get('serve_ace', 0))),
-                        'reception_total': str(clean_num(stat.get('reception_total', 0))),
-                        'reception_err': str(clean_num(stat.get('reception_err', 0))),
-                        'reception_exc': str(clean_num(stat.get('reception_exc', 0))),
-                        'attack_total': str(clean_num(stat.get('attack_total', 0))),
-                        'attack_err': str(clean_num(stat.get('attack_err', 0))),
-                        'attack_exc': str(clean_num(stat.get('attack_att', 0))),
-                        'block_pts': str(clean_num(stat.get('block_pts', 0))),
-                        'static_type': 'General'
-                    }
-
-                    PlayerStatics.objects.update_or_create(
-                        player=player,
-                        defaults=statics_defaults
-                    )
-                    updated_count += 1
-
-                except Exception as e:
-                    error_details.append(f"Row {idx} ({player_name}): {str(e)}")
-                    continue
-
-            # Build result message
-            msg = _(f"✓ Successfully updated statistics for {updated_count} players out of {len(parsed_stats)} found in PDF.")
-
-            if skipped_players:
-                skipped_msg = _(f" ⚠ Skipped {len(skipped_players)} players not found in database:")
-                for p in skipped_players[:5]:  # Show first 5
-                    skipped_msg += f"\n  • {p['name']} (#{p['number']})"
-                if len(skipped_players) > 5:
-                    skipped_msg += f"\n  ... and {len(skipped_players) - 5} more"
-                msg += skipped_msg
-
-            if error_details:
-                error_msg = _(" ✕ Errors during processing:")
-                for err in error_details[:5]:  # Show first 5 errors
-                    error_msg += f"\n  • {err}"
-                if len(error_details) > 5:
-                    error_msg += f"\n  ... and {len(error_details) - 5} more errors"
-                msg += error_msg
-                messages.warning(request, msg, extra_tags='Players')
-            else:
-                messages.success(request, msg, extra_tags='Players')
-
+            # Show preview without saving
+            messages.info(
+                request,
+                _(f"Preview: Found {extraction_data['total_players']} players in {len(extraction_data['teams'])} team(s). Review the data and confirm to save."),
+                extra_tags='Players'
+            )
+            context = {
+                'match': match,
+                'current_page': _('Upload PDF Statistics'),
+                'extraction_data': extraction_data,
+                'json_preview': json_preview,
+                'teams_count': len(extraction_data['teams']),
+                'players_count': extraction_data.get('total_players', 0),
+                'log': extraction_data.get('log', [])
+            }
+            return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
         except Exception as e:
-            error_msg = _("Error processing PDF: ") + str(e)
-            messages.error(request, error_msg, extra_tags='Players')
-            import traceback
-            traceback.print_exc()
-        finally:
-            if os.path.exists(temp_path):
-                try:
-                    os.remove(temp_path)
-                except:
-                    pass
-
-        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails', kwargs={'slug': match_slug}))
-
+            pass
+    # GET request - show upload form
     context = {
         'match': match,
-        'current_page': _('Upload PDF Statics'),
-        'team1': match.team1 if hasattr(match, 'team1') else None,
-        'team2': match.team2 if hasattr(match, 'team2') else None,
+        'current_page': _('Upload PDF Statistics'),
+        'extraction_data': extraction_data,
+        'json_preview': json_preview,
     }
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
 
@@ -2800,8 +2906,7 @@ def AdminPlayerStaticAdd(request, slug):
 #             round_obj = Round.objects.get(id=round_id)
 
 #             if home_team.sport != round_obj.sport or away_team.sport != round_obj.sport:
-#                 messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"),
-#                                extra_tags='Match')
+#                 messages.error(request, _("Home Team and Away Team Sport Not Match with Round Sport"), extra_tags='Match')
 #                 return HttpResponseRedirect(reverse_lazy('sport:AdminMatchList'))
 
 #             name = home_team.name + ' vs ' + away_team.name
@@ -3016,32 +3121,31 @@ def AdminMatchUpdate(request, slug):
 #             sport_id = request.POST.get('sport')
 #             if sport_id:
 #                 try:
-#                     sport = Sport.objects.get(id=sport_id)
-#                     fixture.sport = sport
+#                     fixture.sport = Sport.objects.get(id=sport_id)
 #                 except Sport.DoesNotExist:
-#                     pass
-            
+#                     fixture.sport = None
+
 #             league_id = request.POST.get('league')
 #             if league_id:
 #                 try:
 #                     fixture.league = Leagues.objects.get(id=league_id)
 #                 except Leagues.DoesNotExist:
-#                     pass
-            
+#                     fixture.league = None
+
 #             season_id = request.POST.get('season')
 #             if season_id:
 #                 try:
 #                     fixture.season = Season.objects.get(id=season_id)
 #                 except Season.DoesNotExist:
-#                     pass
-            
+#                     fixture.season = None
+
 #             venue_id = request.POST.get('venue')
 #             if venue_id:
 #                 try:
 #                     fixture.venue = Venues.objects.get(id=venue_id)
 #                 except Venues.DoesNotExist:
-#                     pass
-            
+#                     fixture.venue = None
+
 #             starting_at = request.POST.get('starting_at')
 #             if starting_at:
 #                 fixture.starting_at = starting_at
@@ -3050,16 +3154,45 @@ def AdminMatchUpdate(request, slug):
 #             if details:
 #                 fixture.details = details
             
+#             # Get teams
+#             home_team_id = request.POST.get('home_team')
+#             away_team_id = request.POST.get('away_team')
+
+#             if not home_team_id or not away_team_id:
+#                 return JsonResponse({
+#                     'type': 'Error',
+#                     'message': _("Both Home Team and Away Team are required")
+#                 }, status=400)
+
+#             if home_team_id == away_team_id:
+#                 return JsonResponse({
+#                     'type': 'Error',
+#                     'message': _("Home Team and Away Team cannot be the same")
+#                 }, status=400)
+
 #             try:
 #                 home_team = Teams.objects.get(id=home_team_id)
 #                 away_team = Teams.objects.get(id=away_team_id)
-#             except Teams.DoesNotExist as e:
+#             except Teams.DoesNotExist:
 #                 return JsonResponse({
-#                     'type': 'Error', 
-#                     'message': f'Team not found: {str(e)}'
+#                     'type': 'Error',
+#                     'message': _("Selected team not found")
 #                 }, status=400)
             
+#             # Update is_finished state
+#             is_finished = request.POST.get('is_finished') == 'true'
+
 #             if is_finished:
+#                 # Match is finished - update state and scores
+#                 fixture.state_data = {
+#                     "id": 5,
+#                     "name": "Full Time",
+#                     "state": "FT",
+#                     "short_name": "FT",
+#                     "developer_name": "FT"
+#                 }
+
+#                 # Process periods if exists
 #                 periods_data = []
 #                 total_home_goals = 0
 #                 total_away_goals = 0
@@ -3067,40 +3200,49 @@ def AdminMatchUpdate(request, slug):
 #                 sport_name = fixture.sport.name if fixture.sport else ''
 #                 periods_count = get_periods_count_by_sport(sport_name)
                 
-#                 for i in range(1, periods_count + 1):
-#                     home_goals_key = f'period_{i}_home'
-#                     away_goals_key = f'period_{i}_away'
-                    
-#                     home_goals = request.POST.get(home_goals_key, '0')
-#                     away_goals = request.POST.get(away_goals_key, '0')
-                    
-#                     try:
-#                         home_goals_int = int(home_goals) if home_goals else 0
-#                         away_goals_int = int(away_goals) if away_goals else 0
-                        
-#                         period_data = {
-#                             "period_number": i,
-#                             "home_goals": home_goals_int,
-#                             "away_goals": away_goals_int,
-#                             "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
-#                         }
-#                         periods_data.append(period_data)
-                        
-#                         if sport_name.lower() == 'volleyball':
-#                             if home_goals_int > away_goals_int:
-#                                 total_home_goals += 1
-#                             elif away_goals_int > home_goals_int:
-#                                 total_away_goals += 1
-#                         else:
-#                             total_home_goals += home_goals_int
-#                             total_away_goals += away_goals_int
-                            
-#                     except ValueError:
-#                         return JsonResponse({
-#                             'type': 'Error', 
-#                             'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
-#                         }, status=400)
-                
+#                 if periods_count > 0:
+#                     # Get periods data from POST
+#                     for i in range(1, periods_count + 1):
+#                         home_goals_key = f'period_{i}_home'
+#                         away_goals_key = f'period_{i}_away'
+
+#                         home_goals = request.POST.get(home_goals_key, '0')
+#                         away_goals = request.POST.get(away_goals_key, '0')
+
+#                         try:
+#                             home_goals_int = int(home_goals) if home_goals else 0
+#                             away_goals_int = int(away_goals) if away_goals else 0
+
+#                             if home_goals_int < 0 or away_goals_int < 0:
+#                                 return JsonResponse({
+#                                     'type': 'Error',
+#                                     'message': f'Goals cannot be negative in period {i}'
+#                                 }, status=400)
+
+#                             period_data = {
+#                                 "period_number": i,
+#                                 "home_goals": home_goals_int,
+#                                 "away_goals": away_goals_int,
+#                                 "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
+#                             }
+#                             periods_data.append(period_data)
+
+#                             # Calculate total based on sport type
+#                             if sport_name.lower() == 'volleyball':
+#                                 if home_goals_int > away_goals_int:
+#                                     total_home_goals += 1
+#                                 elif away_goals_int > home_goals_int:
+#                                     total_away_goals += 1
+#                             else:
+#                                 total_home_goals += home_goals_int
+#                                 total_away_goals += away_goals_int
+
+#                         except ValueError:
+#                             return JsonResponse({
+#                                 'type': 'Error',
+#                                 'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
+#                             }, status=400)
+
 #                 fixture.periods = periods_data
                 
 #                 fixture.scores = [
@@ -3123,37 +3265,46 @@ def AdminMatchUpdate(request, slug):
 #                 ]
                 
 #             else:
+#                 # Match not finished - clear scores and set state to Not Started
+#                 fixture.state_data = {
+#                     "id": 1,
+#                     "name": "Not Started",
+#                     "state": "NS",
+#                     "short_name": "NS",
+#                     "developer_name": "NS"
+#                 }
 #                 fixture.scores = None
 #                 fixture.periods = None
 
+#             # Save fixture
 #             fixture.save()
-#             if home_team_id:
-#                 try:
-#                     FixtureParticipant.objects.create(
-#                         fixture=fixture,
-#                         team=home_team,
-#                         meta_location='home'
-#                     )
-#                 except Teams.DoesNotExist:
-#                     pass
-            
-#             if away_team_id:
-#                 try:
-#                     FixtureParticipant.objects.create(
-#                         fixture=fixture,
-#                         team=away_team,
-#                         meta_location='away'
-#                     )
-#                 except Teams.DoesNotExist:
-#                     pass
-            
-#             messages.success(request, _("Fixture Added Successfully"), extra_tags='Fixture')
-#             return JsonResponse({'type': 'Success', 'message': 'Fixture Added Successfully'})
-            
+
+#             # Update participants
+#             # Delete old participants
+#             FixtureParticipant.objects.filter(fixture=fixture).delete()
+
+#             # Create new participants
+#             FixtureParticipant.objects.create(
+#                 fixture=fixture,
+#                 team=home_team,
+#                 meta_location='home'
+#             )
+
+#             FixtureParticipant.objects.create(
+#                 fixture=fixture,
+#                 team=away_team,
+#                 meta_location='away'
+#             )
+
+#             return JsonResponse({
+#                 'type': 'Success',
+#                 'message': _("Fixture updated successfully")
+#             })
+
 #         except Exception as e:
 #             return JsonResponse({
-#                 'type': 'Error', 
-#                 'message': f'Error: {str(e)}'
+#                 'type': 'Error',
+#                 'message': f"Error updating fixture: {str(e)}"
 #             }, status=400)
     
 #     return JsonResponse({'type': 'Error', 'message': 'Invalid request method.'}, status=400)
@@ -3272,7 +3423,7 @@ def AdminMatchDetails(request, slug):
             # Update basic fixture data
             fixture.name = request.POST.get('name')
             fixture.short_name = request.POST.get('short_name')
-            
+
             # Update optional fields
             sport_id = request.POST.get('sport')
             if sport_id:
@@ -3282,7 +3433,7 @@ def AdminMatchDetails(request, slug):
                     fixture.sport = None
             else:
                 fixture.sport = None
-            
+
             league_id = request.POST.get('league')
             if league_id:
                 try:
@@ -3291,7 +3442,7 @@ def AdminMatchDetails(request, slug):
                     fixture.league = None
             else:
                 fixture.league = None
-            
+
             season_id = request.POST.get('season')
             if season_id:
                 try:
@@ -3300,7 +3451,7 @@ def AdminMatchDetails(request, slug):
                     fixture.season = None
             else:
                 fixture.season = None
-            
+
             venue_id = request.POST.get('venue')
             if venue_id:
                 try:
@@ -3309,34 +3460,34 @@ def AdminMatchDetails(request, slug):
                     fixture.venue = None
             else:
                 fixture.venue = None
-            
+
             # Update starting_at
             starting_at = request.POST.get('starting_at')
             if starting_at:
                 fixture.starting_at = starting_at
             else:
                 fixture.starting_at = None
-            
+
             # Update details
             details = request.POST.get('details')
             fixture.details = details if details else None
-            
+
             # Get teams
             home_team_id = request.POST.get('home_team')
             away_team_id = request.POST.get('away_team')
-            
+
             if not home_team_id or not away_team_id:
                 return JsonResponse({
                     'type': 'Error',
                     'message': _("Both Home Team and Away Team are required")
                 }, status=400)
-            
+
             if home_team_id == away_team_id:
                 return JsonResponse({
                     'type': 'Error',
                     'message': _("Home Team and Away Team cannot be the same")
                 }, status=400)
-            
+
             try:
                 home_team = Teams.objects.get(id=home_team_id)
                 away_team = Teams.objects.get(id=away_team_id)
@@ -3345,10 +3496,10 @@ def AdminMatchDetails(request, slug):
                     'type': 'Error',
                     'message': _("Selected team not found")
                 }, status=400)
-            
+
             # Update is_finished state
             is_finished = request.POST.get('is_finished') == 'true'
-            
+
             if is_finished:
                 # Match is finished - update state and scores
                 fixture.state_data = {
@@ -3358,34 +3509,34 @@ def AdminMatchDetails(request, slug):
                     "short_name": "FT",
                     "developer_name": "FT"
                 }
-                
+
                 # Process periods if exists
                 periods_data = []
                 total_home_goals = 0
                 total_away_goals = 0
-                
+
                 sport_name = fixture.sport.name if fixture.sport else ''
                 periods_count = get_periods_count_by_sport(sport_name)
-                
+
                 if periods_count > 0:
                     # Get periods data from POST
                     for i in range(1, periods_count + 1):
                         home_goals_key = f'period_{i}_home'
                         away_goals_key = f'period_{i}_away'
-                        
+
                         home_goals = request.POST.get(home_goals_key, '0')
                         away_goals = request.POST.get(away_goals_key, '0')
-                        
+
                         try:
                             home_goals_int = int(home_goals) if home_goals else 0
                             away_goals_int = int(away_goals) if away_goals else 0
-                            
+
                             if home_goals_int < 0 or away_goals_int < 0:
                                 return JsonResponse({
                                     'type': 'Error',
                                     'message': f'Goals cannot be negative in period {i}'
                                 }, status=400)
-                            
+
                             period_data = {
                                 "period_number": i,
                                 "home_goals": home_goals_int,
@@ -3393,7 +3544,7 @@ def AdminMatchDetails(request, slug):
                                 "period_name": f"Set {i}" if sport_name.lower() == 'volleyball' else f"Period {i}"
                             }
                             periods_data.append(period_data)
-                            
+
                             # Calculate total based on sport type
                             if sport_name.lower() == 'volleyball':
                                 if home_goals_int > away_goals_int:
@@ -3403,29 +3554,29 @@ def AdminMatchDetails(request, slug):
                             else:
                                 total_home_goals += home_goals_int
                                 total_away_goals += away_goals_int
-                                
+
                         except ValueError:
                             return JsonResponse({
                                 'type': 'Error',
                                 'message': f'Invalid goals value in period {i}. Please enter valid numbers.'
                             }, status=400)
-                    
+
                     fixture.periods = periods_data
                 else:
                     # No periods - use direct goals input
                     home_goals = request.POST.get('home_goals')
                     away_goals = request.POST.get('away_goals')
-                    
+
                     if home_goals is None or away_goals is None or home_goals == '' or away_goals == '':
                         return JsonResponse({
                             'type': 'Error',
                             'message': _("Please provide scores for both teams when match is finished")
                         }, status=400)
-                    
+
                     try:
                         total_home_goals = int(home_goals)
                         total_away_goals = int(away_goals)
-                        
+
                         if total_home_goals < 0 or total_away_goals < 0:
                             return JsonResponse({
                                 'type': 'Error',
@@ -3436,9 +3587,9 @@ def AdminMatchDetails(request, slug):
                             'type': 'Error',
                             'message': _("Invalid goal values. Please enter valid numbers")
                         }, status=400)
-                    
+
                     fixture.periods = None
-                
+
                 # Update scores
                 fixture.scores = [
                     {
@@ -3469,38 +3620,38 @@ def AdminMatchDetails(request, slug):
                 }
                 fixture.scores = None
                 fixture.periods = None
-            
+
             # Save fixture
             fixture.save()
-            
+
             # Update participants
             # Delete old participants
             FixtureParticipant.objects.filter(fixture=fixture).delete()
-            
+
             # Create new participants
             FixtureParticipant.objects.create(
                 fixture=fixture,
                 team=home_team,
                 meta_location='home'
             )
-            
+
             FixtureParticipant.objects.create(
                 fixture=fixture,
                 team=away_team,
                 meta_location='away'
             )
-            
+
             return JsonResponse({
                 'type': 'Success',
                 'message': _("Fixture updated successfully")
             })
-            
+
         except Exception as e:
             return JsonResponse({
                 'type': 'Error',
                 'message': f"Error updating fixture: {str(e)}"
             }, status=400)
-    
+
     # GET request - display form
     # Get dropdown data
     sports = Sport.objects.all()
@@ -3508,26 +3659,26 @@ def AdminMatchDetails(request, slug):
     seasons = Season.objects.all()
     venues = Venues.objects.all()
     teams = Teams.objects.all()
-    
+
     # Serialize dropdown data for Vue.js
     sports_data = [{'id': s.id, 'name': s.name} for s in sports]
     leagues_data = [{'id': l.id, 'name': l.name} for l in leagues]
     seasons_data = [{'id': s.id, 'name': s.name} for s in seasons]
     venues_data = [{'id': v.id, 'name': v.name} for v in venues]
     teams_data = [{'id': t.id, 'name': t.name} for t in teams]
-    
+
     # Get current scores and periods if match is finished
     current_scores = {
         'home_goals': 0,
         'away_goals': 0,
         'is_finished': False
     }
-    
+
     current_periods = []
-    
+
     if fixture.state_data and fixture.state_data.get('state') == 'FT':
         current_scores['is_finished'] = True
-        
+
         # Get scores
         if fixture.scores:
             for score_data in fixture.scores:
@@ -3535,7 +3686,7 @@ def AdminMatchDetails(request, slug):
                     current_scores['home_goals'] = score_data.get('score', {}).get('goals', 0)
                 elif score_data.get('score', {}).get('meta_location') == 'away':
                     current_scores['away_goals'] = score_data.get('score', {}).get('goals', 0)
-        
+
         # Get periods
         if fixture.periods:
             for period in fixture.periods:
@@ -3543,7 +3694,7 @@ def AdminMatchDetails(request, slug):
                     'home': period.get('home_goals', 0),
                     'away': period.get('away_goals', 0)
                 })
-    
+
     context = {
         'fixture': fixture,
         'home_team': home_participant.team if home_participant else None,
@@ -3559,7 +3710,7 @@ def AdminMatchDetails(request, slug):
         'prev_Page': _('Fixtures'),
         'prev_Page_link': reverse_lazy('sport:AdminMatchList'),
     }
-    
+
     return render(request, f'{BACKEND_TEMPLATES}/sport/fixtures/update.html', context)
 
 
@@ -3771,17 +3922,14 @@ def AdminMatchStaticAdd(request, slug):
         return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
 
 
-
-
-
 @authenticated_staf
 @staff_only
 def AdminMatchGoalsAdd(request, slug):
     match = Match.objects.get(slug=slug)
     home_team = Teams.objects.get(id=match.home_team.id)
     away_team = Teams.objects.get(id=match.away_team.id)
-    match_goal = MatchGoals.objects.filter(match=match)
-    last_goal = MatchGoals.objects.filter(match=match).last()
+    match_goal = MatchSummary.objects.filter(match=match)
+    last_goal = MatchSummary.objects.filter(match=match).last()
 
     if request.method == "POST":
         math_form = AdminMatchForm(request.POST or None, request.FILES or None)
@@ -3896,18 +4044,4 @@ def AdminMatchTeamEventAdd(request,slug,team_slug):
                    'summary_form': AdminMatchSummaryForm(),
                    'match_team_player_form': AdminMatchTeamPlayerForm(), 'current_page': _('Match Team Event')}
         return render(request, f'{BACKEND_TEMPLATES}/sport/match/details.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
