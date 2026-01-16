@@ -130,6 +130,10 @@
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#kt_modal_static">{% translate 'Match Summary' %}</a>
                                                     <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
+                                                       href="{% url 'sport:AdminMatchPlayerStaticPdfUpload' match.slug %}"
+
+                                                       >{% translate 'Match Static All' %}</a>
+                                                    <a class="btn btn-primary btn-sm flex-shrink-0 me-3"
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#kt_modal_goals">{% translate 'Match Goals' %}</a>
 

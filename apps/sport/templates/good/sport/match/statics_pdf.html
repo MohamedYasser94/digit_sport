@@ -1,0 +1,224 @@
+{% extends BACKEND_BASE %}
+{% load static %}
+{% load i18n %}
+
+{% block body %}
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <div id="kt_content_container" class="container-fluid">
+        <!-- Alert Messages from Django -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{% if 'error' in message.tags %}danger{% elif 'warning' in message.tags %}warning{% else %}success{% endif %}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    {% if 'error' in message.tags %}
+                    <i class="bi bi-exclamation-circle fs-3 me-3"></i>
+                    {% elif 'warning' in message.tags %}
+                    <i class="bi bi-exclamation-triangle fs-3 me-3"></i>
+                    {% else %}
+                    <i class="bi bi-check-circle fs-3 me-3"></i>
+                    {% endif %}
+                    <div>
+                        <strong>{% if 'error' in message.tags %}{% translate 'Error' %}{% elif 'warning' in message.tags %}{% translate 'Warning' %}{% else %}{% translate 'Success' %}{% endif %}</strong>
+                        <div class="text-break" style="white-space: pre-wrap;">{{ message }}</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="form d-flex flex-column flex-lg-row"
+              enctype="multipart/form-data"
+              action="{% url 'sport:AdminMatchPlayerStaticPdfUpload' match.slug %}"
+              method="post"
+              id="pdfUploadForm">
+            {% csrf_token %}
+
+            <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+                <!-- Main Card -->
+                <div class="card card-flush py-4">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>{% translate 'Upload Match Statistics PDF' %}</h2>
+                            <p class="text-muted fs-7 mt-1">
+                                {% translate 'Match:' %} <strong>{{ match }}</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card-body pt-0">
+                        <!-- Instructions Alert -->
+                        <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
+                            <span class="svg-icon svg-icon-2tx svg-icon-primary me-4">
+                                <i class="bi bi-file-earmark-pdf fs-2hx text-primary"></i>
+                            </span>
+                            <div class="d-flex flex-stack flex-grow-1">
+                                <div class="fw-bold">
+                                    <h4 class="text-gray-900 fw-bolder">{% translate 'Instructions' %}</h4>
+                                    <div class="fs-6 text-gray-700">
+                                        <ul class="mb-0 ps-3">
+                                            <li>{% translate 'Upload the official match report PDF for statistics extraction' %}</li>
+                                            <li>{% translate 'The system will parse player data and statistics from the PDF' %}</li>
+                                            <li>{% translate 'Players will be matched by name and number from the database' %}</li>
+                                            <li>{% translate 'Statistics will be saved to Match Player Reports and Player Statics' %}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team Information -->
+                        {% if team1 or team2 %}
+                        <div class="alert alert-info mb-6" role="alert">
+                            <h5 class="mb-2">{% translate 'Match Teams:' %}</h5>
+                            <div class="row">
+                                {% if team1 %}
+                                <div class="col-md-6">
+                                    <strong>{% translate 'Team 1:' %}</strong> {{ team1.name }}
+                                </div>
+                                {% endif %}
+                                {% if team2 %}
+                                <div class="col-md-6">
+                                    <strong>{% translate 'Team 2:' %}</strong> {{ team2.name }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- File Input -->
+                        <div class="fv-row mb-10">
+                            <label class="form-label required">{% translate 'Select PDF File' %}</label>
+                            <div class="position-relative">
+                                <input
+                                    type="file"
+                                    name="pdf_file"
+                                    class="form-control"
+                                    accept=".pdf"
+                                    required
+                                    id="pdfFileInput"
+                                    onchange="updateFileInfo(this)" />
+                                <div class="text-muted fs-7 mt-2">
+                                    <i class="bi bi-info-circle"></i> {% translate 'Only .pdf files are supported. Max 50MB.' %}
+                                </div>
+                            </div>
+                            <!-- File Info Display -->
+                            <div id="fileInfo" class="mt-3" style="display: none;">
+                                <div class="alert alert-light border border-secondary">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>{% translate 'File:' %}</strong> <span id="fileName"></span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <strong>{% translate 'Size:' %}</strong> <span id="fileSize"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Information -->
+                        <div class="alert alert-light-secondary border border-secondary" role="alert">
+                            <h6 class="mb-3">{% translate 'What will happen:' %}</h6>
+                            <ol class="mb-0 ps-4">
+                                <li>{% translate 'PDF will be parsed using OCR technology' %}</li>
+                                <li>{% translate 'Player names and statistics will be extracted' %}</li>
+                                <li>{% translate 'Players will be matched with database records' %}</li>
+                                <li>{% translate 'Statistics will be stored for each player' %}</li>
+                                <li>{% translate 'You will see a detailed report of successes and errors' %}</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column justify-content-between gap-3">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="submitBtn"
+                        disabled>
+                        <span class="indicator-label">
+                            <i class="bi bi-cloud-upload me-2"></i>{% translate 'Upload and Process' %}
+                        </span>
+                        <span class="indicator-progress" style="display:none;">
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                    <a href="" class="btn btn-light">
+                        <i class="bi bi-arrow-left me-2"></i>{% translate 'Back to Match' %}
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript for Enhanced UX -->
+<script>
+function updateFileInfo(input) {
+    const fileInfo = document.getElementById('fileInfo');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const maxSize = 50 * 1024 * 1024; // 50MB
+
+        // Check file size
+        if (file.size > maxSize) {
+            alert('{% translate "File size exceeds 50MB limit" %}');
+            input.value = '';
+            fileInfo.style.display = 'none';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Check file type
+        if (file.type !== 'application/pdf') {
+            alert('{% translate "Please select a PDF file" %}');
+            input.value = '';
+            fileInfo.style.display = 'none';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Display file info
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+        fileInfo.style.display = 'block';
+        submitBtn.disabled = false;
+    } else {
+        fileInfo.style.display = 'none';
+        submitBtn.disabled = true;
+    }
+}
+
+// Form submission with loading state
+document.getElementById('pdfUploadForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    const label = submitBtn.querySelector('.indicator-label');
+    const progress = submitBtn.querySelector('.indicator-progress');
+
+    submitBtn.disabled = true;
+    label.style.display = 'none';
+    progress.style.display = 'inline';
+});
+
+// Initial state
+document.getElementById('submitBtn').disabled = true;
+</script>
+
+<style>
+    .alert {
+        border-radius: 0.5rem;
+    }
+    #fileInfo .alert {
+        background-color: #f8f9fa;
+    }
+    .indicator-progress {
+        display: none;
+    }
+</style>
+{% endblock %}

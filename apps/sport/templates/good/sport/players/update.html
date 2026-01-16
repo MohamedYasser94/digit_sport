@@ -57,6 +57,15 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="fv-row">
+                                        <label class="required fs-6 fw-bold mb-2">{% translate 'Name Arabic' %}</label>
+                                        <input type="text" name="name_tr" class="form-control form-control-solid" value="{{ player.name_tr|default:'' }}" placeholder="{% translate 'Name Arabic' %}" />
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="row g-5 mb-5">
+
+                                <div class="col-md-6">
+                                    <div class="fv-row">
                                         <label class="required fs-6 fw-bold mb-2">{% translate 'Position' %}</label>
                                         <input type="text" name="position" class="form-control form-control-solid" value="{{ player.position|default:'' }}" placeholder="{% translate 'Position' %}" />
                                     </div>

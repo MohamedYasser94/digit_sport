@@ -1,0 +1,130 @@
+Script started.
+Building signature map...
+Signature Map built with 97 models.
+Scanning mappings...
+Scanning CSV for ID mappings (CT and Permissions)...
+Found auth_permission table in CSV.
+Mapped 123 ContentTypes and 492 Permissions.
+Starting Main Import...
+--> Importing table for: account.EmailAddress
+--> Importing table for: account.EmailConfirmation
+--> Importing table for: authtoken.TokenProxy
+--> Importing table for: auth.Group
+--> Importing table for: auth.Group_permissions
+--> Importing table for: auth.Permission
+--> Importing table for: core.Area
+--> Importing table for: core.CalendarLocalization
+Error importing core.CalendarLocalization: Field 'id' expected a number but got 'id'.
+--> Importing table for: core.City
+--> Importing table for: core.Country
+--> Importing table for: core.Currency
+--> Importing table for: core.Governorates
+--> Importing table for: core.Language
+--> Importing table for: admin.LogEntry
+--> Importing table for: contenttypes.ContentType
+--> Importing table for: sessions.Session
+--> Importing table for: sites.Site
+--> Importing table for: fcm_django.FCMDevice
+--> Importing table for: otp_email.EmailDevice
+--> Importing table for: otp_static.StaticDevice
+--> Importing table for: otp_static.StaticToken
+--> Importing table for: otp_totp.TOTPDevice
+--> Importing table for: socialaccount.SocialAccount
+--> Importing table for: socialaccount.SocialApp
+--> Importing table for: socialaccount.SocialApp_sites
+--> Importing table for: socialaccount.SocialToken
+--> Importing table for: sport.Aggregate
+--> Importing table for: sport.Bookmakers
+--> Importing table for: sport.Clubs
+Error importing sport.Clubs: (1062, "Duplicate entry 'الكــــويت' for key 'sport_clubs.name'")
+--> Importing table for: sport.Coaches
+--> Importing table for: sport.Commentaries
+--> Importing table for: sport.DataSource
+--> Importing table for: sport.Favorite
+--> Importing table for: sport.FavoriteLeague
+--> Importing table for: sport.FetchedDate
+--> Importing table for: sport.FixtureParticipant
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+Error importing sport.FixtureParticipant: (1452, 'Cannot add or update a child row: a foreign key constraint fails (`digit_sport`.`sport_fixtureparticipant`, CONSTRAINT `sport_fixturepartici_fixture_id_c6ccbe8e_fk_sport_fix` FOREIGN KEY (`fixture_id`) REFERENCES `sport_fixtures` (`id`))')
+--> Importing table for: sport.Fixtures
+--> Importing table for: sport.Group
+--> Importing table for: sport.InPlayOdds
+--> Importing table for: sport.Leagues
+Imported 1000 rows...
+--> Importing table for: sport.LeagueSeasonTable
+--> Importing table for: sport.LiveScores
+--> Importing table for: sport.LiveStandings
+--> Importing table for: sport.Markets
+--> Importing table for: sport.Match
+--> Importing table for: sport.MatchGoals
+--> Importing table for: sport.MatchPlayerReport
+--> Importing table for: sport.MatchPlayerSummary
+--> Importing table for: sport.MatchReport
+--> Importing table for: sport.MatchStatics
+--> Importing table for: sport.MatchSummary
+--> Importing table for: sport.MatchTeamLineups
+--> Importing table for: sport.MatchTeamLineupsPlayer
+--> Importing table for: sport.MatchTeamPlayer
+--> Importing table for: sport.Media
+--> Importing table for: sport.MultiSourcePlayers
+Imported 2000 rows...
+Imported 3000 rows...
+Imported 4000 rows...
+--> Importing table for: sport.MultiSourcePlayers_league
+--> Importing table for: sport.PlayerAchievement
+--> Importing table for: sport.PlayerAward
+--> Importing table for: sport.PlayerDataConflict
+--> Importing table for: sport.PlayerDataSourceInfo
+Imported 5000 rows...
+Imported 6000 rows...
+Imported 7000 rows...
+--> Importing table for: sport.PlayerMarketValueHistory
+--> Importing table for: sport.PlayerRelative
+--> Importing table for: sport.Players
+Imported 8000 rows...
+Imported 9000 rows...
+Imported 10000 rows...
+--> Importing table for: sport.PlayerSeasonStats
+--> Importing table for: sport.PlayerStatics
+--> Importing table for: sport.Players_league
+--> Importing table for: sport.PreMatchOdds
+--> Importing table for: sport.Referees
+--> Importing table for: sport.Rivals
+--> Importing table for: sport.Round
+--> Importing table for: sport.Schedules
+--> Importing table for: sport.Season
+--> Importing table for: sport.Sport
+--> Importing table for: sport.SportCategory
+--> Importing table for: sport.SportState
+--> Importing table for: sport.Squads
+--> Importing table for: sport.Stages
+--> Importing table for: sport.Standings
+--> Importing table for: sport.Statistics
+--> Importing table for: sport.Teams
+Imported 11000 rows...
+Imported 12000 rows...
+--> Importing table for: sport.TeamSeasonTable
+--> Importing table for: sport.TopScorer
+--> Importing table for: sport.TopScorers
+--> Importing table for: sport.Transfers
+Imported 13000 rows...
+--> Importing table for: sport.TVStations
+--> Importing table for: sport.Venues
+--> Importing table for: sport.Media
+--> Importing table for: sport.YoutubeVideo
+--> Importing table for: thumbnail.KVStore
+--> Importing table for: token_blacklist.BlacklistedToken
+--> Importing table for: token_blacklist.OutstandingToken
+--> Importing table for: phonenumber.PhoneDevice
+--> Importing table for: user.User
+--> Importing table for: user.UserGeoInfo
+--> Importing table for: user.UserProfile
+--> Importing table for: user.UserToken
+--> Importing table for: user.User_user_permissions
+Done. Success: 13631, Errors: 21162, Skips: 147

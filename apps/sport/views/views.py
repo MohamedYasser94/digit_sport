@@ -1,5 +1,13 @@
 from datetime import timezone, datetime
 import json
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
+import os
+import re
 from OpenSSL.rand import status
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage,EmptyPage, PageNotAnInteger
@@ -11,10 +19,14 @@ from django.db.models import Q
 from apps.sport.forms.forms import *
 from apps.sport.forms.operations import *
 from apps.sport.models.models import *
+from apps.sport.utils.pdf_parser import parse_match_report
 from core.models.core import CommonTranslate
 from core.views.notifications import AdminFcmNotifications
 from helper.commonHelper import BACKEND_TEMPLATES
 from helper.decorators import authenticated_staf, staff_only
+
+
+
 User = get_user_model()
 
 
@@ -2062,6 +2074,194 @@ def AdminMatchPlayerStaticAdd(request, match_slug, slug):
     return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics.html', context)
 
 
+@authenticated_staf
+@staff_only
+def AdminMatchPlayerStaticPdfUpload(request, match_slug):
+    """
+    New view to upload a PDF and automatically update all player statistics for a match.
+    Provides detailed progress tracking and error reporting.
+    """
+    match = get_object_or_404(Match, slug=match_slug)
+
+    if request.method == "POST" and request.FILES.get('pdf_file'):
+        pdf_file = request.FILES['pdf_file']
+
+        # Save file temporarily to parse it
+        import tempfile
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, pdf_file.name)
+
+        try:
+            # Save uploaded file
+            with open(temp_path, 'wb+') as destination:
+                for chunk in pdf_file.chunks():
+                    destination.write(chunk)
+
+            # Parse the PDF
+            parsed_stats = parse_match_report(temp_path)
+
+            if not parsed_stats:
+                # Auto-run diagnostic to help user understand the issue
+                from apps.sport.utils.pdf_diagnostic_report import (
+                    generate_pdf_diagnostic_report,
+                    format_diagnostic_for_display
+                )
+
+                diagnostic = generate_pdf_diagnostic_report(temp_path)
+                diagnostic_report = format_diagnostic_for_display(diagnostic)
+
+                # Build error message with diagnostic info
+                error_msg = (
+                    "❌ No statistics found in the PDF.\n\n"
+                    "AUTOMATED DIAGNOSTIC REPORT:\n"
+                    "───────────────────────────────────────────────────────────────\n" +
+                    diagnostic_report + "\n"
+                    "───────────────────────────────────────────────────────────────\n\n"
+                    "WHAT TO DO:\n"
+                    "1. Read the diagnostic report above\n"
+                    "2. Check if PDF has team headers (Kuwait SC, Al Sahel, etc.)\n"
+                    "3. Check if player numbers and names are visible\n"
+                    "4. If text is blurry, get a higher quality PDF\n"
+                    "5. If no text extracted, use a digital PDF instead of scanned image\n\n"
+                    "📖 See: TROUBLESHOOTING_NO_STATS.md for more help"
+                )
+                messages.error(request, error_msg, extra_tags='Players')
+                return HttpResponseRedirect(request.path)
+
+            # Process results tracking
+            updated_count = 0
+            skipped_players = []
+            error_details = []
+
+            for idx, stat in enumerate(parsed_stats, 1):
+                try:
+                    player_name = stat.get('player_name', '').strip()
+                    player_number = stat.get('player_number', '')
+
+                    if not player_name:
+                        error_details.append(f"Row {idx}: Missing player name")
+                        continue
+
+                    # Search for player by name or number
+                    player = Players.objects.filter(
+                        name__icontains=player_name
+                    ).first()
+
+                    if not player and player_number:
+                        # Try matching by number within the match's teams
+                        player = Players.objects.filter(
+                            number=int(player_number) if player_number.isdigit() else player_number,
+                            team__in=[match.team1, match.team2]
+                        ).first()
+
+                    if not player:
+                        skipped_players.append({
+                            'name': player_name,
+                            'number': player_number,
+                            'reason': 'Player not found in database'
+                        })
+                        continue
+
+                    # Clean numeric data
+                    def clean_num(val):
+                        if not val: return 0
+                        cleaned = re.sub(r'[^\d]', '', str(val))
+                        return int(cleaned) if cleaned else 0
+
+                    # Map stats with proper field names based on MatchPlayerReport model
+                    defaults = {
+                        'point_total': str(clean_num(stat.get('pts', 0))),
+                        'serve_total': str(clean_num(stat.get('serve_total', 0))),
+                        'serve_err': str(clean_num(stat.get('serve_err', 0))),
+                        'serve_ace': str(clean_num(stat.get('serve_ace', 0))),
+                        'reception_total': str(clean_num(stat.get('reception_total', 0))),
+                        'reception_err': str(clean_num(stat.get('reception_err', 0))),
+                        'reception_exc': str(clean_num(stat.get('reception_exc', 0))),
+                        'attack_total': str(clean_num(stat.get('attack_total', 0))),
+                        'attack_err': str(clean_num(stat.get('attack_err', 0))),
+                        'attack_att': str(clean_num(stat.get('attack_att', 0))),
+                        'attack_pts': str(clean_num(stat.get('attack_pts', 0))),
+                        'block_pts': str(clean_num(stat.get('block_pts', 0))),
+                        'static_type': 'General'
+                    }
+
+                    # Update or Create MatchPlayerReport
+                    report, created = MatchPlayerReport.objects.update_or_create(
+                        player=player,
+                        match=match,
+                        defaults=defaults
+                    )
+
+                    # Update or Create PlayerStatics (Total Stats) - use similar mapping
+                    statics_defaults = {
+                        'point_total': str(clean_num(stat.get('pts', 0))),
+                        'serve_total': str(clean_num(stat.get('serve_total', 0))),
+                        'serve_err': str(clean_num(stat.get('serve_err', 0))),
+                        'serve_pts': str(clean_num(stat.get('serve_ace', 0))),
+                        'reception_total': str(clean_num(stat.get('reception_total', 0))),
+                        'reception_err': str(clean_num(stat.get('reception_err', 0))),
+                        'reception_exc': str(clean_num(stat.get('reception_exc', 0))),
+                        'attack_total': str(clean_num(stat.get('attack_total', 0))),
+                        'attack_err': str(clean_num(stat.get('attack_err', 0))),
+                        'attack_exc': str(clean_num(stat.get('attack_att', 0))),
+                        'block_pts': str(clean_num(stat.get('block_pts', 0))),
+                        'static_type': 'General'
+                    }
+
+                    PlayerStatics.objects.update_or_create(
+                        player=player,
+                        defaults=statics_defaults
+                    )
+                    updated_count += 1
+
+                except Exception as e:
+                    error_details.append(f"Row {idx} ({player_name}): {str(e)}")
+                    continue
+
+            # Build result message
+            msg = _(f"✓ Successfully updated statistics for {updated_count} players out of {len(parsed_stats)} found in PDF.")
+
+            if skipped_players:
+                skipped_msg = _(f" ⚠ Skipped {len(skipped_players)} players not found in database:")
+                for p in skipped_players[:5]:  # Show first 5
+                    skipped_msg += f"\n  • {p['name']} (#{p['number']})"
+                if len(skipped_players) > 5:
+                    skipped_msg += f"\n  ... and {len(skipped_players) - 5} more"
+                msg += skipped_msg
+
+            if error_details:
+                error_msg = _(" ✕ Errors during processing:")
+                for err in error_details[:5]:  # Show first 5 errors
+                    error_msg += f"\n  • {err}"
+                if len(error_details) > 5:
+                    error_msg += f"\n  ... and {len(error_details) - 5} more errors"
+                msg += error_msg
+                messages.warning(request, msg, extra_tags='Players')
+            else:
+                messages.success(request, msg, extra_tags='Players')
+
+        except Exception as e:
+            error_msg = _("Error processing PDF: ") + str(e)
+            messages.error(request, error_msg, extra_tags='Players')
+            import traceback
+            traceback.print_exc()
+        finally:
+            if os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except:
+                    pass
+
+        return HttpResponseRedirect(reverse_lazy('sport:AdminMatchDetails', kwargs={'slug': match_slug}))
+
+    context = {
+        'match': match,
+        'current_page': _('Upload PDF Statics'),
+        'team1': match.team1 if hasattr(match, 'team1') else None,
+        'team2': match.team2 if hasattr(match, 'team2') else None,
+    }
+    return render(request, f'{BACKEND_TEMPLATES}/sport/match/statics_pdf.html', context)
+
 ##########################  Players ################################
 @authenticated_staf
 @staff_only
@@ -2104,6 +2304,7 @@ def AdminPlayersList(request):
         players_form = AdminPlayersForm(request.POST or None, request.FILES or None)
         if players_form:
             name = request.POST.get('name')
+            name_tr = request.POST.get('name_tr')
             position = request.POST.get('position')
             age = request.POST.get('age')
             birthdate = request.POST.get('birthdate')
@@ -2133,7 +2334,7 @@ def AdminPlayersList(request):
                 in_team = 'Yes'
 
             player_object = Players(
-                name=name,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
+                name=name,name_tr=name_tr,position=position,age=age,height=height,country=country,team=team,sport=sport,in_team=in_team,
                 gender=gender,keyword=keyword,image=image,image_path=image_path,nationality=nationality, nationality_flag=nationality_flag,)
             player_object.save()
             
@@ -2348,6 +2549,7 @@ def AdminPlayersUpdate(request, slug):
 
         if players_form:
             name = request.POST.get('name')
+            name_tr = request.POST.get('name_tr')
             short_code = request.POST.get('short_code')
             age = request.POST.get('age')
             birthdate = request.POST.get('birthdate')
@@ -2385,6 +2587,7 @@ def AdminPlayersUpdate(request, slug):
 
             player_object = Players.objects.get(slug=slug)
             player_object.name = name
+            player_object.name_tr = name_tr
             player_object.short_code = short_code
             player_object.birthdate = birthdate
             player_object.status = status

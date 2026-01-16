@@ -152,6 +152,7 @@ urlpatterns = [
     ##########   Match By Team #########
     path('match/team/player/<slug:match_slug>/<slug:slug>/', views.AdminMatchTeamPlayerList,name='AdminMatchTeamPlayerList'),
     path('match/player/static/add/<slug:match_slug>/<slug:slug>/', views.AdminMatchPlayerStaticAdd,name='AdminMatchPlayerStaticAdd'),
+path('match/player/static/pdf/add/<slug:match_slug>', views.AdminMatchPlayerStaticPdfUpload,name='AdminMatchPlayerStaticPdfUpload'),
 
 
     path('match/team/playr/transfer/<slug:slug>/', views.AdminTeamPlayerMatchAdd, name='AdminTeamPlayerMatchAdd'),

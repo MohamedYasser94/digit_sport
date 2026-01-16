@@ -1,0 +1,191 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║         🔧 QUICK FIX: "Poppler Not Installed" Error                          ║
+║                                                                               ║
+║         Error: "Unable to get page count. Is poppler installed?"             ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+⚡ ONE-LINE FIX (Copy & Paste)
+═══════════════════════════════════════════════════════════════════════════════
+
+For Ubuntu/Debian (Most Common):
+  sudo apt-get update && sudo apt-get install -y poppler-utils tesseract-ocr
+
+For CentOS/RedHat:
+  sudo yum install -y poppler-utils tesseract
+
+For Alpine:
+  sudo apk add --no-cache poppler-utils tesseract-ocr
+
+For macOS:
+  brew install poppler tesseract
+
+
+✅ VERIFY INSTALLATION
+═══════════════════════════════════════════════════════════════════════════════
+
+After installation, run:
+
+  pdftoimage -v
+  tesseract --version
+
+Both should show version info. If yes, you're done!
+
+
+🚀 TEST IT WORKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Option 1 - Web UI (Easiest):
+  1. Login to admin
+  2. Go to Match → Upload PDF Statistics
+  3. Upload a PDF
+  4. Should work now! ✅
+
+Option 2 - Command Line:
+  python pdf_diagnostic.py "your_file.pdf"
+
+Option 3 - Django Shell:
+  python manage.py test_pdf_upload "file.pdf" --verbose
+
+
+❓ WHAT IS POPPLER?
+═══════════════════════════════════════════════════════════════════════════════
+
+Poppler is a system library that:
+  • Converts PDFs to images
+  • Required by pdf2image Python package
+  • Not included by default on servers
+
+Tesseract is a system library that:
+  • Reads text from images (OCR)
+  • Required by pytesseract Python package
+  • Extracts data from scanned PDFs
+
+
+📋 INSTALLATION STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+Step 1: SSH to your server
+  ssh user@your.server.com
+
+Step 2: Run install command (see above for your OS)
+  sudo apt-get update && sudo apt-get install -y poppler-utils tesseract-ocr
+
+Step 3: Verify
+  pdftoimage -v
+  tesseract --version
+
+Step 4: Restart Django (if needed)
+  sudo systemctl restart digit_sport
+  or
+  supervisorctl restart digit_sport
+
+Step 5: Test
+  Go to web UI and try uploading PDF
+
+
+🆘 STILL NOT WORKING?
+═══════════════════════════════════════════════════════════════════════════════
+
+Check 1: Is it installed?
+  which pdftoimage
+  which tesseract
+
+Check 2: Is it in PATH?
+  echo $PATH
+  (Should contain directory where pdftoimage is)
+
+Check 3: Python can see it?
+  python -c "from pdf2image import convert_from_path; print('OK')"
+
+Check 4: Try manual PDF test
+  python pdf_diagnostic.py "test.pdf"
+
+Check 5: Restart app
+  sudo systemctl restart digit_sport
+  supervisorctl restart digit_sport
+
+Check 6: Check error logs
+  tail -f /path/to/django/logs/error.log
+
+
+💻 DIFFERENT SYSTEMS
+═══════════════════════════════════════════════════════════════════════════════
+
+Ubuntu/Debian:
+  sudo apt-get install poppler-utils tesseract-ocr
+
+CentOS/RedHat/Fedora:
+  sudo yum install poppler-utils tesseract
+
+Alpine Linux:
+  sudo apk add --no-cache poppler-utils tesseract-ocr
+
+macOS:
+  brew install poppler tesseract
+
+Windows:
+  Download from GitHub (see INSTALL_POPPLER_FIX.md)
+
+
+📁 REFERENCE DOCS
+═══════════════════════════════════════════════════════════════════════════════
+
+Full installation guide:
+  → INSTALL_POPPLER_FIX.md
+
+Troubleshooting PDF issues:
+  → TROUBLESHOOTING_NO_STATS.md
+
+Auto-diagnostic feature:
+  → AUTO_PDF_DIAGNOSTIC_COMPLETE.md
+
+
+✨ WHAT HAPPENS AFTER INSTALLATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Once poppler and tesseract are installed:
+
+1. Upload PDF via web UI
+   ↓
+2. System automatically:
+   • Converts PDF to images
+   • Runs OCR to extract text
+   • Parses player statistics
+   ↓
+3. Saves to database
+   ✅ Success!
+
+If still no stats found:
+   • Auto-diagnostic runs
+   • Shows what's wrong
+   • Gives recommendations
+
+
+🎯 QUICK CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+Before trying to upload PDF:
+  ☐ SSH to server
+  ☐ Run install command
+  ☐ Verify: pdftoimage -v (shows version)
+  ☐ Verify: tesseract --version (shows version)
+  ☐ Restart Django app
+  ☐ Try uploading PDF again
+  ☐ ✅ Done!
+
+Time needed: ~5 minutes
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Most Common System: Ubuntu/Debian
+  → Use: sudo apt-get install poppler-utils tesseract-ocr
+
+Most Common Issue: Poppler not in PATH
+  → Fix: Restart Django app after installation
+
+═══════════════════════════════════════════════════════════════════════════════
+
