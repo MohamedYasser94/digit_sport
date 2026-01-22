@@ -4,6 +4,7 @@ from datetime import timedelta, time
 from django.db import DatabaseError
 from django.http import JsonResponse
 from django.utils import timezone as django_timezone
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
@@ -61,7 +62,7 @@ def _get_serialized_fixtures_for_date(fetch_date, sport_obj, request=None):
     for league in sorted(all_leagues, key=lambda x: x.name if x else ""):
         league_serializer = SimpleLeagueSerializer(league,context={'request': request})
         league_fixtures = fixtures_by_league.get(league, [])
-        fixture_serializer = FixtureSerializer(league_fixtures, many=True)
+        fixture_serializer = FixtureSerializer(league_fixtures, many=True,context={'request': request})
         league_matches = matches_by_league.get(league, [])
         match_serializer = MatchSerializer(league_matches, many=True,context={'request': request})
         
@@ -245,7 +246,7 @@ def LeagueStandingsApi(request, league_id, season_id):
             'success': False,
             'data': {'standings': []},
             'message': f"League standings not found for league_id {league_id} and season_id {season_id}"
-        }, status=404)
+        }, status=200)
         
     except Exception as e:
         print(f"Error retrieving standings: {str(e)}")
@@ -253,7 +254,7 @@ def LeagueStandingsApi(request, league_id, season_id):
             'success': False,
             'data': {'standings': []},
             'message': f"Error retrieving league standings: {str(e)}"
-        }, status=500)
+        }, status=200)
 
 @api_view(['GET'])
 def LeagueMatchesApi(request, league_id):
@@ -497,7 +498,7 @@ def LeagueSeasonsApi(request, league_id):
             league_id=league_id,
             status='Active'
         ).order_by('-starting_at')
-        seasons_serializer = SeasonDetailsSerializer(seasons_query, many=True)
+        seasons_serializer = SeasonDetailsSerializer(seasons_query, many=True, context={'request': request})
         sport_data = {
             'seasons': seasons_serializer.data,
         }
@@ -547,9 +548,12 @@ def SearchGeneralApi(request, name, sport):
     try:
         search_query = name.strip()
         sport_name_filter = sport.strip()
+
+        # Use Q objects to search in name OR name_tr fields
+        search_filter = Q(name__icontains=search_query) | Q(name_tr__icontains=search_query)
+
         players_qs = Players.objects.filter(
-            name__icontains=search_query,
-            sport__name__icontains=sport_name_filter 
+            search_filter
         ).select_related('team', 'sport')
 
         player_data = PlayerSearchSerializer(
@@ -557,9 +561,9 @@ def SearchGeneralApi(request, name, sport):
             many=True, 
             context={'request': request} 
         ).data
+
         teams_qs = Teams.objects.filter(
-            name__icontains=search_query,
-            sport__name__icontains=sport_name_filter
+            search_filter
         ).select_related('sport')
 
         team_data = TeamSearchSerializer(
@@ -567,9 +571,9 @@ def SearchGeneralApi(request, name, sport):
             many=True, 
             context={'request': request}
         ).data
+
         leagues_qs = Leagues.objects.filter(
-            name__icontains=search_query,
-            sport__name__icontains=sport_name_filter
+            search_filter
         ).select_related('sport')
 
         league_data = LeagueSearchSerializer(
@@ -1717,40 +1721,103 @@ def SeasonSchedulesApiView(request, season_id, lang='en'):
     
 
 @api_view(['GET'])
-def LeagueSearchApiView(request, name,lang='en'):
+def LeagueSearchApiView(request, name,lang):
     """
     Proxy endpoint to search leagues by name using SportMonks API.
     Example: /v4/football/leagues/search/Premier/
     """
+    # try:
+    #     # Base URL for searching leagues
+    #     url = f"{base_url}football/leagues/search/{name}?api_token={api_key}&locale={lang}"
+    #
+    #     # Append the include param (default currentseason)
+    #     include_param = request.query_params.get('include', 'currentSeason')
+    #     url += f"&include={include_param.replace(',', ';')}"
+    #
+    #     # Forward extra query parameters (filters, pagination, etc.)
+    #     for key, value in request.query_params.items():
+    #         if key not in ["include"]:
+    #             url += f"&{key}={value}"
+    #
+    #     # Make request
+    #     response = requests.get(url)
+    #     response.raise_for_status()
+    #
+    #     data = response.json()
+    #     _enrich_search_results(data, entity_type='league')
+    #     return Response(data, status=status.HTTP_200_OK)
+    #
+    # except requests.exceptions.HTTPError as err:
+    #     return Response(
+    #         {"error": f"Failed to fetch leagues: {err.response.status_code} {err.response.reason}"},
+    #         status=err.response.status_code
+    #     )
+    # except Exception as e:
+    #     return Response({"error": f"Unexpected error: {str(e)}"},
+    #                     status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     try:
-        # Base URL for searching leagues
-        url = f"{base_url}football/leagues/search/{name}?api_token={api_key}&locale={lang}"
+        search_query = name.strip()
+        # sport_name_filter = sport.strip()
+        players_qs = Players.objects.filter(
+            name__icontains=search_query,
+            # sport__name__icontains=sport_name_filter
+        ).select_related('team', )
 
-        # Append the include param (default currentseason)
-        include_param = request.query_params.get('include', 'currentSeason')
-        url += f"&include={include_param.replace(',', ';')}"
-
-        # Forward extra query parameters (filters, pagination, etc.)
-        for key, value in request.query_params.items():
-            if key not in ["include"]:
-                url += f"&{key}={value}"
-
-        # Make request
-        response = requests.get(url)
-        response.raise_for_status()
-
-        data = response.json()
-        _enrich_search_results(data, entity_type='league')
-        return Response(data, status=status.HTTP_200_OK)
-
-    except requests.exceptions.HTTPError as err:
-        return Response(
-            {"error": f"Failed to fetch leagues: {err.response.status_code} {err.response.reason}"},
-            status=err.response.status_code
+        player_data = PlayerSearchSerializer(
+            players_qs,
+            many=True,
+            context={'request': request}
+        ).data
+        teams_qs = Teams.objects.filter(
+            name__icontains=search_query,
+            # sport__name__icontains=sport_name_filter
         )
+
+        team_data = TeamSearchSerializer(
+            teams_qs,
+            many=True,
+            context={'request': request}
+        ).data
+        leagues_qs = Leagues.objects.filter(
+            name__icontains=search_query,
+            # sport__name__icontains=sport_name_filter
+        )
+
+        league_data = LeagueSearchSerializer(
+            leagues_qs,
+            many=True,
+            context={'request': request}
+        ).data
+        total_results = len(player_data) + len(team_data) + len(league_data)
+        success = True
+
+        if total_results > 0:
+            message = f"Found {total_results} results for '{search_query}' '"
+        else:
+            message = f"No results found for '{search_query}' "
+
+        data = {
+            'success': success,
+            'message': message,
+            'data': {
+                'leagues': league_data,
+                'teams': team_data,
+                'players': player_data,
+            }
+        }
+
+        return JsonResponse(data, safe=False)
+
     except Exception as e:
-        return Response({"error": f"Unexpected error: {str(e)}"},
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(f"Search API Error: {str(e)}")
+
+        return JsonResponse({
+            'success': False,
+            'message': "An error occurred during the search process.",
+            'error_details': str(e),
+            'data': {}
+        }, status=500)
 
 
 @api_view(['GET'])

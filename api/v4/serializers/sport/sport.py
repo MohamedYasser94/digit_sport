@@ -255,6 +255,7 @@ class FixtureSerializer(serializers.ModelSerializer):
 # This serializer is for the top-level league information
 class SimpleLeagueSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+
     
     class Meta:
         model = Leagues
@@ -268,6 +269,8 @@ class SimpleLeagueSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.image.url)
             return obj.image.url
         return None
+
+
 
 class PlyerSerializer(serializers.ModelSerializer):
     team = TeamSerializer(read_only=True)
@@ -668,7 +671,7 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = [
-            'id', 'venues_name', 'league_id', 'league_name', 'league_image', 
+            'id', 'venues_name', 'league_id', 'league_name', 'league_image',
             'home_score', 'away_score', 'score', 'start_time', 
             'home_team', 'away_team', 'sport_name', 'round_name', 'round_id',
             'match_statistics', 'state', 'season_id', 'season_name'
@@ -827,7 +830,7 @@ class LeagueSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Leagues
-        fields = ['id', 'name', 'image', 'sport_name', 'country', 'currentseason']
+        fields = ['id', 'name','name_tr', 'image','image_path', 'sport_name', 'country', 'currentseason']
 
     def get_image(self, obj):
         if obj.image:
@@ -846,7 +849,7 @@ class TeamSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teams
-        fields = ['id', 'name', 'image', 'sport_name', 'country', 'gender']
+        fields = ['id', 'name','name_tr', 'image','image_path', 'sport_name', 'country', 'gender']
 
     def get_image(self, obj):
         if obj.image:
@@ -866,7 +869,7 @@ class PlayerSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Players
-        fields = ['id', 'name', 'image', 'position', 'team_name', 'sport_name', 'nationality']
+        fields = ['id', 'name', 'name_tr','image','image_path', 'position', 'team_name', 'sport_name', 'nationality']
 
     def get_image(self, obj):
         if obj.image:
