@@ -842,7 +842,6 @@ class LeagueSearchSerializer(serializers.ModelSerializer):
             except:
                 pass
         return obj.image_path
-
 class TeamSearchSerializer(serializers.ModelSerializer):
     sport_name = serializers.CharField(source='sport.name', read_only=True)
     image = serializers.SerializerMethodField()
