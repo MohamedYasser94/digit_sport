@@ -203,56 +203,66 @@ def MatchDetailsApi(request, match_id):
 @api_view(['GET'])
 def LeagueStandingsApi(request, league_id, season_id):
     """
-    Get league standings for a specific league and season
+    Get league standings for a specific league and season.
+    Returns all tables (groups) for the league/season combination.
     """
     try:
         print(f"Looking for standings - League: {league_id}, Season: {season_id}")
-        
-        league_season_table = get_object_or_404(
-            LeagueSeasonTable.objects.select_related('league', 'season'),
+        league_season_tables = LeagueSeasonTable.objects.filter(
             league_id=league_id,
             season_id=season_id
-        )
+        ).select_related('league', 'season', 'group').order_by('sort', 'id')
         
-        standings = TeamSeasonTable.objects.filter(
-            table_id=league_season_table.id
-        ).select_related('team', 'league').order_by('position')
+        if not league_season_tables.exists():
+            return Response({
+                'success': False,
+                'data': {'tables': []},
+                'message': f"League standings not found for league_id {league_id} and season_id {season_id}"
+            }, status=200)
         
-        standings_serializer = TeamSeasonTableSerializer(
-            standings, 
-            many=True, 
-            context={'request': request}
-        )
-        
+        first_table = league_season_tables.first()
         league_data = {
-            'league_id': league_season_table.league.id,
-            'league_name': league_season_table.league.name,
-            'season_id': league_season_table.season.id,
-            'season_name': league_season_table.season.name if hasattr(league_season_table.season, 'name') else None,
-            'league_season_table_id': league_season_table.id
+            'league_id': first_table.league.id if first_table.league else None,
+            'league_name': first_table.league.name if first_table.league else None,
+            'season_id': first_table.season.id if first_table.season else None,
+            'season_name': first_table.season.name if first_table.season and hasattr(first_table.season, 'name') else None,
         }
+        
+        tables_data = []
+        for table in league_season_tables:
+            standings = TeamSeasonTable.objects.filter(
+                table_id=table.id
+            ).select_related('team', 'league').order_by('position')
+            
+            standings_serializer = TeamSeasonTableSerializer(
+                standings, 
+                many=True, 
+                context={'request': request}
+            )
+            
+            table_info = {
+                'table_id': table.id,
+                'group_id': table.group.id if table.group else None,
+                'group_name': table.group.name if table.group else None,
+                'sort': table.sort,
+                'standings': standings_serializer.data
+            }
+            tables_data.append(table_info)
         
         return Response({
             'success': True,
             'data': {
                 'league_info': league_data,
-                'standings': standings_serializer.data
+                'tables': tables_data
             },
             'message': "League standings retrieved successfully"
         })
-        
-    except LeagueSeasonTable.DoesNotExist:
-        return Response({
-            'success': False,
-            'data': {'standings': []},
-            'message': f"League standings not found for league_id {league_id} and season_id {season_id}"
-        }, status=200)
         
     except Exception as e:
         print(f"Error retrieving standings: {str(e)}")
         return Response({
             'success': False,
-            'data': {'standings': []},
+            'data': {'tables': []},
             'message': f"Error retrieving league standings: {str(e)}"
         }, status=200)
 
