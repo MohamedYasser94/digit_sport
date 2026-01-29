@@ -1224,6 +1224,16 @@ def _enrich_team_detail_with_name_tr(team_data):
     
     if team_data.get('latest'):
         for match in team_data['latest']:
+            # Convert starting_at from UTC to UTC+3
+            if 'starting_at' in match and isinstance(match['starting_at'], str):
+                try:
+                    utc_time = datetime.strptime(match['starting_at'], '%Y-%m-%d %H:%M:%S')
+                    utc_plus_3_time = utc_time + timedelta(hours=3)
+                    match['starting_at'] = utc_plus_3_time.strftime('%Y-%m-%d %H:%M:%S')
+                    match['timezone'] = 'UTC+3'
+                except ValueError:
+                    pass
+            
             if match.get('league'):
                 league_api_id = match['league'].get('id')
                 league_name_tr = None
@@ -1258,6 +1268,16 @@ def _enrich_team_detail_with_name_tr(team_data):
 
     if team_data.get('upcoming'):
         for match in team_data['upcoming']:
+            # Convert starting_at from UTC to UTC+3
+            if 'starting_at' in match and isinstance(match['starting_at'], str):
+                try:
+                    utc_time = datetime.strptime(match['starting_at'], '%Y-%m-%d %H:%M:%S')
+                    utc_plus_3_time = utc_time + timedelta(hours=3)
+                    match['starting_at'] = utc_plus_3_time.strftime('%Y-%m-%d %H:%M:%S')
+                    match['timezone'] = 'UTC+3'
+                except ValueError:
+                    pass
+            
             if match.get('league'):
                 league_api_id = match['league'].get('id')
                 league_name_tr = None
